@@ -1,10 +1,12 @@
 from pathlib import Path
 import csv
+import os
 import subprocess
 
 from flask import Flask, redirect, render_template, request, url_for
 
 try:
+    from .backend_executable import BackendExecutableError, resolve_backend_executable
     from .backend_result_adapter import (
         BackendResultAdapter,
         display_value,
@@ -13,6 +15,7 @@ try:
         safe_int,
     )
 except ImportError:
+    from backend_executable import BackendExecutableError, resolve_backend_executable
     from backend_result_adapter import (
         BackendResultAdapter,
         display_value,
@@ -26,12 +29,6 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
 
 app = Flask(__name__)
-
-EXECUTABLE_NAMES = [
-    "allocation_system.exe",
-    "allocation_system_test.exe",
-    "allocation_system",
-]
 
 SUPPORTED_STRATEGIES = [
     {"value": "greedy", "label": "Greedy"},
@@ -834,15 +831,6 @@ def truncate_output(text, limit=3000):
     return text[:limit] + "\n... output truncated for dashboard display ..."
 
 
-def find_backend_executable():
-    for executable_name in EXECUTABLE_NAMES:
-        executable_path = PROJECT_ROOT / executable_name
-        if executable_path.exists() and executable_path.is_file():
-            return executable_path
-
-    return None
-
-
 def build_dashboard_context(run_result=None, strategy_message=None):
     requests_table = read_csv_table("requests.csv")
     results_table = read_csv_table("request_results.csv")
@@ -897,19 +885,26 @@ def build_dashboard_context(run_result=None, strategy_message=None):
 
 
 def run_backend_allocation():
-    executable_path = find_backend_executable()
-
-    if executable_path is None:
+    try:
+        backend = resolve_backend_executable(
+            PROJECT_ROOT, os.environ.get("RESOURCE_ALLOCATION_BACKEND")
+        )
+    except BackendExecutableError as error:
+        app.logger.error("Backend validation failed: %s", error)
         return {
             "status": "error",
-            "message": "Backend executable not found. Please compile the C++ project first.",
+            "message": str(error),
             "stdout": "",
             "stderr": "",
         }
 
+    app.logger.info("Executing backend %s (built=%s source=%s binary=%s compiler=%s)",
+                    backend.path, backend.metadata["built_at"],
+                    backend.metadata["source_sha256"], backend.metadata["binary_sha256"],
+                    backend.metadata["compiler"])
     try:
         completed = subprocess.run(
-            [str(executable_path)],
+            [str(backend.path)],
             text=True,
             cwd=PROJECT_ROOT,
             capture_output=True,
@@ -921,6 +916,14 @@ def run_backend_allocation():
             "message": "Backend execution timed out after 30 seconds.",
             "stdout": truncate_output(exc.stdout or ""),
             "stderr": truncate_output(exc.stderr or ""),
+        }
+    except OSError as error:
+        app.logger.error("Backend could not start at %s: %s", backend.path, error)
+        return {
+            "status": "error",
+            "message": f"Configured backend could not start: {error}",
+            "stdout": "",
+            "stderr": "",
         }
 
     if completed.returncode == 0:

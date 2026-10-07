@@ -15,15 +15,32 @@ pip install flask
 From PowerShell in the project root:
 
 ```powershell
-$sources = Get-ChildItem -Recurse -Path src -Filter *.cpp | ForEach-Object { $_.FullName }
-g++ -std=c++17 $sources -o allocation_system
+python scripts/build_backend.py
 ```
 
-The dashboard looks for one of these executables in the project root:
+The single default backend artifact is:
 
-- `allocation_system.exe`
-- `allocation_system_test.exe`
-- `allocation_system`
+- Windows: `build/backend/allocation_system.exe`
+- Linux: `build/backend/allocation_system`
+
+The script requires `g++` on PATH. A compiler path containing spaces can be passed with `--compiler "C:\path to compiler\g++.exe"`. It also writes an adjacent `.build.json` manifest with the C++ source hash, binary hash, build time, and compiler identity. Flask refuses missing, stale, or mismatched builds and logs the verified build identity when running it. It never falls back to old root, test, or check executables.
+
+For an intentional alternate location, build it explicitly and configure the same path:
+
+```powershell
+python scripts/build_backend.py --output "build/custom/engine.exe"
+$env:RESOURCE_ALLOCATION_BACKEND = "build/custom/engine.exe"
+```
+
+Relative paths are resolved from the project root, not the shell working directory. Absolute paths are also supported. On Linux, use `export RESOURCE_ALLOCATION_BACKEND=/absolute/path/engine` after building with `--output` and keep its manifest beside it. Packaged deployments without `src/` still validate the binary against the manifest. Build before starting workers; this is not a hot-reload or signed-artifact system.
+
+Run the resolution/integration regression tests with:
+
+```powershell
+python -m unittest discover -s tests -p test_backend_executable.py -v
+```
+
+Build first to include the live C++/Flask smoke test; it reports an explicit skip if the authoritative artifact is unavailable. The live smoke uses temporary input/output files, not the project's generated CSVs.
 
 ## Run Flask From The Project Root
 
@@ -46,7 +63,7 @@ Open this address in a browser:
 http://127.0.0.1:5000
 ```
 
-Click `Run Allocation` on the home page to run the compiled C++ backend executable. The web app uses a fixed executable lookup, runs it from the project root, and then displays the updated `allocations.csv` and `request_results.csv` files.
+Click `Run Allocation` on the home page to run the validated C++ backend artifact from the project root, then display the updated `allocations.csv` and `request_results.csv` files. Validation/startup errors are shown instead of executing an arbitrary binary.
 
 ## Dashboard Flow
 

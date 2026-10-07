@@ -231,17 +231,18 @@ The test runner compiles and runs the backend smoke executable, then compiles an
 From PowerShell in the project root:
 
 ```powershell
-$sources = Get-ChildItem -Recurse -Path src -Filter *.cpp | ForEach-Object { $_.FullName }
-g++ -std=c++17 $sources -o allocation_system
+python scripts/build_backend.py
 ```
 
 Run:
 
 ```powershell
-.\allocation_system.exe
+.\build\backend\allocation_system.exe
 ```
 
 The backend loads CSV files, reads `data/config.txt`, processes requests with the selected strategy, prints request outcomes, and exports `allocations.csv`, `request_results.csv`, `request_summaries.csv`, and `allocation_summaries.csv`.
+
+The build script requires `g++` on PATH (or `--compiler <compiler-path>`) and writes the authoritative executable plus its build manifest under `build/backend/`. On Linux, run `./build/backend/allocation_system`. Flask validates the manifest, binary hash, and current C++ source hash before execution; old root/check executables are never fallbacks. See [web configuration](web/README.md#compile-the-c-backend) for an explicit executable override.
 
 ## How to Run Web Dashboard
 
