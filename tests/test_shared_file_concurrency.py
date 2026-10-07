@@ -17,6 +17,7 @@ from web import app as web_app
 from web.backend_executable import resolve_backend_executable
 from web.backend_result_adapter import BackendResultAdapter
 from web.shared_file_state import OUTPUT_HEADERS, SharedFileState, SharedStateBusy, atomic_write
+from engine_json_fixtures import fake_result
 
 
 def write_csv(path, headers, rows):
@@ -129,8 +130,8 @@ class SharedFileConcurrencyTests(TestCase):
             return self.state.publish(workspace, {"test": marker})
 
     def fake_execution(self, command, **kwargs):
-        fake_outputs(kwargs["cwd"], "new")
-        return subprocess.CompletedProcess(command, 0, "complete", "")
+        snapshot = json.loads(kwargs["input"])
+        return subprocess.CompletedProcess(command, 0, json.dumps(fake_result(snapshot)), "")
 
     def assert_associations(self):
         requests = read_rows(self.data / "requests.csv")
@@ -185,13 +186,13 @@ class SharedFileConcurrencyTests(TestCase):
         started, release = threading.Event(), threading.Event()
         configs = []
         def execution(command, **kwargs):
-            path = kwargs["cwd"] / "data" / "config.txt"
-            before = path.read_text()
+            snapshot = json.loads(kwargs["input"])
+            before = snapshot["strategy"]
             if not configs:
                 started.set()
                 self.assertTrue(release.wait(5))
-            self.assertEqual(before, path.read_text())
-            configs.append((before, kwargs["cwd"]))
+            self.assertEqual(before, json.loads(kwargs["input"])["strategy"])
+            configs.append((before, snapshot["runId"]))
             return self.fake_execution(command, **kwargs)
         def run_greedy():
             return web_app.app.test_client().post("/run-allocation")
@@ -212,9 +213,9 @@ class SharedFileConcurrencyTests(TestCase):
                 for future in (first, second):
                     response = future.result(10)
                     self.assertEqual(parse_qs(urlparse(response.location).query)["run_status"], ["success"])
-        self.assertEqual([config for config, _ in configs], ["allocation_strategy=greedy\n", "allocation_strategy=priority\n"])
+        self.assertEqual([config for config, _ in configs], ["greedy", "priority"])
         self.assertNotEqual(configs[0][1], configs[1][1])
-        self.assertEqual((self.state.current_data_dir() / "config.txt").read_text(), "allocation_strategy=priority\n")
+        self.assertEqual(self.state.read_engine_result()["snapshot"]["strategy"], "priority")
 
     def test_reader_pins_all_results_and_inputs_across_atomic_publication(self):
         old = self.publish_fixture()
@@ -256,7 +257,6 @@ class SharedFileConcurrencyTests(TestCase):
     def test_nonzero_backend_does_not_publish_partial_outputs(self):
         old = self.publish_fixture()
         def fail(command, **kwargs):
-            (kwargs["cwd"] / "data" / "allocations.csv").write_text("partial")
             return subprocess.CompletedProcess(command, 7, "", "failed")
         with mock.patch.object(web_app.subprocess, "run", side_effect=fail):
             result = web_app.run_backend_allocation()
@@ -266,13 +266,16 @@ class SharedFileConcurrencyTests(TestCase):
 
     def test_backend_timeout_never_publishes_and_preserves_saved_request(self):
         old = self.publish_fixture()
+        with mock.patch.object(web_app.subprocess, "run", side_effect=self.fake_execution):
+            self.assertEqual(web_app.run_backend_allocation()["status"], "success")
+        previous_json = (self.state.root / "engine-result.json").read_bytes()
         def timeout(command, **kwargs):
-            (kwargs["cwd"] / "data" / "allocations.csv").write_text("partial")
             raise subprocess.TimeoutExpired(command, kwargs["timeout"], output=b"partial")
         with mock.patch.object(web_app.subprocess, "run", side_effect=timeout):
             response = self.client.post("/add-request", data=form("Timeout saved", "save_run"))
         self.assertIn("timed out", parse_qs(urlparse(response.location).query)["run_message"][0])
         self.assertEqual(self.state.current_data_dir(), old)
+        self.assertEqual((self.state.root / "engine-result.json").read_bytes(), previous_json)
         self.assertEqual(read_rows(self.data / "requests.csv")[-1]["title"], "Timeout saved")
         item, _ = self.adapter.pin().get_request_summary("2")
         self.assertEqual(item["status"], "Pending")
@@ -280,11 +283,15 @@ class SharedFileConcurrencyTests(TestCase):
 
     def test_submit_and_run_backend_error_keeps_request_and_participants_pending(self):
         old = self.publish_fixture()
+        with mock.patch.object(web_app.subprocess, "run", side_effect=self.fake_execution):
+            self.assertEqual(web_app.run_backend_allocation()["status"], "success")
+        previous_json = (self.state.root / "engine-result.json").read_bytes()
         with mock.patch.object(web_app.subprocess, "run", return_value=subprocess.CompletedProcess([], 9, "", "bad")):
             response = self.client.post("/add-request", data=form("Failure saved", "save_run"))
         self.assertEqual(response.status_code, 302)
         self.assertEqual(parse_qs(urlparse(response.location).query)["run_status"], ["error"])
         self.assertEqual(self.state.current_data_dir(), old)
+        self.assertEqual((self.state.root / "engine-result.json").read_bytes(), previous_json)
         self.assertEqual(read_rows(self.data / "request_participants.csv")[-1]["requestId"], "2")
         self.assertEqual(self.adapter.pin().get_request_summary("2")[0]["status"], "Pending")
         self.assertEqual(self.client.get(response.location).status_code, 200)
@@ -292,9 +299,9 @@ class SharedFileConcurrencyTests(TestCase):
     def test_zero_exit_with_missing_or_malformed_output_is_not_published(self):
         old = self.publish_fixture()
         def bad_output(command, **kwargs):
-            fake_outputs(kwargs["cwd"])
-            (kwargs["cwd"] / "data" / "allocation_summaries.csv").write_text("wrong,header\n")
-            return subprocess.CompletedProcess(command, 0, "", "")
+            result = fake_result(json.loads(kwargs["input"]))
+            result["requestResults"] = []
+            return subprocess.CompletedProcess(command, 0, json.dumps(result), "")
         for executor in (lambda command, **kwargs: subprocess.CompletedProcess(command, 0, "", ""), bad_output):
             with self.subTest(executor=executor), mock.patch.object(web_app.subprocess, "run", side_effect=executor):
                 result = web_app.run_backend_allocation()
@@ -305,7 +312,7 @@ class SharedFileConcurrencyTests(TestCase):
         old = self.publish_fixture()
         real_replace = os.replace
         def fail_pointer(source, destination):
-            if Path(destination) == self.state.pointer:
+            if Path(destination) == self.state.root / "engine-result.json":
                 raise OSError("publication denied")
             return real_replace(source, destination)
         with mock.patch.object(web_app.subprocess, "run", side_effect=self.fake_execution), \
@@ -370,6 +377,7 @@ class SharedFileConcurrencyTests(TestCase):
         self.assertEqual(result["status"], "success")
         self.assertTrue(old.exists())
         self.assertTrue(orphan.exists())
+        self.assertIsNotNone(self.state.read_engine_result())
         self.assertNotEqual(self.state.current_data_dir().parent, orphan)
 
     def test_save_only_does_not_execute_or_replace_published_generation(self):
@@ -385,7 +393,7 @@ class SharedFileConcurrencyTests(TestCase):
         with mock.patch.object(web_app.subprocess, "run", side_effect=self.fake_execution):
             response = self.client.post("/add-request", data=form("Submit and run", "save_run"))
         self.assertEqual(parse_qs(urlparse(response.location).query)["run_status"], ["success"])
-        self.assertEqual(len(read_rows(self.state.current_data_dir() / "request_results.csv")), 2)
+        self.assertEqual(len(self.state.read_engine_result()["result"]["requestResults"]), 2)
         for route in (response.location, "/", "/allocation-summary", "/requests", "/schedules",
                       "/schedules?type=user&id=2", "/schedules?type=space&id=301",
                       "/raw-data?file=request_summaries.csv", "/raw-data?file=allocation_summaries.csv"):

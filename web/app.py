@@ -9,6 +9,7 @@ from flask import Flask, g, has_request_context, redirect, render_template, requ
 try:
     from .shared_file_state import SharedFileState, SharedStateBusy, SharedStateError
     from .backend_executable import BackendExecutableError, resolve_backend_executable
+    from .engine_gateway import EngineGateway, EngineIntegrationError, execution_snapshot
     from .backend_result_adapter import (
         BackendResultAdapter,
         build_committee_participant_display,
@@ -20,6 +21,7 @@ try:
 except ImportError:
     from shared_file_state import SharedFileState, SharedStateBusy, SharedStateError
     from backend_executable import BackendExecutableError, resolve_backend_executable
+    from engine_gateway import EngineGateway, EngineIntegrationError, execution_snapshot
     from backend_result_adapter import (
         BackendResultAdapter,
         build_committee_participant_display,
@@ -180,6 +182,7 @@ def shared_data_busy(error):
 
 
 @app.errorhandler(SharedStateError)
+@app.errorhandler(EngineIntegrationError)
 def shared_data_error(error):
     app.logger.error("Shared-file operation failed: %s", error)
     return f"Shared-file operation failed: {error}", 503
@@ -876,71 +879,25 @@ def build_dashboard_context(run_result=None, strategy_message=None):
 def run_backend_allocation():
     try:
         with shared_operation() as state:
-            return execute_backend_in_workspace(state)
+            return execute_json_backend(state)
     except SharedStateBusy:
         raise
-    except (SharedStateError, OSError) as error:
+    except (SharedStateError, OSError, EngineIntegrationError, BackendExecutableError) as error:
         app.logger.error("Allocation was not published: %s", error)
         return {"status": "error", "message": str(error), "stdout": "", "stderr": ""}
 
 
-def execute_backend_in_workspace(state):
-    try:
-        backend = resolve_backend_executable(
-            PROJECT_ROOT, os.environ.get("RESOURCE_ALLOCATION_BACKEND")
-        )
-    except BackendExecutableError as error:
-        app.logger.error("Backend validation failed: %s", error)
-        return {
-            "status": "error",
-            "message": str(error),
-            "stdout": "",
-            "stderr": "",
-        }
-
-    app.logger.info("Executing backend %s (built=%s source=%s binary=%s compiler=%s)",
-                    backend.path, backend.metadata["built_at"],
-                    backend.metadata["source_sha256"], backend.metadata["binary_sha256"],
-                    backend.metadata["compiler"])
-    workspace = state.create_workspace()
-    try:
-        completed = subprocess.run(
-            [str(backend.path)],
-            text=True,
-            cwd=workspace,
-            capture_output=True,
-            timeout=app.config["BACKEND_TIMEOUT"],
-        )
-    except subprocess.TimeoutExpired as exc:
-        return {
-            "status": "error",
-            "message": f"Backend execution timed out after {app.config['BACKEND_TIMEOUT']} seconds. Previous results remain active.",
-            "stdout": truncate_output(exc.stdout.decode(errors="replace") if isinstance(exc.stdout, bytes) else exc.stdout or ""),
-            "stderr": truncate_output(exc.stderr.decode(errors="replace") if isinstance(exc.stderr, bytes) else exc.stderr or ""),
-        }
-    except OSError as error:
-        app.logger.error("Backend could not start at %s: %s", backend.path, error)
-        return {
-            "status": "error",
-            "message": f"Configured backend could not start: {error}",
-            "stdout": "",
-            "stderr": "",
-        }
-
-    if completed.returncode == 0:
-        state.publish(workspace, backend.metadata)
-        status = "success"
-        message = "Allocation backend ran successfully. Results were updated."
-    else:
-        status = "error"
-        message = f"Allocation backend failed with exit code {completed.returncode}."
-
-    return {
-        "status": status,
-        "message": message,
-        "stdout": truncate_output(completed.stdout),
-        "stderr": truncate_output(completed.stderr),
-    }
+def execute_json_backend(state):
+    # Validate before reading persistence too, preserving clear missing/stale-artifact errors.
+    resolve_backend_executable(PROJECT_ROOT, os.environ.get("RESOURCE_ALLOCATION_BACKEND"))
+    strategy = read_config_strategy()
+    if strategy == "greedy (default / config missing)":
+        strategy = "greedy"
+    snapshot = execution_snapshot(backend_results.pin(state), strategy)
+    result, metadata = EngineGateway(PROJECT_ROOT, app.config["BACKEND_TIMEOUT"], app.logger).execute(snapshot)
+    state.publish_engine_result(snapshot, result, metadata)
+    return {"status": "success", "message": "Allocation backend ran successfully. Results were updated.",
+            "stdout": f"JSON run {result['runId']} completed ({result['engineVersion']}).", "stderr": ""}
 
 
 def render_csv_page(template_name, title, filename, empty_message):

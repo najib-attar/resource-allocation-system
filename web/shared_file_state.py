@@ -99,6 +99,22 @@ def csv_with_rows(path, headers, rows):
 
 
 class SharedFileState:
+    def read_engine_result(self):
+        path = self.root / "engine-result.json"
+        if not path.exists():
+            return None
+        document = json.loads(path.read_text(encoding="utf-8"))
+        if (not isinstance(document, dict) or not isinstance(document.get("snapshot"), dict)
+                or not isinstance(document.get("result"), dict)
+                or any(key not in document["snapshot"] for key in ("runId", "strategy", "requests", "spaces"))):
+            raise SharedStateError("Invalid published JSON result. Run allocation again; no legacy fallback was used.")
+        return document
+
+    def publish_engine_result(self, snapshot, result, metadata):
+        # One replacement publishes the input provenance and all result collections together.
+        document = {"snapshot": snapshot, "result": result, "build": metadata}
+        atomic_write(self.root / "engine-result.json", json.dumps(document, ensure_ascii=False, allow_nan=False).encode("utf-8"))
+
     def __init__(self, data_dir, lock_timeout=5.0):
         self.data_dir = Path(data_dir)
         self.root = self.data_dir / ".runtime"
