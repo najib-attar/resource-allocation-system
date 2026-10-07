@@ -2,7 +2,6 @@ from pathlib import Path
 from contextlib import contextmanager
 import csv
 import os
-import subprocess
 
 from flask import Flask, g, has_request_context, redirect, render_template, request, url_for
 
@@ -486,126 +485,6 @@ def parse_time_fields(form_data, errors):
     return day, start_time, end_time
 
 
-def validate_exam_form(form_data, users, spaces):
-    errors = []
-    user_ids = {(user.get("userId") or "").strip() for user in users}
-    space_ids = {(space.get("spaceId") or "").strip() for space in spaces}
-
-    user_id = form_data.get("userId", "").strip()
-    space_id = form_data.get("spaceId", "").strip()
-    participant_count = parse_positive_int(
-        form_data, "participantCount", "Participant count", errors
-    )
-    day, start_time, end_time = parse_time_fields(form_data, errors)
-    title = form_data.get("title", "").strip()
-    course_code = form_data.get("courseCode", "").strip()
-    course_name = form_data.get("courseName", "").strip()
-    exam_type = form_data.get("examType", "").strip()
-    can_split = form_data.get("canSplitAcrossRooms", "").strip()
-
-    if user_id not in user_ids:
-        errors.append("Selected requester does not exist.")
-
-    if space_id not in space_ids:
-        errors.append("Selected reference space does not exist.")
-
-    if not title:
-        errors.append("Title is required.")
-
-    if not course_code:
-        errors.append("Course code is required.")
-
-    if not course_name:
-        errors.append("Course name is required.")
-
-    if exam_type not in EXAM_TYPES:
-        errors.append("Exam type must be Midterm, Final, Quiz, or General.")
-
-    if can_split not in {"true", "false"}:
-        errors.append("Can split across rooms must be true or false.")
-
-    if errors:
-        return None, errors
-
-    row = {
-        "requestId": str(get_next_request_id()),
-        "requestType": "Exam",
-        "userId": user_id,
-        "spaceId": space_id,
-        "participantCount": str(participant_count),
-        "requiredFeature": normalize_optional_constraint(
-            form_data.get("requiredFeature", "")
-        ),
-        "requiredBuilding": normalize_optional_constraint(
-            form_data.get("requiredBuilding", "")
-        ),
-        "timeData": f"{day}-{start_time}-{end_time}",
-        "title": title,
-        "purpose": "Exam",
-        "courseCode": course_code,
-        "courseName": course_name,
-        "examType": exam_type,
-        "canSplitAcrossRooms": can_split,
-    }
-
-    return row, []
-
-
-def validate_one_time_form(form_data, users, spaces):
-    errors = []
-    user_ids = {(user.get("userId") or "").strip() for user in users}
-    space_ids = {(space.get("spaceId") or "").strip() for space in spaces}
-
-    user_id = form_data.get("userId", "").strip()
-    space_id = form_data.get("spaceId", "").strip()
-    participant_count = parse_positive_int(
-        form_data, "participantCount", "Participant count", errors
-    )
-    day, start_time, end_time = parse_time_fields(form_data, errors)
-    title = form_data.get("title", "").strip()
-    purpose = form_data.get("purpose", "").strip()
-
-    if user_id not in user_ids:
-        errors.append("Selected requester does not exist.")
-
-    if space_id not in space_ids:
-        errors.append("Selected space does not exist.")
-
-    if not title:
-        errors.append("Title is required.")
-
-    if not purpose:
-        errors.append("Purpose is required.")
-    elif purpose not in PURPOSE_OPTIONS:
-        errors.append("Purpose must be Meeting, Lecture, Lab, General, or Other.")
-
-    if errors:
-        return None, errors
-
-    row = {
-        "requestId": str(get_next_request_id()),
-        "requestType": "OneTime",
-        "userId": user_id,
-        "spaceId": space_id,
-        "participantCount": str(participant_count),
-        "requiredFeature": normalize_optional_constraint(
-            form_data.get("requiredFeature", "")
-        ),
-        "requiredBuilding": normalize_optional_constraint(
-            form_data.get("requiredBuilding", "")
-        ),
-        "timeData": f"{day}-{start_time}-{end_time}",
-        "title": title,
-        "purpose": purpose,
-        "courseCode": "",
-        "courseName": "",
-        "examType": "",
-        "canSplitAcrossRooms": "false",
-    }
-
-    return row, []
-
-
 def validate_request_form(form_data, users, spaces):
     errors = []
     user_ids = {(user.get("userId") or "").strip() for user in users}
@@ -811,16 +690,6 @@ def build_schedule_context():
 
 def count_optional_file(filename):
     return current_results().count_optional_file(filename)
-
-
-def truncate_output(text, limit=3000):
-    if not text:
-        return ""
-
-    if len(text) <= limit:
-        return text
-
-    return text[:limit] + "\n... output truncated for dashboard display ..."
 
 
 def build_dashboard_context(run_result=None, strategy_message=None):

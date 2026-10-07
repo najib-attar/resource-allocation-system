@@ -19,8 +19,6 @@ REQUEST_TYPE_LABELS = {
     "CommitteeMeeting": "Committee Meeting",
 }
 
-REQUEST_TYPE_OPTIONS = ["OneTime", "Recurring", "Exam", "CommitteeMeeting"]
-
 SCHEDULE_USER_ROLES = {
     "Student",
     "Instructor",

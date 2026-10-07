@@ -160,7 +160,7 @@ class BackendExecutionTests(BackendFixture, TestCase):
         self.addCleanup(environment.stop)
 
     def test_invalid_artifact_is_never_executed(self):
-        with mock.patch.object(self.web_app.subprocess, "run") as run:
+        with mock.patch("web.engine_gateway.subprocess.run") as run:
             result = self.web_app.run_backend_allocation()
         self.assertEqual(result["status"], "error")
         self.assertIn("missing", result["message"])
@@ -169,7 +169,7 @@ class BackendExecutionTests(BackendFixture, TestCase):
     def test_stale_artifact_is_never_executed(self):
         self.make_backend()
         self.source.write_text("changed\n", encoding="utf-8")
-        with mock.patch.object(self.web_app.subprocess, "run") as run:
+        with mock.patch("web.engine_gateway.subprocess.run") as run:
             result = self.web_app.run_backend_allocation()
         self.assertEqual(result["status"], "error")
         self.assertIn("stale", result["message"])
@@ -179,7 +179,7 @@ class BackendExecutionTests(BackendFixture, TestCase):
         path = self.make_backend()
         def execution(command, **kwargs):
             return subprocess.CompletedProcess(command, 0, json.dumps(fake_result(json.loads(kwargs["input"]))), "")
-        with mock.patch.object(self.web_app.subprocess, "run", side_effect=execution) as run, \
+        with mock.patch("web.engine_gateway.subprocess.run", side_effect=execution) as run, \
                 mock.patch.object(self.web_app.SharedFileState, "publish_engine_result") as publish:
             with self.assertLogs(self.web_app.app.logger, level="INFO") as logs:
                 result = self.web_app.run_backend_allocation()
@@ -194,13 +194,13 @@ class BackendExecutionTests(BackendFixture, TestCase):
 
     def test_os_loader_failure_is_reported(self):
         self.make_backend()
-        with mock.patch.object(self.web_app.subprocess, "run", side_effect=OSError("missing runtime DLL")):
+        with mock.patch("web.engine_gateway.subprocess.run", side_effect=OSError("missing runtime DLL")):
             result = self.web_app.run_backend_allocation()
         self.assertEqual(result["status"], "error")
         self.assertIn("could not start", result["message"])
 
     def test_run_route_redirects_to_clear_validation_error(self):
-        with mock.patch.object(self.web_app.subprocess, "run") as run:
+        with mock.patch("web.engine_gateway.subprocess.run") as run:
             response = self.web_app.app.test_client().post("/run-allocation")
         self.assertEqual(response.status_code, 302)
         query = parse_qs(urlparse(response.location).query)

@@ -119,6 +119,45 @@ class SaveOnlyConfirmationTests(TestCase):
         self.run_backend.assert_not_called()
         self.assertFalse((self.data / "allocations.csv").exists())
 
+    def test_exam_save_only_uses_shared_validation_and_preserves_course_fields(self):
+        form = self.save_form("Exam")
+        form.update({"userId": "2", "title": "Saved exam", "purpose": "Exam",
+                     "courseCode": "CS401", "courseName": "Algorithms, Part II",
+                     "examType": "Final", "canSplitAcrossRooms": "true"})
+        response = self.client.post("/add-request", data=form)
+        self.assertEqual(response.status_code, 302)
+        saved = self.read_rows("requests.csv")[-1]
+        for key in ("requestType", "courseCode", "courseName", "examType", "canSplitAcrossRooms"):
+            self.assertEqual(saved[key], form[key])
+        self.assertEqual(saved["timeData"], "1-10:00-11:00")
+        self.assertEqual(self.client.get(response.location).status_code, 200)
+        self.assertEqual(self.client.get("/request/41").status_code, 200)
+        self.run_backend.assert_not_called()
+
+    def test_invalid_normal_and_exam_forms_do_not_persist_or_execute(self):
+        before = {name: (self.data / name).read_bytes()
+                  for name in ("requests.csv", "request_participants.csv")}
+        for request_type in ("OneTime", "Exam"):
+            with self.subTest(request_type=request_type):
+                form = self.save_form(request_type)
+                form["endTime"] = form["startTime"]
+                response = self.client.post("/add-request", data=form)
+                self.assertEqual(response.status_code, 200)
+                page = response.get_data(as_text=True)
+                self.assertIn("Start time must be earlier than end time.", page)
+                if request_type == "Exam":
+                    self.assertIn("Course code is required for exam requests.", page)
+                self.assertEqual(before, {name: (self.data / name).read_bytes() for name in before})
+        self.run_backend.assert_not_called()
+
+    def test_legacy_result_urls_redirect_to_working_raw_data_views(self):
+        for route, filename in (("/allocations", "allocations.csv"), ("/results", "request_results.csv")):
+            with self.subTest(route=route):
+                response = self.client.get(route)
+                self.assertEqual(response.status_code, 302)
+                self.assertEqual(response.location, f"/raw-data?file={filename}")
+                self.assertEqual(self.client.get(response.location).status_code, 200)
+
     def test_existing_normal_confirmation_and_detail_routes_render(self):
         for route in ("/request-added/1", "/request/1"):
             with self.subTest(route=route):
