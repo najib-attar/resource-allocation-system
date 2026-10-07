@@ -13,8 +13,6 @@ namespace {
     struct BestFitState {
         bool reachable = false;
         int roomCount = std::numeric_limits<int>::max();
-        int previousCapacity = -1;
-        int candidateIndex = -1;
     };
 
     int nextAllocationId(const std::vector<Allocation>& allocations) {
@@ -108,6 +106,9 @@ namespace {
         }
 
         std::vector<BestFitState> dp(totalCapacity + 1);
+        // Stage-indexed choices survive later updates to the one-dimensional scores.
+        std::vector<std::vector<bool>> takeRoom(
+            candidates.size(), std::vector<bool>(totalCapacity + 1, false));
         dp[0].reachable = true;
         dp[0].roomCount = 0;
 
@@ -126,8 +127,7 @@ namespace {
                     nextRoomCount < dp[nextCapacity].roomCount) {
                     dp[nextCapacity].reachable = true;
                     dp[nextCapacity].roomCount = nextRoomCount;
-                    dp[nextCapacity].previousCapacity = capacity;
-                    dp[nextCapacity].candidateIndex = static_cast<int>(index);
+                    takeRoom[index][nextCapacity] = true;
                 }
             }
         }
@@ -146,14 +146,16 @@ namespace {
 
         std::vector<const Space*> selectedRooms;
         int currentCapacity = bestCapacity;
-        while (currentCapacity > 0) {
-            const BestFitState& state = dp[currentCapacity];
-            if (state.candidateIndex < 0) {
-                break;
+        for (size_t index = candidates.size(); index > 0 && currentCapacity > 0; --index) {
+            if (!takeRoom[index - 1][currentCapacity]) {
+                continue;
             }
 
-            selectedRooms.push_back(candidates[state.candidateIndex].space);
-            currentCapacity = state.previousCapacity;
+            selectedRooms.push_back(candidates[index - 1].space);
+            currentCapacity -= candidates[index - 1].capacity;
+        }
+        if (currentCapacity != 0) {
+            return {};
         }
 
         std::reverse(selectedRooms.begin(), selectedRooms.end());
