@@ -1,0 +1,2 @@
+src/vendor/nlohmann/json.hpp -text
+src/vendor/nlohmann/LICENSE.MIT -text

@@ -34,6 +34,9 @@ public:
                         const std::string& requestParticipantsFile = "data/request_participants.csv");
 
     bool runAllocation();
+    // Takes ownership of domain objects; CSV loading remains a separate entry point.
+    void initialize(SystemData&& data, const std::string& strategy);
+    const std::map<int, std::vector<MeetingTimeSuggestion>>& getMeetingSuggestions() const;
     void addExistingAllocation(const Allocation& allocation);
     bool exportResults(const std::string& allocationsFile,
                        const std::string& requestResultsFile) const;

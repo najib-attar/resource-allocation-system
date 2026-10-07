@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 #include "../models/Allocation.h"
 #include "../models/Request.h"
 #include "../models/Space.h"
@@ -23,11 +24,12 @@ private:
     MeetingTimeSuggestionService meetingTimeSuggestionService;
     RuleEngineFacade ruleEngineFacade;
     const IAllocationStrategy* allocationStrategy;
+    std::map<int, std::vector<MeetingTimeSuggestion>> meetingSuggestions;
 
-    void appendMeetingTimeSuggestions(CommitteeMeetingRequest& request) const;
+    void appendMeetingTimeSuggestions(CommitteeMeetingRequest& request);
     void appendMeetingTimeSuggestionsForRejectedCommitteeRequests(
         const std::vector<Request*>& requests
-    ) const;
+    );
 
 public:
     AllocationService();
@@ -36,6 +38,7 @@ public:
                       const std::vector<User*>& users,
                       const std::vector<UserBusySlot>& userBusySlots);
     const std::vector<Allocation>& getAllocations() const;
+    const std::map<int, std::vector<MeetingTimeSuggestion>>& getMeetingSuggestions() const;
     void addExistingAllocation(const Allocation& allocation);
     void processRequests(const std::vector<Request*>& requests);
     void processRequests(const std::vector<Request*>& requests,
