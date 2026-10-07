@@ -159,6 +159,8 @@ The prototype currently uses CSV files in the `data/` folder:
 - `request_summaries.csv` (generated output)
 - `allocation_summaries.csv` (generated output)
 
+CSV inputs use UTF-8 (an optional BOM is accepted), comma separators, and standard double-quote escaping compatible with Python's `csv.writer`. Quote fields containing commas, quotes, or line breaks, and represent a literal quote as `""`. Empty optional fields retain their existing defaults; LF and CRLF record endings are supported. The backend warns and skips malformed user/space/auxiliary records, while malformed request records become rejected `InvalidRequest` objects. An unterminated quoted field consumes the remaining input as one malformed record rather than guessing new row boundaries.
+
 The selected allocation strategy is configured in `data/config.txt`. The current demo configuration is:
 
 ```text

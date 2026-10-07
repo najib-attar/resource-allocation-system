@@ -6,6 +6,7 @@
 #include <unordered_set>
 #include "../models/SpaceFactory.h"
 #include "../models/UserFactory.h"
+#include "../utils/CsvReader.h"
 
 namespace {
     using HeaderIndex = std::unordered_map<std::string, size_t>;
@@ -32,16 +33,22 @@ namespace {
         return removeUtf8Bom(text.substr(first, last - first + 1));
     }
 
-    std::vector<std::string> splitCsvLine(const std::string& line) {
-        std::vector<std::string> tokens;
-        std::stringstream ss(line);
-        std::string token;
-
-        while (std::getline(ss, token, ',')) {
-            tokens.push_back(trim(token));
+    bool readCsvRow(CsvReader& reader, std::vector<std::string>& columns,
+                    const std::string& rowType, bool trimFields = true) {
+        std::string error;
+        while (true) {
+            const auto result = reader.readRecord(columns, error);
+            if (result == CsvReader::Result::End) return false;
+            if (result == CsvReader::Result::Malformed) {
+                std::cerr << "Warning: Skipping malformed " << rowType << " CSV record "
+                          << reader.getRecordNumber() << ": " << error << ".\n";
+                continue;
+            }
+            if (trimFields) {
+                for (std::string& column : columns) column = trim(column);
+            }
+            return true;
         }
-
-        return tokens;
     }
 
     std::string optionalColumn(const std::vector<std::string>& columns,
@@ -90,29 +97,6 @@ namespace {
         }
 
         return roles;
-    }
-
-    std::string firstCsvToken(const std::string& line) {
-        std::stringstream ss(line);
-        std::string token;
-        std::getline(ss, token, ',');
-        return trim(token);
-    }
-
-    bool isUsersHeader(const std::string& line) {
-        return firstCsvToken(line) == "userId";
-    }
-
-    bool isSpacesHeader(const std::string& line) {
-        return firstCsvToken(line) == "spaceId";
-    }
-
-    bool isUserBusySlotsHeader(const std::string& line) {
-        return firstCsvToken(line) == "userId";
-    }
-
-    bool isRequestParticipantsHeader(const std::string& line) {
-        return firstCsvToken(line) == "requestId";
     }
 
     bool tryParseInt(const std::string& text, int& value) {
@@ -181,25 +165,23 @@ namespace {
 std::vector<User*> DataLoader::loadUsers(const std::string& filename) {
     std::vector<User*> users;
     std::unordered_set<int> acceptedUserIds;
-    std::ifstream file(filename);
+    std::ifstream file(filename, std::ios::binary);
 
     if (!file.is_open()) {
         std::cerr << "Error: Could not open users file: " << filename << "\n";
         return users;
     }
 
-    std::string line;
-    int lineNumber = 0;
+    CsvReader reader(file);
+    std::vector<std::string> columns;
     HeaderIndex userHeaderIndex;
-    while (std::getline(file, line)) {
-        lineNumber++;
-        if (line.empty()) continue;
-        if (lineNumber == 1 && isUsersHeader(line)) {
-            userHeaderIndex = buildHeaderIndex(splitCsvLine(line));
+    while (readCsvRow(reader, columns, "user")) {
+        const size_t lineNumber = reader.getRecordNumber();
+        if (columns.empty()) continue;
+        if (lineNumber == 1 && columns[0] == "userId") {
+            userHeaderIndex = buildHeaderIndex(columns);
             continue;
         }
-
-        const std::vector<std::string> columns = splitCsvLine(line);
 
         if (columns.size() < 3) {
             std::cerr << "Warning: Skipping malformed user row " << lineNumber << ".\n";
@@ -258,49 +240,39 @@ std::vector<User*> DataLoader::loadUsers(const std::string& filename) {
 std::vector<Space*> DataLoader::loadSpaces(const std::string& filename) {
     std::vector<Space*> spaces;
     std::unordered_set<int> acceptedSpaceIds;
-    std::ifstream file(filename);
+    std::ifstream file(filename, std::ios::binary);
 
     if (!file.is_open()) {
         std::cerr << "Error: Could not open spaces file: " << filename << "\n";
         return spaces;
     }
 
-    std::string line;
-    int lineNumber = 0;
-    while (std::getline(file, line)) {
-        lineNumber++;
-        if (line.empty()) continue;
-        if (lineNumber == 1 && isSpacesHeader(line)) continue;
+    CsvReader reader(file);
+    std::vector<std::string> columns;
+    while (readCsvRow(reader, columns, "space", false)) {
+        const size_t lineNumber = reader.getRecordNumber();
+        if (columns.empty()) continue;
+        if (lineNumber == 1 && trim(columns[0]) == "spaceId") continue;
 
-        std::stringstream ss(line);
-        std::string idToken;
-        std::string type;
-        std::string name;
-        std::string capacityToken;
-        std::string projectorToken;
-        std::string whiteboardToken;
-        std::string computersToken;
-        std::string availableToken;
-        std::string building;
+        if (columns.size() < 9) {
+            std::cerr << "Warning: Skipping malformed space row " << lineNumber << ".\n";
+            continue;
+        }
+        const std::string& idToken = columns[0];
+        const std::string& type = columns[1];
+        const std::string& name = columns[2];
+        const std::string& capacityToken = columns[3];
+        const std::string& projectorToken = columns[4];
+        const std::string& whiteboardToken = columns[5];
+        const std::string& computersToken = columns[6];
+        const std::string& availableToken = columns[7];
+        const std::string& building = columns[8];
         int id = 0;
         int capacity = 0;
         bool hasProjector = false;
         bool hasWhiteboard = false;
         bool hasComputers = false;
         bool isAvailable = false;
-
-        if (!std::getline(ss, idToken, ',') ||
-            !std::getline(ss, type, ',') ||
-            !std::getline(ss, name, ',') ||
-            !std::getline(ss, capacityToken, ',') ||
-            !std::getline(ss, projectorToken, ',') ||
-            !std::getline(ss, whiteboardToken, ',') ||
-            !std::getline(ss, computersToken, ',') ||
-            !std::getline(ss, availableToken, ',') ||
-            !std::getline(ss, building, ',')) {
-            std::cerr << "Warning: Skipping malformed space row " << lineNumber << ".\n";
-            continue;
-        }
 
         if (!tryParseInt(idToken, id) ||
             !tryParseInt(capacityToken, capacity) ||
@@ -338,7 +310,7 @@ std::vector<Space*> DataLoader::loadSpaces(const std::string& filename) {
 
 std::vector<UserBusySlot> DataLoader::loadUserBusySlots(const std::string& filename) {
     std::vector<UserBusySlot> busySlots;
-    std::ifstream file(filename);
+    std::ifstream file(filename, std::ios::binary);
 
     if (!file.is_open()) {
         std::cerr << "Warning: Could not open user busy slots file: " << filename
@@ -346,14 +318,12 @@ std::vector<UserBusySlot> DataLoader::loadUserBusySlots(const std::string& filen
         return busySlots;
     }
 
-    std::string line;
-    int lineNumber = 0;
-    while (std::getline(file, line)) {
-        lineNumber++;
-        if (line.empty()) continue;
-        if (lineNumber == 1 && isUserBusySlotsHeader(line)) continue;
-
-        const std::vector<std::string> columns = splitCsvLine(line);
+    CsvReader reader(file);
+    std::vector<std::string> columns;
+    while (readCsvRow(reader, columns, "user busy slot")) {
+        const size_t lineNumber = reader.getRecordNumber();
+        if (columns.empty()) continue;
+        if (lineNumber == 1 && columns[0] == "userId") continue;
 
         if (columns.size() < 5) {
             std::cerr << "Warning: Skipping malformed user busy slot row "
@@ -390,7 +360,7 @@ std::vector<UserBusySlot> DataLoader::loadUserBusySlots(const std::string& filen
 
 std::vector<RequestParticipant> DataLoader::loadRequestParticipants(const std::string& filename) {
     std::vector<RequestParticipant> participants;
-    std::ifstream file(filename);
+    std::ifstream file(filename, std::ios::binary);
 
     if (!file.is_open()) {
         std::cerr << "Warning: Could not open request participants file: " << filename
@@ -398,14 +368,12 @@ std::vector<RequestParticipant> DataLoader::loadRequestParticipants(const std::s
         return participants;
     }
 
-    std::string line;
-    int lineNumber = 0;
-    while (std::getline(file, line)) {
-        lineNumber++;
-        if (line.empty()) continue;
-        if (lineNumber == 1 && isRequestParticipantsHeader(line)) continue;
-
-        const std::vector<std::string> columns = splitCsvLine(line);
+    CsvReader reader(file);
+    std::vector<std::string> columns;
+    while (readCsvRow(reader, columns, "request participant")) {
+        const size_t lineNumber = reader.getRecordNumber();
+        if (columns.empty()) continue;
+        if (lineNumber == 1 && columns[0] == "requestId") continue;
 
         if (columns.size() < 3) {
             std::cerr << "Warning: Skipping malformed request participant row "

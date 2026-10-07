@@ -1,6 +1,5 @@
 #include "DataController.h"
 #include <fstream>
-#include <sstream>
 #include <iostream>
 #include <set>
 #include <cctype>
@@ -9,6 +8,7 @@
 #include "../models/RequestFactory.h"
 #include "../models/CommitteeMeetingRequest.h"
 #include "RequestResultWriter.h"
+#include "../utils/CsvReader.h"
 
 namespace {
     std::string trim(const std::string& value) {
@@ -22,16 +22,20 @@ namespace {
         return value.substr(start, end - start + 1);
     }
 
-    std::string firstCsvToken(const std::string& line) {
-        std::stringstream ss(line);
-        std::string token;
-        std::getline(ss, token, ',');
-        return trim(token);
-    }
-
-    bool isRequestsHeader(const std::string& line) {
-        return firstCsvToken(line) == "requestId";
-    }
+    class CsvFields {
+        const std::vector<std::string>& columns;
+        size_t index = 0;
+    public:
+        explicit CsvFields(const std::vector<std::string>& columns) : columns(columns) {}
+        bool next(std::string& value) {
+            if (index >= columns.size()) {
+                value.clear();
+                return false;
+            }
+            value = columns[index++];
+            return true;
+        }
+    };
 
     std::string normalizeStrategyName(const std::string& strategyName) {
         std::string normalized;
@@ -73,30 +77,30 @@ namespace {
         bool canSplitAcrossRooms = false;
     };
 
-    void parseOptionalRequestFields(std::stringstream& ss, OptionalRequestFields& fields) {
+    void parseOptionalRequestFields(CsvFields& ss, OptionalRequestFields& fields) {
         std::string token;
 
-        if (std::getline(ss, token, ',')) {
+        if (ss.next(token)) {
             fields.title = normalizeMetadataField(token);
         }
 
-        if (std::getline(ss, token, ',')) {
+        if (ss.next(token)) {
             fields.purpose = normalizeMetadataField(token);
         }
 
-        if (std::getline(ss, token, ',')) {
+        if (ss.next(token)) {
             fields.courseCode = normalizeMetadataField(token);
         }
 
-        if (std::getline(ss, token, ',')) {
+        if (ss.next(token)) {
             fields.courseName = normalizeMetadataField(token);
         }
 
-        if (std::getline(ss, token, ',')) {
+        if (ss.next(token)) {
             fields.examType = normalizeMetadataField(token);
         }
 
-        if (std::getline(ss, token)) {
+        if (ss.next(token)) {
             fields.canSplitAcrossRooms = parseOptionalBoolField(token);
         }
     }
@@ -142,21 +146,35 @@ namespace {
                                               const std::vector<Space*>& spaces) {
         std::vector<Request*> requests;
         std::set<int> seenRequestIds;
-        std::ifstream file(filename);
+        std::ifstream file(filename, std::ios::binary);
 
         if (!file.is_open()) {
             std::cerr << "Error: Could not open requests file: " << filename << "\n";
             return requests;
         }
 
-        std::string line;
-        int lineNumber = 0;
-        while (std::getline(file, line)) {
-            lineNumber++;
-            if (line.empty()) continue;
-            if (lineNumber == 1 && isRequestsHeader(line)) continue;
+        CsvReader reader(file);
+        std::vector<std::string> columns;
+        std::string csvError;
+        while (true) {
+            const auto result = reader.readRecord(columns, csvError);
+            if (result == CsvReader::Result::End) break;
+            if (result == CsvReader::Result::Malformed) {
+                int invalidId = -1;
+                if (!columns.empty() && !tryParseInt(columns[0], invalidId)) invalidId = -1;
+                if (invalidId >= 0) seenRequestIds.insert(invalidId);
+                const std::string reason = "Malformed CSV: " + csvError;
+                requests.push_back(RequestFactory::createInvalidRequest(
+                    invalidId, columns.size() > 1 ? columns[1] : "Unknown",
+                    nullptr, nullptr, 0, "", "", "", "", "", reason
+                ));
+                printRejectedRequestWarning(invalidId, reason);
+                continue;
+            }
+            if (columns.empty()) continue;
+            if (reader.getRecordNumber() == 1 && trim(columns[0]) == "requestId") continue;
 
-            std::stringstream ss(line);
+            CsvFields ss(columns);
             std::string token;
 
             int requestId = -1;
@@ -169,7 +187,7 @@ namespace {
             std::string timeData;
             OptionalRequestFields optionalFields;
 
-            if (!std::getline(ss, token, ',') || !tryParseInt(token, requestId)) {
+            if (!ss.next(token) || !tryParseInt(token, requestId)) {
                 requests.push_back(RequestFactory::createInvalidRequest(
                     -1, "Unknown", nullptr, nullptr, 0, "", "", "", "", "", "Malformed input"
                 ));
@@ -186,18 +204,18 @@ namespace {
             }
 
             if (seenRequestIds.find(requestId) != seenRequestIds.end()) {
-                std::getline(ss, requestType, ',');
-                std::getline(ss, token, ',');
+                ss.next(requestType);
+                ss.next(token);
                 userId = tryParseInt(token, userId) ? userId : -1;
-                std::getline(ss, token, ',');
+                ss.next(token);
                 spaceId = tryParseInt(token, spaceId) ? spaceId : -1;
-                std::getline(ss, token, ',');
+                ss.next(token);
                 participantCount = tryParseInt(token, participantCount) ? participantCount : 0;
-                std::getline(ss, requiredFeature, ',');
+                ss.next(requiredFeature);
                 requiredFeature = normalizeOptionalField(requiredFeature);
-                std::getline(ss, requiredBuilding, ',');
+                ss.next(requiredBuilding);
                 requiredBuilding = normalizeOptionalField(requiredBuilding);
-                std::getline(ss, timeData, ',');
+                ss.next(timeData);
                 timeData = trim(timeData);
 
                 parseOptionalRequestFields(ss, optionalFields);
@@ -225,7 +243,7 @@ namespace {
 
             seenRequestIds.insert(requestId);
 
-            if (!std::getline(ss, requestType, ',')) {
+            if (!ss.next(requestType)) {
                 requests.push_back(RequestFactory::createInvalidRequest(
                     requestId, "Unknown", nullptr, nullptr, 0, "", "", "", "", "", "Malformed input"
                 ));
@@ -233,7 +251,7 @@ namespace {
                 continue;
             }
 
-            if (!std::getline(ss, token, ',') || !tryParseInt(token, userId)) {
+            if (!ss.next(token) || !tryParseInt(token, userId)) {
                 requests.push_back(RequestFactory::createInvalidRequest(
                     requestId, requestType, nullptr, nullptr, 0, "", "", "", "", "", "Malformed input"
                 ));
@@ -241,7 +259,7 @@ namespace {
                 continue;
             }
 
-            if (!std::getline(ss, token, ',') || !tryParseInt(token, spaceId)) {
+            if (!ss.next(token) || !tryParseInt(token, spaceId)) {
                 requests.push_back(RequestFactory::createInvalidRequest(
                     requestId, requestType, findUserById(users, userId), nullptr, 0, "", "", "", "", "", "Malformed input"
                 ));
@@ -249,12 +267,12 @@ namespace {
                 continue;
             }
 
-            if (!std::getline(ss, token, ',') || !tryParseInt(token, participantCount)) {
-                std::getline(ss, requiredFeature, ',');
+            if (!ss.next(token) || !tryParseInt(token, participantCount)) {
+                ss.next(requiredFeature);
                 requiredFeature = normalizeOptionalField(requiredFeature);
-                std::getline(ss, requiredBuilding, ',');
+                ss.next(requiredBuilding);
                 requiredBuilding = normalizeOptionalField(requiredBuilding);
-                std::getline(ss, timeData, ',');
+                ss.next(timeData);
                 timeData = trim(timeData);
 
                 parseOptionalRequestFields(ss, optionalFields);
@@ -269,7 +287,7 @@ namespace {
                 continue;
             }
 
-            if (!std::getline(ss, requiredFeature, ',')) {
+            if (!ss.next(requiredFeature)) {
                 requests.push_back(RequestFactory::createInvalidRequest(
                     requestId, requestType, findUserById(users, userId), findSpaceById(spaces, spaceId),
                     participantCount, "", "", "", "", "", "Malformed input"
@@ -279,7 +297,7 @@ namespace {
             }
             requiredFeature = normalizeOptionalField(requiredFeature);
 
-            if (!std::getline(ss, requiredBuilding, ',')) {
+            if (!ss.next(requiredBuilding)) {
                 requests.push_back(RequestFactory::createInvalidRequest(
                     requestId, requestType, findUserById(users, userId), findSpaceById(spaces, spaceId),
                     participantCount, "", "", requiredFeature, "", "", "Malformed input"
@@ -289,7 +307,7 @@ namespace {
             }
             requiredBuilding = normalizeOptionalField(requiredBuilding);
 
-            if (!std::getline(ss, timeData, ',')) {
+            if (!ss.next(timeData)) {
                 requests.push_back(RequestFactory::createInvalidRequest(
                     requestId, requestType, findUserById(users, userId), findSpaceById(spaces, spaceId),
                     participantCount, "", "", requiredFeature, requiredBuilding, "", "Malformed input"
