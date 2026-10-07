@@ -9,6 +9,7 @@ try:
     from .backend_executable import BackendExecutableError, resolve_backend_executable
     from .backend_result_adapter import (
         BackendResultAdapter,
+        build_committee_participant_display,
         display_value,
         format_time_data,
         index_by_field,
@@ -18,6 +19,7 @@ except ImportError:
     from backend_executable import BackendExecutableError, resolve_backend_executable
     from backend_result_adapter import (
         BackendResultAdapter,
+        build_committee_participant_display,
         display_value,
         format_time_data,
         index_by_field,
