@@ -15,7 +15,8 @@ namespace {
 bool MeetingTimeSuggestionService::areParticipantsAvailable(
     const CommitteeMeetingRequest& request,
     const TimeSlot& candidateSlot,
-    const std::vector<UserBusySlot>& userBusySlots
+    const std::vector<UserBusySlot>& userBusySlots,
+    const std::vector<Allocation>& allocations
 ) const {
     const std::vector<int>& participantIds = request.getRequiredParticipantIds();
 
@@ -26,7 +27,8 @@ bool MeetingTimeSuggestionService::areParticipantsAvailable(
     for (int participantId : participantIds) {
         if (!userAvailabilityService.isUserAvailable(participantId,
                                                      candidateSlot,
-                                                     userBusySlots)) {
+                                                     userBusySlots,
+                                                     allocations)) {
             return false;
         }
     }
@@ -108,7 +110,7 @@ std::vector<MeetingTimeSuggestion> MeetingTimeSuggestionService::suggestTimes(
             TimeSlot candidateSlot =
                 TimeSlot::fromMinutes(day, startMinutes, endMinutes);
 
-            if (!areParticipantsAvailable(request, candidateSlot, userBusySlots)) {
+            if (!areParticipantsAvailable(request, candidateSlot, userBusySlots, allocations)) {
                 continue;
             }
 

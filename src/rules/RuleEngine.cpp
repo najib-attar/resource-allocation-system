@@ -54,7 +54,7 @@ RuleEvaluationResult RuleEngine::evaluate(ExamRequest& request,
 RuleEvaluationResult RuleEngine::evaluate(CommitteeMeetingRequest& request,
                                           const std::vector<Allocation>& allocations) const {
     for (const IRequestRule* rule : requestRules) {
-        RuleEvaluationResult result = rule->evaluate(request);
+        RuleEvaluationResult result = rule->evaluate(request, allocations);
         if (!result.isPassed()) {
             return result;
         }

@@ -23,6 +23,8 @@ public:
                                 const std::vector<UserBusySlot>& userBusySlots);
 
     RuleEvaluationResult evaluate(Request& request) const override;
+    RuleEvaluationResult evaluate(Request& request,
+                                  const std::vector<Allocation>& allocations) const override;
 };
 
 #endif

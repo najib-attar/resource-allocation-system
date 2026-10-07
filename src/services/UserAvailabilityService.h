@@ -4,6 +4,7 @@
 #include <vector>
 #include "../models/TimeSlot.h"
 #include "../models/UserBusySlot.h"
+#include "../models/Allocation.h"
 
 class UserAvailabilityService {
 private:
@@ -20,7 +21,8 @@ public:
                     const std::vector<UserBusySlot>& busySlots) const;
     bool isUserAvailable(int userId,
                          const TimeSlot& slot,
-                         const std::vector<UserBusySlot>& busySlots) const;
+                         const std::vector<UserBusySlot>& busySlots,
+                         const std::vector<Allocation>& allocations = {}) const;
     std::vector<UserBusySlot> getBusySlotsForUser(
         int userId,
         const std::vector<UserBusySlot>& busySlots

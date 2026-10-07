@@ -1,4 +1,5 @@
 #include "UserAvailabilityService.h"
+#include <algorithm>
 
 namespace {
     constexpr int Monday = 1;
@@ -43,9 +44,21 @@ bool UserAvailabilityService::isUserBusy(
 bool UserAvailabilityService::isUserAvailable(
     int userId,
     const TimeSlot& slot,
-    const std::vector<UserBusySlot>& busySlots
+    const std::vector<UserBusySlot>& busySlots,
+    const std::vector<Allocation>& allocations
 ) const {
-    return isWithinWorkingHours(slot) && !isUserBusy(userId, slot, busySlots);
+    if (!isWithinWorkingHours(slot) || isUserBusy(userId, slot, busySlots)) {
+        return false;
+    }
+
+    for (const Allocation& allocation : allocations) {
+        const auto& participantIds = allocation.getRequiredParticipantIds();
+        if (allocation.getTimeSlot().overlapsWith(slot) &&
+            std::find(participantIds.begin(), participantIds.end(), userId) != participantIds.end()) {
+            return false;
+        }
+    }
+    return true;
 }
 
 std::vector<UserBusySlot> UserAvailabilityService::getBusySlotsForUser(

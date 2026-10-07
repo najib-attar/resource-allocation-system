@@ -45,6 +45,12 @@ std::string ParticipantAvailabilityRule::formatTimeSlot(const TimeSlot& slot) co
 }
 
 RuleEvaluationResult ParticipantAvailabilityRule::evaluate(Request& request) const {
+    return evaluate(request, {});
+}
+
+RuleEvaluationResult ParticipantAvailabilityRule::evaluate(
+    Request& request, const std::vector<Allocation>& allocations
+) const {
     CommitteeMeetingRequest* committeeRequest =
         dynamic_cast<CommitteeMeetingRequest*>(&request);
 
@@ -80,7 +86,8 @@ RuleEvaluationResult ParticipantAvailabilityRule::evaluate(Request& request) con
 
         if (!availabilityService.isUserAvailable(participantId,
                                                  preferredTimeSlot,
-                                                 busySlots)) {
+                                                 busySlots,
+                                                 allocations)) {
             return RuleEvaluationResult(
                 false,
                 "Required participant " + participant->getName()

@@ -105,7 +105,7 @@ The prototype currently evaluates requests using the following rules:
 - `LocationRule`
 - `AvailabilityRule`
 
-`RequestTypeRule` checks whether a requester can submit the selected request type. `UserRoleRule` checks whether the requester can use the requested space type. `ParticipantAvailabilityRule` checks required human participants for `CommitteeMeetingRequest` objects. `AvailabilityRule` checks physical room time availability.
+`RequestTypeRule` checks whether a requester can submit the selected request type. `UserRoleRule` checks whether the requester can use the requested space type. `ParticipantAvailabilityRule` checks required human participants for `CommitteeMeetingRequest` objects against loaded busy slots and already approved committee allocations, even in different rooms. Meeting suggestions respect these same participant commitments. `AvailabilityRule` checks physical room time availability.
 
 The effective normal rule order is:
 

@@ -1,12 +1,14 @@
 #include "Allocation.h"
 
 Allocation::Allocation(int id, int requestId, const Space* space, const TimeSlot& timeSlot,
-                       int assignedParticipants)
+                       int assignedParticipants,
+                       const std::vector<int>& requiredParticipantIds)
     : id(id),
       requestId(requestId),
       space(space),
       timeSlot(timeSlot),
       assignedParticipants(assignedParticipants),
+      requiredParticipantIds(requiredParticipantIds),
       status(AllocationStatus::Active) {}
 
 int Allocation::getId() const {
@@ -31,4 +33,8 @@ int Allocation::getAssignedParticipants() const {
 
 AllocationStatus Allocation::getStatus() const {
     return status;
+}
+
+const std::vector<int>& Allocation::getRequiredParticipantIds() const {
+    return requiredParticipantIds;
 }

@@ -180,7 +180,7 @@ The CommitteeMeeting form is designed for the professor demo flow:
 5. Review the confirmation page.
 6. Click `Run Allocation Now` or open Allocation Summary after running allocation.
 
-Flask does not check whether committee participants are free. It only writes `requests.csv` and `request_participants.csv`. After `Run Allocation`, the C++ backend creates the `CommitteeMeetingRequest`, attaches participants, and uses `ParticipantAvailabilityRule` with `user_busy_slots.csv` to approve or reject the request.
+Flask does not check whether committee participants are free. It only writes `requests.csv` and `request_participants.csv`. After `Run Allocation`, the C++ backend creates the `CommitteeMeetingRequest`, attaches participants, and uses `ParticipantAvailabilityRule` with `user_busy_slots.csv` and already approved committee allocations to approve or reject the request. Required participants cannot attend overlapping approved committee meetings, even in different rooms; alternative-time suggestions respect the same commitments.
 
 When a committee meeting is rejected because the requested time is not workable, the C++ backend may add least-change alternative time suggestions to the request lifecycle history. These suggestions scan Monday-Friday working hours in 30-minute increments, keep the original meeting duration, check required participant availability, check the requested room's existing allocations, and rank valid slots by distance from the originally requested time. The Allocation Summary page displays this exported suggestion text when it is present.
 

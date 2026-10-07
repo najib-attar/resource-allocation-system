@@ -179,7 +179,8 @@ bool PriorityAllocationStrategy::processRequest(CommitteeMeetingRequest& request
     Allocation allocation(allocationId, request.getId(),
                           request.getRequestedSpace(),
                           request.getPreferredTimeSlot(),
-                          request.getParticipantCount());
+                          request.getParticipantCount(),
+                          request.getRequiredParticipantIds());
     allocations.push_back(allocation);
 
     return true;

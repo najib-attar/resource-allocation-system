@@ -16,7 +16,8 @@ private:
     bool areParticipantsAvailable(
         const CommitteeMeetingRequest& request,
         const TimeSlot& candidateSlot,
-        const std::vector<UserBusySlot>& userBusySlots
+        const std::vector<UserBusySlot>& userBusySlots,
+        const std::vector<Allocation>& allocations
     ) const;
 
     bool isRequestedSpaceAvailable(
