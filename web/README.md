@@ -234,12 +234,57 @@ The backend remains compatible with the old `userId,name,role` format and still 
 
 ## Generated Files
 
-After allocation runs, the backend generates or updates:
+CLI execution generates four files in its working directory's `data/`:
 
 - `data/allocations.csv`
 - `data/request_results.csv`
+- `data/request_summaries.csv`
+- `data/allocation_summaries.csv`
 
 If these files are missing, the dashboard shows a friendly message instead of crashing.
+
+### Shared-File Coordination (Interim)
+
+Flask workers on one machine share the OS-backed `data/.runtime/shared.lock`
+(Windows byte-range locking / Linux `flock`). The lock serializes request ID
+generation, saving requests with participant rows, strategy changes, allocation
+execution, and publication. It is never deleted to break a lock. Waiting defaults
+to 5 seconds; a busy operation returns HTTP 503 with `Retry-After`. Set
+`RESOURCE_ALLOCATION_LOCK_TIMEOUT` to configure the wait and
+`RESOURCE_ALLOCATION_ENGINE_TIMEOUT` to configure the engine timeout (default 30
+seconds). Dynamic readers briefly take the same lock to pin their inputs/results;
+after pinning, rendering can proceed concurrently. Static assets do not take it.
+
+Each web execution copies inputs and config into a unique `.runtime/run-*/data/`
+workspace and runs the verified executable there. The C++ engine never writes into
+shared input/output paths. Only a zero-exit run with all four usable, consistent
+outputs is published. The workspace becomes `.runtime/generation-*/`, including
+its inputs, outputs and build metadata, and `current.json` is replaced atomically.
+Each Flask response pins that pointer once and reads the same generation throughout.
+Before the first publication, existing root-level CSV outputs remain readable for
+compatibility; web execution never overwrites them afterward. Raw Data uses the
+published outputs, not those legacy files.
+
+**Save Only** saves the request and participants without executing allocation.
+**Submit and Run** saves first, then attempts execution while holding the lock.
+If execution fails, times out, or publication fails, the saved request remains
+pending and the previous successful generation stays visible. A small durable
+`pending-save.json` record lets the next lock holder finish an interrupted two-CSV
+save before generating another ID; it is removed after both replacements succeed.
+A crash after saving may therefore leave a saved request even without a response.
+
+OS process termination releases the lock. Orphan workspaces and unreferenced
+generations are ignored. They are deliberately not deleted automatically because
+old responses may still be pinned to them. During offline maintenance, obsolete
+directories may be removed only after stopping all workers/backend processes;
+never remove the current generation or the lock file. `.runtime/` is ignored by Git.
+
+This is not a database or distributed lock: all workers must share one local data
+directory/filesystem and use this protocol. Manual CSV edits and direct CLI runs
+against live shared data bypass it; use separate CLI workspaces or stop the web app
+first. There is no guarantee for network filesystems, multiple hosts, power-loss
+durability, or retry idempotency after a lost response. PostgreSQL will replace this
+interim coordination and provide normal constraints/transactions later.
 
 ## View Allocation Summary
 

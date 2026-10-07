@@ -1,11 +1,13 @@
 from pathlib import Path
+from contextlib import contextmanager
 import csv
 import os
 import subprocess
 
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, g, has_request_context, redirect, render_template, request, url_for
 
 try:
+    from .shared_file_state import SharedFileState, SharedStateBusy, SharedStateError
     from .backend_executable import BackendExecutableError, resolve_backend_executable
     from .backend_result_adapter import (
         BackendResultAdapter,
@@ -16,6 +18,7 @@ try:
         safe_int,
     )
 except ImportError:
+    from shared_file_state import SharedFileState, SharedStateBusy, SharedStateError
     from backend_executable import BackendExecutableError, resolve_backend_executable
     from backend_result_adapter import (
         BackendResultAdapter,
@@ -31,6 +34,12 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
 
 app = Flask(__name__)
+app.config.update(
+    SHARED_FILE_LOCK_TIMEOUT=float(os.environ.get("RESOURCE_ALLOCATION_LOCK_TIMEOUT", "5")),
+    BACKEND_TIMEOUT=float(os.environ.get("RESOURCE_ALLOCATION_ENGINE_TIMEOUT", "30")),
+)
+if any(not 0 < app.config[key] < float("inf") for key in ("SHARED_FILE_LOCK_TIMEOUT", "BACKEND_TIMEOUT")):
+    raise ValueError("Shared-file lock and backend timeouts must be finite positive seconds.")
 
 SUPPORTED_STRATEGIES = [
     {"value": "greedy", "label": "Greedy"},
@@ -134,38 +143,74 @@ RAW_DATA_FILES = [
 backend_results = BackendResultAdapter(DATA_DIR, RAW_DATA_FILES)
 
 
+def current_results():
+    return getattr(g, "backend_results", backend_results) if has_request_context() else backend_results
+
+
+def shared_state():
+    return SharedFileState(DATA_DIR, app.config["SHARED_FILE_LOCK_TIMEOUT"])
+
+
+@contextmanager
+def shared_operation():
+    if has_request_context() and getattr(g, "shared_state", None) is not None:
+        yield g.shared_state
+        return
+    with shared_state().locked() as state:
+        if has_request_context():
+            g.shared_state = state
+            g.backend_results = backend_results.pin(state)
+        try:
+            yield state
+        finally:
+            if has_request_context():
+                g.shared_state = None
+
+
+@app.before_request
+def pin_result_generation():
+    if request.method in {"GET", "HEAD"} and request.endpoint != "static":
+        with shared_state().locked() as state:
+            g.backend_results = backend_results.pin(state)
+
+
+@app.errorhandler(SharedStateBusy)
+def shared_data_busy(error):
+    return str(error), 503, {"Retry-After": "2"}
+
+
+@app.errorhandler(SharedStateError)
+def shared_data_error(error):
+    app.logger.error("Shared-file operation failed: %s", error)
+    return f"Shared-file operation failed: {error}", 503
+
+
 def read_config_strategy():
-    config_path = DATA_DIR / "config.txt"
-
-    if not config_path.exists():
+    config = current_results().read_text_file("config.txt")
+    if not config["exists"]:
         return "greedy (default / config missing)"
+    for line in config["content"].splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
 
-    with config_path.open("r", encoding="utf-8-sig", newline="") as file:
-        for line in file:
-            stripped = line.strip()
-            if not stripped or stripped.startswith("#"):
-                continue
+        if "=" not in stripped:
+            continue
 
-            if "=" not in stripped:
-                continue
-
-            key, value = stripped.split("=", 1)
-            if key.strip() == "allocation_strategy" and value.strip():
-                return value.strip()
+        key, value = stripped.split("=", 1)
+        if key.strip() == "allocation_strategy" and value.strip():
+            return value.strip()
 
     return "greedy (default / config missing)"
 
 
 def write_config_strategy(strategy_name):
-    config_path = DATA_DIR / "config.txt"
-    config_path.write_text(
-        f"allocation_strategy={strategy_name}\n",
-        encoding="utf-8",
-    )
+    with shared_operation() as state:
+        state.write_strategy(strategy_name)
 
 
 def read_csv_table(filename):
-    return backend_results.read_csv_table(filename)
+    return current_results().read_csv_table(filename)
 
 
 def get_page_message():
@@ -687,70 +732,12 @@ def validate_request_form(form_data, users, spaces):
     return row, participant_rows, []
 
 
-def append_request_row(row):
-    requests_path = DATA_DIR / "requests.csv"
-    headers = get_request_headers()
-    write_header = not requests_path.exists() or requests_path.stat().st_size == 0
-    needs_leading_newline = False
-
-    if requests_path.exists() and requests_path.stat().st_size > 0:
-        with requests_path.open("rb") as file:
-            file.seek(-1, 2)
-            needs_leading_newline = file.read(1) not in {b"\n", b"\r"}
-
-    with requests_path.open("a", encoding="utf-8", newline="") as file:
-        if needs_leading_newline:
-            file.write("\n")
-
-        writer = csv.DictWriter(file, fieldnames=headers, extrasaction="ignore")
-
-        if write_header:
-            writer.writeheader()
-
-        writer.writerow({header: row.get(header, "") for header in headers})
-
-
-def append_request_participant_rows(rows):
-    if not rows:
-        return
-
-    participants_path = DATA_DIR / "request_participants.csv"
-    write_header = not participants_path.exists() or participants_path.stat().st_size == 0
-    needs_leading_newline = False
-
-    if participants_path.exists() and participants_path.stat().st_size > 0:
-        with participants_path.open("rb") as file:
-            file.seek(-1, 2)
-            needs_leading_newline = file.read(1) not in {b"\n", b"\r"}
-
-    with participants_path.open("a", encoding="utf-8", newline="") as file:
-        if needs_leading_newline:
-            file.write("\n")
-
-        writer = csv.DictWriter(
-            file,
-            fieldnames=REQUEST_PARTICIPANT_HEADERS,
-            extrasaction="ignore",
-        )
-
-        if write_header:
-            writer.writeheader()
-
-        for row in rows:
-            writer.writerow(
-                {
-                    header: row.get(header, "")
-                    for header in REQUEST_PARTICIPANT_HEADERS
-                }
-            )
-
-
 def build_allocation_summary():
-    return backend_results.get_allocation_summary(strategy=read_config_strategy())
+    return current_results().get_allocation_summary(strategy=read_config_strategy())
 
 
 def get_request_summary(request_id):
-    return backend_results.get_request_summary(
+    return current_results().get_request_summary(
         request_id,
         strategy=read_config_strategy(),
     )
@@ -813,14 +800,14 @@ def build_request_list_context():
 
 
 def build_schedule_context():
-    return backend_results.get_schedule_context(
+    return current_results().get_schedule_context(
         schedule_type=request.args.get("type", "user"),
         selected_id=request.args.get("id", ""),
     )
 
 
 def count_optional_file(filename):
-    return backend_results.count_optional_file(filename)
+    return current_results().count_optional_file(filename)
 
 
 def truncate_output(text, limit=3000):
@@ -888,6 +875,17 @@ def build_dashboard_context(run_result=None, strategy_message=None):
 
 def run_backend_allocation():
     try:
+        with shared_operation() as state:
+            return execute_backend_in_workspace(state)
+    except SharedStateBusy:
+        raise
+    except (SharedStateError, OSError) as error:
+        app.logger.error("Allocation was not published: %s", error)
+        return {"status": "error", "message": str(error), "stdout": "", "stderr": ""}
+
+
+def execute_backend_in_workspace(state):
+    try:
         backend = resolve_backend_executable(
             PROJECT_ROOT, os.environ.get("RESOURCE_ALLOCATION_BACKEND")
         )
@@ -904,20 +902,21 @@ def run_backend_allocation():
                     backend.path, backend.metadata["built_at"],
                     backend.metadata["source_sha256"], backend.metadata["binary_sha256"],
                     backend.metadata["compiler"])
+    workspace = state.create_workspace()
     try:
         completed = subprocess.run(
             [str(backend.path)],
             text=True,
-            cwd=PROJECT_ROOT,
+            cwd=workspace,
             capture_output=True,
-            timeout=30,
+            timeout=app.config["BACKEND_TIMEOUT"],
         )
     except subprocess.TimeoutExpired as exc:
         return {
             "status": "error",
-            "message": "Backend execution timed out after 30 seconds.",
-            "stdout": truncate_output(exc.stdout or ""),
-            "stderr": truncate_output(exc.stderr or ""),
+            "message": f"Backend execution timed out after {app.config['BACKEND_TIMEOUT']} seconds. Previous results remain active.",
+            "stdout": truncate_output(exc.stdout.decode(errors="replace") if isinstance(exc.stdout, bytes) else exc.stdout or ""),
+            "stderr": truncate_output(exc.stderr.decode(errors="replace") if isinstance(exc.stderr, bytes) else exc.stderr or ""),
         }
     except OSError as error:
         app.logger.error("Backend could not start at %s: %s", backend.path, error)
@@ -929,6 +928,7 @@ def run_backend_allocation():
         }
 
     if completed.returncode == 0:
+        state.publish(workspace, backend.metadata)
         status = "success"
         message = "Allocation backend ran successfully. Results were updated."
     else:
@@ -944,7 +944,7 @@ def run_backend_allocation():
 
 
 def render_csv_page(template_name, title, filename, empty_message):
-    table = backend_results.format_table_for_display(filename, read_csv_table(filename))
+    table = current_results().format_table_for_display(filename, read_csv_table(filename))
     return render_template(
         template_name,
         title=title,
@@ -1024,22 +1024,24 @@ def add_request():
     errors = []
 
     if request.method == "POST":
-        row, participant_rows, errors = validate_request_form(form_data, users, spaces)
+        with shared_operation() as state:
+            users = read_csv_table("users.csv")["rows"]
+            spaces = read_csv_table("spaces.csv")["rows"]
+            row, participant_rows, errors = validate_request_form(form_data, users, spaces)
 
-        if not errors:
-            append_request_row(row)
-            append_request_participant_rows(participant_rows)
-            if request.form.get("submitAction") == "save_run":
-                run_result = run_backend_allocation()
-                return redirect(
-                    url_for(
-                        "request_detail",
-                        request_id=row["requestId"],
-                        run_status=run_result["status"],
-                        run_message=run_result["message"],
+            if not errors:
+                state.save_request(row, participant_rows, get_request_headers(), REQUEST_PARTICIPANT_HEADERS)
+                if request.form.get("submitAction") == "save_run":
+                    run_result = run_backend_allocation()
+                    return redirect(
+                        url_for(
+                            "request_detail",
+                            request_id=row["requestId"],
+                            run_status=run_result["status"],
+                            run_message=run_result["message"],
+                        )
                     )
-                )
-            return redirect(url_for("request_added", request_id=row["requestId"]))
+                return redirect(url_for("request_added", request_id=row["requestId"]))
 
     return render_template(
         "add_request.html",
@@ -1207,7 +1209,7 @@ def requests():
 def raw_data():
     return render_template(
         "raw_data.html",
-        **backend_results.get_raw_data(request.args.get("file", "requests.csv")),
+        **current_results().get_raw_data(request.args.get("file", "requests.csv")),
         page_message=get_page_message(),
     )
 

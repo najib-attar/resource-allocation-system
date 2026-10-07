@@ -147,6 +147,13 @@ class BackendExecutionTests(BackendFixture, TestCase):
         patch = mock.patch.object(web_app, "PROJECT_ROOT", self.root)
         patch.start()
         self.addCleanup(patch.stop)
+        data = self.root / "data"
+        data.mkdir()
+        for attribute, value in (("DATA_DIR", data),
+                                 ("backend_results", web_app.BackendResultAdapter(data, web_app.RAW_DATA_FILES))):
+            patch = mock.patch.object(web_app, attribute, value)
+            patch.start()
+            self.addCleanup(patch.stop)
         environment = mock.patch.dict(os.environ, {}, clear=True)
         environment.start()
         self.addCleanup(environment.stop)
@@ -170,12 +177,16 @@ class BackendExecutionTests(BackendFixture, TestCase):
     def test_verified_absolute_path_is_executed_and_logged(self):
         path = self.make_backend()
         completed = subprocess.CompletedProcess([str(path)], 0, "done", "")
-        with mock.patch.object(self.web_app.subprocess, "run", return_value=completed) as run:
+        with mock.patch.object(self.web_app.subprocess, "run", return_value=completed) as run, \
+                mock.patch.object(self.web_app.SharedFileState, "publish") as publish:
             with self.assertLogs(self.web_app.app.logger, level="INFO") as logs:
                 result = self.web_app.run_backend_allocation()
         self.assertEqual(result["status"], "success")
         self.assertEqual(run.call_args.args[0], [str(path.resolve())])
-        self.assertEqual(run.call_args.kwargs["cwd"], self.root)
+        workspace = run.call_args.kwargs["cwd"]
+        self.assertEqual(workspace.parent, self.root / "data" / ".runtime")
+        self.assertTrue((workspace / "data").is_dir())
+        publish.assert_called_once()
         self.assertFalse(run.call_args.kwargs.get("shell", False))
         self.assertTrue(any("source=" in entry and "compiler=" in entry for entry in logs.output))
 
@@ -235,7 +246,10 @@ class BackendWebSmokeTests(TestCase):
                         self.assertEqual(client.get(route).status_code, 200)
                 for name in ("allocations.csv", "request_results.csv", "request_summaries.csv",
                              "allocation_summaries.csv"):
-                    self.assertGreater((data / name).stat().st_size, 0)
+                    published = web_app.SharedFileState(data).current_data_dir()
+                    self.assertGreater((published / name).stat().st_size, 0)
+                    self.assertFalse((data / name).exists())
+                adapter = adapter.pin()
                 request_ids = {row["requestId"] for row in adapter.read_csv_table("requests.csv")["rows"]}
                 for row in adapter.read_csv_table("allocations.csv")["rows"]:
                     self.assertIn(row["requestId"], request_ids)

@@ -2,6 +2,11 @@ from pathlib import Path
 import csv
 import re
 
+try:
+    from .shared_file_state import INPUT_FILES, OUTPUT_HEADERS, SharedFileState
+except ImportError:
+    from shared_file_state import INPUT_FILES, OUTPUT_HEADERS, SharedFileState
+
 
 REQUEST_TYPE_LABELS = {
     "OneTime": "One-Time",
@@ -43,11 +48,31 @@ class BackendResultAdapter:
     def __init__(self, data_dir, raw_data_files):
         self.data_dir = Path(data_dir)
         self.raw_data_files = list(raw_data_files)
+        self._tables = None
+        self._texts = None
+        self.generation_dir = None
+
+    def pin(self, state=None):
+        """Read live inputs and resolve the published generation once, under the lock."""
+        if state is None:
+            with SharedFileState(self.data_dir).locked() as state:
+                return self.pin(state)
+        pinned = BackendResultAdapter(self.data_dir, self.raw_data_files)
+        pinned.generation_dir = state.current_data_dir()
+        result_reader = BackendResultAdapter(pinned.generation_dir or self.data_dir, self.raw_data_files)
+        pinned._tables = {
+            name: (result_reader if name in OUTPUT_HEADERS else self).read_csv_table(name)
+            for name in (*INPUT_FILES, *OUTPUT_HEADERS) if name.endswith(".csv")
+        }
+        pinned._texts = {"config.txt": self.read_text_file("config.txt")}
+        return pinned
 
     def list_raw_data_files(self):
         return list(self.raw_data_files)
 
     def read_csv_table(self, filename):
+        if self._tables is not None:
+            return self._tables[filename]
         csv_path = self.data_dir / filename
 
         if not csv_path.exists():
@@ -71,6 +96,8 @@ class BackendResultAdapter:
         }
 
     def read_text_file(self, filename):
+        if self._texts is not None:
+            return self._texts[filename]
         file_path = self.data_dir / filename
         if not file_path.exists():
             return {
