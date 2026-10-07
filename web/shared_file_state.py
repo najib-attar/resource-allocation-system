@@ -6,10 +6,8 @@ import csv
 import io
 import json
 import os
-import shutil
 import tempfile
 import time
-import uuid
 
 if os.name == "nt":
     import msvcrt
@@ -99,6 +97,22 @@ def csv_with_rows(path, headers, rows):
 
 
 class SharedFileState:
+    def read_engine_result(self):
+        path = self.root / "engine-result.json"
+        if not path.exists():
+            return None
+        document = json.loads(path.read_text(encoding="utf-8"))
+        if (not isinstance(document, dict) or not isinstance(document.get("snapshot"), dict)
+                or not isinstance(document.get("result"), dict)
+                or any(key not in document["snapshot"] for key in ("runId", "strategy", "requests", "spaces"))):
+            raise SharedStateError("Invalid published JSON result. Run allocation again; no legacy fallback was used.")
+        return document
+
+    def publish_engine_result(self, snapshot, result, metadata):
+        # One replacement publishes the input provenance and all result collections together.
+        document = {"snapshot": snapshot, "result": result, "build": metadata}
+        atomic_write(self.root / "engine-result.json", json.dumps(document, ensure_ascii=False, allow_nan=False).encode("utf-8"))
+
     def __init__(self, data_dir, lock_timeout=5.0):
         self.data_dir = Path(data_dir)
         self.root = self.data_dir / ".runtime"
@@ -150,58 +164,3 @@ class SharedFileState:
             return directory
         except (OSError, ValueError, KeyError, TypeError) as error:
             raise SharedStateError("Published result pointer is invalid; refusing mixed/stale fallback.") from error
-
-    def create_workspace(self):
-        workspace = Path(tempfile.mkdtemp(prefix="run-", dir=self.root))
-        data = workspace / "data"
-        data.mkdir()
-        for name in INPUT_FILES:
-            source = self.data_dir / name
-            if source.exists():
-                shutil.copy2(source, data / name)
-        return workspace
-
-    def validate_outputs(self, workspace):
-        data = workspace / "data"
-        tables = {}
-        for name, expected in OUTPUT_HEADERS.items():
-            try:
-                with (data / name).open(encoding="utf-8-sig", newline="") as file:
-                    reader = csv.DictReader(file, strict=True)
-                    if reader.fieldnames != expected.split(","):
-                        raise ValueError("unexpected CSV header")
-                    rows = list(reader)
-                    if any(None in row or any(value is None for value in row.values()) for row in rows):
-                        raise ValueError("incomplete CSV row")
-                    tables[name] = rows
-            except (OSError, UnicodeError, csv.Error, ValueError) as error:
-                raise SharedStateError(f"Backend output {name} is missing or unusable: {error}") from error
-        with (data / "requests.csv").open(encoding="utf-8-sig", newline="") as file:
-            request_ids = {row["requestId"] for row in csv.DictReader(file)}
-        for name in ("request_results.csv", "request_summaries.csv"):
-            rows = tables[name]
-            ids = [row["requestId"] for row in rows]
-            if set(ids) != request_ids or len(ids) != len(request_ids):
-                raise SharedStateError(f"Backend output {name} does not cover the input requests.")
-            if any(row["status"] not in {"Pending", "Approved", "Rejected"} for row in rows):
-                raise SharedStateError(f"Backend output {name} contains invalid statuses.")
-        statuses = {row["requestId"]: row["status"] for row in tables["request_results.csv"]}
-        if any(row["status"] != statuses[row["requestId"]] for row in tables["request_summaries.csv"]):
-            raise SharedStateError("Backend request outputs disagree on status.")
-        allocations = tables["allocations.csv"]
-        summaries = tables["allocation_summaries.csv"]
-        if [(row["allocationId"], row["requestId"]) for row in allocations] != [
-                (row["allocationId"], row["requestId"]) for row in summaries]:
-            raise SharedStateError("Backend allocation outputs disagree.")
-        if any(row["requestId"] not in request_ids for row in allocations):
-            raise SharedStateError("Backend output refers to a missing request.")
-
-    def publish(self, workspace, metadata):
-        self.validate_outputs(workspace)
-        generation = "generation-" + uuid.uuid4().hex
-        atomic_write(workspace / "metadata.json", json.dumps(metadata).encode("utf-8"))
-        destination = self.root / generation
-        os.replace(workspace, destination)
-        # This is the only operation that makes an entire generation visible.
-        atomic_write(self.pointer, json.dumps({"generation": generation}).encode("utf-8"))
-        return destination / "data"

@@ -4,8 +4,12 @@ import re
 
 try:
     from .shared_file_state import INPUT_FILES, OUTPUT_HEADERS, SharedFileState
+    from .engine_result_projection import result_tables, suggestion_display
+    from .engine_gateway import validate_result
 except ImportError:
     from shared_file_state import INPUT_FILES, OUTPUT_HEADERS, SharedFileState
+    from engine_result_projection import result_tables, suggestion_display
+    from engine_gateway import validate_result
 
 
 REQUEST_TYPE_LABELS = {
@@ -14,8 +18,6 @@ REQUEST_TYPE_LABELS = {
     "Exam": "Exam",
     "CommitteeMeeting": "Committee Meeting",
 }
-
-REQUEST_TYPE_OPTIONS = ["OneTime", "Recurring", "Exam", "CommitteeMeeting"]
 
 SCHEDULE_USER_ROLES = {
     "Student",
@@ -43,7 +45,7 @@ DAY_NAMES = {
 
 
 class BackendResultAdapter:
-    """Adapts backend-generated CSV outputs into UI-ready Flask contexts."""
+    """Adapts structured engine results, with legacy CSV display compatibility."""
 
     def __init__(self, data_dir, raw_data_files):
         self.data_dir = Path(data_dir)
@@ -51,6 +53,7 @@ class BackendResultAdapter:
         self._tables = None
         self._texts = None
         self.generation_dir = None
+        self.engine_result = None
 
     def pin(self, state=None):
         """Read live inputs and resolve the published generation once, under the lock."""
@@ -58,13 +61,18 @@ class BackendResultAdapter:
             with SharedFileState(self.data_dir).locked() as state:
                 return self.pin(state)
         pinned = BackendResultAdapter(self.data_dir, self.raw_data_files)
-        pinned.generation_dir = state.current_data_dir()
+        document = state.read_engine_result()
+        pinned.generation_dir = state.current_data_dir() if document is None else None
         result_reader = BackendResultAdapter(pinned.generation_dir or self.data_dir, self.raw_data_files)
         pinned._tables = {
             name: (result_reader if name in OUTPUT_HEADERS else self).read_csv_table(name)
-            for name in (*INPUT_FILES, *OUTPUT_HEADERS) if name.endswith(".csv")
+            for name in (*INPUT_FILES, *(OUTPUT_HEADERS if document is None else ())) if name.endswith(".csv")
         }
         pinned._texts = {"config.txt": self.read_text_file("config.txt")}
+        if document is not None:
+            validate_result(document["result"], document["snapshot"])
+            pinned.engine_result = document["result"]
+            pinned._tables.update(result_tables(document["snapshot"], document["result"]))
         return pinned
 
     def list_raw_data_files(self):
@@ -297,8 +305,10 @@ class BackendResultAdapter:
                         result_row.get("rejectionReason"),
                         "",
                     ),
-                    "meeting_suggestions": extract_meeting_suggestions(
-                        result_row.get("lifecycleHistory")
+                    "meeting_suggestions": (
+                        next((suggestion_display(group) for group in self.engine_result["suggestions"]
+                              if str(group["requestId"]) == request_id), None)
+                        if self.engine_result is not None else extract_meeting_suggestions(result_row.get("lifecycleHistory"))
                     ),
                     "assigned_rooms": assigned_rooms,
                     "total_assigned": total_assigned,

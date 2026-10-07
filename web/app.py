@@ -2,13 +2,13 @@ from pathlib import Path
 from contextlib import contextmanager
 import csv
 import os
-import subprocess
 
 from flask import Flask, g, has_request_context, redirect, render_template, request, url_for
 
 try:
     from .shared_file_state import SharedFileState, SharedStateBusy, SharedStateError
     from .backend_executable import BackendExecutableError, resolve_backend_executable
+    from .engine_gateway import EngineGateway, EngineIntegrationError, execution_snapshot
     from .backend_result_adapter import (
         BackendResultAdapter,
         build_committee_participant_display,
@@ -20,6 +20,7 @@ try:
 except ImportError:
     from shared_file_state import SharedFileState, SharedStateBusy, SharedStateError
     from backend_executable import BackendExecutableError, resolve_backend_executable
+    from engine_gateway import EngineGateway, EngineIntegrationError, execution_snapshot
     from backend_result_adapter import (
         BackendResultAdapter,
         build_committee_participant_display,
@@ -180,6 +181,7 @@ def shared_data_busy(error):
 
 
 @app.errorhandler(SharedStateError)
+@app.errorhandler(EngineIntegrationError)
 def shared_data_error(error):
     app.logger.error("Shared-file operation failed: %s", error)
     return f"Shared-file operation failed: {error}", 503
@@ -483,126 +485,6 @@ def parse_time_fields(form_data, errors):
     return day, start_time, end_time
 
 
-def validate_exam_form(form_data, users, spaces):
-    errors = []
-    user_ids = {(user.get("userId") or "").strip() for user in users}
-    space_ids = {(space.get("spaceId") or "").strip() for space in spaces}
-
-    user_id = form_data.get("userId", "").strip()
-    space_id = form_data.get("spaceId", "").strip()
-    participant_count = parse_positive_int(
-        form_data, "participantCount", "Participant count", errors
-    )
-    day, start_time, end_time = parse_time_fields(form_data, errors)
-    title = form_data.get("title", "").strip()
-    course_code = form_data.get("courseCode", "").strip()
-    course_name = form_data.get("courseName", "").strip()
-    exam_type = form_data.get("examType", "").strip()
-    can_split = form_data.get("canSplitAcrossRooms", "").strip()
-
-    if user_id not in user_ids:
-        errors.append("Selected requester does not exist.")
-
-    if space_id not in space_ids:
-        errors.append("Selected reference space does not exist.")
-
-    if not title:
-        errors.append("Title is required.")
-
-    if not course_code:
-        errors.append("Course code is required.")
-
-    if not course_name:
-        errors.append("Course name is required.")
-
-    if exam_type not in EXAM_TYPES:
-        errors.append("Exam type must be Midterm, Final, Quiz, or General.")
-
-    if can_split not in {"true", "false"}:
-        errors.append("Can split across rooms must be true or false.")
-
-    if errors:
-        return None, errors
-
-    row = {
-        "requestId": str(get_next_request_id()),
-        "requestType": "Exam",
-        "userId": user_id,
-        "spaceId": space_id,
-        "participantCount": str(participant_count),
-        "requiredFeature": normalize_optional_constraint(
-            form_data.get("requiredFeature", "")
-        ),
-        "requiredBuilding": normalize_optional_constraint(
-            form_data.get("requiredBuilding", "")
-        ),
-        "timeData": f"{day}-{start_time}-{end_time}",
-        "title": title,
-        "purpose": "Exam",
-        "courseCode": course_code,
-        "courseName": course_name,
-        "examType": exam_type,
-        "canSplitAcrossRooms": can_split,
-    }
-
-    return row, []
-
-
-def validate_one_time_form(form_data, users, spaces):
-    errors = []
-    user_ids = {(user.get("userId") or "").strip() for user in users}
-    space_ids = {(space.get("spaceId") or "").strip() for space in spaces}
-
-    user_id = form_data.get("userId", "").strip()
-    space_id = form_data.get("spaceId", "").strip()
-    participant_count = parse_positive_int(
-        form_data, "participantCount", "Participant count", errors
-    )
-    day, start_time, end_time = parse_time_fields(form_data, errors)
-    title = form_data.get("title", "").strip()
-    purpose = form_data.get("purpose", "").strip()
-
-    if user_id not in user_ids:
-        errors.append("Selected requester does not exist.")
-
-    if space_id not in space_ids:
-        errors.append("Selected space does not exist.")
-
-    if not title:
-        errors.append("Title is required.")
-
-    if not purpose:
-        errors.append("Purpose is required.")
-    elif purpose not in PURPOSE_OPTIONS:
-        errors.append("Purpose must be Meeting, Lecture, Lab, General, or Other.")
-
-    if errors:
-        return None, errors
-
-    row = {
-        "requestId": str(get_next_request_id()),
-        "requestType": "OneTime",
-        "userId": user_id,
-        "spaceId": space_id,
-        "participantCount": str(participant_count),
-        "requiredFeature": normalize_optional_constraint(
-            form_data.get("requiredFeature", "")
-        ),
-        "requiredBuilding": normalize_optional_constraint(
-            form_data.get("requiredBuilding", "")
-        ),
-        "timeData": f"{day}-{start_time}-{end_time}",
-        "title": title,
-        "purpose": purpose,
-        "courseCode": "",
-        "courseName": "",
-        "examType": "",
-        "canSplitAcrossRooms": "false",
-    }
-
-    return row, []
-
-
 def validate_request_form(form_data, users, spaces):
     errors = []
     user_ids = {(user.get("userId") or "").strip() for user in users}
@@ -810,16 +692,6 @@ def count_optional_file(filename):
     return current_results().count_optional_file(filename)
 
 
-def truncate_output(text, limit=3000):
-    if not text:
-        return ""
-
-    if len(text) <= limit:
-        return text
-
-    return text[:limit] + "\n... output truncated for dashboard display ..."
-
-
 def build_dashboard_context(run_result=None, strategy_message=None):
     requests_table = read_csv_table("requests.csv")
     results_table = read_csv_table("request_results.csv")
@@ -876,71 +748,25 @@ def build_dashboard_context(run_result=None, strategy_message=None):
 def run_backend_allocation():
     try:
         with shared_operation() as state:
-            return execute_backend_in_workspace(state)
+            return execute_json_backend(state)
     except SharedStateBusy:
         raise
-    except (SharedStateError, OSError) as error:
+    except (SharedStateError, OSError, EngineIntegrationError, BackendExecutableError) as error:
         app.logger.error("Allocation was not published: %s", error)
         return {"status": "error", "message": str(error), "stdout": "", "stderr": ""}
 
 
-def execute_backend_in_workspace(state):
-    try:
-        backend = resolve_backend_executable(
-            PROJECT_ROOT, os.environ.get("RESOURCE_ALLOCATION_BACKEND")
-        )
-    except BackendExecutableError as error:
-        app.logger.error("Backend validation failed: %s", error)
-        return {
-            "status": "error",
-            "message": str(error),
-            "stdout": "",
-            "stderr": "",
-        }
-
-    app.logger.info("Executing backend %s (built=%s source=%s binary=%s compiler=%s)",
-                    backend.path, backend.metadata["built_at"],
-                    backend.metadata["source_sha256"], backend.metadata["binary_sha256"],
-                    backend.metadata["compiler"])
-    workspace = state.create_workspace()
-    try:
-        completed = subprocess.run(
-            [str(backend.path)],
-            text=True,
-            cwd=workspace,
-            capture_output=True,
-            timeout=app.config["BACKEND_TIMEOUT"],
-        )
-    except subprocess.TimeoutExpired as exc:
-        return {
-            "status": "error",
-            "message": f"Backend execution timed out after {app.config['BACKEND_TIMEOUT']} seconds. Previous results remain active.",
-            "stdout": truncate_output(exc.stdout.decode(errors="replace") if isinstance(exc.stdout, bytes) else exc.stdout or ""),
-            "stderr": truncate_output(exc.stderr.decode(errors="replace") if isinstance(exc.stderr, bytes) else exc.stderr or ""),
-        }
-    except OSError as error:
-        app.logger.error("Backend could not start at %s: %s", backend.path, error)
-        return {
-            "status": "error",
-            "message": f"Configured backend could not start: {error}",
-            "stdout": "",
-            "stderr": "",
-        }
-
-    if completed.returncode == 0:
-        state.publish(workspace, backend.metadata)
-        status = "success"
-        message = "Allocation backend ran successfully. Results were updated."
-    else:
-        status = "error"
-        message = f"Allocation backend failed with exit code {completed.returncode}."
-
-    return {
-        "status": status,
-        "message": message,
-        "stdout": truncate_output(completed.stdout),
-        "stderr": truncate_output(completed.stderr),
-    }
+def execute_json_backend(state):
+    # Validate before reading persistence too, preserving clear missing/stale-artifact errors.
+    resolve_backend_executable(PROJECT_ROOT, os.environ.get("RESOURCE_ALLOCATION_BACKEND"))
+    strategy = read_config_strategy()
+    if strategy == "greedy (default / config missing)":
+        strategy = "greedy"
+    snapshot = execution_snapshot(backend_results.pin(state), strategy)
+    result, metadata = EngineGateway(PROJECT_ROOT, app.config["BACKEND_TIMEOUT"], app.logger).execute(snapshot)
+    state.publish_engine_result(snapshot, result, metadata)
+    return {"status": "success", "message": "Allocation backend ran successfully. Results were updated.",
+            "stdout": f"JSON run {result['runId']} completed ({result['engineVersion']}).", "stderr": ""}
 
 
 def render_csv_page(template_name, title, filename, empty_message):

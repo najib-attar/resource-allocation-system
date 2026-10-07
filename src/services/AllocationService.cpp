@@ -26,6 +26,10 @@ const std::vector<Allocation>& AllocationService::getAllocations() const {
     return allocations;
 }
 
+const std::map<int, std::vector<MeetingTimeSuggestion>>& AllocationService::getMeetingSuggestions() const {
+    return meetingSuggestions;
+}
+
 static std::string dayToString(int day) {
     switch (day) {
         case 1: return "Monday";
@@ -61,6 +65,7 @@ void AllocationService::processRequests(const std::vector<Request*>& requests) {
 
 void AllocationService::processRequests(const std::vector<Request*>& requests,
                                         const std::vector<Space*>& spaces) {
+    meetingSuggestions.clear();
     allocationStrategy->processRequests(requests, spaces, allocations, ruleEngineFacade);
     appendMeetingTimeSuggestionsForRejectedCommitteeRequests(requests);
 }
@@ -78,6 +83,7 @@ bool AllocationService::processRequest(ExamRequest& request) {
 }
 
 bool AllocationService::processRequest(CommitteeMeetingRequest& request) {
+    meetingSuggestions.erase(request.getId());
     const bool approved =
         allocationStrategy->processRequest(request, allocations, ruleEngineFacade);
 
@@ -90,7 +96,7 @@ bool AllocationService::processRequest(CommitteeMeetingRequest& request) {
 
 void AllocationService::appendMeetingTimeSuggestions(
     CommitteeMeetingRequest& request
-) const {
+) {
     if (request.getStatus() != RequestStatus::Rejected) {
         return;
     }
@@ -108,6 +114,7 @@ void AllocationService::appendMeetingTimeSuggestions(
             3
         );
 
+    meetingSuggestions[request.getId()] = suggestions;
     if (suggestions.empty()) {
         request.addHistoryEvent("No available alternative time found.");
         return;
@@ -137,7 +144,7 @@ void AllocationService::appendMeetingTimeSuggestions(
 
 void AllocationService::appendMeetingTimeSuggestionsForRejectedCommitteeRequests(
     const std::vector<Request*>& requests
-) const {
+) {
     for (Request* request : requests) {
         CommitteeMeetingRequest* committeeRequest =
             dynamic_cast<CommitteeMeetingRequest*>(request);

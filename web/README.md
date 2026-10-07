@@ -2,7 +2,7 @@
 
 This folder contains a small Flask dashboard for the C++ Resource Allocation System.
 
-The web dashboard does not run allocation logic or modify the C++ backend. It displays data files from the project `data/` folder, can update the selected strategy in `config.txt`, can append new request rows to `requests.csv`, and can run the compiled backend executable for demo purposes.
+The web dashboard does not compute allocation logic. CSV temporarily persists requests, participants and strategy preferences. Execution uses the versioned [JSON engine protocol](../docs/engine-protocol.md): one snapshot on stdin and one structured result on stdout, through `EngineGateway` and the validated backend executable.
 
 ## Install Flask
 
@@ -63,7 +63,7 @@ Open this address in a browser:
 http://127.0.0.1:5000
 ```
 
-Click `Run Allocation` on the home page to run the validated C++ backend artifact from the project root, then display the updated `allocations.csv` and `request_results.csv` files. Validation/startup errors are shown instead of executing an arbitrary binary.
+Click `Run Allocation` to send a snapshot to the validated backend in `--json` mode. The returned result is published atomically as `data/.runtime/engine-result.json`. Dashboard, detail, schedule and Raw Data pages consume that pinned result; no C++ runtime CSV output files are needed. Validation/startup errors are shown instead of executing an arbitrary binary.
 
 ## Dashboard Flow
 
@@ -76,7 +76,7 @@ The dashboard is organized around a cleaner demo workflow:
 5. Use `Schedules` to confirm user busy slots or room allocations after allocation has run.
 6. Use `Raw Data` only when you need to inspect CSV files directly.
 
-The Flask app still does not compute allocation, participant availability, or suggestions. It writes CSV rows, runs the compiled C++ executable, and displays backend-generated CSV outputs.
+The Flask app still does not compute allocation, participant availability, or suggestions. It persists CSV rows and displays structured C++ results, including structured suggestions without history parsing. An in-memory compatibility adapter keeps existing table templates working. Legacy output CSVs remain readable before the first JSON run.
 
 ## Recommended Demo Workflow
 
@@ -105,7 +105,7 @@ Saving a strategy updates `data/config.txt` with:
 allocation_strategy=<selected_strategy>
 ```
 
-The Flask app does not implement strategy logic. It only updates the config file. The C++ backend reads `config.txt` and uses `AllocationStrategyFactory` when the allocation executable runs.
+The Flask app does not implement strategy logic. It saves the preference in config and captures it in each JSON execution snapshot. JSON mode never reads or modifies global config; only the retained no-argument CSV CLI reads `config.txt`. Both paths use the existing C++ strategies.
 
 Supported strategies:
 
@@ -255,29 +255,29 @@ to 5 seconds; a busy operation returns HTTP 503 with `Retry-After`. Set
 seconds). Dynamic readers briefly take the same lock to pin their inputs/results;
 after pinning, rendering can proceed concurrently. Static assets do not take it.
 
-Each web execution copies inputs and config into a unique `.runtime/run-*/data/`
-workspace and runs the verified executable there. The C++ engine never writes into
-shared input/output paths. Only a zero-exit run with all four usable, consistent
-outputs is published. The workspace becomes `.runtime/generation-*/`, including
-its inputs, outputs and build metadata, and `current.json` is replaced atomically.
-Each Flask response pins that pointer once and reads the same generation throughout.
-Before the first publication, existing root-level CSV outputs remain readable for
-compatibility; web execution never overwrites them afterward. Raw Data uses the
-published outputs, not those legacy files.
+Each web execution sends one JSON snapshot, including its strategy, to `--json`
+stdin and validates one JSON response from stdout. C++ does not read shared files
+or create CSV outputs in this mode. Only a zero-exit, complete, valid response is
+published by replacing `.runtime/engine-result.json` atomically. That single file
+contains the input provenance, all result collections and build metadata. Each
+Flask response loads it once. No new generation directories or input workspaces
+are created. Raw Data's result tables are in-memory projections of this JSON.
+Before the first JSON publication, existing CSV outputs/old generations remain
+readable for compatibility. Web execution never overwrites those files.
 
 **Save Only** saves the request and participants without executing allocation.
 **Submit and Run** saves first, then attempts execution while holding the lock.
 If execution fails, times out, or publication fails, the saved request remains
-pending and the previous successful generation stays visible. A small durable
+pending and the previous successful result stays visible. A small durable
 `pending-save.json` record lets the next lock holder finish an interrupted two-CSV
 save before generating another ID; it is removed after both replacements succeed.
 A crash after saving may therefore leave a saved request even without a response.
 
-OS process termination releases the lock. Orphan workspaces and unreferenced
-generations are ignored. They are deliberately not deleted automatically because
-old responses may still be pinned to them. During offline maintenance, obsolete
-directories may be removed only after stopping all workers/backend processes;
-never remove the current generation or the lock file. `.runtime/` is ignored by Git.
+OS process termination releases the lock. An incomplete engine response is never
+published. Orphan workspaces/old generations from the previous CSV execution path
+are ignored after JSON publication and are not automatically deleted. Offline
+maintenance must never remove the current result or lock file. `.runtime/` is
+ignored by Git.
 
 This is not a database or distributed lock: all workers must share one local data
 directory/filesystem and use this protocol. Manual CSV edits and direct CLI runs

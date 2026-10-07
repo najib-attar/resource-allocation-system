@@ -76,6 +76,19 @@ bool ResourceAllocationSession::runAllocation() {
     return true;
 }
 
+void ResourceAllocationSession::initialize(SystemData&& data, const std::string& strategy) {
+    cleanup();
+    systemData = std::move(data);
+    strategyName = strategy;
+    loaded = true;
+    rebuildAllocationService();
+}
+
+const std::map<int, std::vector<MeetingTimeSuggestion>>& ResourceAllocationSession::getMeetingSuggestions() const {
+    static const std::map<int, std::vector<MeetingTimeSuggestion>> empty;
+    return allocationService ? allocationService->getMeetingSuggestions() : empty;
+}
+
 void ResourceAllocationSession::addExistingAllocation(const Allocation& allocation) {
     if (allocationService) {
         allocationService->addExistingAllocation(allocation);

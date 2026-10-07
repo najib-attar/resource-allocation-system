@@ -128,9 +128,8 @@ class CsvContractTests(TestCase):
             })
             self.assertEqual(response.status_code, 302)
             self.assertEqual(client.get(response.location).status_code, 200)
-            published = SharedFileState(self.data).current_data_dir()
-            self.assertIsNotNone(published)
-            row = self.read_rows("request_results.csv", published)[0]
+            self.assertIsNotNone(SharedFileState(self.data).read_engine_result())
+            row = adapter.pin().read_csv_table("request_results.csv")["rows"][0]
             self.assertEqual(row["status"], "Approved")
             self.assertEqual(row["title"], title)
 

@@ -10,8 +10,16 @@
 #include "models/Allocation.h"
 #include "services/ResourceAllocationSession.h"
 #include "utils/ConsolePrinter.h"
+#include "integration/JsonEngineProtocol.h"
 
-int main() {
+int main(int argc, char* argv[]) {
+    if (argc == 2 && std::string(argv[1]) == "--json") {
+        return JsonEngineProtocol::run(std::cin, std::cout, std::cerr);
+    }
+    if (argc != 1) {
+        std::cerr << "Usage: allocation_system [--json]\n";
+        return 2;
+    }
     ResourceAllocationSession session;
     session.loadStrategyName("data/config.txt");
 

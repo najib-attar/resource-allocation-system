@@ -8,6 +8,7 @@ import json
 import os
 import shutil
 import subprocess
+from engine_json_fixtures import fake_result
 
 from web.backend_executable import (
     BackendExecutableError,
@@ -159,7 +160,7 @@ class BackendExecutionTests(BackendFixture, TestCase):
         self.addCleanup(environment.stop)
 
     def test_invalid_artifact_is_never_executed(self):
-        with mock.patch.object(self.web_app.subprocess, "run") as run:
+        with mock.patch("web.engine_gateway.subprocess.run") as run:
             result = self.web_app.run_backend_allocation()
         self.assertEqual(result["status"], "error")
         self.assertIn("missing", result["message"])
@@ -168,7 +169,7 @@ class BackendExecutionTests(BackendFixture, TestCase):
     def test_stale_artifact_is_never_executed(self):
         self.make_backend()
         self.source.write_text("changed\n", encoding="utf-8")
-        with mock.patch.object(self.web_app.subprocess, "run") as run:
+        with mock.patch("web.engine_gateway.subprocess.run") as run:
             result = self.web_app.run_backend_allocation()
         self.assertEqual(result["status"], "error")
         self.assertIn("stale", result["message"])
@@ -176,29 +177,30 @@ class BackendExecutionTests(BackendFixture, TestCase):
 
     def test_verified_absolute_path_is_executed_and_logged(self):
         path = self.make_backend()
-        completed = subprocess.CompletedProcess([str(path)], 0, "done", "")
-        with mock.patch.object(self.web_app.subprocess, "run", return_value=completed) as run, \
-                mock.patch.object(self.web_app.SharedFileState, "publish") as publish:
+        def execution(command, **kwargs):
+            return subprocess.CompletedProcess(command, 0, json.dumps(fake_result(json.loads(kwargs["input"]))), "")
+        with mock.patch("web.engine_gateway.subprocess.run", side_effect=execution) as run, \
+                mock.patch.object(self.web_app.SharedFileState, "publish_engine_result") as publish:
             with self.assertLogs(self.web_app.app.logger, level="INFO") as logs:
                 result = self.web_app.run_backend_allocation()
         self.assertEqual(result["status"], "success")
-        self.assertEqual(run.call_args.args[0], [str(path.resolve())])
-        workspace = run.call_args.kwargs["cwd"]
-        self.assertEqual(workspace.parent, self.root / "data" / ".runtime")
-        self.assertTrue((workspace / "data").is_dir())
+        self.assertEqual(run.call_args.args[0], [str(path.resolve()), "--json"])
+        self.assertEqual(run.call_args.kwargs["cwd"], self.root)
+        self.assertIn("protocolVersion", json.loads(run.call_args.kwargs["input"]))
+        self.assertEqual(list((self.root / "data" / ".runtime").glob("run-*")), [])
         publish.assert_called_once()
         self.assertFalse(run.call_args.kwargs.get("shell", False))
         self.assertTrue(any("source=" in entry and "compiler=" in entry for entry in logs.output))
 
     def test_os_loader_failure_is_reported(self):
         self.make_backend()
-        with mock.patch.object(self.web_app.subprocess, "run", side_effect=OSError("missing runtime DLL")):
+        with mock.patch("web.engine_gateway.subprocess.run", side_effect=OSError("missing runtime DLL")):
             result = self.web_app.run_backend_allocation()
         self.assertEqual(result["status"], "error")
         self.assertIn("could not start", result["message"])
 
     def test_run_route_redirects_to_clear_validation_error(self):
-        with mock.patch.object(self.web_app.subprocess, "run") as run:
+        with mock.patch("web.engine_gateway.subprocess.run") as run:
             response = self.web_app.app.test_client().post("/run-allocation")
         self.assertEqual(response.status_code, 302)
         query = parse_qs(urlparse(response.location).query)
@@ -246,9 +248,12 @@ class BackendWebSmokeTests(TestCase):
                         self.assertEqual(client.get(route).status_code, 200)
                 for name in ("allocations.csv", "request_results.csv", "request_summaries.csv",
                              "allocation_summaries.csv"):
-                    published = web_app.SharedFileState(data).current_data_dir()
-                    self.assertGreater((published / name).stat().st_size, 0)
+                    self.assertTrue(adapter.pin().read_csv_table(name)["exists"])
                     self.assertFalse((data / name).exists())
+                missing = client.get("/request/999999")
+                self.assertEqual(missing.status_code, 200)  # Existing friendly missing-request page.
+                self.assertIn("not found", missing.get_data(as_text=True).lower())
+                self.assertEqual(client.get("/raw-data?file=not_allowed.csv").status_code, 200)
                 adapter = adapter.pin()
                 request_ids = {row["requestId"] for row in adapter.read_csv_table("requests.csv")["rows"]}
                 for row in adapter.read_csv_table("allocations.csv")["rows"]:
