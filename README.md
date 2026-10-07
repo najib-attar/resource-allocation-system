@@ -184,11 +184,13 @@ powershell -ExecutionPolicy Bypass -File tests\run_tests.ps1
 The latest verified result is:
 
 ```text
-Running 79 test(s)
-Result: 79 passed, 0 failed
+Running 140 test(s)
+Result: 140 passed, 0 failed
 ```
 
 The test runner compiles and runs the backend smoke executable, then compiles and runs the unit and integration tests.
+
+After building the authoritative backend, also run `python -m unittest discover -s tests -p 'test_*.py' -v` for gateway, JSON/legacy parity, CSV persistence/concurrency and Flask smoke checks. The Windows run has 70 passed, 0 failed, and one POSIX-permission skip; Linux CI is configured to exercise the platform-specific path.
 
 ## Iterative Development Summary
 
@@ -266,7 +268,7 @@ Open:
 http://127.0.0.1:5000
 ```
 
-The web dashboard does not implement allocation logic. It reads and writes CSV files for demo usage and runs the compiled C++ backend. The C++ backend remains responsible for rules, strategies, participant availability, meeting suggestions, and allocation.
+The web dashboard does not implement allocation logic. CSV remains temporary application persistence/import/export, but Flask executes the C++ engine through a versioned JSON stdin/stdout contract using `EngineGateway`. Structured results and meeting suggestions are atomically published as one JSON document and adapted for existing views; execution does not read shared config or write runtime CSV outputs. The C++ backend remains responsible for rules, strategies, participant availability, meeting suggestions, and allocation. See the [engine protocol](docs/engine-protocol.md) for schema, errors, compatibility, and verification.
 
 ## Web Dashboard Overview
 
