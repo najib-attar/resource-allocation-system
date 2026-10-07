@@ -1,0 +1,2 @@
+requestId,requestType,userId,spaceId,participantCount,requiredFeature,requiredBuilding,timeData,title,purpose,courseCode,courseName,examType,canSplitAcrossRooms
+1,OneTime,1,101,5,None,Main,1-10:00-12:00,Clean Runtime Request,Regression test,,,,false

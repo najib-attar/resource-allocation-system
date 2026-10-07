@@ -32,10 +32,6 @@ int main() {
 
     SystemData& data = session.getSystemData();
 
-    Allocation existingClassroomAllocation(100, 999, data.spaces[0], TimeSlot(1, 10, 12),
-                                           data.spaces[0]->getCapacity());
-    session.addExistingAllocation(existingClassroomAllocation);
-
     session.runAllocation();
 
     for (Request* request : data.requests) {

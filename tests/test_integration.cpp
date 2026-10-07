@@ -4,6 +4,7 @@
 #include "../src/models/CommitteeMeetingRequest.h"
 #include "../src/models/InvalidRequest.h"
 #include "../src/services/AllocationService.h"
+#include "../src/services/ResourceAllocationSession.h"
 #include <cstdio>
 #include <fstream>
 
@@ -299,25 +300,29 @@ TEST_CASE("DataController loads custom auxiliary busy-slot and request-participa
     std::remove(participantsPath.c_str());
 }
 
-TEST_CASE("Backend smoke artifacts from main data exist after backend run") {
-    const bool allocationsReady = fileExistsAndNotEmpty("data/allocations.csv");
-    const bool resultsReady = fileExistsAndNotEmpty("data/request_results.csv");
-    const bool requestSummariesReady = fileExistsAndNotEmpty("data/request_summaries.csv");
-    const bool allocationSummariesReady = fileExistsAndNotEmpty("data/allocation_summaries.csv");
+TEST_CASE("Session exports fresh normal-data smoke artifacts to isolated paths") {
+    const std::string allocationsPath = "tests/tmp_smoke_allocations.csv";
+    const std::string resultsPath = "tests/tmp_smoke_results.csv";
+    const std::string requestSummariesPath = "tests/tmp_smoke_request_summaries.csv";
+    const std::string allocationSummariesPath = "tests/tmp_smoke_allocation_summaries.csv";
 
-    if (!allocationsReady ||
-        !resultsReady ||
-        !requestSummariesReady ||
-        !allocationSummariesReady) {
-        std::cout << "[INFO] Backend smoke artifacts are missing. "
-                  << "Run the normal backend executable to create them.\n";
-    }
+    ResourceAllocationSession session;
+    session.loadStrategyName("data/config.txt");
+    CHECK(session.loadSystemData("data/users.csv", "data/spaces.csv", "data/requests.csv"));
+    CHECK(session.runAllocation());
+    CHECK(session.exportResults(allocationsPath, resultsPath,
+                                requestSummariesPath, allocationSummariesPath));
+    CHECK(fileExistsAndNotEmpty(allocationsPath));
+    CHECK(fileExistsAndNotEmpty(resultsPath));
+    CHECK(fileExistsAndNotEmpty(requestSummariesPath));
+    CHECK(fileExistsAndNotEmpty(allocationSummariesPath));
+    CHECK_FILE_CONTAINS(requestSummariesPath, "requestId");
+    CHECK_FILE_CONTAINS(requestSummariesPath, "status");
+    CHECK_FILE_CONTAINS(allocationSummariesPath, "assignedParticipants");
 
-    CHECK(allocationsReady);
-    CHECK(resultsReady);
-    CHECK(requestSummariesReady);
-    CHECK(allocationSummariesReady);
-    CHECK_FILE_CONTAINS("data/request_summaries.csv", "requestId");
-    CHECK_FILE_CONTAINS("data/request_summaries.csv", "status");
-    CHECK_FILE_CONTAINS("data/allocation_summaries.csv", "assignedParticipants");
+    session.cleanup();
+    std::remove(allocationsPath.c_str());
+    std::remove(resultsPath.c_str());
+    std::remove(requestSummariesPath.c_str());
+    std::remove(allocationSummariesPath.c_str());
 }

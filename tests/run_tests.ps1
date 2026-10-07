@@ -8,9 +8,11 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "Running backend smoke executable..."
-.\allocation_system_smoke.exe > backend_smoke.log
-if ($LASTEXITCODE -ne 0) {
-    exit $LASTEXITCODE
+try {
+    & "$PSScriptRoot/test_backend_runtime.ps1" -ExecutablePath "$PWD/allocation_system_smoke.exe"
+} catch {
+    Write-Error $_
+    exit 1
 }
 
 $sources = Get-ChildItem -Recurse -Path src -Filter *.cpp |

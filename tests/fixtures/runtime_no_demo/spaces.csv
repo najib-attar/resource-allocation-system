@@ -1,0 +1,2 @@
+spaceId,type,name,capacity,hasProjector,hasWhiteboard,hasComputers,isAvailable,building
+101,Classroom,Runtime Classroom,20,1,1,0,1,Main
