@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-from sqlalchemy import BigInteger, Boolean, CheckConstraint, DateTime, ForeignKey, ForeignKeyConstraint, Identity, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy import BigInteger, Boolean, CheckConstraint, DateTime, ForeignKey, ForeignKeyConstraint, Identity, Index, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -43,7 +43,7 @@ class OrganizationUnit(Base):
 
 class User(Base):
     __tablename__ = "university_user"
-    __table_args__ = (CheckConstraint("id > 0"), CheckConstraint("year_level >= 0"))
+    __table_args__ = (CheckConstraint("id > 0"), CheckConstraint("year_level >= 0"), CheckConstraint("source_order > 0", name="ck_user_source_order"))
     id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
     source_order: Mapped[int] = mapped_column(Integer, unique=True)
     name: Mapped[str] = mapped_column(Text)
@@ -63,15 +63,15 @@ class User(Base):
 
 class UserRole(Base):
     __tablename__ = "user_role"
-    __table_args__ = (UniqueConstraint("user_id", "ordinal"),)
+    __table_args__ = (UniqueConstraint("user_id", "ordinal"), CheckConstraint("ordinal > 0", name="ck_user_role_ordinal"))
     user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True)
-    role_id: Mapped[int] = mapped_column(ForeignKey("role.id"), primary_key=True)
+    role_id: Mapped[int] = mapped_column(ForeignKey("role.id"), primary_key=True, index=True)
     ordinal: Mapped[int] = mapped_column(Integer)
 
 
 class Resource(Base):
     __tablename__ = "resource"
-    __table_args__ = (CheckConstraint("id > 0 AND capacity > 0"), CheckConstraint(allowed("type", SPACE_TYPES)))
+    __table_args__ = (CheckConstraint("id > 0 AND capacity > 0"), CheckConstraint(allowed("type", SPACE_TYPES)), CheckConstraint("source_order > 0", name="ck_resource_source_order"))
     id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
     source_order: Mapped[int] = mapped_column(Integer, unique=True)
     type: Mapped[str] = mapped_column(String(30))
@@ -86,7 +86,7 @@ class Resource(Base):
 
 class ResourceRequest(Base):
     __tablename__ = "resource_request"
-    __table_args__ = (CheckConstraint("id > 0 AND participant_count > 0 AND revision > 0"), CheckConstraint(allowed("type", REQUEST_TYPES)))
+    __table_args__ = (CheckConstraint("id > 0 AND participant_count > 0 AND revision > 0"), CheckConstraint(allowed("type", REQUEST_TYPES)), CheckConstraint("submission_order > 0", name="ck_request_submission_order"))
     id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
     submission_order: Mapped[int] = mapped_column(BigInteger, Identity(), unique=True)
     type: Mapped[str] = mapped_column(String(30))
@@ -102,7 +102,7 @@ class ResourceRequest(Base):
 
 class RequestSlot(Base):
     __tablename__ = "request_slot"
-    __table_args__ = slot_checks()
+    __table_args__ = (*slot_checks(), CheckConstraint("ordinal > 0", name="ck_request_slot_ordinal"))
     request_id: Mapped[int] = mapped_column(ForeignKey("resource_request.id"), primary_key=True)
     ordinal: Mapped[int] = mapped_column(Integer, primary_key=True)
     day: Mapped[int] = mapped_column(Integer)
@@ -121,16 +121,16 @@ class ExamDetails(Base):
 
 class RequestParticipant(Base):
     __tablename__ = "request_participant"
-    __table_args__ = (UniqueConstraint("request_id", "ordinal"),)
+    __table_args__ = (UniqueConstraint("request_id", "ordinal"), CheckConstraint("ordinal > 0", name="ck_request_participant_ordinal"))
     request_id: Mapped[int] = mapped_column(ForeignKey("resource_request.id"), primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True, index=True)
     ordinal: Mapped[int] = mapped_column(Integer)
     role: Mapped[str] = mapped_column(Text, default="Participant")
 
 
 class BusySlot(Base):
     __tablename__ = "busy_slot"
-    __table_args__ = slot_checks()
+    __table_args__ = (*slot_checks(), CheckConstraint("source_order > 0", name="ck_busy_source_order"))
     id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), index=True)
     source_order: Mapped[int] = mapped_column(Integer, unique=True)
@@ -142,7 +142,7 @@ class BusySlot(Base):
 
 class AllocationRun(Base):
     __tablename__ = "allocation_run"
-    __table_args__ = (CheckConstraint(allowed("status", ("running", "success", "failed", "superseded"))), CheckConstraint(allowed("strategy", STRATEGIES)))
+    __table_args__ = (CheckConstraint(allowed("status", ("running", "success", "failed", "superseded"))), CheckConstraint(allowed("strategy", STRATEGIES)), CheckConstraint("input_revision >= 0", name="ck_run_input_revision"))
     id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
     correlation_id: Mapped[str] = mapped_column(String(32), unique=True)
     input_revision: Mapped[int] = mapped_column(BigInteger)
@@ -166,9 +166,10 @@ class ApplicationState(Base):
 
 class RequestDecision(Base):
     __tablename__ = "request_decision"
-    __table_args__ = (CheckConstraint(allowed("status", ("Approved", "Rejected"))),)
+    __table_args__ = (CheckConstraint(allowed("status", ("Approved", "Rejected"))),
+                      UniqueConstraint("run_id", "ordinal", name="uq_decision_order"), CheckConstraint("ordinal > 0", name="ck_decision_ordinal"))
     run_id: Mapped[int] = mapped_column(ForeignKey("allocation_run.id"), primary_key=True)
-    request_id: Mapped[int] = mapped_column(ForeignKey("resource_request.id"), primary_key=True)
+    request_id: Mapped[int] = mapped_column(ForeignKey("resource_request.id"), primary_key=True, index=True)
     ordinal: Mapped[int] = mapped_column(Integer)
     status: Mapped[str] = mapped_column(String(20))
     reason: Mapped[str] = mapped_column(Text)
@@ -178,7 +179,8 @@ class RequestDecision(Base):
 class Allocation(Base):
     __tablename__ = "allocation"
     __table_args__ = (ForeignKeyConstraint(["run_id", "request_id"], ["request_decision.run_id", "request_decision.request_id"]),
-                      UniqueConstraint("run_id", "engine_id"), CheckConstraint("assigned_participants > 0"), *slot_checks())
+                      UniqueConstraint("run_id", "engine_id"), CheckConstraint("assigned_participants > 0"), *slot_checks(),
+                      Index("ix_allocation_decision", "run_id", "request_id"), CheckConstraint("engine_id >= 0", name="ck_allocation_engine_id"))
     id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
     run_id: Mapped[int] = mapped_column(BigInteger, index=True)
     request_id: Mapped[int] = mapped_column(Integer, index=True)
@@ -192,14 +194,16 @@ class Allocation(Base):
 
 class AllocationParticipant(Base):
     __tablename__ = "allocation_participant"
+    __table_args__ = (CheckConstraint("ordinal >= 0", name="ck_allocation_participant_ordinal"),)
     allocation_id: Mapped[int] = mapped_column(ForeignKey("allocation.id"), primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True, index=True)
     ordinal: Mapped[int] = mapped_column(Integer, server_default="0")
 
 
 class SuggestionGroup(Base):
     __tablename__ = "suggestion_group"
-    __table_args__ = (ForeignKeyConstraint(["run_id", "request_id"], ["request_decision.run_id", "request_decision.request_id"]),)
+    __table_args__ = (ForeignKeyConstraint(["run_id", "request_id"], ["request_decision.run_id", "request_decision.request_id"]),
+                      UniqueConstraint("run_id", "ordinal", name="uq_suggestion_group_order"), CheckConstraint("ordinal > 0", name="ck_suggestion_group_ordinal"))
     run_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     request_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     ordinal: Mapped[int] = mapped_column(Integer)
@@ -207,11 +211,12 @@ class SuggestionGroup(Base):
 
 class MeetingSuggestion(Base):
     __tablename__ = "meeting_suggestion"
-    __table_args__ = (ForeignKeyConstraint(["run_id", "request_id"], ["suggestion_group.run_id", "suggestion_group.request_id"]), *slot_checks())
+    __table_args__ = (ForeignKeyConstraint(["run_id", "request_id"], ["suggestion_group.run_id", "suggestion_group.request_id"]), *slot_checks(),
+                      CheckConstraint("rank > 0 AND score >= 0 AND time_distance >= 0 AND day_distance >= 0 AND conflict_count >= 0", name="ck_suggestion_scores"))
     run_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     request_id: Mapped[int] = mapped_column(Integer, primary_key=True)
     rank: Mapped[int] = mapped_column(Integer, primary_key=True)
-    resource_id: Mapped[int] = mapped_column(ForeignKey("resource.id"))
+    resource_id: Mapped[int] = mapped_column(ForeignKey("resource.id"), index=True)
     day: Mapped[int] = mapped_column(Integer)
     start_minutes: Mapped[int] = mapped_column(Integer)
     end_minutes: Mapped[int] = mapped_column(Integer)

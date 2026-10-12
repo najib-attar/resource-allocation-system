@@ -21,6 +21,29 @@ class StaleRun(PersistenceError):
     pass
 
 
+def validate_publication(result, snapshot):
+    """Verify duplicated result projections agree; do not repeat scheduling rules."""
+    validate_result(result, snapshot)
+    if result["status"] != "success":
+        raise PersistenceError("Cannot publish an unsuccessful engine result.")
+    by_request = defaultdict(list)
+    spaces = {item["id"]: item for item in snapshot["spaces"]}
+    for item in result["allocations"]:
+        space = spaces[item["spaceId"]]
+        if any(item[key] != space[source] for key, source in
+               (("spaceName", "name"), ("spaceType", "type"), ("building", "building"), ("spaceCapacity", "capacity"))):
+            raise PersistenceError("Engine resource metadata disagrees with its input snapshot.")
+        by_request[item["requestId"]].append(item)
+    for decision in result["requestResults"]:
+        allocations = by_request[decision["requestId"]]
+        if (decision["allocationCount"] != len(allocations)
+                or decision["allocationIds"] != [item["allocationId"] for item in allocations]
+                or decision["allocatedSpaceIds"] != [item["spaceId"] for item in allocations]
+                or decision["assignedParticipants"] != sum(item["assignedParticipants"] for item in allocations)
+                or (decision["status"] == "Approved") != bool(allocations)):
+            raise PersistenceError("Engine allocation summary disagrees with its allocation rows.")
+
+
 PROFILE_FIELDS = {"email": "email", "status": "status", "studentNo": "student_no", "program": "program",
                   "yearLevel": "year_level", "title": "title", "officeRoom": "office_room",
                   "assistantType": "assistant_type", "jobTitle": "job_title", "adminLevel": "admin_level"}
@@ -164,9 +187,7 @@ class Repository:
                 raise StaleRun("Inputs changed during allocation. Saved requests remain pending; retry allocation. Previous results remain active.")
             if state.active_run_id is not None and state.active_run_id > run.id:
                 raise StaleRun("A newer allocation run is already active. This older run was not published.")
-            validate_result(result, run.snapshot)
-            if result["status"] != "success":
-                raise PersistenceError("Cannot publish an unsuccessful engine result.")
+            validate_publication(result, run.snapshot)
             for ordinal, item in enumerate(result["requestResults"], 1):
                 session.add(RequestDecision(run_id=run.id, request_id=item["requestId"], ordinal=ordinal,
                                             status=item["status"], reason=item["rejectionReason"], payload=item))
@@ -205,7 +226,7 @@ class Repository:
                 if run is None or run.status != "success":
                     raise PersistenceError("Active allocation run is inconsistent; refusing stale-file fallback.")
                 document = {"snapshot": run.snapshot, "result": result_from_session(session, run), "build": run.build}
-                validate_result(document["result"], document["snapshot"])
+                validate_publication(document["result"], document["snapshot"])
             return snapshot, document, state.active_run_id
 
 

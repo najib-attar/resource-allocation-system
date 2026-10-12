@@ -89,3 +89,20 @@ Authentication, dated appointment scheduling and UC-STU-01 remain outside scope.
 HTTP retry idempotency and automatic abandoned-run/retention cleanup are not added.
 Original generated results stay offline and must be regenerated for PostgreSQL.
 See [operations](../database-operations.md) for setup, failure semantics and backups.
+
+## Database foundation review follow-up
+
+The initial cutover is complete; the requested comprehensive foundation review
+is in progress. No new feature iteration or additional tables are introduced.
+
+- Reproduced missing ordinal constraints, duplicate decision ordering, missing
+  reverse-FK lookup indexes and acceptance of inconsistent allocation projections.
+- Added additive revision `0041b`: validates existing order/score data, adds six
+  lookup indexes and two ordering uniqueness constraints. An invalid existing
+  database fails the transactional upgrade instead of being silently repaired.
+- Publication/read-back now verify allocation totals and resource metadata against
+  the captured snapshot; no C++ scheduling rules are duplicated.
+- Seven new quality regressions passed; the complete PostgreSQL group passed
+  45 tests on real PostgreSQL 17.11. All five strategies retain exact round-trip.
+- Next: complete schema inventory/ER sources, demo seeding, runtime CSV cleanup,
+  isolated backup/restore verification and full final regression.
