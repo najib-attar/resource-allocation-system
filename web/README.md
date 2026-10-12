@@ -180,9 +180,9 @@ The CommitteeMeeting form is designed for the professor demo flow:
 5. Review the confirmation page.
 6. Click `Run Allocation Now` or open Allocation Summary after running allocation.
 
-Flask does not check whether committee participants are free. It only writes `requests.csv` and `request_participants.csv`. After `Run Allocation`, the C++ backend creates the `CommitteeMeetingRequest`, attaches participants, and uses `ParticipantAvailabilityRule` with `user_busy_slots.csv` and already approved committee allocations to approve or reject the request. Required participants cannot attend overlapping approved committee meetings, even in different rooms; alternative-time suggestions respect the same commitments.
+Flask does not check whether committee participants are free. It persists request and participant rows, then sends a JSON snapshot when allocation is run. The C++ backend creates the `CommitteeMeetingRequest`, attaches participants, and uses `ParticipantAvailabilityRule` with the snapshot's busy slots and already approved committee allocations to approve or reject the request. Required participants cannot attend overlapping approved committee meetings, even in different rooms; alternative-time suggestions respect the same commitments.
 
-When a committee meeting is rejected because the requested time is not workable, the C++ backend may add least-change alternative time suggestions to the request lifecycle history. These suggestions scan Monday-Friday working hours in 30-minute increments, keep the original meeting duration, check required participant availability, check the requested room's existing allocations, and rank valid slots by distance from the originally requested time. The Allocation Summary page displays this exported suggestion text when it is present.
+When a committee meeting is rejected because the requested time is not workable, the C++ backend may return structured least-change alternative time suggestions in the JSON result. These suggestions scan Monday-Friday working hours in 30-minute increments, keep the original meeting duration, check required participant availability, check the requested room's existing allocations, and rank valid slots by distance from the originally requested time. The Allocation Summary page formats these structured suggestions directly. Lifecycle-history parsing remains only for legacy CSV results before the first JSON publication.
 
 Day numbers use this mapping:
 
@@ -241,7 +241,7 @@ CLI execution generates four files in its working directory's `data/`:
 - `data/request_summaries.csv`
 - `data/allocation_summaries.csv`
 
-If these files are missing, the dashboard shows a friendly message instead of crashing.
+Web execution does not generate or require these CSV outputs. Its results are published as `data/.runtime/engine-result.json`; existing CSV outputs remain a compatibility fallback before the first JSON publication. If neither result source exists, the dashboard asks the user to run allocation.
 
 ### Shared-File Coordination (Interim)
 
@@ -290,17 +290,13 @@ interim coordination and provide normal constraints/transactions later.
 
 Use the `Allocation Summary` page to see all request types grouped by request ID.
 
-The page reads existing CSV files only:
+For web executions, `BackendResultAdapter` combines persisted request data with one pinned structured JSON result. That result supplies decisions, room assignments, participant counts, and room/request details. Existing table-shaped views are in-memory projections, not C++ runtime CSV files.
 
-- `requests.csv` identifies requests.
-- `request_results.csv` provides approval or rejection status.
-- `allocations.csv` provides room assignments and assigned participants.
-- `spaces.csv` provides readable room names, capacity, type, and building.
-- `users.csv` provides requester names.
+Before the first JSON publication, the adapter can read legacy request-result and allocation CSVs. See the [engine protocol](../docs/engine-protocol.md) for the compatibility boundary.
 
 One-time requests show their assigned space when approved. Recurring requests show each allocation occurrence. Exam requests show course details and grouped room assignments, including total assigned participants and unused capacity when room capacities are available.
 
-If allocation outputs are missing, the page shows a friendly message asking the user to run allocation first.
+If no allocation result is available, the page shows a friendly message asking the user to run allocation first.
 
 ## Request Detail Page
 
@@ -315,28 +311,30 @@ The detail page is useful after `Submit and Run` because it keeps the demo focus
 It shows:
 
 - request type, title, purpose, requester, requested room, and readable day/time,
-- current backend status from `request_results.csv`,
+- current backend status from the pinned JSON result, or legacy CSV fallback; saved but unprocessed requests remain pending,
 - rejection reason if rejected,
 - committee participants and roles for `CommitteeMeeting`,
-- least-change suggestion text exported by the backend,
+- structured least-change suggestions returned by the backend, or legacy history text in the CSV fallback,
 - approved allocation rows and links to the room schedule.
 
 ## View Schedules
 
 Use the `Schedules` page to view user and space availability in a simple weekly table.
 
-- User schedules read `data/user_busy_slots.csv` and show busy/free time for instructors, teaching assistants, staff, and administrators.
-- Space schedules read `data/allocations.csv` and show allocated/free time for rooms after allocation has been run.
+- User schedules combine saved busy slots with approved allocation-derived events and show busy/free time for instructors, teaching assistants, staff, and administrators.
+- Space schedules show allocated/free time from the pinned JSON result after allocation has run. Legacy allocation CSVs are used only before the first JSON publication.
 - Space allocation events link back to `/request/<requestId>` so the user can jump from a scheduled room slot to the request result.
 - This page is visualization only. The C++ backend remains responsible for scheduling rules and allocation behavior.
 
 ## Raw Data
 
-Use `Raw Data` for technical inspection of CSV files:
+Use `Raw Data` for technical inspection of persisted inputs and result tables. Result tables are projected from the pinned JSON result after a web execution; before that, existing legacy CSV results remain readable:
 
 - `requests.csv`
 - `allocations.csv`
 - `request_results.csv`
+- `request_summaries.csv`
+- `allocation_summaries.csv`
 - `request_participants.csv`
 - `user_busy_slots.csv`
 - `users.csv`
@@ -362,4 +360,4 @@ The main navigation keeps raw technical tables under this section so the demo fl
 - `/allocations` redirects to `/raw-data?file=allocations.csv`.
 - `/results` redirects to `/raw-data?file=request_results.csv`.
 
-If `allocations.csv` or `request_results.csv` is missing, the dashboard shows a friendly message instead of crashing.
+Missing legacy CSV outputs do not prevent display of a published JSON result. If no result source is available, the dashboard shows a friendly message instead of crashing.

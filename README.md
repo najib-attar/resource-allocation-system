@@ -4,7 +4,7 @@ This repository contains an iterative C++ prototype for a university resource al
 
 The project focuses on gradually developing a flexible allocation system for resources such as classrooms, laboratories, meeting rooms, exams, and committee meetings. The implementation follows an iterative software design approach, where each iteration introduces one or more new concepts into the prototype.
 
-The latest implemented iteration is Iteration 40, with SpaceFactory and BackendResultAdapter refinements.
+The latest documented iteration is Iteration 40, with SpaceFactory and BackendResultAdapter refinements. The current code also includes subsequent robustness fixes and the [versioned Flask-C++ JSON execution boundary](docs/engine-protocol.md).
 
 ## Current Prototype Features
 
@@ -127,6 +127,8 @@ RequestTypeRule
 - `docs/iteration-reports/` : Iteration reports, including Iterations 33-40
 - `docs/design/class-diagrams/` : class diagram exports, including Iterations 33-40
 - `docs/testing/` : backend testing and verification reports
+- `docs/development/` : analysis, implementation, testing, documentation, frontend, and Git workflow guidelines
+- `docs/use-cases/` : user-facing feature requirements; not a list of implemented features
 - `src/` : C++ prototype implementation
   - `src/models/` : domain models, requests, factories, users, spaces, allocations, time slots, participants, busy slots, and suggestions
   - `src/rules/` : rule engine, rule facade, and individual request rules
@@ -143,6 +145,14 @@ RequestTypeRule
 
 - [Design Patterns and Principles Report](docs/design/design-patterns-and-principles/Design_Patterns_and_Principles_Report.pdf)
 - [LaTeX Source](docs/design/design-patterns-and-principles/Design_Patterns_and_Principles_Report.tex)
+
+### Development Documentation
+
+- [Repository Instructions](AGENTS.md): entry point for the development guides.
+- [Analysis and Delivery Workflow](docs/development/WORKFLOW.md)
+- [Git, Iterations, and Review](docs/development/GIT_ITERATIONS.md)
+- [Existing Engine Protocol](docs/engine-protocol.md): compatibility contract for Flask-C++ execution.
+- [Student-Professor Appointment Use Case](docs/use-cases/UC-STU-01-student-professor-appointment.pdf): requirements for a future feature, not current implementation.
 
 ## Data Files
 
@@ -190,7 +200,7 @@ Result: 140 passed, 0 failed
 
 The test runner compiles and runs the backend smoke executable, then compiles and runs the unit and integration tests.
 
-After building the authoritative backend, also run `python -m unittest discover -s tests -p 'test_*.py' -v` for gateway, JSON/legacy parity, CSV persistence/concurrency and Flask smoke checks. The Windows run has 70 passed, 0 failed, and one POSIX-permission skip; Linux CI is configured to exercise the platform-specific path.
+After building the authoritative backend, also run `python -m unittest discover -s tests -p 'test_*.py' -v` for gateway, JSON/legacy parity, CSV persistence/concurrency and Flask smoke checks. The latest verified Windows run has 74 tests: 73 passed, 0 failed, and one POSIX-permission skip; Linux CI is configured to exercise the platform-specific path.
 
 ## Iterative Development Summary
 
