@@ -115,8 +115,9 @@ or a partial success.
 | Generated result CSVs/local JSON | Not imported as authoritative results; regenerate using the verified engine. |
 
 The importer validates all files and references before writing, supports dry-run,
-and refuses an already populated application. Invalid rows are reported with file
-and row information; no silent skipping or invented references. Explicit IDs and
+and refuses an already populated application. Parsing errors identify the file
+and row; reference errors identify the affected entity. No silent skipping or
+invented references. Explicit IDs and
 ordinals are preserved, then identity sequences are advanced safely. Import is
 one transaction. Re-running is rejected rather than overwriting data. Existing
 files are never modified/deleted; no destructive migration is authorized.
