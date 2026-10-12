@@ -17,7 +17,7 @@ from web.allocation_workflow import execute_allocation
 from web.engine_gateway import EngineGateway, EngineIntegrationError
 from web.persistence.database import Database, DatabaseBusy
 from web.persistence.importer import import_csv
-from web.persistence.models import Allocation, AllocationRun, ApplicationState, RequestDecision
+from web.persistence.models import Allocation, AllocationRun, RequestDecision
 from web.persistence.repository import Repository, StaleRun, state_row
 
 

@@ -16,7 +16,7 @@ On Windows, run existing C++ test driver (PowerShell):
 ```powershell
 powershell -ExecutionPolicy Bypass -File tests/run_tests.ps1
 ```
-On Linux, the existing workflow compiles C++17 tests from `src/` and `tests/` using `g++`, then runs the binary. Inspect `.github/workflows/shared-file-regression.yml` for its exact command rather than inventing a second canonical runner.
+On Linux, the existing workflow compiles C++17 tests from `src/` and `tests/` using `g++`, then runs the binary. Inspect `.github/workflows/backend-postgresql-regression.yml` for its exact command rather than inventing a second canonical runner.
 
 ## For every meaningful feature
 - Write acceptance tests for the actor flow and negative/edge cases.

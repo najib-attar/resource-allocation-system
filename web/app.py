@@ -13,8 +13,10 @@ try:
     from .persistence.database import Database, DatabaseBusy, DatabaseConfigurationError
     from .persistence.repository import Repository, PersistenceError, SubmissionConflict
     from .backend_executable import BackendExecutableError, resolve_backend_executable
-    from .engine_gateway import EngineGateway, EngineIntegrationError, csv_slots, integer
+    from .engine_gateway import EngineGateway, EngineIntegrationError
+    from .input_validation import parse_time_slots, integer
     from .backend_result_adapter import (
+        REQUEST_TYPE_LABELS,
         build_committee_participant_display,
         display_value,
         format_time_data,
@@ -27,8 +29,10 @@ except ImportError:
     from persistence.database import Database, DatabaseBusy, DatabaseConfigurationError
     from persistence.repository import Repository, PersistenceError, SubmissionConflict
     from backend_executable import BackendExecutableError, resolve_backend_executable
-    from engine_gateway import EngineGateway, EngineIntegrationError, csv_slots, integer
+    from engine_gateway import EngineGateway, EngineIntegrationError
+    from input_validation import parse_time_slots, integer
     from backend_result_adapter import (
+        REQUEST_TYPE_LABELS,
         build_committee_participant_display,
         display_value,
         format_time_data,
@@ -55,23 +59,6 @@ SUPPORTED_STRATEGIES = [
     {"value": "shared_room_exam_best_fit", "label": "Shared-Room Exam Best-Fit"},
 ]
 
-REQUEST_HEADERS = [
-    "requestId",
-    "requestType",
-    "userId",
-    "spaceId",
-    "participantCount",
-    "requiredFeature",
-    "requiredBuilding",
-    "timeData",
-    "title",
-    "purpose",
-    "courseCode",
-    "courseName",
-    "examType",
-    "canSplitAcrossRooms",
-]
-
 EXAM_TYPES = ["Midterm", "Final", "Quiz", "General"]
 FEATURE_OPTIONS = ["None", "Projector", "Whiteboard", "Computers"]
 PURPOSE_OPTIONS = [
@@ -87,23 +74,12 @@ PURPOSE_OPTIONS = [
     "Other",
 ]
 REQUEST_TYPE_OPTIONS = ["OneTime", "Recurring", "Exam", "CommitteeMeeting"]
-REQUEST_TYPE_LABELS = {
-    "OneTime": "One-Time",
-    "Recurring": "Recurring",
-    "Exam": "Exam",
-    "CommitteeMeeting": "Committee Meeting",
-}
 COMMITTEE_PARTICIPANT_ROLES = {
     "Instructor",
     "TeachingAssistant",
     "Staff",
     "Administrator",
 }
-REQUEST_PARTICIPANT_HEADERS = [
-    "requestId",
-    "userId",
-    "participantRole",
-]
 USER_ROLE_OPTIONS = [
     "All",
     "Student",
@@ -171,20 +147,20 @@ def get_repository():
 
 
 @app.before_request
-def pin_result_generation():
+def pin_database_view():
     if request.method in {"GET", "HEAD"} and request.endpoint != "static":
         current_results()
 
 
 @app.errorhandler(DatabaseBusy)
-def shared_data_busy(error):
+def database_busy(error):
     return str(error), 503, {"Retry-After": "2"}
 
 
 @app.errorhandler(DatabaseConfigurationError)
 @app.errorhandler(PersistenceError)
 @app.errorhandler(EngineIntegrationError)
-def shared_data_error(error):
+def application_error(error):
     app.logger.error("Application operation failed: %s", error)
     return f"Application operation failed: {error}", 503
 
@@ -200,16 +176,16 @@ def submission_conflict(error):
     return str(error), 409
 
 
-def read_config_strategy():
+def current_strategy():
     return current_results().strategy
 
 
-def write_config_strategy(strategy_name):
+def update_strategy(strategy_name):
     get_repository().set_strategy(strategy_name)
 
 
-def read_csv_table(filename):
-    return current_results().read_csv_table(filename)
+def get_table(name):
+    return current_results().get_table(name)
 
 
 def get_page_message():
@@ -256,7 +232,7 @@ def build_committee_participant_options(users):
 def get_request_row(request_id):
     request_id = str(request_id)
 
-    for row in read_csv_table("requests.csv")["rows"]:
+    for row in get_table("requests")["rows"]:
         if (row.get("requestId") or "").strip() == request_id:
             return row
 
@@ -265,7 +241,7 @@ def get_request_row(request_id):
 
 def get_request_participant_rows(request_id):
     request_id = str(request_id)
-    table = read_csv_table("request_participants.csv")
+    table = get_table("request_participants")
 
     return [
         row
@@ -588,7 +564,7 @@ def request_record(row, participants):
     """Translate validated form values into a domain record, without choosing an ID."""
     item = {"type": row["requestType"], "requesterId": integer(row["userId"], "requester", 1),
             "spaceId": integer(row["spaceId"], "space", 1), "participantCount": integer(row["participantCount"], "participants", 1),
-            "slots": csv_slots(row["timeData"])}
+            "slots": parse_time_slots(row["timeData"])}
     for key in ("title", "purpose", "requiredFeature", "requiredBuilding"):
         item[key] = "" if row[key] == "None" else row[key]
     if item["type"] == "Exam":
@@ -601,13 +577,13 @@ def request_record(row, participants):
 
 
 def build_allocation_summary():
-    return current_results().get_allocation_summary(strategy=read_config_strategy())
+    return current_results().get_allocation_summary(strategy=current_strategy())
 
 
 def get_request_summary(request_id):
     return current_results().get_request_summary(
         request_id,
-        strategy=read_config_strategy(),
+        strategy=current_strategy(),
     )
 
 
@@ -674,14 +650,14 @@ def build_schedule_context():
     )
 
 
-def count_optional_file(filename):
-    return current_results().count_optional_file(filename)
+def count_records(name):
+    return current_results().count_records(name)
 
 
 def build_dashboard_context(run_result=None, strategy_message=None):
-    requests_table = read_csv_table("requests.csv")
-    results_table = read_csv_table("request_results.csv")
-    allocations_table = read_csv_table("allocations.csv")
+    requests_table = get_table("requests")
+    results_table = get_table("request_results")
+    allocations_table = get_table("allocations")
     results_by_request = index_by_field(results_table["rows"], "requestId")
 
     status_counts = {"Approved": 0, "Rejected": 0, "Pending": 0}
@@ -709,13 +685,13 @@ def build_dashboard_context(run_result=None, strategy_message=None):
         {"label": "Approved", "value": status_counts.get("Approved", 0), "tone": "approved"},
         {"label": "Rejected", "value": status_counts.get("Rejected", 0), "tone": "rejected"},
         {"label": "Pending", "value": status_counts.get("Pending", 0), "tone": "pending"},
-        {"label": "Allocations", "value": count_optional_file("allocations.csv")},
+        {"label": "Allocations", "value": count_records("allocations")},
         {"label": "Committee Meetings", "value": committee_count},
         {"label": "Exam Requests", "value": exam_count},
     ]
     request_context = build_request_list_context()
     recent_requests = request_context["items"][:5]
-    strategy = read_config_strategy()
+    strategy = current_strategy()
 
     return {
         "strategy": strategy,
@@ -752,8 +728,8 @@ def execute_json_backend():
             "stdout": f"JSON run {result['runId']} completed ({result['engineVersion']}).", "stderr": ""}
 
 
-def render_csv_page(template_name, title, filename, empty_message):
-    table = current_results().format_table_for_display(filename, read_csv_table(filename))
+def render_table_page(template_name, title, name, empty_message):
+    table = current_results().format_table_for_display(name, get_table(name))
     return render_template(
         template_name,
         title=title,
@@ -809,7 +785,7 @@ def set_strategy():
             )
         )
 
-    write_config_strategy(selected_strategy)
+    update_strategy(selected_strategy)
     return redirect(
         url_for(
             "index",
@@ -821,8 +797,8 @@ def set_strategy():
 
 @app.route("/add-request", methods=["GET", "POST"])
 def add_request():
-    users_table = read_csv_table("users.csv")
-    spaces_table = read_csv_table("spaces.csv")
+    users_table = get_table("users")
+    spaces_table = get_table("spaces")
     users = users_table["rows"]
     spaces = spaces_table["rows"]
     form_data = request.form.to_dict() if request.method == "POST" else {
@@ -868,8 +844,8 @@ def request_added(request_id):
     row = get_request_row(request_id)
     display_row = dict(row) if row else None
     participant_rows = get_request_participant_rows(request_id)
-    users_by_id = index_by_field(read_csv_table("users.csv")["rows"], "userId")
-    spaces_by_id = index_by_field(read_csv_table("spaces.csv")["rows"], "spaceId")
+    users_by_id = index_by_field(get_table("users")["rows"], "userId")
+    spaces_by_id = index_by_field(get_table("spaces")["rows"], "spaceId")
     requester = {}
     requested_space = {}
 
@@ -972,7 +948,7 @@ def schedules():
 
 @app.route("/users")
 def users():
-    table = read_csv_table("users.csv")
+    table = get_table("users")
     selected_role = request.args.get("role", "All").strip() or "All"
 
     if selected_role not in USER_ROLE_OPTIONS:
@@ -999,7 +975,7 @@ def users():
 
 @app.route("/spaces")
 def spaces():
-    return render_csv_page("spaces.html", "Spaces", "spaces.csv", "No spaces were found.")
+    return render_table_page("spaces.html", "Spaces", "spaces", "No spaces were found.")
 
 
 @app.route("/requests")

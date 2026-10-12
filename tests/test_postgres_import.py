@@ -8,7 +8,7 @@ from sqlalchemy import func, select
 
 from postgres_fixtures import PostgresTestCase, ROOT
 from web.persistence.importer import CsvInputs, ImportValidationError, import_csv
-from web.persistence.models import ApplicationState, RequestParticipant, ResourceRequest, User
+from web.persistence.models import ApplicationState, User
 from web.persistence.repository import Repository
 
 

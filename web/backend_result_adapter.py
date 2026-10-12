@@ -1,12 +1,8 @@
-from pathlib import Path
-import csv
-import re
-
 try:
-    from .result_table_schema import INPUT_FILES, OUTPUT_HEADERS
+    from .result_table_schema import RAW_TABLE_ALIASES
     from .engine_result_projection import suggestion_display
 except ImportError:
-    from result_table_schema import INPUT_FILES, OUTPUT_HEADERS
+    from result_table_schema import RAW_TABLE_ALIASES
     from engine_result_projection import suggestion_display
 
 
@@ -43,75 +39,23 @@ DAY_NAMES = {
 
 
 class BackendResultAdapter:
-    """Adapts structured engine results, with legacy CSV display compatibility."""
+    """Present immutable in-memory tables and structured engine results; no file IO."""
 
-    def __init__(self, data_dir, raw_data_files):
-        self.data_dir = Path(data_dir)
+    def __init__(self, tables, raw_data_files=(), *, strategy="greedy", engine_result=None):
+        self._tables = tables
         self.raw_data_files = list(raw_data_files)
-        self._tables = None
-        self._texts = None
-        self.engine_result = None
-
-    def pin(self, state=None):
-        """Pin offline CSV display fixtures; normal web readers use PostgreSQL."""
-        pinned = BackendResultAdapter(self.data_dir, self.raw_data_files)
-        pinned._tables = {
-            name: self.read_csv_table(name)
-            for name in (*INPUT_FILES, *OUTPUT_HEADERS) if name.endswith(".csv")
-        }
-        pinned._texts = {"config.txt": self.read_text_file("config.txt")}
-        return pinned
+        self.strategy = strategy
+        self.engine_result = engine_result
 
     def list_raw_data_files(self):
         return list(self.raw_data_files)
 
-    def read_csv_table(self, filename):
-        if self._tables is not None:
-            return self._tables[filename]
-        csv_path = self.data_dir / filename
+    def get_table(self, name):
+        return self._tables[name]
 
-        if not csv_path.exists():
-            return {
-                "exists": False,
-                "headers": [],
-                "rows": [],
-                "message": f"{filename} is not available yet.",
-            }
-
-        with csv_path.open("r", encoding="utf-8-sig", newline="") as file:
-            reader = csv.DictReader(file)
-            headers = reader.fieldnames or []
-            rows = list(reader)
-
-        return {
-            "exists": True,
-            "headers": headers,
-            "rows": rows,
-            "message": "",
-        }
-
-    def read_text_file(self, filename):
-        if self._texts is not None:
-            return self._texts[filename]
-        file_path = self.data_dir / filename
-        if not file_path.exists():
-            return {
-                "exists": False,
-                "content": "",
-                "message": f"{filename} is not available yet.",
-            }
-
-        return {
-            "exists": True,
-            "content": file_path.read_text(encoding="utf-8-sig"),
-            "message": "",
-        }
-
-    def count_optional_file(self, filename):
-        table = self.read_csv_table(filename)
-        if not table["exists"]:
-            return "Not available"
-        return len(table["rows"])
+    def count_records(self, name):
+        table = self.get_table(name)
+        return len(table["rows"]) if table["exists"] else "Not available"
 
     def get_raw_data(self, selected_file):
         selected_file = (selected_file or "requests.csv").strip()
@@ -125,18 +69,17 @@ class BackendResultAdapter:
         )
 
         if selected_file == "config.txt":
-            text_file = self.read_text_file(selected_file)
             table = {
-                "exists": text_file["exists"],
+                "exists": True,
                 "headers": [],
                 "rows": [],
-                "message": text_file["message"],
+                "message": "",
             }
-            raw_text = text_file["content"]
+            raw_text = "allocation_strategy=" + self.strategy
         else:
             table = self.format_table_for_display(
-                selected_file,
-                self.read_csv_table(selected_file),
+                RAW_TABLE_ALIASES[selected_file],
+                self.get_table(RAW_TABLE_ALIASES[selected_file]),
             )
             raw_text = ""
 
@@ -148,7 +91,7 @@ class BackendResultAdapter:
             "raw_text": raw_text,
         }
 
-    def format_table_for_display(self, filename, table):
+    def format_table_for_display(self, name, table):
         display_table = {
             "exists": table["exists"],
             "headers": list(table["headers"]),
@@ -159,16 +102,16 @@ class BackendResultAdapter:
         for row in table["rows"]:
             display_row = dict(row)
 
-            if filename == "requests.csv" and "timeData" in display_row:
+            if name == "requests" and "timeData" in display_row:
                 display_row["timeData"] = format_time_data(display_row.get("timeData"))
 
-            if filename == "request_results.csv":
+            if name == "request_results":
                 if "timeData" in display_row:
                     display_row["timeData"] = format_time_data(display_row.get("timeData"))
                 if "timeInfo" in display_row:
                     display_row["timeInfo"] = format_time_data(display_row.get("timeInfo"))
 
-            if filename == "allocations.csv":
+            if name == "allocations":
                 if "day" in display_row:
                     display_row["day"] = format_day_name(display_row.get("day"))
                 if "startHour" in display_row:
@@ -181,12 +124,12 @@ class BackendResultAdapter:
         return display_table
 
     def get_allocation_summary(self, strategy=""):
-        requests_table = self.read_csv_table("requests.csv")
-        results_table = self.read_csv_table("request_results.csv")
-        allocations_table = self.read_csv_table("allocations.csv")
-        spaces_table = self.read_csv_table("spaces.csv")
-        users_table = self.read_csv_table("users.csv")
-        participants_table = self.read_csv_table("request_participants.csv")
+        requests_table = self.get_table("requests")
+        results_table = self.get_table("request_results")
+        allocations_table = self.get_table("allocations")
+        spaces_table = self.get_table("spaces")
+        users_table = self.get_table("users")
+        participants_table = self.get_table("request_participants")
 
         results_by_request = index_by_field(results_table["rows"], "requestId")
         allocations_by_request = group_by_field(allocations_table["rows"], "requestId")
@@ -295,7 +238,7 @@ class BackendResultAdapter:
                     "meeting_suggestions": (
                         next((suggestion_display(group) for group in self.engine_result["suggestions"]
                               if str(group["requestId"]) == request_id), None)
-                        if self.engine_result is not None else extract_meeting_suggestions(result_row.get("lifecycleHistory"))
+                        if self.engine_result is not None else None
                     ),
                     "assigned_rooms": assigned_rooms,
                     "total_assigned": total_assigned,
@@ -330,12 +273,12 @@ class BackendResultAdapter:
         if schedule_type not in {"user", "space"}:
             schedule_type = "user"
 
-        users_table = self.read_csv_table("users.csv")
-        spaces_table = self.read_csv_table("spaces.csv")
-        requests_table = self.read_csv_table("requests.csv")
-        results_table = self.read_csv_table("request_results.csv")
-        allocations_table = self.read_csv_table("allocations.csv")
-        participants_table = self.read_csv_table("request_participants.csv")
+        users_table = self.get_table("users")
+        spaces_table = self.get_table("spaces")
+        requests_table = self.get_table("requests")
+        results_table = self.get_table("request_results")
+        allocations_table = self.get_table("allocations")
+        participants_table = self.get_table("request_participants")
         user_options = build_schedule_resource_options(
             users_table["rows"],
             "userId",
@@ -366,7 +309,7 @@ class BackendResultAdapter:
                 (option["row"] for option in user_options if option["id"] == selected_id),
                 None,
             )
-            busy_table = self.read_csv_table("user_busy_slots.csv")
+            busy_table = self.get_table("user_busy_slots")
             event_file_available = busy_table["exists"] or allocations_table["exists"]
 
             if not event_file_available:
@@ -571,62 +514,6 @@ def build_committee_participant_display(participant_rows, users_by_id):
         )
 
     return participants
-
-
-def extract_meeting_suggestion_text(lifecycle_history):
-    history = (lifecycle_history or "").strip()
-    if not history:
-        return ""
-
-    for event in history.split(" | "):
-        event = event.strip()
-        if event.startswith("Suggested least-change alternative times:"):
-            return event
-        if event.startswith("Suggested alternative times:"):
-            return event
-        if event == "No available alternative time found.":
-            return event
-
-    return ""
-
-
-def extract_meeting_suggestions(lifecycle_history):
-    suggestion_text = extract_meeting_suggestion_text(lifecycle_history)
-    if not suggestion_text:
-        return None
-
-    if suggestion_text == "No available alternative time found.":
-        return {
-            "heading": "Suggested alternative times",
-            "items": [],
-            "empty_message": suggestion_text,
-            "raw": suggestion_text,
-        }
-
-    heading, separator, body = suggestion_text.partition(":")
-    if not separator:
-        return {
-            "heading": "Suggested alternative times",
-            "items": [],
-            "empty_message": "",
-            "raw": suggestion_text,
-        }
-
-    items = []
-    for part in body.split(";"):
-        cleaned = part.strip()
-        if not cleaned:
-            continue
-
-        cleaned = re.sub(r"^\d+\)\s*", "", cleaned)
-        items.append(cleaned)
-
-    return {
-        "heading": heading.strip(),
-        "items": items,
-        "empty_message": "" if items else body.strip(),
-        "raw": suggestion_text,
-    }
 
 
 def get_room_capacity(space):

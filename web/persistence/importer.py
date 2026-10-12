@@ -1,83 +1,81 @@
 """Explicit, non-destructive CSV import. Never used as operational persistence."""
 
 import csv
+import uuid
 from pathlib import Path
 
 from sqlalchemy import func, select
 
 try:
-    from ..engine_gateway import EngineIntegrationError, execution_snapshot
+    from ..engine_gateway import EngineIntegrationError, PROTOCOL_VERSION
+    from ..input_validation import integer, minutes, parse_time_slots
 except ImportError:
-    from engine_gateway import EngineIntegrationError, execution_snapshot
-from .models import Base, BusySlot, OrganizationUnit, REQUEST_TYPES, RequestHistory, Resource, ResourceRequest, Role, ROLES, SPACE_TYPES, STRATEGIES, User, UserRole
+    from engine_gateway import EngineIntegrationError, PROTOCOL_VERSION
+    from input_validation import integer, minutes, parse_time_slots
+from .models import Base, BusySlot, OrganizationUnit, RequestHistory, Resource, ResourceRequest, Role, ROLES, STRATEGIES, User, UserRole
+from .validation import DataValidationError as ImportValidationError, require, validate_snapshot
 from .repository import PROFILE_FIELDS, PersistenceError, advance_identity, insert_request, state_row, validate_unit_hierarchy
 
 
-class ImportValidationError(PersistenceError):
-    pass
+def csv_bool(value, default=False):
+    value = (value or "").strip().lower()
+    if not value:
+        return default
+    if value in ("1", "true"):
+        return True
+    if value in ("0", "false"):
+        return False
+    raise EngineIntegrationError("Invalid persisted boolean")
 
 
-def require(condition, message):
-    if not condition:
-        raise ImportValidationError(message)
-
-
-def validate_slot(slot):
-    require(isinstance(slot, dict), "Time slot must be an object.")
-    require(all(type(slot.get(key)) is int for key in ("day", "startMinutes", "endMinutes")), "Time values must be integers.")
-    require(1 <= slot["day"] <= 7 and 0 <= slot["startMinutes"] < slot["endMinutes"] <= 1440, "Invalid weekly time range.")
-
-
-def validate_request(item, users, resources):
-    require(isinstance(item, dict), "Request must be an object.")
-    label = f"Request {item.get('id', '(new)')}"
-    require(item.get("type") in REQUEST_TYPES, label + ": unknown request type.")
-    require(type(item.get("requesterId")) is int and item["requesterId"] in users, label + ": missing user reference.")
-    require(type(item.get("spaceId")) is int and item["spaceId"] in resources, label + ": missing space reference.")
-    require(type(item.get("participantCount")) is int and 0 < item["participantCount"] <= 2147483647, label + ": invalid participant count.")
-    require(isinstance(item.get("slots"), list) and 0 < len(item["slots"]) <= 10000, label + ": missing occurrence slots.")
-    require(item["type"] == "Recurring" or len(item["slots"]) == 1, label + ": request requires exactly one slot.")
-    for key in ("title", "purpose", "requiredFeature", "requiredBuilding"):
-        require(isinstance(item.get(key, ""), str), label + f": {key} must be text.")
-    for slot in item["slots"]:
-        validate_slot(slot)
-    if item["type"] == "CommitteeMeeting":
-        participants = item.get("participants", [])
-        require(isinstance(participants, list), label + ": malformed participants.")
-        require(all(isinstance(participant, dict) and isinstance(participant.get("role", ""), str) for participant in participants),
-                label + ": malformed participant metadata.")
-        ids = [participant.get("userId") for participant in participants]
-        require(all(type(uid) is int and uid in users for uid in ids), label + ": missing participant reference.")
-        require(len(ids) == len(set(ids)), label + ": duplicate participant IDs.")
-    if item["type"] == "Exam":
-        require(isinstance(item.get("exam"), dict) and type(item["exam"].get("canSplitAcrossRooms")) is bool,
-                label + ": invalid exam metadata.")
-        require(all(isinstance(item["exam"].get(key, ""), str) for key in ("courseCode", "courseName", "examType")),
-                label + ": examination metadata must be text.")
-    else:
-        require("exam" not in item, label + ": exam metadata belongs only to Exam requests.")
-    if item["type"] != "CommitteeMeeting":
-        require(not item.get("participants"), label + ": participants belong only to CommitteeMeeting requests.")
-
-
-def validate_snapshot(snapshot):
-    for key in ("users", "spaces", "requests"):
-        require(len(snapshot[key]) <= 10000, key + ": exceeds protocol v1 item limit.")
-        ids = [item["id"] for item in snapshot[key]]
-        require(all(type(uid) is int and 0 < uid <= 2147483647 for uid in ids), key + ": invalid IDs.")
-        require(len(ids) == len(set(ids)), key + ": duplicate IDs; import refused rather than skipping data.")
-    users = {item["id"] for item in snapshot["users"]}
-    resources = {item["id"] for item in snapshot["spaces"]}
-    for item in snapshot["users"]:
-        require(item["role"] in ROLES, f"User {item['id']}: unknown primary role.")
-        require(len(item["assignedRoles"]) == len(set(item["assignedRoles"])), f"User {item['id']}: duplicate assigned role labels.")
-    for item in snapshot["spaces"]:
-        require(item["type"] in SPACE_TYPES, f"Space {item['id']}: unknown space type.")
-    for item in snapshot["requests"]:
-        validate_request(item, users, resources)
-    for item in snapshot["busySlots"]:
-        require(item["userId"] in users, "Busy slot: missing user reference.")
-        validate_slot(item["slot"])
+def _execution_snapshot(tables, strategy):
+    """Translate explicit offline CSV inputs into DTOs; normal runs snapshot PostgreSQL."""
+    def rows(name):
+        return tables[name]["rows"]
+    def optional(row, key):
+        value = row.get(key) or ""
+        return "" if value == "None" else value
+    users = []
+    for row in rows("users.csv"):
+        item = {"id": integer(row.get("userId"), "userId"), "name": row.get("name", ""), "role": row.get("role", "")}
+        for key in ("email", "primaryUnit", "studentNo", "program", "title", "officeRoom", "assistantType", "jobTitle", "adminLevel"):
+            item[key] = optional(row, key)
+        item["status"] = row.get("status") or "active"
+        item["yearLevel"] = integer(row.get("yearLevel") or "0", "yearLevel")
+        item["assignedRoles"] = [part.strip() for part in optional(row, "assignedRoles").split("|") if part.strip()]
+        users.append(item)
+    spaces = [{"id": integer(row.get("spaceId"), "spaceId"), "name": row.get("name", ""),
+               "type": row.get("type", ""), "capacity": integer(row.get("capacity"), "capacity", 1),
+               "building": optional(row, "building"), "available": csv_bool(row.get("isAvailable"), True),
+               "features": {key: csv_bool(row.get(column)) for key, column in
+                            (("projector", "hasProjector"), ("whiteboard", "hasWhiteboard"), ("computers", "hasComputers"))}}
+              for row in rows("spaces.csv")]
+    participants = {}
+    for row in rows("request_participants.csv"):
+        participants.setdefault(integer(row.get("requestId"), "participant requestId"), []).append(
+            {"userId": integer(row.get("userId"), "participant userId"), "role": optional(row, "participantRole")})
+    requests = []
+    for row in rows("requests.csv"):
+        item = {"id": integer(row.get("requestId"), "requestId"), "type": row.get("requestType", ""),
+                "requesterId": integer(row.get("userId"), "requesterId"), "spaceId": integer(row.get("spaceId"), "spaceId"),
+                "participantCount": integer(row.get("participantCount"), "participantCount", 1),
+                "slots": parse_time_slots(row.get("timeData") or "")}
+        for key in ("title", "purpose", "requiredFeature", "requiredBuilding"):
+            item[key] = optional(row, key)
+        if item["type"] == "Exam":
+            item["exam"] = {key: optional(row, key) for key in ("courseCode", "courseName", "examType")}
+            item["exam"]["canSplitAcrossRooms"] = csv_bool(row.get("canSplitAcrossRooms"))
+        if item["type"] == "CommitteeMeeting":
+            item["participants"] = participants.get(item["id"], [])
+        requests.append(item)
+    known_requests = {item["id"]: item["type"] for item in requests}
+    if any(known_requests.get(rid) != "CommitteeMeeting" for rid in participants):
+        raise EngineIntegrationError("Participant rows must reference a CommitteeMeeting request")
+    busy = [{"userId": integer(row.get("userId"), "busy userId"), "reason": optional(row, "reason"),
+             "slot": {"day": integer(row.get("day"), "busy day"), "startMinutes": minutes(row.get("startTime")),
+                      "endMinutes": minutes(row.get("endTime"))}} for row in rows("user_busy_slots.csv")]
+    return {"protocolVersion": PROTOCOL_VERSION, "runId": uuid.uuid4().hex, "strategy": strategy,
+            "users": users, "spaces": spaces, "busySlots": busy, "requests": requests}
 
 
 class CsvInputs:
@@ -121,9 +119,6 @@ class CsvInputs:
             except (csv.Error, UnicodeError) as error:
                 raise ImportValidationError(f"{filename}: malformed UTF-8 CSV: {error}") from error
 
-    def read_csv_table(self, filename):
-        return self.tables[filename]
-
     def snapshot(self):
         strategy = "greedy"
         config = self.directory / "config.txt"
@@ -135,7 +130,7 @@ class CsvInputs:
             self.warnings.append("Unknown strategy config; using the existing greedy fallback.")
             strategy = "greedy"
         try:
-            snapshot = execution_snapshot(self, strategy)
+            snapshot = _execution_snapshot(self.tables, strategy)
         except EngineIntegrationError as error:
             raise ImportValidationError("CSV validation failed: " + str(error)) from error
         validate_snapshot(snapshot)
