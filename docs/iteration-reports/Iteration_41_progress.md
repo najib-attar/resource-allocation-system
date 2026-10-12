@@ -23,7 +23,7 @@ implement authentication, dated calendars or UC-STU-01 in this iteration.
 | Request persistence and configuration | Complete | Thread/process saves preserve distinct IDs and participant associations; lock timeout and worker termination tested. |
 | Engine snapshots and transactional results | Complete | Twelve real-PostgreSQL workflow tests passed, including all five strategies, exact JSON round-trip, rollback, stale runs and coherent readers. |
 | Web cutover | Complete | Database-backed dashboard, Save Only, Submit and Run, details, schedules, raw projections and strategy changes verified; file readers disabled in a regression test. |
-| Final regression and report | Pending | Full C++/Python/PostgreSQL tests, integrity and security review required. |
+| Final regression and report | Complete | 140 C++ passed; 112 Python passed, zero failed, one POSIX-only skip. Fresh database CLI migration/import and twelve Flask route checks passed; final documentation reviewed. |
 
 ## Decisions
 
@@ -34,14 +34,14 @@ implement authentication, dated calendars or UC-STU-01 in this iteration.
   work. Do not invent organizational parents from CSV names.
 - Retain legacy CSV CLI and explicit import/export; no operational CSV fallback.
 
-## Remaining work
+## Verification record
 
 Design commit: `2136153`; foundation commit: `245dfbc`; importer commit: `64f81da`; workflow commit: `68ec3e8`. Baseline: 140 C++ passed, two isolated CLI smoke scenarios
 passed; Python 74 total, 73 passed, one POSIX-only skip on Windows. Foundation:
 `python -m unittest discover -s tests -p test_postgres_foundation.py -v`, real
 PostgreSQL 17.11: seven passed. Import:
 `python -m unittest discover -s tests -p test_postgres_import.py -v`: ten passed.
-Remaining implementation milestones are above.
+These were milestone checks; the final complete-suite results are recorded below.
 
 Workflow: `python -m unittest discover -s tests -p test_postgres_workflow.py -v`:
 twelve passed on Windows against PostgreSQL 17.11. No existing application data
@@ -66,3 +66,26 @@ A newly created disposable database was migrated to head, imported through the
 actual CLI, checked with `alembic check` (no schema drift), and exercised with the
 real engine plus twelve Flask GET smoke routes. No production/existing database
 was overwritten. All four protected generated CSV SHA-256 values are unchanged.
+
+## Local implementation commits
+
+| Commit | Milestone |
+|---|---|
+| `2136153` | Database design, ER diagram and migration plan. |
+| `245dfbc` | PostgreSQL models, migrations and integration test foundation. |
+| `64f81da` | Safe CSV import with preserved IDs/order and dry-run. |
+| `68ec3e8` | Transactional allocation runs and publication. |
+| `76350be` | Existing web workflows cut over to PostgreSQL. |
+| `cb95f5c` | Connection validation and recurring form persistence regression. |
+
+Final living documentation and this verification record are committed separately.
+No implementation commit has been pushed or merged; publication requires approval.
+
+## Remaining limitations
+
+The updated Linux CI job is configured but not remotely executed on this
+unpublished branch. Local verification used Windows and real PostgreSQL 17.11.
+Authentication, dated appointment scheduling and UC-STU-01 remain outside scope.
+HTTP retry idempotency and automatic abandoned-run/retention cleanup are not added.
+Original generated results stay offline and must be regenerated for PostgreSQL.
+See [operations](../database-operations.md) for setup, failure semantics and backups.

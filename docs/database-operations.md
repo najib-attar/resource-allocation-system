@@ -1,0 +1,117 @@
+# PostgreSQL setup and safe operations
+
+Iteration 41 makes PostgreSQL the normal web application's source of truth.
+The C++ engine still receives JSON protocol v1 and has no SQL dependency.
+See [database design](architecture/database-design.md) for the ER diagram and
+[engine protocol](engine-protocol.md) for the unchanged execution contract.
+
+## Setup
+
+Use Python 3.12 or 3.13, PostgreSQL 17, and g++ with C++17 support. From the
+repository root, create/activate your Python virtual environment, then:
+
+```powershell
+python -m pip install -r requirements.txt
+python scripts/build_backend.py
+$env:DATABASE_URL = 'postgresql+psycopg://USER:PASSWORD@localhost:5432/resource_allocation'
+python -m alembic upgrade head
+python scripts/import_csv.py --data-dir data --dry-run
+python scripts/import_csv.py --data-dir data
+python web/app.py
+```
+
+Create a **new empty** `resource_allocation` database and an appropriate local
+role beforehand, using your PostgreSQL administration tools. Substitute your own
+credentials; URL-encode special password characters. The application does not
+create databases, auto-run migrations, or silently fall back to files. For Linux,
+use `export DATABASE_URL='...'`; the Python commands are unchanged.
+
+`.env.example` documents settings but is not loaded automatically. Configure
+environment variables in your shell/service. Keep actual `.env` files and secrets
+out of Git. Use a non-superuser application account and restrict network access;
+use authenticated TLS connections for a remote database. CI's trust-authenticated
+database is disposable test infrastructure, not a production configuration.
+
+Open `http://127.0.0.1:5000`. Use Run Allocation after import to publish the first
+database result. Before that, requests are pending; existing generated result files
+are **not** an operational fallback. The standalone C++ CSV CLI still works in an
+isolated working directory and does not update the database.
+
+## Import safeguards
+
+- Back up original CSVs before cutover and keep that independent backup. The
+  importer only reads files and never deletes or rewrites them.
+- Dry-run validates files, IDs, types, numeric/time fields and references without
+  writing to PostgreSQL. Missing optional auxiliary files produce explicit warnings.
+- Actual import refuses any populated application target. There is no overwrite,
+  truncate or destructive-reset switch. Do not use an existing database as a test target.
+- All inserts commit together or roll back together. IDs, profile metadata,
+  resource/request order, recurring slots, participants and busy slots are preserved.
+- Unknown columns, duplicate identities and invalid references are reported rather
+  than silently discarded. Correct the source or decide its meaning before retrying.
+- Generated CSVs/local result JSON are not trustworthy migration inputs: they may
+  be stale. Preserve them as offline artifacts and regenerate verified results.
+
+Schema upgrades use reviewed Alembic revisions. Before future production upgrades,
+take a PostgreSQL backup (`pg_dump`) and verify a restore into a separate database.
+This iteration performs no destructive migration of an existing application DB.
+
+## Workflow and failures
+
+Save Only commits the request, participants and history, without invoking C++.
+Submit and Run commits the request first and then starts allocation. Engine errors,
+timeouts or publication failures leave that request saved/pending and keep the
+previous successful run visible. A lost HTTP response does not undo a committed save;
+automatic idempotent retry is not implemented.
+
+Each run captures its strategy and ordered inputs in PostgreSQL. The engine runs
+outside a transaction. Short `application_state` row locks coordinate input changes
+and result publication. Publication verifies the captured input revision, rejects
+stale runs and prevents older runs from replacing newer completed runs. All result
+records and the active-run pointer commit atomically. Every response pins one
+repeatable-read database view; suggestions are structured, not recovered from text.
+
+`RESOURCE_ALLOCATION_DB_LOCK_TIMEOUT` defaults to 5 seconds. Lock contention returns
+HTTP 503 with `Retry-After: 2` and no partial input writes. Engine timeout defaults
+to 30 seconds (`RESOURCE_ALLOCATION_ENGINE_TIMEOUT`). Missing configuration/database
+errors produce explicit failures, not CSV fallback; SQL parameters and connection
+credentials are not echoed in web errors/logs. A worker crash releases DB locks.
+A run interrupted outside a transaction may remain marked `running`; it never
+becomes authoritative without successful publication. Administrative retention/
+abandoned-run cleanup is not automated yet.
+
+Keep all operational writes through the repository's transaction/revision protocol.
+Uncoordinated manual SQL can bypass revision checks. The application rebuilds a
+complete weekly allocation batch; it is not yet a dated appointment reservation
+system. Shared-room exams retain their existing capacity-sharing policy, so a
+blanket SQL room-overlap prohibition would be incorrect.
+
+## Tests and CI
+
+Create a separate disposable test database and set:
+
+```powershell
+$env:TEST_DATABASE_URL = 'postgresql+psycopg://USER:PASSWORD@localhost:5432/resource_allocation_test'
+python -m unittest discover -s tests -p 'test_*.py' -v
+powershell -ExecutionPolicy Bypass -File tests/run_tests.ps1
+```
+
+Database tests create unique owned `ras_test_<uuid>` schemas, migrate them, and
+clean up only those schemas. They never reset the configured database's public
+schema or use SQLite as a PostgreSQL substitute. The test role needs schema
+creation rights **only in that disposable database**. Without `TEST_DATABASE_URL`,
+database tests explicitly skip; that is not full migration verification.
+
+The Linux GitHub Actions job provisions PostgreSQL 17.11, installs pinned direct
+dependencies, builds the authoritative engine, and runs the C++ and Python suites.
+Windows verification uses real PostgreSQL too. Linux-specific permission checks
+cannot be claimed verified by a Windows local run. The implementation branch is
+not published until authorized, so its revised CI job has not run remotely yet.
+
+## Scope boundaries
+
+No authentication, appointment approvals/invitations, date/timezone migration or
+public deployment is included. Do not expose the Flask debug server publicly.
+Weekly schedules remain weekday/minute intervals. PostgreSQL stores all currently
+implemented roles/resources/requests/allocations/availability/history/configuration;
+future appointment workflows require a separately reviewed feature iteration.
