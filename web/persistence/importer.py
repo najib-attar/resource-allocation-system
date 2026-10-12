@@ -5,7 +5,10 @@ from pathlib import Path
 
 from sqlalchemy import func, select
 
-from ..engine_gateway import EngineIntegrationError, execution_snapshot
+try:
+    from ..engine_gateway import EngineIntegrationError, execution_snapshot
+except ImportError:
+    from engine_gateway import EngineIntegrationError, execution_snapshot
 from .models import Base, BusySlot, OrganizationUnit, REQUEST_TYPES, RequestHistory, Resource, ResourceRequest, Role, ROLES, SPACE_TYPES, STRATEGIES, User, UserRole
 from .repository import PROFILE_FIELDS, PersistenceError, advance_identity, insert_request, state_row
 
@@ -81,6 +84,9 @@ class CsvInputs:
         self.directory = Path(directory)
         self.tables = {}
         self.warnings = []
+        if any((self.directory / name).exists() for name in
+               ("allocations.csv", "request_results.csv", "request_summaries.csv", "allocation_summaries.csv", ".runtime/engine-result.json")):
+            self.warnings.append("Generated results are retained untouched, not imported; run the verified engine after migration to publish database results.")
         for filename, required in self.REQUIRED.items():
             path = self.directory / filename
             if not path.exists() and filename in {"user_busy_slots.csv", "request_participants.csv"}:

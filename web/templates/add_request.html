@@ -10,7 +10,7 @@
     <p>
         Save many requests for batch processing, or use <strong>Submit and Run</strong>
         to add one request and immediately focus its backend-generated result.
-        Flask writes CSV rows only; the C++ backend still evaluates and allocates.
+        Flask saves requests transactionally; the C++ backend still evaluates and allocates.
     </p>
 
     {% if errors %}
@@ -136,7 +136,7 @@
             </div>
             <p class="form-note">
                 Committee meeting requests are checked against required participant availability
-                only after <strong>Run Allocation</strong> is clicked. Flask writes CSV rows;
+                only after <strong>Run Allocation</strong> is clicked. Flask saves database records;
                 the C++ backend approves, rejects, and generates suggestions.
             </p>
         </div>
@@ -234,8 +234,8 @@
         <div class="form-section" data-request-section="CommitteeMeeting">
             <h3>Required Professors / Participants</h3>
             <p>
-                Select at least one required participant. The role field is written to
-                <code>data/request_participants.csv</code> beside the selected user.
+                Select at least one required participant. The participant role is saved
+                with the selected user and request in the database.
             </p>
 
             {% set selected_participants = form_data.get("requiredParticipantIds", []) %}

@@ -9,8 +9,8 @@
     <h2>Request {{ request_id }} was added successfully.</h2>
     <p>
         It is pending until allocation is run. The request already appears in
-        <code>data/requests.csv</code>, but approval or rejection will appear
-        only after the C++ backend updates <code>request_results.csv</code>.
+        the database, but approval or rejection will appear
+        only after the C++ backend runs and its results are published.
     </p>
 
     {% if request_row %}

@@ -7,7 +7,10 @@ from sqlalchemy import func, select, text, update
 
 from .models import ApplicationState, BusySlot, ExamDetails, OrganizationUnit, RequestHistory, RequestParticipant, RequestSlot, Resource, ResourceRequest, Role, User, UserRole
 from .models import Allocation, AllocationParticipant, AllocationRun, MeetingSuggestion, RequestDecision, SuggestionGroup
-from ..engine_gateway import validate_result
+try:
+    from ..engine_gateway import validate_result
+except ImportError:
+    from engine_gateway import validate_result
 
 
 class PersistenceError(RuntimeError):

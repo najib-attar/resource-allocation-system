@@ -8,9 +8,9 @@
     <p class="eyebrow">Availability View</p>
     <h2>Weekly schedules</h2>
     <p>
-        This page visualizes existing CSV data only. User schedules combine
-        <code>user_busy_slots.csv</code> with approved allocation rows, while
-        space schedules read <code>allocations.csv</code> after the backend has run.
+        This page visualizes database schedules. User schedules combine
+        saved busy slots with approved allocations, while
+        space schedules show the current published allocation run.
     </p>
 
     <div class="schedule-switch">
@@ -56,23 +56,23 @@
 
     {% if schedule_type == "user" and not users_available %}
         <div class="empty-state">
-            <h2>Users file is missing</h2>
-            <p>No user schedule can be displayed because <code>users.csv</code> is not available.</p>
+            <h2>Users unavailable</h2>
+            <p>No user schedule can be displayed because user data is not available.</p>
         </div>
     {% elif schedule_type == "space" and not spaces_available %}
         <div class="empty-state">
-            <h2>Spaces file is missing</h2>
-            <p>No space schedule can be displayed because <code>spaces.csv</code> is not available.</p>
+            <h2>Spaces unavailable</h2>
+            <p>No space schedule can be displayed because resource data is not available.</p>
         </div>
     {% elif schedule_type == "user" and user_options|length == 0 %}
         <div class="empty-state">
             <h2>No schedulable users found</h2>
-            <p>Add Student, Instructor, TeachingAssistant, Staff, or Administrator rows to <code>users.csv</code>.</p>
+            <p>Import Student, Instructor, TeachingAssistant, Staff, or Administrator users into the database.</p>
         </div>
     {% elif schedule_type == "space" and space_options|length == 0 %}
         <div class="empty-state">
             <h2>No spaces found</h2>
-            <p>Add space rows to <code>spaces.csv</code>.</p>
+            <p>Import resources into the database.</p>
         </div>
     {% elif not selected_resource %}
         <div class="empty-state">

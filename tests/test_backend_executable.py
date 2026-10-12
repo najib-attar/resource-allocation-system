@@ -9,6 +9,10 @@ import os
 import shutil
 import subprocess
 from engine_json_fixtures import fake_result
+from postgres_fixtures import PostgresTestCase
+from web.database_result_adapter import DatabaseResultAdapter
+from web.persistence.importer import import_csv
+from web.persistence.repository import Repository
 
 from web.backend_executable import (
     BackendExecutableError,
@@ -150,11 +154,12 @@ class BackendExecutionTests(BackendFixture, TestCase):
         self.addCleanup(patch.stop)
         data = self.root / "data"
         data.mkdir()
-        for attribute, value in (("DATA_DIR", data),
-                                 ("backend_results", web_app.BackendResultAdapter(data, web_app.RAW_DATA_FILES))):
-            patch = mock.patch.object(web_app, attribute, value)
-            patch.start()
-            self.addCleanup(patch.stop)
+        self.repository = mock.Mock()
+        self.repository.start_run.return_value = (1, {"protocolVersion": 1, "runId": "verified-artifact",
+                                                     "strategy": "greedy", "users": [], "spaces": [], "busySlots": [], "requests": []})
+        patch = mock.patch.object(web_app, "get_repository", return_value=self.repository)
+        patch.start()
+        self.addCleanup(patch.stop)
         environment = mock.patch.dict(os.environ, {}, clear=True)
         environment.start()
         self.addCleanup(environment.stop)
@@ -179,8 +184,7 @@ class BackendExecutionTests(BackendFixture, TestCase):
         path = self.make_backend()
         def execution(command, **kwargs):
             return subprocess.CompletedProcess(command, 0, json.dumps(fake_result(json.loads(kwargs["input"]))), "")
-        with mock.patch("web.engine_gateway.subprocess.run", side_effect=execution) as run, \
-                mock.patch.object(self.web_app.SharedFileState, "publish_engine_result") as publish:
+        with mock.patch("web.engine_gateway.subprocess.run", side_effect=execution) as run:
             with self.assertLogs(self.web_app.app.logger, level="INFO") as logs:
                 result = self.web_app.run_backend_allocation()
         self.assertEqual(result["status"], "success")
@@ -188,7 +192,7 @@ class BackendExecutionTests(BackendFixture, TestCase):
         self.assertEqual(run.call_args.kwargs["cwd"], self.root)
         self.assertIn("protocolVersion", json.loads(run.call_args.kwargs["input"]))
         self.assertEqual(list((self.root / "data" / ".runtime").glob("run-*")), [])
-        publish.assert_called_once()
+        self.repository.publish_run.assert_called_once()
         self.assertFalse(run.call_args.kwargs.get("shell", False))
         self.assertTrue(any("source=" in entry and "compiler=" in entry for entry in logs.output))
 
@@ -209,7 +213,7 @@ class BackendExecutionTests(BackendFixture, TestCase):
         run.assert_not_called()
 
 
-class BackendWebSmokeTests(TestCase):
+class BackendWebSmokeTests(PostgresTestCase):
     def test_real_backend_and_dashboard_use_isolated_outputs(self):
         from web import app as web_app
         root = Path(__file__).resolve().parent.parent
@@ -231,10 +235,10 @@ class BackendWebSmokeTests(TestCase):
             shutil.copy2(backend.path, executable)
             shutil.copy2(manifest_path(backend.path), manifest_path(executable))
 
-            adapter = web_app.BackendResultAdapter(data, web_app.RAW_DATA_FILES)
+            import_csv(self.database, data)
+            repository = Repository(self.database)
             with mock.patch.object(web_app, "PROJECT_ROOT", workspace), \
-                    mock.patch.object(web_app, "DATA_DIR", data), \
-                    mock.patch.object(web_app, "backend_results", adapter), \
+                    mock.patch.object(web_app, "get_repository", return_value=repository), \
                     mock.patch.dict(os.environ, {"RESOURCE_ALLOCATION_BACKEND": str(executable)}):
                 client = web_app.app.test_client()
                 response = client.post("/run-allocation")
@@ -246,6 +250,7 @@ class BackendWebSmokeTests(TestCase):
                               "/raw-data?file=allocation_summaries.csv", "/add-request?type=CommitteeMeeting"):
                     with self.subTest(route=route):
                         self.assertEqual(client.get(route).status_code, 200)
+                adapter = DatabaseResultAdapter(repository, web_app.RAW_DATA_FILES)
                 for name in ("allocations.csv", "request_results.csv", "request_summaries.csv",
                              "allocation_summaries.csv"):
                     self.assertTrue(adapter.pin().read_csv_table(name)["exists"])

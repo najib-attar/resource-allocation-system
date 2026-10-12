@@ -10,6 +10,10 @@ from unittest import TestCase, main, mock
 from web import app as web_app
 from web.backend_executable import resolve_backend_executable
 from web.shared_file_state import SharedFileState
+from web.database_result_adapter import DatabaseResultAdapter
+from web.persistence.importer import import_csv
+from web.persistence.repository import Repository
+from postgres_fixtures import PostgresTestCase
 
 
 class CsvContractTests(TestCase):
@@ -113,13 +117,27 @@ class CsvContractTests(TestCase):
         self.assertEqual(rows[1]["status"], "Approved")
         self.assertEqual([row["requestId"] for row in self.read_rows("allocations.csv")], ["2"])
 
+
+class CsvWebContractTests(PostgresTestCase):
     def test_flask_submit_and_run_preserves_comma_quote_and_unicode_title(self):
+        self.backend = resolve_backend_executable(Path(__file__).resolve().parent.parent)
+        temporary = TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.data = Path(temporary.name)
+        for name, headers, rows in (
+            ("users.csv", ["userId", "name", "role"], [[2, "Professor", "Instructor"]]),
+            ("spaces.csv", ["spaceId", "type", "name", "capacity", "building"], [[301, "MeetingRoom", "M301", 20, "Main"]]),
+            ("requests.csv", web_app.REQUEST_HEADERS, []),
+        ):
+            with (self.data / name).open("w", encoding="utf-8", newline="") as file:
+                writer = csv.writer(file)
+                writer.writerow(headers)
+                writer.writerows(rows)
+        import_csv(self.database, self.data)
+        repository = Repository(self.database)
         title = 'Advanced Algorithms, "Part II" \u00c7a\u011fr\u0131'
-        adapter = web_app.BackendResultAdapter(self.data, web_app.RAW_DATA_FILES)
-        with mock.patch.object(web_app, "DATA_DIR", self.data), \
-                mock.patch.object(web_app, "backend_results", adapter), \
-                mock.patch.dict(os.environ, {"RESOURCE_ALLOCATION_BACKEND": str(self.backend.path)}):
-            client = web_app.app.test_client()
+        client = self.configure_web()
+        with mock.patch.dict(os.environ, {"RESOURCE_ALLOCATION_BACKEND": str(self.backend.path)}):
             response = client.post("/add-request", data={
                 "requestType": "OneTime", "userId": "2", "spaceId": "301", "participantCount": "4",
                 "day": "1", "startTime": "10:00", "endTime": "11:00", "title": title,
@@ -128,8 +146,9 @@ class CsvContractTests(TestCase):
             })
             self.assertEqual(response.status_code, 302)
             self.assertEqual(client.get(response.location).status_code, 200)
-            self.assertIsNotNone(SharedFileState(self.data).read_engine_result())
-            row = adapter.pin().read_csv_table("request_results.csv")["rows"][0]
+            self.assertIsNotNone(repository.read_view()[1])
+            self.assertIsNone(SharedFileState(self.data).read_engine_result())
+            row = DatabaseResultAdapter(repository, web_app.RAW_DATA_FILES).read_csv_table("request_results.csv")["rows"][0]
             self.assertEqual(row["status"], "Approved")
             self.assertEqual(row["title"], title)
 

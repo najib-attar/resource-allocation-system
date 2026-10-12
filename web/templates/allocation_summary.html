@@ -9,7 +9,7 @@
     <h2>Current strategy: {{ strategy }}</h2>
     <p>
         This page groups requests by request ID and displays related allocation
-        rows beneath each request. It reads existing CSV outputs only.
+        rows beneath each request from one published database run.
     </p>
 
     {% if not allocations_available or not results_available %}
@@ -27,13 +27,13 @@
 
 {% if not requests_available %}
 <section class="empty-state">
-    <h2>Requests file is missing</h2>
-    <p>No requests can be summarized because <code>requests.csv</code> is not available.</p>
+    <h2>Requests unavailable</h2>
+    <p>No requests can be summarized because request data is not available.</p>
 </section>
 {% elif summaries|length == 0 %}
 <section class="empty-state">
     <h2>No requests found</h2>
-    <p>No request rows were found in <code>requests.csv</code>.</p>
+    <p>No requests were found in the database.</p>
 </section>
 {% else %}
 <section class="summary-list">

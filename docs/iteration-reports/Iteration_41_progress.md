@@ -22,7 +22,7 @@ implement authentication, dated calendars or UC-STU-01 in this iteration.
 | Validated CSV import/dry-run | Complete | Ten real-PostgreSQL tests passed: exact DTO round-trip, preserved order/IDs, dry-run, invalid input, rollback and refusal to overwrite. |
 | Request persistence and configuration | Complete | Thread/process saves preserve distinct IDs and participant associations; lock timeout and worker termination tested. |
 | Engine snapshots and transactional results | Complete | Twelve real-PostgreSQL workflow tests passed, including all five strategies, exact JSON round-trip, rollback, stale runs and coherent readers. |
-| Web cutover | Pending | Existing routes must work without operational CSV/result files. |
+| Web cutover | Complete | Database-backed dashboard, Save Only, Submit and Run, details, schedules, raw projections and strategy changes verified; file readers disabled in a regression test. |
 | Final regression and report | Pending | Full C++/Python/PostgreSQL tests, integrity and security review required. |
 
 ## Decisions
@@ -36,7 +36,7 @@ implement authentication, dated calendars or UC-STU-01 in this iteration.
 
 ## Remaining work
 
-Design commit: `2136153`; foundation commit: `245dfbc`; importer commit: `64f81da`. Baseline: 140 C++ passed, two isolated CLI smoke scenarios
+Design commit: `2136153`; foundation commit: `245dfbc`; importer commit: `64f81da`; workflow commit: `68ec3e8`. Baseline: 140 C++ passed, two isolated CLI smoke scenarios
 passed; Python 74 total, 73 passed, one POSIX-only skip on Windows. Foundation:
 `python -m unittest discover -s tests -p test_postgres_foundation.py -v`, real
 PostgreSQL 17.11: seven passed. Import:
@@ -47,3 +47,12 @@ Workflow: `python -m unittest discover -s tests -p test_postgres_workflow.py -v`
 twelve passed on Windows against PostgreSQL 17.11. No existing application data
 was imported into or overwritten in a production database; verification uses
 new, randomly named test schemas only.
+
+Web cutover verification: full Python suite with real PostgreSQL: 111 total,
+110 passed, zero failed, one POSIX-only permission skip on Windows. Ported the
+existing storage-facing regressions instead of leaving a CSV web test mode.
+Offline CSV CLI/parser/recovery tests remain. All five strategies produce exact
+equivalent results through original CSV snapshots and database snapshots, including
+structured suggestions and normalized result round-trips.
+
+Final documentation, security/integrity review and verification are in progress.

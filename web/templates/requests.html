@@ -13,7 +13,7 @@
         <a class="button-secondary" href="{{ url_for('add_request') }}">Add Request</a>
     </div>
     <p class="muted">
-        This page focuses on workflow status. Raw <code>requests.csv</code> is still available under Raw Data.
+        This page focuses on workflow status. A technical database projection is available under Raw Data.
     </p>
 
     <form class="filter-form filters-panel" method="get" action="{{ url_for('requests') }}">
@@ -48,8 +48,8 @@
 
 {% if not requests_available %}
 <section class="empty-state">
-    <h2>Requests file is missing</h2>
-    <p>No request queue can be shown because <code>requests.csv</code> is not available.</p>
+    <h2>Requests unavailable</h2>
+    <p>No request queue can be shown because request data is not available.</p>
 </section>
 {% elif items|length == 0 %}
 <section class="empty-state">

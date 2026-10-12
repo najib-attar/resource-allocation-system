@@ -33,6 +33,21 @@ class PostgresTestCase(TestCase):
         self.database = Database(self.url)
         self.addCleanup(self.database.dispose)
 
+    def configure_web(self):
+        from web import app as web_app
+        patch = mock.patch.dict(web_app.app.config, {"TESTING": True, "PROPAGATE_EXCEPTIONS": True,
+                                                     "DATABASE_URL": self.url, "DATABASE_LOCK_TIMEOUT": 5})
+        patch.start()
+        self.addCleanup(patch.stop)
+        self.addCleanup(self.dispose_web_database)
+        return web_app.app.test_client()
+
+    def dispose_web_database(self):
+        from web import app as web_app
+        cached = web_app.app.extensions.get("allocation_database")
+        if cached and cached[0][0] == self.url:
+            web_app.app.extensions.pop("allocation_database")[1].dispose()
+
     def cleanup_schema(self):
         if not re.fullmatch(r"ras_test_[0-9a-f]{32}", self.schema):
             raise RuntimeError("Refusing to clean an unowned test schema.")

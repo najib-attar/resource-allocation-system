@@ -228,7 +228,9 @@ class JsonEngineIntegrationTests(TestCase):
             with mock.patch("web.backend_result_adapter.extract_meeting_suggestions", side_effect=AssertionError("history parser used")):
                 item, _ = adapter.pin().get_request_summary("1")
                 self.assertEqual(len(item["meeting_suggestions"]["items"]), 3)
-                with mock.patch.object(web_app, "DATA_DIR", data), mock.patch.object(web_app, "backend_results", adapter):
+                repository = mock.Mock()
+                repository.read_view.return_value = (snapshot, {"snapshot": snapshot, "result": result, "build": {}}, 1)
+                with mock.patch.object(web_app, "get_repository", return_value=repository):
                     response = web_app.app.test_client().get("/request/1")
                     self.assertEqual(response.status_code, 200)
                     self.assertIn("Suggested least-change", response.get_data(as_text=True))
