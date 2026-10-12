@@ -182,7 +182,7 @@ class Allocation(Base):
                       UniqueConstraint("run_id", "engine_id"), CheckConstraint("assigned_participants > 0"), *slot_checks(),
                       Index("ix_allocation_decision", "run_id", "request_id"), CheckConstraint("engine_id >= 0", name="ck_allocation_engine_id"))
     id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
-    run_id: Mapped[int] = mapped_column(BigInteger, index=True)
+    run_id: Mapped[int] = mapped_column(BigInteger)
     request_id: Mapped[int] = mapped_column(Integer, index=True)
     engine_id: Mapped[int] = mapped_column(Integer)
     resource_id: Mapped[int] = mapped_column(ForeignKey("resource.id"), index=True)

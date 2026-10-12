@@ -194,13 +194,16 @@ class Repository:
                 session.add(RequestHistory(request_id=item["requestId"], run_id=run.id, kind="decision",
                                            message=item["status"] + (": " + item["rejectionReason"] if item["rejectionReason"] else "")))
             session.flush()
+            allocation_records = []
             for item in result["allocations"]:
                 slot = item["slot"]
                 allocation = Allocation(run_id=run.id, request_id=item["requestId"], engine_id=item["allocationId"],
                                         resource_id=item["spaceId"], day=slot["day"], start_minutes=slot["startMinutes"],
                                         end_minutes=slot["endMinutes"], assigned_participants=item["assignedParticipants"])
-                session.add(allocation)
-                session.flush()
+                allocation_records.append(allocation)
+            session.add_all(allocation_records)
+            session.flush()
+            for item, allocation in zip(result["allocations"], allocation_records):
                 for ordinal, uid in enumerate(item["requiredParticipantIds"], 1):
                     session.add(AllocationParticipant(allocation_id=allocation.id, user_id=uid, ordinal=ordinal))
             for ordinal, group in enumerate(result["suggestions"], 1):
@@ -252,9 +255,12 @@ def result_from_session(session, run):
                                              "timeDistanceMinutes": item.time_distance, "dayDistance": item.day_distance,
                                              "conflictCount": item.conflict_count, "reason": item.reason})
     groups = session.scalars(select(SuggestionGroup).where(SuggestionGroup.run_id == run.id).order_by(SuggestionGroup.ordinal))
+    decisions = list(session.scalars(select(RequestDecision).where(RequestDecision.run_id == run.id).order_by(RequestDecision.ordinal)))
+    if any(item.payload.get("status") != item.status or item.payload.get("rejectionReason") != item.reason for item in decisions):
+        raise PersistenceError("Stored decision projections are inconsistent; refusing publication view.")
     return {"protocolVersion": 1, "engineVersion": run.engine_version, "runId": run.correlation_id, "strategy": run.strategy,
             "status": "success", "errors": [], "allocations": allocation_results,
-            "requestResults": [item.payload for item in session.scalars(select(RequestDecision).where(RequestDecision.run_id == run.id).order_by(RequestDecision.ordinal))],
+            "requestResults": [item.payload for item in decisions],
             "suggestions": [{"requestId": group.request_id, "items": suggestions[group.request_id]} for group in groups]}
 
 

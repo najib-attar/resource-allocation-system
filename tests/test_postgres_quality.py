@@ -4,7 +4,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from copy import deepcopy
 
-from sqlalchemy import inspect, select
+from sqlalchemy import inspect, select, update
 from sqlalchemy.exc import IntegrityError
 
 from postgres_fixtures import PostgresTestCase, ROOT
@@ -49,6 +49,23 @@ class PostgresQualityTests(PostgresTestCase):
                 with self.subTest(table=table.name, columns=columns):
                     self.assertTrue(any(index[:len(columns)] == columns for index in indexes))
 
+    def test_all_eighteen_tables_match_physical_keys_checks_and_nullability(self):
+        from sqlalchemy import CheckConstraint, UniqueConstraint
+        inspector = inspect(self.database.engine)
+        self.assertEqual(set(inspector.get_table_names()), set(Base.metadata.tables) | {"alembic_version"})
+        for table in Base.metadata.tables.values():
+            with self.subTest(table=table.name):
+                self.assertEqual({item["name"]: item["nullable"] for item in inspector.get_columns(table.name)},
+                                 {column.name: column.nullable for column in table.columns})
+                checks = [item for item in table.constraints if isinstance(item, CheckConstraint)]
+                actual_checks = inspector.get_check_constraints(table.name)
+                self.assertEqual(len(checks), len(actual_checks))
+                self.assertTrue({item.name for item in checks if item.name} <= {item["name"] for item in actual_checks})
+                self.assertEqual({tuple(item.columns.keys()) for item in table.constraints if isinstance(item, UniqueConstraint)},
+                                 {tuple(item["column_names"]) for item in inspector.get_unique_constraints(table.name)})
+                self.assertTrue(all(item["options"].get("ondelete", "NO ACTION") == "NO ACTION"
+                                    for item in inspector.get_foreign_keys(table.name)))
+
     def test_inconsistent_result_totals_cannot_be_published(self):
         run_id, snapshot = self.repository.start_run()
         result, build = EngineGateway(ROOT).execute(snapshot)
@@ -85,3 +102,12 @@ class PostgresQualityTests(PostgresTestCase):
             with self.subTest(changes=changes), self.assertRaises(ImportValidationError):
                 self.repository.save_request(item)
         self.assertEqual(len(self.repository.snapshot()["requests"]), 14)
+
+    def test_modified_duplicate_decision_projection_is_detected_on_read(self):
+        run_id, snapshot = self.repository.start_run()
+        result, build = EngineGateway(ROOT).execute(snapshot)
+        self.repository.publish_run(run_id, result, build)
+        with self.database.transaction() as session:
+            session.execute(update(RequestDecision).where(RequestDecision.run_id == run_id).values(reason="unexpected manual modification"))
+        with self.assertRaisesRegex(PersistenceError, "Stored decision projections"):
+            self.repository.read_view()

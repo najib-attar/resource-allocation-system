@@ -1,5 +1,5 @@
 from unittest import TestCase
-from sqlalchemy import select
+from sqlalchemy import event, select
 
 from postgres_fixtures import PostgresTestCase, ROOT
 from web.allocation_workflow import execute_allocation
@@ -28,6 +28,20 @@ class DemoGenerationTests(TestCase):
 
 
 class PostgresDemoTests(PostgresTestCase):
+    def test_large_snapshot_uses_bounded_queries_and_returns_connections(self):
+        seed_demo_database(self.database, size="large")
+        statements = []
+        def record(connection, cursor, statement, parameters, context, executemany):
+            statements.append(statement)
+        event.listen(self.database.engine, "before_cursor_execute", record)
+        try:
+            snapshot, document, _ = Repository(self.database).read_view()
+        finally:
+            event.remove(self.database.engine, "before_cursor_execute", record)
+        self.assertEqual(len(snapshot["requests"]), 1200)
+        self.assertIsNone(document)
+        self.assertLessEqual(len(statements), 15)
+        self.assertEqual(self.database.engine.pool.checkedout(), 0)
     def test_seed_preserves_units_identities_and_refuses_populated_target(self):
         report = seed_demo_database(self.database)
         self.assertEqual(report["counts"], {"users": 106, "spaces": 20, "requests": 120, "busySlots": 12})

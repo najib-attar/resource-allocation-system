@@ -121,3 +121,25 @@ publication from the runtime adapter. Presentation schemas are pure constants in
 only under `tests/legacy_*` to preserve useful recovery/parity regressions; runtime
 imports cannot reach them. The full Python suite passed 125 tests (124 passed,
 one POSIX-only skip) after cleanup. Standalone CSV CLI and explicit import remain.
+
+Foundation performance/integrity review: allocation inserts are batched, decision
+projection corruption is detected on reads, and revision `0041c` removes a redundant
+run-only index. All 18 tables' physical constraints/nullability match the models;
+the large demo snapshot uses at most 15 statements and returns its pool connection.
+The complete final Python run passed: 133 total, 132 passed, zero failed, one
+POSIX-only skip on Windows. Fresh C++ compilation: 140 passed, zero failed and
+both isolated CLI smoke scenarios passed. No C++ source or protocol changes.
+
+Recovery verification uses matching PostgreSQL 17.11 tools: a custom-format dump
+was restored into a new uniquely named database, exact published results and next
+request identity survived, and a new Flask process rendered the allocation page.
+Valid upgrades preserve data/results; invalid pre-0041b records abort upgrades
+atomically without removal. These three recovery/upgrade tests passed locally.
+The recovery DBs are retained, not destructively reset. Fresh CLI migration,
+dry-run/import and `alembic check` passed on a separate newly created database.
+
+CLI seed 41 demos: moderate has 59 approved/61 rejected requests and 74 allocations
+(0.297 seconds for engine/publication); large has 664 approved/536 rejected and
+850 allocations (3.531 seconds). These are single-machine sanity timings, not
+production load guarantees. Both demonstration databases upgrade cleanly to head.
+Actionlint 1.7.12 validates the updated CI workflow; remote CI remains NOT RUN.
