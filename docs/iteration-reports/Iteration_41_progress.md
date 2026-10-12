@@ -197,3 +197,6 @@ committed one-or-more slot cardinality; dedicated tests cover migration-owned SQ
 triggers not inspected by Alembic's metadata drift check. The rendered diagram was
 visually inspected. Complete diff/secret/exclusion review precedes publication;
 remote results will be inspected on the draft PR, which must not be merged here.
+
+Completion correction commit: `dc397e7`. Final living guides document retry keys,
+deferred subtype constraints, hierarchy safety and non-destructive retention.

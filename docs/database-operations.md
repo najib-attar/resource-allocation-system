@@ -61,8 +61,18 @@ This iteration performs no destructive migration of an existing application DB.
 Save Only commits the request, participants and history, without invoking C++.
 Submit and Run commits the request first and then starts allocation. Engine errors,
 timeouts or publication failures leave that request saved/pending and keep the
-previous successful run visible. A lost HTTP response does not undo a committed save;
-automatic idempotent retry is not implemented.
+previous successful run visible. A lost HTTP response does not undo a committed save.
+Each rendered request form carries a random submission key. An exact retry with
+the same key reuses the existing request ID without another save/history/revision;
+different content with that key returns HTTP 409. Keys are retained with requests,
+not expired automatically. Imported records and unkeyed legacy POST clients keep
+their existing semantics: each unkeyed save is a new request. This is not an
+authentication or CSRF token.
+
+Submit and Run retries can run the engine again after reusing the saved request.
+Runs have distinct correlation IDs; only one successful run is active. Engine
+execution is not deduplicated or scheduled automatically, and a changed input
+revision still requires a fresh run. There is no retry loop hidden in Flask.
 
 Each run captures its strategy and ordered inputs in PostgreSQL. The engine runs
 outside a transaction. Short `application_state` row locks coordinate input changes
@@ -85,6 +95,41 @@ Uncoordinated manual SQL can bypass revision checks. The application rebuilds a
 complete weekly allocation batch; it is not yet a dated appointment reservation
 system. Shared-room exams retain their existing capacity-sharing policy, so a
 blanket SQL room-overlap prohibition would be incorrect.
+
+## Integrity upgrades and retention
+
+Migrate to head before starting the current application. Revision `0041d` checks
+old subtype data and installs deferred SQL constraints: every request has slots,
+non-recurring requests have one slot, only exams have required exam details, and
+only committee requests have participant mappings. Empty committees remain engine
+inputs that may be rejected. Replacing slots/subtypes in one transaction is safe;
+concurrent child edits serialize on the parent request. A malformed existing
+subtype aborts the upgrade without deleting records. Back up and explicitly review
+repairs; never silently remove a request to make a migration pass.
+
+`0041e` adds nullable unique form retry keys and fingerprints; old/imported records
+remain unchanged. Organizational forests are validated before initialization and
+snapshot construction. A corrupt/manual cycle fails clearly before C++ execution.
+The current application has no organizational editor; SQL bypassing the repository
+is not a supported application write interface or revision protocol.
+
+All runs, decisions and history are retained by default. This deliberately avoids
+deleting audit evidence or an active publication without an approved retention
+policy. An interrupted worker may leave a `running` record, but a new run is safe;
+never classify it as failed solely because a timer expired. Use read-only inspection:
+
+```sql
+SELECT status, count(*), min(created_at), max(created_at)
+FROM allocation_run GROUP BY status;
+SELECT active_run_id, input_revision FROM application_state WHERE id = 1;
+SELECT count(*), coalesce(sum(pg_column_size(snapshot)), 0) AS snapshot_bytes
+FROM allocation_run;
+```
+
+Automatic pruning, abandoned-run reconciliation and engine-job deduplication are
+administrative lifecycle work requiring a retention/retry policy, not missing
+storage for current features. They are not enabled in this iteration. Monitor
+growth, preserve backups, and obtain approval before any destructive cleanup.
 
 ## Fictional demonstration database
 
@@ -188,7 +233,8 @@ The Linux GitHub Actions job provisions PostgreSQL 17.11, installs pinned direct
 dependencies, builds the authoritative engine, and runs the C++ and Python suites.
 Windows verification uses real PostgreSQL too. Linux-specific permission checks
 cannot be claimed verified by a Windows local run. The implementation branch is
-not published until authorized, so its revised CI job has not run remotely yet.
+published only when authorized; inspect the draft PR's actual Actions results
+before merge rather than treating local lint as remote verification.
 
 ## Scope boundaries
 

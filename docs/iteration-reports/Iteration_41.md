@@ -52,12 +52,12 @@ rollback, referential integrity, thread/process saves, worker termination, lock
 timeout, failed/stale publication, coherent readers and all five strategies.
 Original CSV-input and database-input JSON results compare exactly, including
 allocations and suggestions. Full Windows run: 140 C++ passed, zero failed;
-134 Python tests total, 133 passed, zero failed, one POSIX-only skip. Two isolated
+155 Python tests total, 154 passed, zero failed, one POSIX-only skip. Two isolated
 CLI smoke scenarios and twelve additional database-backed Flask route checks passed.
 A fresh disposable database was migrated and imported through the actual CLI;
 `alembic check` found no schema drift. Original
-untracked generated CSV hashes are preserved. Linux CI is configured but not yet
-executed for this unpublished implementation branch; browser visual QA was not
+untracked generated CSV hashes are preserved. Linux CI is configured and its
+actual remote outcome must be reviewed on the draft PR; browser visual QA was not
 performed because layouts/interactions were unchanged (storage explanatory text
 was corrected).
 
@@ -79,7 +79,15 @@ refused. Real custom-format PostgreSQL dump/restore into a new isolated database
 preserved decisions, allocations, suggestions and next IDs; a new Flask process
 read the restored results. Valid upgrades retain existing data; invalid old rows
 abort upgrades atomically without deletion. Actionlint validated CI locally;
-the service-container recovery client path is configured but not remotely run.
+the service-container recovery client path is exercised by the Linux PR checks.
+
+**Final completion corrections:** Full organization forests are validated before
+initialization/snapshots; corrupt cycles fail before engine execution. Revision
+`0041d` enforces deferred slot/exam/participant subtype integrity, including
+concurrent child-edit safety. `0041e` adds unique keyed form retries without new
+tables; exact retries reuse one request/history/revision, conflicting reuse returns
+409. Twenty completion regressions and four recovery/upgrade tests pass locally.
+No allocation algorithm, JSON contract, authentication or appointment change.
 
 **Completion checklist:**
 - [x] All 18 application tables audited against live PostgreSQL.
@@ -90,6 +98,7 @@ the service-container recovery client path is configured but not remotely run.
 - [x] Fresh migration, import/dry-run, sequence continuation and rollback verified.
 - [x] Real backup/restore and application restart verified in isolated databases.
 - [x] Full C++/Python tests, local CI lint, syntax and dependency checks passed.
+- [x] Hierarchy, subtype completeness and keyed submission retries verified.
 - [ ] Remote Linux CI execution: pending authorized publication.
 
 The current weekly application's database foundation is locally verified. This
@@ -99,6 +108,8 @@ checklist is not a claim of production readiness or future appointment support.
 to calendar dates. No authentication or UC-STU-01 is implemented. Generated old
 results are retained offline, not imported as trusted decisions. Engine failure
 does not roll back a previously saved request; stale publication requires explicit
-retry. Abandoned run cleanup, retention and idempotent HTTP retry are future work.
+retry. Exact keyed saves are deduplicated; unkeyed clients and engine runs are not.
+Abandoned-run reconciliation and automatic retention need an approved policy;
+all records remain retained and active publications are never pruned automatically.
 Production authentication, credentials, backup/restore and deployment hardening
 remain necessary before public use. No production database was overwritten.

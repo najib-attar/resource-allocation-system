@@ -29,8 +29,9 @@ mmdc -i docs/architecture/database-er-physical.mmd -o docs/architecture/database
 Mermaid-safe labels such as `varchar_32` mean SQL `varchar(32)`; the catalog uses
 exact PostgreSQL type names.
 
-Cardinalities describe physical constraints: a request can temporarily have zero
-slot rows in direct SQL, although application transactions require at least one.
+Cardinalities describe committed physical constraints: every request has at least
+one slot. Deferred subtype triggers allow temporary incompleteness inside a
+transaction, but not at commit; non-recurring requests require exactly one slot.
 An exam-details row belongs to exactly one request; a request has at most one.
 The optional parent/primary-unit/run FKs allow unknown organizational hierarchy
 and pre-publication state. A run may be inactive; only the singleton state selects
@@ -45,7 +46,7 @@ the active run. Composite allocation/suggestion FKs cannot cross run boundaries.
 | university_user | Integer PK; primary role FK and nullable primary unit FK; name, email, status and current profile fields. No password or authentication is introduced in this iteration. |
 | user_role | Composite user/role PK; assignment ordinal. Preserves assignedRoles order. |
 | resource | Integer PK; unique source ordinal; type, name, capacity, building, three feature booleans and availability. |
-| resource_request | Integer PK; generated submission ordinal; requester/resource FKs; type, title, purpose, count, feature/building requirements and revision. |
+| resource_request | Integer PK; generated submission ordinal; requester/resource FKs; type, requirements and revision; nullable unique submission key and content fingerprint for exact retries. |
 | request_slot | Composite request/ordinal PK; weekday, start/end minutes. Recurring requests retain their ordered occurrence list. |
 | exam_details | Request PK/FK; course code/name, exam type, can-split flag. |
 | request_participant | Request/user composite PK and unique per-request ordinal; participant role label. |
@@ -74,13 +75,13 @@ tables were added. The catalog above contains the complete physical verification
 | Table | Necessity, normalization and reviewed relationship |
 |---|---|
 | role | Necessary shared labels; unique names. Primary role controls C++ dispatch; assigned labels do not introduce new policies. |
-| organization_unit | Necessary shared unit names; optional type/parent preserve unknown CSV hierarchy. Self-parent prohibited; general cycle/type policies need a future organizational editor design. |
+| organization_unit | Necessary shared unit names; optional type/parent preserve unknown CSV hierarchy. Self-parent prohibited in SQL; full forests are validated iteratively before initialization and every snapshot. Unsupported manual SQL cycles fail safely on application reads; no organizational editor/type policy is invented. |
 | university_user | Necessary identity/profile; unique source order, positive ID and nonnegative year. One profile table avoids unnecessary per-role joins; role-specific empty fields intentionally preserve the protocol. Email is not unique because existing profiles may omit it. |
 | user_role | Necessary many-to-many assignment; composite PK prevents duplicates, unique positive ordinal preserves ordering, reverse role index supports referential lookups. |
 | resource | Necessary independent resource entity; positive capacity and allowed subtype, explicit facilities/availability, unique positive source order. Three booleans match the current feature set; no generic feature framework needed. |
-| resource_request | Necessary request identity/requirements; separate requester and preferred resource FKs, unique positive identity-generated submission order. Per-request revision is retained metadata; global input_revision currently controls publication. |
+| resource_request | Necessary request identity/requirements; separate requester/resource FKs and positive unique submission order. Optional unique retry key/fingerprint preserve the same saved identity on exact form resubmission. Per-request revision is metadata; global input_revision controls publication. |
 | request_slot | Necessary one-to-many occurrences; composite request/positive ordinal PK, weekday/minute checks. Recurring requests retain multiple occurrences, not duplicated parent requests. |
-| exam_details | Necessary optional one-to-one subtype metadata. Correct subtype and required exam metadata are validated by application writes/snapshot construction, not a cross-table SQL trigger. |
+| exam_details | Necessary conditional one-to-one subtype metadata. Deferred SQL constraints require this row if and only if its parent is an Exam; application checks remain for actionable errors. |
 | request_participant | Necessary many-to-many committee membership; composite identity plus unique positive ordinal; reverse user index. Participant role text is descriptive, not access authorization. |
 | busy_slot | Necessary independent commitments; valid weekly intervals, user FK and unique positive source order. Overlapping busy slots are legitimate input, so no artificial uniqueness/exclusion rule. |
 | allocation_run | Necessary execution provenance; unique correlation ID, allowed status/strategy, nonnegative captured revision, timestamp and immutable JSON input/build. Snapshot duplication preserves exactly what an old run evaluated. |
@@ -96,8 +97,11 @@ All FKs use **NO ACTION**, not cascading deletes: referenced history/results can
 silently disappear. ORM defaults are not automatic SQL defaults; explicit SQL
 tools must supply required fields. Structural keys, nullability, unique/check
 constraints and deletion behavior are tested against live PostgreSQL for every
-table. Policy/type completeness across subtype tables is also protected by the
-transactional application boundary. Arbitrary direct SQL is not a supported
+table. Revision `0041d` enforces slot/exam/participant subtype completeness with
+deferred constraint triggers; before-child parent-row writes prevent write skew,
+including repeatable-read transactions. Atomic subtype/slot replacement is allowed.
+An empty committee remains valid engine input that can be rejected by C++, not a
+new database approval policy. Arbitrary direct SQL is not a supported
 alternative application write path.
 
 ## Query and integrity findings
@@ -106,6 +110,13 @@ Added revision `0041b` validates ordering and scores, adds decision/scan orderin
 uniqueness and six reverse/composite lookup indexes. `0041c` removes the redundant
 allocation run-only index without deleting data. Upgrading invalid old records
 fails atomically; the migration never silently repairs/discards them.
+
+`0041d` validates existing subtype records before installing its SQL functions and
+triggers; inconsistent old records abort the upgrade without deletion. `0041e`
+adds nullable submission key/fingerprint columns, a unique key and a paired-value
+check; existing/imported records remain null. Neither revision adds a table.
+SQL functions are migration-owned, so dedicated live trigger/concurrency tests
+supplement Alembic's model drift check. Cardinalities and the catalog reflect them.
 
 Reads use bounded bulk queries rather than lazy ORM relationships: the 1,200-request
 demo snapshot is tested to use at most 15 SQL statements and return its connection.
@@ -117,6 +128,12 @@ Result validation checks duplicated counts/IDs/room metadata against actual retu
 allocations and the captured inputs. The database handles references/rollback;
 C++ still handles capacity sharing, conflicts, eligibility and strategy ordering.
 No SQL overlap rule is introduced that would forbid legitimate shared-room exams.
+
+Exact keyed Save Only/Submit and Run retries reuse one saved request, history event
+and input revision; conflicting reuse returns HTTP 409. The UI supplies a random
+key per form. This is not authentication/CSRF protection or engine job deduplication.
+All runs remain retained, and no automatic deletion or retry scheduler is added;
+see the operations guide for the explicit retention/retry boundaries.
 
 Full snapshots/results are intentionally loaded for the bounded weekly prototype.
 Unbounded run/history retention and whole-batch rendering will eventually need

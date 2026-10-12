@@ -137,5 +137,7 @@ powershell -ExecutionPolicy Bypass -File tests/run_tests.ps1
 See [Iteration 41 progress](../docs/iteration-reports/Iteration_41_progress.md)
 for exact counts. Historical file-coordination/publication helpers live only in
 `tests/legacy_*`, not application runtime. Explicit offline CSV display/import/CLI
-support remains. Authentication, HTTP retry idempotency, dated
+support remains. Exact keyed form retries reuse saved requests; unkeyed legacy
+callers retain their original new-request semantics. Authentication, engine-job
+deduplication, dated
 appointments and production hardening are not delivered by this migration.
