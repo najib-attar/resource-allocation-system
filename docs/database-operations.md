@@ -198,13 +198,18 @@ than deleting any existing database. Local test schema cleanup never affects it.
 | Regression fixtures | Original `data/` and `tests/fixtures/` files preserved untouched. |
 | Historical documentation | Previous iteration reports preserved; active guides describe PostgreSQL. |
 | Obsolete operational persistence | `web/shared_file_state.py` and runtime file-generation publication removed. |
-| Historical compatibility tests | Coordinator/result-publication fixtures live only in `tests/legacy_*`; unused legacy strategy writer removed. |
+| Retired shared-file tests | Lock/journal/generation helpers and their four obsolete recovery/publication tests removed; PostgreSQL lock release, rollback and coherent publication coverage retained. |
 
-`result_table_schema.py` contains display/import column constants, not storage.
-Legacy-named `read_csv_table` adapter methods return in-memory database projections
-in normal Flask workflows. Renaming all template/view keys would add risk without
-changing authority. The explicit offline CSV display adapter is still used by
-CLI parity tests; it cannot become a fallback when PostgreSQL fails.
+`BackendResultAdapter` is file-free presentation code; `DatabaseResultAdapter`
+pins one coherent repository view and exposes `get_table("requests")`, not a CSV
+reader. `engine_result_projection.py` shares input/result display projections and
+`result_table_schema.py` defines their columns. Old Raw Data URL selectors remain
+aliases for database views, not filesystem paths. `CsvInputs` and its DTO conversion
+are confined to the explicit importer. Request validation is shared independently
+of import machinery. Suggestions are presented only from structured engine data.
+See the [cleanup inventory](architecture/csv-cleanup.md) for retained components
+and test coverage. Normal workflows, cold restart and database failures are tested
+with CSV/config/lock/local-result IO forbidden.
 
 ## Tests and CI
 

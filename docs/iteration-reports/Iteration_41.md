@@ -101,6 +101,21 @@ No allocation algorithm, JSON contract, authentication or appointment change.
 - [x] Hierarchy, subtype completeness and keyed submission retries verified.
 - [x] Remote Linux CI: 155 Python and 140 C++ passed, zero failures/skips.
 
+## Runtime Cleanup Follow-Up
+
+After the original PR was merged, a separate maintenance review retired the
+remaining CSV-oriented runtime interfaces and test-only shared-file framework.
+Adapters now present in-memory logical tables; suggestions never require history
+text parsing. Explicit importer/standalone C++ CSV support and useful regressions
+remain. See the [cleanup inventory](../architecture/csv-cleanup.md) and
+[progress record](Iteration_41_progress.md) for retained APIs and test classification.
+
+Fresh local verification: 140 C++ passed, zero failed; 156 Python tests total,
+155 passed, zero failed, one POSIX-permission skip on Windows. Tests include real
+PostgreSQL migrations, all five strategies, concurrency/recovery and forbidden
+runtime-file IO during workflows and cold restarts. No schema, algorithm, protocol
+or user-facing workflow changes. This follow-up remains unmerged pending review.
+
 The current weekly application's database foundation is locally verified. This
 checklist is not a claim of production readiness or future appointment support.
 

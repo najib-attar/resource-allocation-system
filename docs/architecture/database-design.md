@@ -8,6 +8,12 @@ C++17 engine, EngineGateway, executable verification, and JSON protocol v1 remai
 unchanged. CSV is an explicit import/export or standalone CLI compatibility tool,
 not a database fallback or a second writable application store.
 
+`DatabaseResultAdapter` pins one repository view and delegates file-free formatting
+to `BackendResultAdapter`. Internal table names are logical entities, not CSV paths;
+existing Raw Data bookmarks are explicit presentation aliases. Offline CSV-to-DTO
+conversion belongs only to the importer, never `EngineGateway` or normal request
+persistence. See the [cleanup inventory](csv-cleanup.md) for boundaries and tests.
+
 ## ER diagrams and physical inventory
 
 ![High-level ER diagram](database-er-high-level.svg)

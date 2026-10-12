@@ -135,9 +135,12 @@ powershell -ExecutionPolicy Bypass -File tests/run_tests.ps1
 ```
 
 See [Iteration 41 progress](../docs/iteration-reports/Iteration_41_progress.md)
-for exact counts. Historical file-coordination/publication helpers live only in
-`tests/legacy_*`, not application runtime. Explicit offline CSV display/import/CLI
-support remains. Exact keyed form retries reuse saved requests; unkeyed legacy
+for exact counts. Presentation uses file-free `get_table("requests")` views;
+offline CSV conversion belongs only to the explicit importer. Retired file-lock
+and local-result-publication fixtures have been removed. Standalone C++ CSV
+CLI/import tests remain, including quoting and five-strategy JSON parity. Web
+workflow tests forbid CSV/config/lock/local-result IO, including cold restart and
+PostgreSQL failure. Exact keyed form retries reuse saved requests; unkeyed legacy
 callers retain their original new-request semantics. Authentication, engine-job
 deduplication, dated
 appointments and production hardening are not delivered by this migration.

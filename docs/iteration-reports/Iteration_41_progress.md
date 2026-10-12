@@ -210,3 +210,48 @@ process concurrency and Linux permissions. PR was conflict-free and left draft.
 Final documentation evidence is committed separately and its subsequent checks
 must also pass; nothing is merged or deployed. Original unrelated local files
 remain unstaged and all four generated CSV hashes remain unchanged.
+
+## PostgreSQL runtime cleanup (2026-10-13)
+
+PR #2 was merged at `149dc30` before this maintenance task. The existing iteration
+branch was fast-forwarded to that main baseline without changing unrelated local
+files. This follow-up is published separately for review and must not be merged
+without approval.
+
+Reference/call-path review found unnecessary adapter CSV/text readers, a runtime
+history-text suggestion fallback, CSV DTO conversion in the JSON gateway, and a
+normal database-save dependency on import validation. These are removed/separated:
+presentation uses logical `get_table` views, shared validators are file-independent,
+and CSV conversion belongs only to explicit import. Duplicate projection/label
+logic and unused imports were cleaned up. C++ sources, SQL tables/migrations,
+JSON v1, allocation behavior and templates remain unchanged.
+
+Retired test-only lock/journal/publication implementations and four obsolete tests
+were deleted. PostgreSQL concurrency coverage moved to its correctly named test
+module; CLI smoke and quoting/parity fixtures remain. Five additional checks cover
+the runtime boundary/guard and complete CSV-free workflows, including package and
+standalone-script cold starts in new processes and real refused DB connections.
+
+Verification against isolated PostgreSQL 17.11:
+
+- Baseline: 155 Python tests, 154 passed, zero failed, one Windows/POSIX skip.
+- Focused cleanup suite: 85 tests, 84 passed, zero failed, the same skip.
+- Final full Python suite: 156 tests, 155 passed, zero failed, the same skip.
+- Fresh authoritative engine build and `tests/run_tests.ps1`: 140 C++ passed,
+  zero failed, both isolated backend runtime smokes passed.
+- Real migrations/head `0041e`, 18-table diagram drift checks, all five strategy
+  parity comparisons, subprocess/thread concurrency, rollback, demo and isolated
+  `pg_dump`/`pg_restore` recovery passed within the full suite.
+- Python syntax, dependency compatibility, changed Markdown paths and diff checks
+  passed. All four original untracked generated CSV hashes remain unchanged.
+
+Commits: `133db7b` (runtime/interface/fixture cleanup), `f727d4c` (strong runtime
+independence coverage). Current inventory and retention rationale are documented
+in [CSV cleanup](../architecture/csv-cleanup.md). Public documented C++ domain APIs
+are not deleted solely because the JSON entry point uses label DTOs; large Flask
+route decomposition and template-column changes are intentionally out of scope.
+
+CI workflow renamed to `backend-postgresql-regression.yml`; service and execution
+commands unchanged. Verify the follow-up PR's final pushed SHA, not PR #2's older
+successful CI. No authentication, appointments, deployment or destructive database
+operation is included.

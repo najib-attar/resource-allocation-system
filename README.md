@@ -6,6 +6,11 @@ The project focuses on gradually developing a flexible allocation system for res
 
 Iteration 41 adds PostgreSQL application persistence while preserving the [versioned Flask-C++ JSON execution boundary](docs/engine-protocol.md), C++ allocation engine and existing dashboard workflows. See the [database design](docs/architecture/database-design.md) and [setup/migration guide](docs/database-operations.md).
 
+Backend presentation is file-free: database views use `get_table("requests")`, while
+CSV conversion is confined to explicit import and standalone CLI compatibility.
+The [cleanup inventory](docs/architecture/csv-cleanup.md) explains retired helpers,
+retained APIs and regression coverage.
+
 ## Current Prototype Features
 
 The current prototype supports:
@@ -206,7 +211,7 @@ Result: 140 passed, 0 failed
 
 The test runner compiles and runs the backend smoke executable, then compiles and runs the unit and integration tests.
 
-After installing `requirements.txt`, building the authoritative backend, and configuring an isolated `TEST_DATABASE_URL`, run `python -m unittest discover -s tests -p 'test_*.py' -v` for database integrity/concurrency, migrations, gateway, JSON/legacy parity and Flask smoke checks. The verified Windows completion-review run executed 155 tests: 154 passed, zero failed, one POSIX-permission test skipped. Configure matching PostgreSQL backup tools as described in the [database guide](docs/database-operations.md) to run recovery tests. Without the URL/tools, relevant tests explicitly skip; such a run is not full verification. Linux CI provides a real PostgreSQL service; inspect the draft PR checks before merge. See the [iteration verification record](docs/iteration-reports/Iteration_41_progress.md) for commands and platform limitations.
+After installing `requirements.txt`, building the authoritative backend, and configuring an isolated `TEST_DATABASE_URL`, run `python -m unittest discover -s tests -p 'test_*.py' -v` for database integrity/concurrency, migrations, gateway, JSON/legacy parity and Flask smoke checks. The verified Windows cleanup run executed 156 tests: 155 passed, zero failed, one POSIX-permission test skipped. This includes cold restart and unreachable-database checks with runtime CSV/config/lock/result-file IO forbidden. Configure matching PostgreSQL backup tools as described in the [database guide](docs/database-operations.md) to run recovery tests. Without the URL/tools, relevant tests explicitly skip; such a run is not full verification. Linux CI provides a real PostgreSQL service; inspect the draft PR checks before merge. See the [iteration verification record](docs/iteration-reports/Iteration_41_progress.md) for commands and platform limitations.
 
 ## Iterative Development Summary
 
