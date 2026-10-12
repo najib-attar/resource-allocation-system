@@ -24,7 +24,7 @@ def database_url(value=None):
         raise DatabaseConfigurationError("DATABASE_URL is required. Configure PostgreSQL and run Alembic migrations; CSV fallback is disabled.")
     try:
         url = make_url(value)
-    except ArgumentError as error:
+    except (ArgumentError, ValueError) as error:
         # URL parsing has no database side effects; never echo a credential-bearing URL.
         raise DatabaseConfigurationError("DATABASE_URL is not a valid PostgreSQL URL.") from error
     if url.drivername not in {"postgresql", "postgresql+psycopg"}:

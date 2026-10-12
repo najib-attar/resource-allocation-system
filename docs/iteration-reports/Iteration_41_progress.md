@@ -55,4 +55,14 @@ Offline CSV CLI/parser/recovery tests remain. All five strategies produce exact
 equivalent results through original CSV snapshots and database snapshots, including
 structured suggestions and normalized result round-trips.
 
-Final documentation, security/integrity review and verification are in progress.
+Web cutover commit: `76350be`. Final review added safe malformed-URL handling and
+a real-engine regression for form-created recurring occurrences. Foundation now
+has eight passing tests; Save Only/confirmation has ten passing tests. Final full
+Python run: 113 total, 112 passed, zero failed, one POSIX-only skip on Windows.
+The freshly compiled C++ runner remains 140 passed, zero failed; both isolated
+CLI smoke scenarios passed. Dependency checks and Python compilation passed.
+
+A newly created disposable database was migrated to head, imported through the
+actual CLI, checked with `alembic check` (no schema drift), and exercised with the
+real engine plus twelve Flask GET smoke routes. No production/existing database
+was overwritten. All four protected generated CSV SHA-256 values are unchanged.

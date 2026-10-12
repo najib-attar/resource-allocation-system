@@ -26,6 +26,12 @@ class DatabaseConfigurationTests(TestCase):
             with self.subTest(value=value), self.assertRaises(DatabaseConfigurationError):
                 Database("postgresql://user@localhost/db", value)
 
+    def test_malformed_url_port_is_reported_without_credentials(self):
+        with self.assertRaises(DatabaseConfigurationError) as caught:
+            database_url("postgresql://user:private-password@localhost:invalid/db")
+        self.assertNotIn("private-password", str(caught.exception))
+        self.assertIn("not a valid PostgreSQL URL", str(caught.exception))
+
 
 class PostgresFoundationTests(PostgresTestCase):
     def test_fresh_alembic_migration_creates_all_mapped_tables(self):

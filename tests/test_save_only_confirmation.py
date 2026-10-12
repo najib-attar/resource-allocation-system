@@ -138,6 +138,25 @@ class SaveOnlyConfirmationTests(PostgresTestCase):
         self.assertEqual(self.client.get("/request/41").status_code, 200)
         self.run_backend.assert_not_called()
 
+    def test_recurring_save_preserves_ordered_occurrences_and_runs_through_real_engine(self):
+        from web.allocation_workflow import execute_allocation
+        from web.engine_gateway import EngineGateway
+        from postgres_fixtures import ROOT
+        form = self.save_form("Recurring")
+        form.update(title='Seminar, "Part II" \u00d6', timeData="2-13:15-14:00;4-09:00-10:00")
+        response = self.client.post("/add-request", data=form)
+        self.assertTrue(response.location.endswith("/request-added/41"))
+        saved = self.repository.snapshot()["requests"][-1]
+        self.assertEqual(saved["title"], form["title"])
+        self.assertEqual(saved["slots"], [{"day": 2, "startMinutes": 795, "endMinutes": 840},
+                                           {"day": 4, "startMinutes": 540, "endMinutes": 600}])
+        self.run_backend.assert_not_called()
+        result = execute_allocation(self.repository, EngineGateway(ROOT))
+        decision = next(item for item in result["requestResults"] if item["requestId"] == 41)
+        self.assertEqual(decision["status"], "Approved")
+        self.assertEqual(decision["allocationCount"], 2)
+        self.assertEqual(self.client.get("/request/41").status_code, 200)
+
     def test_invalid_normal_and_exam_forms_do_not_persist_or_execute(self):
         before = {name: self.read_rows(name) for name in ("requests.csv", "request_participants.csv")}
         for request_type in ("OneTime", "Exam"):
