@@ -22,6 +22,7 @@ This file is the short, always-on entry point for AI coding assistance. Read the
 - Code quality and architecture: `docs/development/IMPLEMENTATION.md`
 - Tests and CI: `docs/development/TESTING_CI.md`
 - Branches, commits, iteration numbering and merge: `docs/development/GIT_ITERATIONS.md`
+- Explicitly authorized autonomous implementation and local milestone commits: `docs/development/AUTONOMOUS_EXECUTION.md`
 - Flask/Jinja/frontend decisions: `docs/development/FRONTEND.md`
 - Iteration reports, design patterns and diagrams: `docs/development/DOCUMENTATION.md`
 
