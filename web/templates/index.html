@@ -9,7 +9,7 @@
         <p class="eyebrow">C++ Backend Controlled Dashboard</p>
         <h2>Plan requests first. Run allocation when you are ready.</h2>
         <p>
-            Requests are saved to CSV first. <strong>Run Allocation</strong>
+            Requests are saved to the database first. <strong>Run Allocation</strong>
             processes all saved requests using the compiled C++ backend, selected
             strategy, rules, participant availability, and meeting-time suggestions.
         </p>
@@ -67,8 +67,8 @@
 
         {% if not requests_available %}
         <div class="empty-state compact">
-            <h3>No requests file</h3>
-            <p><code>requests.csv</code> is not available yet.</p>
+            <h3>Requests unavailable</h3>
+            <p>Request data is not available yet.</p>
         </div>
         {% elif recent_requests|length == 0 %}
         <div class="empty-state compact">
@@ -101,7 +101,7 @@
             <a href="{{ url_for('allocation_summary') }}">Review allocation results</a>
             <a href="{{ url_for('schedules', type='space') }}">Check space schedules</a>
             <a href="{{ url_for('schedules', type='user') }}">Check participant schedules</a>
-            <a href="{{ url_for('raw_data') }}">Inspect raw CSV data</a>
+            <a href="{{ url_for('raw_data') }}">Inspect technical data</a>
         </div>
     </article>
 </section>

@@ -3,13 +3,11 @@ import csv
 import re
 
 try:
-    from .shared_file_state import INPUT_FILES, OUTPUT_HEADERS, SharedFileState
-    from .engine_result_projection import result_tables, suggestion_display
-    from .engine_gateway import validate_result
+    from .result_table_schema import INPUT_FILES, OUTPUT_HEADERS
+    from .engine_result_projection import suggestion_display
 except ImportError:
-    from shared_file_state import INPUT_FILES, OUTPUT_HEADERS, SharedFileState
-    from engine_result_projection import result_tables, suggestion_display
-    from engine_gateway import validate_result
+    from result_table_schema import INPUT_FILES, OUTPUT_HEADERS
+    from engine_result_projection import suggestion_display
 
 
 REQUEST_TYPE_LABELS = {
@@ -52,27 +50,16 @@ class BackendResultAdapter:
         self.raw_data_files = list(raw_data_files)
         self._tables = None
         self._texts = None
-        self.generation_dir = None
         self.engine_result = None
 
     def pin(self, state=None):
-        """Read live inputs and resolve the published generation once, under the lock."""
-        if state is None:
-            with SharedFileState(self.data_dir).locked() as state:
-                return self.pin(state)
+        """Pin offline CSV display fixtures; normal web readers use PostgreSQL."""
         pinned = BackendResultAdapter(self.data_dir, self.raw_data_files)
-        document = state.read_engine_result()
-        pinned.generation_dir = state.current_data_dir() if document is None else None
-        result_reader = BackendResultAdapter(pinned.generation_dir or self.data_dir, self.raw_data_files)
         pinned._tables = {
-            name: (result_reader if name in OUTPUT_HEADERS else self).read_csv_table(name)
-            for name in (*INPUT_FILES, *(OUTPUT_HEADERS if document is None else ())) if name.endswith(".csv")
+            name: self.read_csv_table(name)
+            for name in (*INPUT_FILES, *OUTPUT_HEADERS) if name.endswith(".csv")
         }
         pinned._texts = {"config.txt": self.read_text_file("config.txt")}
-        if document is not None:
-            validate_result(document["result"], document["snapshot"])
-            pinned.engine_result = document["result"]
-            pinned._tables.update(result_tables(document["snapshot"], document["result"]))
         return pinned
 
     def list_raw_data_files(self):

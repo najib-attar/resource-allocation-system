@@ -32,6 +32,9 @@ cmake-build-release/
 *.swp
 *.swo
 *~
+.env
+.env.*
+!.env.example
 
 # Generated images or exports if you do not want to track them
 # Uncomment if needed

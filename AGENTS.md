@@ -6,8 +6,10 @@ This file is the short, always-on entry point for AI coding assistance. Read the
 - University resource allocation/scheduling application; current repository is a prototype.
 - `src/`: C++17 models, rules, strategies, and allocation engine.
 - `web/`: Flask/Jinja web application and browser UI.
-- `data/`: temporary CSV persistence; PostgreSQL is planned, not yet implemented.
+- PostgreSQL is the operational source of truth; `web/persistence/` owns database records and transactions.
+- `data/`: offline CSV import/standalone C++ CLI fixtures and exports; never a normal web fallback.
 - Engine execution from Flask uses the **versioned JSON stdin/stdout contract** documented in `docs/engine-protocol.md` via `EngineGateway` and `BackendResultAdapter`.
+- Read `docs/architecture/database-design.md` and `docs/database-operations.md` for persistence boundaries, migrations and safe test isolation. `DatabaseResultAdapter` reuses backend-result presentation logic without file reads.
 - Read `README.md` and the relevant implementation and tests to confirm actual behavior. Documentation can lag behind code.
 
 ## Default mode: analyze before changing code

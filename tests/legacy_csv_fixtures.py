@@ -5,7 +5,8 @@ import csv
 import shutil
 import tempfile
 
-from web.shared_file_state import INPUT_FILES, OUTPUT_HEADERS, SharedStateError
+from web.result_table_schema import INPUT_FILES, OUTPUT_HEADERS
+from legacy_shared_file_state import SharedStateError
 
 
 def create_legacy_workspace(state):

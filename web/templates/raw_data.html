@@ -5,9 +5,10 @@
 
 {% block content %}
 <section class="panel-card">
-    <p class="eyebrow">Technical CSV View</p>
+    <p class="eyebrow">Technical Database View</p>
     <h2>{{ selected_label }}</h2>
     <p class="muted">
+        These are in-memory database projections; tab names retain the old CSV labels.
         Raw data stays available for debugging, but the demo flow should use Dashboard,
         Requests, Allocation Summary, and Schedules.
     </p>
@@ -39,11 +40,11 @@
     {% elif table.rows|length == 0 %}
     <div class="empty-state">
         <h2>No rows found</h2>
-        <p>{{ selected_file }} exists but has no data rows.</p>
+        <p>This view has no data rows.</p>
     </div>
     {% else %}
     <div class="table-summary">
-        <p>{{ table.rows|length }} row(s) loaded from <code>{{ selected_file }}</code>.</p>
+        <p>{{ table.rows|length }} row(s) loaded from the <code>{{ selected_file }}</code> database view.</p>
     </div>
     <div class="table-wrap">
         <table>

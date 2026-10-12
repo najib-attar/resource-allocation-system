@@ -10,9 +10,10 @@ import subprocess
 
 from engine_json_fixtures import fake_result
 from web.backend_executable import BackendExecutable, BackendExecutableError, resolve_backend_executable
-from web.backend_result_adapter import BackendResultAdapter, extract_meeting_suggestions
+from web.backend_result_adapter import extract_meeting_suggestions
+from legacy_result_adapter import LegacyResultAdapter as BackendResultAdapter
 from web.engine_gateway import EngineGateway, EngineIntegrationError, execution_snapshot, validate_result
-from web.shared_file_state import SharedFileState
+from legacy_shared_file_state import SharedFileState
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -199,7 +200,7 @@ class JsonEngineIntegrationTests(TestCase):
             pinned = adapter.pin()
             previous = (state.root / "engine-result.json").read_bytes()
             result["requestResults"][0]["title"] = "Later"
-            with state.locked(), mock.patch("web.shared_file_state.os.replace", side_effect=OSError("publication denied")):
+            with state.locked(), mock.patch("legacy_shared_file_state.os.replace", side_effect=OSError("publication denied")):
                 with self.assertRaises(OSError): state.publish_engine_result(snapshot, result, metadata)
             self.assertEqual((state.root / "engine-result.json").read_bytes(), previous)
             with state.locked(): state.publish_engine_result(snapshot, result, metadata)
@@ -228,7 +229,9 @@ class JsonEngineIntegrationTests(TestCase):
             with mock.patch("web.backend_result_adapter.extract_meeting_suggestions", side_effect=AssertionError("history parser used")):
                 item, _ = adapter.pin().get_request_summary("1")
                 self.assertEqual(len(item["meeting_suggestions"]["items"]), 3)
-                with mock.patch.object(web_app, "DATA_DIR", data), mock.patch.object(web_app, "backend_results", adapter):
+                repository = mock.Mock()
+                repository.read_view.return_value = (snapshot, {"snapshot": snapshot, "result": result, "build": {}}, 1)
+                with mock.patch.object(web_app, "get_repository", return_value=repository):
                     response = web_app.app.test_client().get("/request/1")
                     self.assertEqual(response.status_code, 200)
                     self.assertIn("Suggested least-change", response.get_data(as_text=True))

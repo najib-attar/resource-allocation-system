@@ -4,7 +4,7 @@ This repository contains an iterative C++ prototype for a university resource al
 
 The project focuses on gradually developing a flexible allocation system for resources such as classrooms, laboratories, meeting rooms, exams, and committee meetings. The implementation follows an iterative software design approach, where each iteration introduces one or more new concepts into the prototype.
 
-The latest documented iteration is Iteration 40, with SpaceFactory and BackendResultAdapter refinements. The current code also includes subsequent robustness fixes and the [versioned Flask-C++ JSON execution boundary](docs/engine-protocol.md).
+Iteration 41 adds PostgreSQL application persistence while preserving the [versioned Flask-C++ JSON execution boundary](docs/engine-protocol.md), C++ allocation engine and existing dashboard workflows. See the [database design](docs/architecture/database-design.md) and [setup/migration guide](docs/database-operations.md).
 
 ## Current Prototype Features
 
@@ -49,7 +49,7 @@ The current prototype supports:
   - `MultiRoomExamGreedyStrategy`
   - `MultiRoomExamBestFitStrategy`
   - `SharedRoomExamBestFitStrategy`
-- strategy selection through `AllocationStrategyFactory` and `data/config.txt`
+- strategy selection through `AllocationStrategyFactory`; PostgreSQL stores the web preference, while the standalone CSV CLI still uses `data/config.txt`
 - exam resource sharing:
   - one exam can be split across multiple classrooms
   - best-fit room selection can reduce unused capacity
@@ -91,6 +91,9 @@ The current prototype supports:
 - web-based Raw Data page
 - web-based Schedules page for user busy slots and room allocations
 - rejection reasons and backend-generated meeting suggestions displayed in the dashboard
+- PostgreSQL persistence through SQLAlchemy 2.x/psycopg 3, with Alembic schema migrations
+- transactional request/participant saves, identifiable allocation runs, structured suggestions/history, and atomic result publication
+- validated, non-destructive CSV import with dry-run and preserved IDs/submission order
 
 ## Implemented Rules
 
@@ -136,8 +139,9 @@ RequestTypeRule
   - `src/strategies/` : allocation strategy interface, greedy strategy, priority strategy, and multi-room exam strategies
   - `src/data/` : CSV loading, export, and structured summary writer components
   - `src/utils/` : console output helpers
-- `web/` : Flask dashboard for adding requests, running the backend, viewing summaries, viewing schedules, and inspecting raw CSV data
-- `data/` : CSV input/output files and configuration
+- `web/` : Flask routes, presentation adapters, engine gateway, allocation workflow and PostgreSQL persistence
+- `migrations/` : versioned Alembic database schema
+- `data/` : offline CSV import/CLI fixtures and generated CLI outputs, not operational web persistence
 - `tests/` : lightweight backend unit, integration, regression, and smoke tests
 - `external/` : third-party single-header libraries, if present locally
 
@@ -152,11 +156,13 @@ RequestTypeRule
 - [Analysis and Delivery Workflow](docs/development/WORKFLOW.md)
 - [Git, Iterations, and Review](docs/development/GIT_ITERATIONS.md)
 - [Existing Engine Protocol](docs/engine-protocol.md): compatibility contract for Flask-C++ execution.
+- [Database Design](docs/architecture/database-design.md): entities, ER diagram, constraints and transactional workflow.
+- [Database Operations](docs/database-operations.md): setup, safe import, testing and failure behavior.
 - [Student-Professor Appointment Use Case](docs/use-cases/UC-STU-01-student-professor-appointment.pdf): requirements for a future feature, not current implementation.
 
 ## Data Files
 
-The prototype currently uses CSV files in the `data/` folder:
+PostgreSQL is the source of truth for normal web operations. The following `data/` files remain for explicit migration/import and the standalone C++ CSV CLI:
 
 - `users.csv`
 - `spaces.csv`
@@ -171,7 +177,7 @@ The prototype currently uses CSV files in the `data/` folder:
 
 CSV inputs use UTF-8 (an optional BOM is accepted), comma separators, and standard double-quote escaping compatible with Python's `csv.writer`. Quote fields containing commas, quotes, or line breaks, and represent a literal quote as `""`. Empty optional fields retain their existing defaults; LF and CRLF record endings are supported. The backend warns and skips malformed user/space/auxiliary records, while malformed request records become rejected `InvalidRequest` objects. An unterminated quoted field consumes the remaining input as one malformed record rather than guessing new row boundaries.
 
-The selected allocation strategy is configured in `data/config.txt`. The current demo configuration is:
+The standalone CSV CLI strategy is configured in `data/config.txt`. The current fixture configuration is:
 
 ```text
 allocation_strategy=shared_room_exam_best_fit
@@ -200,7 +206,7 @@ Result: 140 passed, 0 failed
 
 The test runner compiles and runs the backend smoke executable, then compiles and runs the unit and integration tests.
 
-After building the authoritative backend, also run `python -m unittest discover -s tests -p 'test_*.py' -v` for gateway, JSON/legacy parity, CSV persistence/concurrency and Flask smoke checks. The latest verified Windows run has 74 tests: 73 passed, 0 failed, and one POSIX-permission skip; Linux CI is configured to exercise the platform-specific path.
+After installing `requirements.txt`, building the authoritative backend, and configuring an isolated `TEST_DATABASE_URL`, run `python -m unittest discover -s tests -p 'test_*.py' -v` for database integrity/concurrency, migrations, gateway, JSON/legacy parity and Flask smoke checks. The verified Windows completion-review run executed 155 tests: 154 passed, zero failed, one POSIX-permission test skipped. Configure matching PostgreSQL backup tools as described in the [database guide](docs/database-operations.md) to run recovery tests. Without the URL/tools, relevant tests explicitly skip; such a run is not full verification. Linux CI provides a real PostgreSQL service; inspect the draft PR checks before merge. See the [iteration verification record](docs/iteration-reports/Iteration_41_progress.md) for commands and platform limitations.
 
 ## Iterative Development Summary
 
@@ -239,6 +245,7 @@ After building the authoritative backend, also run `python -m unittest discover 
 - Iteration 39: structured backend summary exports through `SummaryWriter`
 - Iteration 39 robustness improvement: explicit export success/failure handling across writers, `DataController`, `ResourceAllocationSession`, and `main.cpp`
 - Iteration 40: `SpaceFactory` introduced for centralized space creation and `BackendResultAdapter` introduced to reduce duplicated Flask result parsing
+- Iteration 41: PostgreSQL replaces operational CSV/config/local-result persistence; database snapshots feed the unchanged C++ JSON protocol, with transactional allocation publication and database-backed views
 
 ## How to Compile and Run Backend
 
@@ -260,10 +267,13 @@ The build script requires `g++` on PATH (or `--compiler <compiler-path>`) and wr
 
 ## How to Run Web Dashboard
 
-Install Flask:
+Install application dependencies and initialize a dedicated PostgreSQL database following the [database guide](docs/database-operations.md):
 
 ```bash
-pip install flask
+python -m pip install -r requirements.txt
+python -m alembic upgrade head
+python scripts/import_csv.py --data-dir data --dry-run
+python scripts/import_csv.py --data-dir data
 ```
 
 Run from the project root:
@@ -278,9 +288,11 @@ Open:
 http://127.0.0.1:5000
 ```
 
-The web dashboard does not implement allocation logic. CSV remains temporary application persistence/import/export, but Flask executes the C++ engine through a versioned JSON stdin/stdout contract using `EngineGateway`. Structured results and meeting suggestions are atomically published as one JSON document and adapted for existing views; execution does not read shared config or write runtime CSV outputs. The C++ backend remains responsible for rules, strategies, participant availability, meeting suggestions, and allocation. See the [engine protocol](docs/engine-protocol.md) for schema, errors, compatibility, and verification.
+Set `DATABASE_URL` before migrations and web startup; `.env.example` is a reference, not automatically loaded. Import refuses populated targets. The web dashboard does not implement allocation logic: it builds ordered PostgreSQL snapshots, calls `EngineGateway`, and persists validated results transactionally. `DatabaseResultAdapter` supplies one pinned database view per response. No normal web operation reads/writes CSV persistence or `engine-result.json`. C++ retains rules, strategies, availability and suggestions. JSON protocol v1 is unchanged.
 
 ## Web Dashboard Overview
+
+For a new empty development database, `python scripts/seed_demo_database.py --seed 41 --run-allocation` creates reproducible fictional university data and runs the real engine. Use `--size large` for a 1,200-request sanity dataset. Seeding never overwrites/resets existing data. See the [ER diagrams and full schema inventory](docs/architecture/database-design.md) and [demo/recovery guide](docs/database-operations.md).
 
 The current dashboard supports:
 
@@ -294,7 +306,7 @@ The current dashboard supports:
 - Allocation Summary cards for approved, rejected, and pending requests
 - display of committee participants, rejection reasons, and least-change suggestions
 - Schedules page for user busy slots and space allocations
-- Raw Data page for direct CSV inspection
+- Raw Data page for database-backed technical tables (legacy CSV-style tab names retained)
 
 Flask does not check participant availability and does not compute suggestions. Those behaviors belong to the C++ backend.
 
@@ -310,6 +322,6 @@ Flask does not check participant availability and does not compute suggestions. 
 
 ## Notes
 
-This repository is an iterative academic prototype. The current implementation focuses on architecture, extensibility, rule-driven evaluation, and demonstration workflows rather than production-level persistence.
+This repository is an iterative academic prototype with real transactional persistence. Authentication, authorization of web actors and production deployment hardening are not implemented; do not expose the development server publicly.
 
-Future work can build on the current structure with alternative-room meeting suggestions, future-only suggestion modes, participant-conflict-aware ranking, global optimization, database or API integration, and richer calendar integration.
+Future work can build on the current structure with authentication, dated calendars and the separately approved appointment use case, richer API integration, and deployment hardening. Those features are not implemented by the database migration.

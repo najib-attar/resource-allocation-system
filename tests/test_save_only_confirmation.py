@@ -1,18 +1,23 @@
-"""Regression checks for Save Only confirmation, using isolated CSV files."""
+"""Save Only regressions against isolated PostgreSQL schemas; CSV is import only."""
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest import TestCase, main, mock
+from unittest import main, mock
 import csv
 import subprocess
 import sys
 
 from web import app as web_app
 from web.backend_result_adapter import BackendResultAdapter, build_committee_participant_display
+from web.database_result_adapter import DatabaseResultAdapter
+from web.persistence.importer import import_csv
+from web.persistence.repository import Repository
+from postgres_fixtures import PostgresTestCase
 
 
-class SaveOnlyConfirmationTests(TestCase):
+class SaveOnlyConfirmationTests(PostgresTestCase):
     def setUp(self):
+        super().setUp()
         temporary = TemporaryDirectory(prefix="save-only-confirmation-")
         self.addCleanup(temporary.cleanup)
         self.data = Path(temporary.name)
@@ -38,10 +43,10 @@ class SaveOnlyConfirmationTests(TestCase):
             {"requestId": "40", "userId": "3", "participantRole": "Participant"},
         ])
 
-        adapter = BackendResultAdapter(self.data, web_app.RAW_DATA_FILES)
+        import_csv(self.database, self.data)
+        self.repository = Repository(self.database)
         for patch in (
-            mock.patch.object(web_app, "DATA_DIR", self.data),
-            mock.patch.object(web_app, "backend_results", adapter),
+            mock.patch.object(web_app, "get_repository", return_value=self.repository),
             mock.patch.dict(web_app.app.config, {"TESTING": True, "PROPAGATE_EXCEPTIONS": True}),
         ):
             patch.start()
@@ -60,8 +65,7 @@ class SaveOnlyConfirmationTests(TestCase):
             writer.writerows(rows)
 
     def read_rows(self, filename):
-        with (self.data / filename).open(encoding="utf-8", newline="") as file:
-            return list(csv.DictReader(file))
+        return DatabaseResultAdapter(self.repository, web_app.RAW_DATA_FILES).read_csv_table(filename)["rows"]
 
     def save_form(self, request_type="OneTime"):
         return {
@@ -134,9 +138,27 @@ class SaveOnlyConfirmationTests(TestCase):
         self.assertEqual(self.client.get("/request/41").status_code, 200)
         self.run_backend.assert_not_called()
 
+    def test_recurring_save_preserves_ordered_occurrences_and_runs_through_real_engine(self):
+        from web.allocation_workflow import execute_allocation
+        from web.engine_gateway import EngineGateway
+        from postgres_fixtures import ROOT
+        form = self.save_form("Recurring")
+        form.update(title='Seminar, "Part II" \u00d6', timeData="2-13:15-14:00;4-09:00-10:00")
+        response = self.client.post("/add-request", data=form)
+        self.assertTrue(response.location.endswith("/request-added/41"))
+        saved = self.repository.snapshot()["requests"][-1]
+        self.assertEqual(saved["title"], form["title"])
+        self.assertEqual(saved["slots"], [{"day": 2, "startMinutes": 795, "endMinutes": 840},
+                                           {"day": 4, "startMinutes": 540, "endMinutes": 600}])
+        self.run_backend.assert_not_called()
+        result = execute_allocation(self.repository, EngineGateway(ROOT))
+        decision = next(item for item in result["requestResults"] if item["requestId"] == 41)
+        self.assertEqual(decision["status"], "Approved")
+        self.assertEqual(decision["allocationCount"], 2)
+        self.assertEqual(self.client.get("/request/41").status_code, 200)
+
     def test_invalid_normal_and_exam_forms_do_not_persist_or_execute(self):
-        before = {name: (self.data / name).read_bytes()
-                  for name in ("requests.csv", "request_participants.csv")}
+        before = {name: self.read_rows(name) for name in ("requests.csv", "request_participants.csv")}
         for request_type in ("OneTime", "Exam"):
             with self.subTest(request_type=request_type):
                 form = self.save_form(request_type)
@@ -147,7 +169,7 @@ class SaveOnlyConfirmationTests(TestCase):
                 self.assertIn("Start time must be earlier than end time.", page)
                 if request_type == "Exam":
                     self.assertIn("Course code is required for exam requests.", page)
-                self.assertEqual(before, {name: (self.data / name).read_bytes() for name in before})
+                self.assertEqual(before, {name: self.read_rows(name) for name in before})
         self.run_backend.assert_not_called()
 
     def test_legacy_result_urls_redirect_to_working_raw_data_views(self):

@@ -1,16 +1,20 @@
 from pathlib import Path
-from contextlib import contextmanager
-import csv
 import os
+import threading
+import uuid
+
+from sqlalchemy.exc import SQLAlchemyError
 
 from flask import Flask, g, has_request_context, redirect, render_template, request, url_for
 
 try:
-    from .shared_file_state import SharedFileState, SharedStateBusy, SharedStateError
+    from .allocation_workflow import execute_allocation
+    from .database_result_adapter import DatabaseResultAdapter
+    from .persistence.database import Database, DatabaseBusy, DatabaseConfigurationError
+    from .persistence.repository import Repository, PersistenceError, SubmissionConflict
     from .backend_executable import BackendExecutableError, resolve_backend_executable
-    from .engine_gateway import EngineGateway, EngineIntegrationError, execution_snapshot
+    from .engine_gateway import EngineGateway, EngineIntegrationError, csv_slots, integer
     from .backend_result_adapter import (
-        BackendResultAdapter,
         build_committee_participant_display,
         display_value,
         format_time_data,
@@ -18,11 +22,13 @@ try:
         safe_int,
     )
 except ImportError:
-    from shared_file_state import SharedFileState, SharedStateBusy, SharedStateError
+    from allocation_workflow import execute_allocation
+    from database_result_adapter import DatabaseResultAdapter
+    from persistence.database import Database, DatabaseBusy, DatabaseConfigurationError
+    from persistence.repository import Repository, PersistenceError, SubmissionConflict
     from backend_executable import BackendExecutableError, resolve_backend_executable
-    from engine_gateway import EngineGateway, EngineIntegrationError, execution_snapshot
+    from engine_gateway import EngineGateway, EngineIntegrationError, csv_slots, integer
     from backend_result_adapter import (
-        BackendResultAdapter,
         build_committee_participant_display,
         display_value,
         format_time_data,
@@ -32,15 +38,14 @@ except ImportError:
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-DATA_DIR = PROJECT_ROOT / "data"
 
 app = Flask(__name__)
 app.config.update(
-    SHARED_FILE_LOCK_TIMEOUT=float(os.environ.get("RESOURCE_ALLOCATION_LOCK_TIMEOUT", "5")),
+    DATABASE_LOCK_TIMEOUT=float(os.environ.get("RESOURCE_ALLOCATION_DB_LOCK_TIMEOUT", "5")),
     BACKEND_TIMEOUT=float(os.environ.get("RESOURCE_ALLOCATION_ENGINE_TIMEOUT", "30")),
 )
-if any(not 0 < app.config[key] < float("inf") for key in ("SHARED_FILE_LOCK_TIMEOUT", "BACKEND_TIMEOUT")):
-    raise ValueError("Shared-file lock and backend timeouts must be finite positive seconds.")
+if any(not 0 < app.config[key] < float("inf") for key in ("DATABASE_LOCK_TIMEOUT", "BACKEND_TIMEOUT")):
+    raise ValueError("Database lock and backend timeouts must be finite positive seconds.")
 
 SUPPORTED_STRATEGIES = [
     {"value": "greedy", "label": "Greedy"},
@@ -141,74 +146,66 @@ RAW_DATA_FILES = [
     {"filename": "config.txt", "label": "Strategy Config"},
 ]
 
-backend_results = BackendResultAdapter(DATA_DIR, RAW_DATA_FILES)
+_database_configuration_lock = threading.Lock()
 
 
 def current_results():
-    return getattr(g, "backend_results", backend_results) if has_request_context() else backend_results
+    if has_request_context():
+        if not hasattr(g, "backend_results"):
+            g.backend_results = DatabaseResultAdapter(get_repository(), RAW_DATA_FILES)
+        return g.backend_results
+    return DatabaseResultAdapter(get_repository(), RAW_DATA_FILES)
 
 
-def shared_state():
-    return SharedFileState(DATA_DIR, app.config["SHARED_FILE_LOCK_TIMEOUT"])
-
-
-@contextmanager
-def shared_operation():
-    if has_request_context() and getattr(g, "shared_state", None) is not None:
-        yield g.shared_state
-        return
-    with shared_state().locked() as state:
-        if has_request_context():
-            g.shared_state = state
-            g.backend_results = backend_results.pin(state)
-        try:
-            yield state
-        finally:
-            if has_request_context():
-                g.shared_state = None
+def get_repository():
+    configuration = (app.config.get("DATABASE_URL", os.environ.get("DATABASE_URL")), app.config["DATABASE_LOCK_TIMEOUT"])
+    # This lock protects pool initialization only; PostgreSQL coordinates writes across workers.
+    with _database_configuration_lock:
+        cached = app.extensions.get("allocation_database")
+        if cached is None or cached[0] != configuration:
+            database = Database(configuration[0], configuration[1])
+            if cached:
+                cached[1].dispose()
+            app.extensions["allocation_database"] = (configuration, database)
+        return Repository(app.extensions["allocation_database"][1])
 
 
 @app.before_request
 def pin_result_generation():
     if request.method in {"GET", "HEAD"} and request.endpoint != "static":
-        with shared_state().locked() as state:
-            g.backend_results = backend_results.pin(state)
+        current_results()
 
 
-@app.errorhandler(SharedStateBusy)
+@app.errorhandler(DatabaseBusy)
 def shared_data_busy(error):
     return str(error), 503, {"Retry-After": "2"}
 
 
-@app.errorhandler(SharedStateError)
+@app.errorhandler(DatabaseConfigurationError)
+@app.errorhandler(PersistenceError)
 @app.errorhandler(EngineIntegrationError)
 def shared_data_error(error):
-    app.logger.error("Shared-file operation failed: %s", error)
-    return f"Shared-file operation failed: {error}", 503
+    app.logger.error("Application operation failed: %s", error)
+    return f"Application operation failed: {error}", 503
+
+
+@app.errorhandler(SQLAlchemyError)
+def database_error(error):
+    app.logger.error("Database operation failed (%s).", type(error).__name__)
+    return "Database operation failed. Check PostgreSQL configuration and migrations; previous results remain active.", 503
+
+
+@app.errorhandler(SubmissionConflict)
+def submission_conflict(error):
+    return str(error), 409
 
 
 def read_config_strategy():
-    config = current_results().read_text_file("config.txt")
-    if not config["exists"]:
-        return "greedy (default / config missing)"
-    for line in config["content"].splitlines():
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
-
-        if "=" not in stripped:
-            continue
-
-        key, value = stripped.split("=", 1)
-        if key.strip() == "allocation_strategy" and value.strip():
-            return value.strip()
-
-    return "greedy (default / config missing)"
+    return current_results().strategy
 
 
 def write_config_strategy(strategy_name):
-    with shared_operation() as state:
-        state.write_strategy(strategy_name)
+    get_repository().set_strategy(strategy_name)
 
 
 def read_csv_table(filename):
@@ -226,37 +223,6 @@ def get_page_message():
         }
 
     return None
-
-
-def get_request_headers():
-    requests_path = DATA_DIR / "requests.csv"
-
-    if not requests_path.exists() or requests_path.stat().st_size == 0:
-        return REQUEST_HEADERS
-
-    with requests_path.open("r", encoding="utf-8-sig", newline="") as file:
-        reader = csv.reader(file)
-        try:
-            headers = next(reader)
-        except StopIteration:
-            return REQUEST_HEADERS
-
-    return headers or REQUEST_HEADERS
-
-
-def get_next_request_id():
-    table = read_csv_table("requests.csv")
-    max_request_id = 0
-
-    for row in table["rows"]:
-        try:
-            request_id = int((row.get("requestId") or "").strip())
-        except ValueError:
-            continue
-
-        max_request_id = max(max_request_id, request_id)
-
-    return max_request_id + 1
 
 
 def build_committee_participant_options(users):
@@ -559,6 +525,9 @@ def validate_request_form(form_data, users, spaces):
             if participant_id.strip()
         ]
 
+        if len(selected_participant_ids) != len(set(selected_participant_ids)):
+            errors.append("Required participants must not be selected more than once.")
+
         if not selected_participant_ids:
             errors.append("At least one required committee participant must be selected.")
 
@@ -588,7 +557,6 @@ def validate_request_form(form_data, users, spaces):
         return None, [], errors
 
     row = {
-        "requestId": str(get_next_request_id()),
         "requestType": request_type,
         "userId": user_id,
         "spaceId": space_id,
@@ -608,10 +576,28 @@ def validate_request_form(form_data, users, spaces):
         "canSplitAcrossRooms": can_split,
     }
 
-    for participant_row in participant_rows:
-        participant_row["requestId"] = row["requestId"]
+    try:
+        request_record(row, participant_rows)
+    except EngineIntegrationError as error:
+        return None, [], [str(error)]
 
     return row, participant_rows, []
+
+
+def request_record(row, participants):
+    """Translate validated form values into a domain record, without choosing an ID."""
+    item = {"type": row["requestType"], "requesterId": integer(row["userId"], "requester", 1),
+            "spaceId": integer(row["spaceId"], "space", 1), "participantCount": integer(row["participantCount"], "participants", 1),
+            "slots": csv_slots(row["timeData"])}
+    for key in ("title", "purpose", "requiredFeature", "requiredBuilding"):
+        item[key] = "" if row[key] == "None" else row[key]
+    if item["type"] == "Exam":
+        item["exam"] = {key: row[key] for key in ("courseCode", "courseName", "examType")}
+        item["exam"]["canSplitAcrossRooms"] = row["canSplitAcrossRooms"] == "true"
+    if item["type"] == "CommitteeMeeting":
+        item["participants"] = [{"userId": integer(participant["userId"], "participant", 1),
+                                  "role": participant["participantRole"]} for participant in participants]
+    return item
 
 
 def build_allocation_summary():
@@ -747,24 +733,21 @@ def build_dashboard_context(run_result=None, strategy_message=None):
 
 def run_backend_allocation():
     try:
-        with shared_operation() as state:
-            return execute_json_backend(state)
-    except SharedStateBusy:
+        return execute_json_backend()
+    except DatabaseBusy:
         raise
-    except (SharedStateError, OSError, EngineIntegrationError, BackendExecutableError) as error:
+    except SQLAlchemyError as error:
+        app.logger.error("Allocation publication failed (%s).", type(error).__name__)
+        return {"status": "error", "message": "Database publication failed; previous results remain active.", "stdout": "", "stderr": ""}
+    except (PersistenceError, DatabaseConfigurationError, EngineIntegrationError, BackendExecutableError) as error:
         app.logger.error("Allocation was not published: %s", error)
         return {"status": "error", "message": str(error), "stdout": "", "stderr": ""}
 
 
-def execute_json_backend(state):
+def execute_json_backend():
     # Validate before reading persistence too, preserving clear missing/stale-artifact errors.
     resolve_backend_executable(PROJECT_ROOT, os.environ.get("RESOURCE_ALLOCATION_BACKEND"))
-    strategy = read_config_strategy()
-    if strategy == "greedy (default / config missing)":
-        strategy = "greedy"
-    snapshot = execution_snapshot(backend_results.pin(state), strategy)
-    result, metadata = EngineGateway(PROJECT_ROOT, app.config["BACKEND_TIMEOUT"], app.logger).execute(snapshot)
-    state.publish_engine_result(snapshot, result, metadata)
+    result = execute_allocation(get_repository(), EngineGateway(PROJECT_ROOT, app.config["BACKEND_TIMEOUT"], app.logger), app.logger)
     return {"status": "success", "message": "Allocation backend ran successfully. Results were updated.",
             "stdout": f"JSON run {result['runId']} completed ({result['engineVersion']}).", "stderr": ""}
 
@@ -844,30 +827,22 @@ def add_request():
     spaces = spaces_table["rows"]
     form_data = request.form.to_dict() if request.method == "POST" else {
         "requestType": request.args.get("type", "OneTime"),
+        "submissionKey": uuid.uuid4().hex,
     }
     if request.method == "POST":
         form_data["requiredParticipantIds"] = request.form.getlist("requiredParticipantIds")
     errors = []
 
     if request.method == "POST":
-        with shared_operation() as state:
-            users = read_csv_table("users.csv")["rows"]
-            spaces = read_csv_table("spaces.csv")["rows"]
-            row, participant_rows, errors = validate_request_form(form_data, users, spaces)
-
-            if not errors:
-                state.save_request(row, participant_rows, get_request_headers(), REQUEST_PARTICIPANT_HEADERS)
-                if request.form.get("submitAction") == "save_run":
-                    run_result = run_backend_allocation()
-                    return redirect(
-                        url_for(
-                            "request_detail",
-                            request_id=row["requestId"],
-                            run_status=run_result["status"],
-                            run_message=run_result["message"],
-                        )
-                    )
-                return redirect(url_for("request_added", request_id=row["requestId"]))
+        row, participant_rows, errors = validate_request_form(form_data, users, spaces)
+        if not errors:
+            request_id = get_repository().save_request(request_record(row, participant_rows),
+                                                       submission_key=request.form.get("submissionKey") or None)
+            if request.form.get("submitAction") == "save_run":
+                run_result = run_backend_allocation()
+                return redirect(url_for("request_detail", request_id=request_id,
+                                        run_status=run_result["status"], run_message=run_result["message"]))
+            return redirect(url_for("request_added", request_id=request_id))
 
     return render_template(
         "add_request.html",
@@ -883,6 +858,7 @@ def add_request():
         feature_options=FEATURE_OPTIONS,
         building_options=get_building_options(spaces),
         form_data=form_data,
+        submission_key=form_data.get("submissionKey") or uuid.uuid4().hex,
         errors=errors,
     )
 

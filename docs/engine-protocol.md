@@ -2,13 +2,13 @@
 
 ## Boundary and Invocation
 
-Application persistence remains CSV temporarily. **Execution is JSON**, independent
-of those files:
+Application persistence is PostgreSQL. **Execution is JSON**, independent of
+database drivers and offline CSV import/CLI files:
 
 ```text
-Flask -> CSV persistence snapshot -> EngineGateway -> executable --json
+Flask -> ordered PostgreSQL snapshot -> EngineGateway -> executable --json
         JSON stdin -> ResourceAllocationSession -> existing rules/strategies
-        JSON stdout -> atomic engine-result.json -> BackendResultAdapter -> views
+        JSON stdout -> transactional PostgreSQL publication -> DatabaseResultAdapter -> views
 ```
 
 Build using `python scripts/build_backend.py`. The authoritative artifact and
@@ -54,7 +54,7 @@ execution boundary. Working-hour and user-permission rules remain engine decisio
 
 Optional strings: `title`, `purpose`, `requiredFeature`, `requiredBuilding`.
 Missing/empty title and purpose retain domain defaults. Empty feature/building
-means no preference. CSV persistence's `None` sentinel is translated to an empty
+means no preference. Legacy CSV inputs' `None` sentinel is translated to an empty
 optional value by the snapshot adapter, not transmitted as a protocol convention.
 
 | Type | Additional requirements |
@@ -147,29 +147,31 @@ Abbreviated successful response (additional documented fields omitted here):
 
 ## Flask Persistence, Publication and Compatibility
 
-The existing OS-backed process lock still protects request IDs, request/participant
-CSV saves, strategy preference saves, snapshot capture and run publication.
+PostgreSQL identities and short state-row transactions protect request IDs,
+request/participant saves, strategy preferences, snapshot capture and publication.
 No global config is mutated while the engine runs: the captured strategy travels
 inside JSON. Save Only never executes the engine. Submit and Run first saves; on
 engine failure/timeout the new request remains pending and previous results remain active.
 
-Successful results plus their input provenance and verified build metadata are
-published with one same-filesystem `os.replace` of `data/.runtime/engine-result.json`.
-Readers load this document once per response. There are no new generation directories,
-output CSV writes, or per-engine data workspaces on the JSON path. A failed process
-or failed publication cannot make a partial result current.
+The C++ process executes outside a database transaction. Publication verifies the
+captured input revision, then commits decisions, allocations, suggestions, history,
+run status and the active-run reference together. An older run cannot replace a
+newer completed run. Failed/stale runs keep the previous successful run active.
+Readers pin one repeatable-read database view per response. No local result JSON,
+runtime CSV outputs or execution workspaces are involved in normal web operations.
 
 `engine_result_projection.py` provides **in-memory** compatibility tables to the
 existing dashboard, schedules and Raw Data templates. These tables are views of
 JSON, not files written by C++. Structured suggestions are formatted directly.
-Legacy CSV results/generations are read only when no JSON result has yet been
-published; historical lifecycle parsing remains only in that legacy fallback.
-The adapter does not read legacy result files/pointers when a JSON result exists.
+`DatabaseResultAdapter` reuses presentation formatting without file reads or history
+parsing for suggestions. Before the first database run, views show pending requests.
+Legacy `BackendResultAdapter` file support remains for offline compatibility/tests,
+not as a fallback when PostgreSQL is unavailable.
 
 Running the executable **without arguments** keeps the CSV CLI: reads `data/*.csv`
 and `config.txt`, prints console outcomes and exports the original four CSVs.
 Its config fallback, CSV schemas and quoted UTF-8 CSV contract remain unchanged.
-CSV import/export remains legitimate and user-facing through persistence/Raw Data;
+CSV import/export remains legitimate through explicit import utilities and the CLI;
 the quoted-field defect was already fixed in `CsvReader`, not removed by this iteration.
 
 Allocation behavior matches legacy mode on representative fixtures. The JSON history
@@ -178,13 +180,15 @@ marker, since no CSV export occurs. Transport-invalid input fails the whole JSON
 whereas legacy CSV loading retains its per-row warning/`InvalidRequest` behavior.
 
 JSON eliminates shared engine input/config/output races and mixed output generations.
-CSV persistence still needs the existing single-machine OS lock and crash recovery.
-Uncoordinated external edits/CLI runs bypass that lock. Keep the lock until database
-transactions replace it; no extra snapshot framework or distributed service is needed.
+Operational CSV coordination has been replaced by database transactions. Offline
+CSV utilities retain their existing checks; CLI edits do not update PostgreSQL.
+See [database design](architecture/database-design.md) and
+[operations](database-operations.md) for migration, concurrency and failure details.
 
 ## Verification
 
-Build first, then run `powershell -ExecutionPolicy Bypass -File tests\run_tests.ps1`
+Install `requirements.txt`, configure an isolated `TEST_DATABASE_URL`, build first,
+then run `powershell -ExecutionPolicy Bypass -File tests\run_tests.ps1`
 and `python -m unittest discover -s tests -p 'test_*.py' -v`.
 Tests include JSON parsing/serialization, malformed protocol, gateway failure modes,
 all four request types, shared/multi-room exams, structured suggestions, real Flask

@@ -13,7 +13,7 @@
 {% if not item %}
 <section class="empty-state">
     <h2>Request not found</h2>
-    <p>No request with ID <code>{{ request_id }}</code> was found in <code>requests.csv</code>.</p>
+    <p>No request with ID <code>{{ request_id }}</code> was found in the database.</p>
     <a class="button-secondary" href="{{ url_for('requests') }}">Back to Requests</a>
 </section>
 {% else %}
