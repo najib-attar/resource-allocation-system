@@ -143,3 +143,16 @@ CLI seed 41 demos: moderate has 59 approved/61 rejected requests and 74 allocati
 850 allocations (3.531 seconds). These are single-machine sanity timings, not
 production load guarantees. Both demonstration databases upgrade cleanly to head.
 Actionlint 1.7.12 validates the updated CI workflow; remote CI remains NOT RUN.
+
+Foundation follow-up commits: `c388b26` (integrity), `63c18df` (fictional seeding),
+`1a7162b` (runtime CSV retirement), `e130c0a` (publication batching/schema checks),
+`b6a1c81` (upgrades/recovery/CI). Final diagrams, catalog, active guides and
+completion checklist are committed separately. Follow-up is locally complete for
+existing weekly functionality; remote Linux CI remains the publication gate.
+
+Final read-back guard rejects non-object stored decision JSON with an explicit
+integrity error instead of an incidental AttributeError. Its real PostgreSQL
+regression and the complete rerun passed: 134 Python tests total, 133 passed,
+zero failed, one POSIX-only skip on Windows. The recovery test performed a new
+isolated dump/restore and Flask-process restart during that run. No application
+schema, scheduling behavior, fixture or C++ source was changed by this guard.

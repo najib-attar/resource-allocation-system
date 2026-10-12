@@ -111,3 +111,12 @@ class PostgresQualityTests(PostgresTestCase):
             session.execute(update(RequestDecision).where(RequestDecision.run_id == run_id).values(reason="unexpected manual modification"))
         with self.assertRaisesRegex(PersistenceError, "Stored decision projections"):
             self.repository.read_view()
+
+    def test_malformed_stored_json_payload_fails_with_clear_integrity_error(self):
+        run_id, snapshot = self.repository.start_run()
+        result, build = EngineGateway(ROOT).execute(snapshot)
+        self.repository.publish_run(run_id, result, build)
+        with self.database.transaction() as session:
+            session.execute(update(RequestDecision).where(RequestDecision.run_id == run_id).values(payload=[]))
+        with self.assertRaisesRegex(PersistenceError, "Stored decision projections"):
+            self.repository.read_view()

@@ -256,7 +256,8 @@ def result_from_session(session, run):
                                              "conflictCount": item.conflict_count, "reason": item.reason})
     groups = session.scalars(select(SuggestionGroup).where(SuggestionGroup.run_id == run.id).order_by(SuggestionGroup.ordinal))
     decisions = list(session.scalars(select(RequestDecision).where(RequestDecision.run_id == run.id).order_by(RequestDecision.ordinal)))
-    if any(item.payload.get("status") != item.status or item.payload.get("rejectionReason") != item.reason for item in decisions):
+    if any(not isinstance(item.payload, dict) or item.payload.get("status") != item.status
+           or item.payload.get("rejectionReason") != item.reason for item in decisions):
         raise PersistenceError("Stored decision projections are inconsistent; refusing publication view.")
     return {"protocolVersion": 1, "engineVersion": run.engine_version, "runId": run.correlation_id, "strategy": run.strategy,
             "status": "success", "errors": [], "allocations": allocation_results,
