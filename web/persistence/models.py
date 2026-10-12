@@ -194,6 +194,7 @@ class AllocationParticipant(Base):
     __tablename__ = "allocation_participant"
     allocation_id: Mapped[int] = mapped_column(ForeignKey("allocation.id"), primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True)
+    ordinal: Mapped[int] = mapped_column(Integer, server_default="0")
 
 
 class SuggestionGroup(Base):

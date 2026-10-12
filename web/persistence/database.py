@@ -6,7 +6,7 @@ from contextlib import contextmanager
 
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import make_url
-from sqlalchemy.exc import ArgumentError
+from sqlalchemy.exc import ArgumentError, DBAPIError
 from sqlalchemy.orm import sessionmaker
 
 
@@ -43,13 +43,18 @@ class Database:
 
     @contextmanager
     def transaction(self, read_only=False):
-        with self.sessions.begin() as session:
-            if read_only:
-                session.execute(text("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY"))
-            else:
-                session.execute(text("SELECT set_config('lock_timeout', :timeout, true)"),
-                                {"timeout": f"{int(self.lock_timeout * 1000)}ms"})
-            yield session
+        try:
+            with self.sessions.begin() as session:
+                if read_only:
+                    session.execute(text("SET TRANSACTION ISOLATION LEVEL REPEATABLE READ, READ ONLY"))
+                else:
+                    session.execute(text("SELECT set_config('lock_timeout', :timeout, true)"),
+                                    {"timeout": f"{max(1, int(self.lock_timeout * 1000))}ms"})
+                yield session
+        except DBAPIError as error:
+            if getattr(error.orig, "sqlstate", None) == "55P03":
+                raise DatabaseBusy("Application data is busy. Retry shortly; no partial changes were saved.") from error
+            raise
 
     def dispose(self):
         self.engine.dispose()

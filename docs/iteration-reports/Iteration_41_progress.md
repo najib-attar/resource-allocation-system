@@ -20,8 +20,8 @@ implement authentication, dated calendars or UC-STU-01 in this iteration.
 | Database design and ER diagram | Complete | Inspected current models, CSV data, JSON protocol, Flask persistence and adapters. |
 | SQLAlchemy/psycopg/Alembic foundation | Complete | Fresh PostgreSQL 17.11 migration; seven foundation/configuration/constraint/rollback tests passed. |
 | Validated CSV import/dry-run | Complete | Ten real-PostgreSQL tests passed: exact DTO round-trip, preserved order/IDs, dry-run, invalid input, rollback and refusal to overwrite. |
-| Request persistence and configuration | Pending | Concurrent creation and atomic save tests required. |
-| Engine snapshots and transactional results | Pending | Five-strategy parity, stale/failed publication tests required. |
+| Request persistence and configuration | Complete | Thread/process saves preserve distinct IDs and participant associations; lock timeout and worker termination tested. |
+| Engine snapshots and transactional results | Complete | Twelve real-PostgreSQL workflow tests passed, including all five strategies, exact JSON round-trip, rollback, stale runs and coherent readers. |
 | Web cutover | Pending | Existing routes must work without operational CSV/result files. |
 | Final regression and report | Pending | Full C++/Python/PostgreSQL tests, integrity and security review required. |
 
@@ -36,9 +36,14 @@ implement authentication, dated calendars or UC-STU-01 in this iteration.
 
 ## Remaining work
 
-Design commit: `2136153`; foundation commit: `245dfbc`. Baseline: 140 C++ passed, two isolated CLI smoke scenarios
+Design commit: `2136153`; foundation commit: `245dfbc`; importer commit: `64f81da`. Baseline: 140 C++ passed, two isolated CLI smoke scenarios
 passed; Python 74 total, 73 passed, one POSIX-only skip on Windows. Foundation:
 `python -m unittest discover -s tests -p test_postgres_foundation.py -v`, real
 PostgreSQL 17.11: seven passed. Import:
 `python -m unittest discover -s tests -p test_postgres_import.py -v`: ten passed.
 Remaining implementation milestones are above.
+
+Workflow: `python -m unittest discover -s tests -p test_postgres_workflow.py -v`:
+twelve passed on Windows against PostgreSQL 17.11. No existing application data
+was imported into or overwritten in a production database; verification uses
+new, randomly named test schemas only.
