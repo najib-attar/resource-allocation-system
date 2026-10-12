@@ -14,4 +14,3 @@ class PersistenceBoundaryTests(TestCase):
             imports += [alias.name for node in ast.walk(ast.parse(path.read_text(encoding="utf-8"))) if isinstance(node, ast.Import) for alias in node.names]
             with self.subTest(file=path.name):
                 self.assertFalse(any("shared_file_state" in name or "legacy_result_adapter" in name for name in imports))
-
