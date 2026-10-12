@@ -23,11 +23,13 @@ def require(condition, message):
 
 
 def validate_slot(slot):
+    require(isinstance(slot, dict), "Time slot must be an object.")
     require(all(type(slot.get(key)) is int for key in ("day", "startMinutes", "endMinutes")), "Time values must be integers.")
     require(1 <= slot["day"] <= 7 and 0 <= slot["startMinutes"] < slot["endMinutes"] <= 1440, "Invalid weekly time range.")
 
 
 def validate_request(item, users, resources):
+    require(isinstance(item, dict), "Request must be an object.")
     label = f"Request {item.get('id', '(new)')}"
     require(item.get("type") in REQUEST_TYPES, label + ": unknown request type.")
     require(type(item.get("requesterId")) is int and item["requesterId"] in users, label + ": missing user reference.")
@@ -35,17 +37,23 @@ def validate_request(item, users, resources):
     require(type(item.get("participantCount")) is int and 0 < item["participantCount"] <= 2147483647, label + ": invalid participant count.")
     require(isinstance(item.get("slots"), list) and 0 < len(item["slots"]) <= 10000, label + ": missing occurrence slots.")
     require(item["type"] == "Recurring" or len(item["slots"]) == 1, label + ": request requires exactly one slot.")
+    for key in ("title", "purpose", "requiredFeature", "requiredBuilding"):
+        require(isinstance(item.get(key, ""), str), label + f": {key} must be text.")
     for slot in item["slots"]:
         validate_slot(slot)
     if item["type"] == "CommitteeMeeting":
         participants = item.get("participants", [])
         require(isinstance(participants, list), label + ": malformed participants.")
+        require(all(isinstance(participant, dict) and isinstance(participant.get("role", ""), str) for participant in participants),
+                label + ": malformed participant metadata.")
         ids = [participant.get("userId") for participant in participants]
         require(all(type(uid) is int and uid in users for uid in ids), label + ": missing participant reference.")
         require(len(ids) == len(set(ids)), label + ": duplicate participant IDs.")
     if item["type"] == "Exam":
         require(isinstance(item.get("exam"), dict) and type(item["exam"].get("canSplitAcrossRooms")) is bool,
                 label + ": invalid exam metadata.")
+        require(all(isinstance(item["exam"].get(key, ""), str) for key in ("courseCode", "courseName", "examType")),
+                label + ": examination metadata must be text.")
 
 
 def validate_snapshot(snapshot):
@@ -138,6 +146,14 @@ def import_csv(database, directory, dry_run=False):
               "strategy": snapshot["strategy"], "warnings": inputs.warnings}
     if dry_run:
         return report
+    populate_empty_database(database, snapshot)
+    return report
+
+
+def populate_empty_database(database, snapshot, unit_definitions=None, event_kind="imported"):
+    """One-time validated initialization only; never reset or merge a populated target."""
+    validate_snapshot(snapshot)
+    unit_definitions = unit_definitions or {}
     with database.transaction() as session:
         state = state_row(session, lock=True)
         for table in Base.metadata.sorted_tables:
@@ -151,9 +167,16 @@ def import_csv(database, directory, dry_run=False):
                     names.append(name)
         roles = {name: Role(name=name) for name in names}
         session.add_all(roles.values())
-        units = {name: OrganizationUnit(name=name) for name in dict.fromkeys(item["primaryUnit"] for item in snapshot["users"] if item["primaryUnit"])}
+        unit_names = list(dict.fromkeys(item["primaryUnit"] for item in snapshot["users"] if item["primaryUnit"]))
+        unit_names += [name for name in unit_definitions if name not in unit_names]
+        units = {name: OrganizationUnit(name=name, unit_type=unit_definitions.get(name, {}).get("type")) for name in unit_names}
         session.add_all(units.values())
         session.flush()
+        for name, definition in unit_definitions.items():
+            parent = definition.get("parent")
+            require(parent is None or parent in units, f"Unit {name}: unknown parent.")
+            require(parent != name, f"Unit {name}: self-parent is invalid.")
+            units[name].parent_id = units[parent].id if parent else None
         for ordinal, item in enumerate(snapshot["users"], 1):
             session.add(User(id=item["id"], source_order=ordinal, name=item["name"], primary_role_id=roles[item["role"]].id,
                              primary_unit_id=units[item["primaryUnit"]].id if item["primaryUnit"] else None,
@@ -167,7 +190,7 @@ def import_csv(database, directory, dry_run=False):
                 session.add(UserRole(user_id=item["id"], role_id=roles[name].id, ordinal=ordinal))
         for ordinal, item in enumerate(snapshot["requests"], 1):
             record = insert_request(session, item, ordinal)
-            session.add(RequestHistory(request_id=record.id, kind="imported", message="Imported from validated CSV input."))
+            session.add(RequestHistory(request_id=record.id, kind=event_kind, message="Imported from validated CSV input." if event_kind == "imported" else "Created from fictional development demo data."))
         for ordinal, item in enumerate(snapshot["busySlots"], 1):
             slot = item["slot"]
             session.add(BusySlot(user_id=item["userId"], source_order=ordinal, day=slot["day"],
@@ -178,4 +201,3 @@ def import_csv(database, directory, dry_run=False):
         for model in (Role, OrganizationUnit, User, Resource, ResourceRequest, BusySlot):
             advance_identity(session, model)
         advance_identity(session, ResourceRequest, "submission_order")
-    return report

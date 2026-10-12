@@ -106,3 +106,11 @@ is in progress. No new feature iteration or additional tables are introduced.
   45 tests on real PostgreSQL 17.11. All five strategies retain exact round-trip.
 - Next: complete schema inventory/ER sources, demo seeding, runtime CSV cleanup,
   isolated backup/restore verification and full final regression.
+
+Demo seeding uses deterministic fictional inputs (default seed 41): 106 users,
+20 resources, 120 requests, 12 busy slots and six supported faculty/department
+units. Large mode scales inputs tenfold. Four demo tests passed, including all five
+real strategies and refusal to overwrite. No reset option or pre-approved fake
+allocations exist. Shared initialization is one validated empty-target transaction;
+CSV import still uses the same safeguards. Malformed metadata receives explicit
+validation errors rather than incidental Python attribute errors.

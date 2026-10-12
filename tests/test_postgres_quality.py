@@ -2,6 +2,7 @@
 
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from copy import deepcopy
 
 from sqlalchemy import inspect, select
 from sqlalchemy.exc import IntegrityError
@@ -9,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from postgres_fixtures import PostgresTestCase, ROOT
 from test_postgres_import import copy_inputs
 from web.engine_gateway import EngineGateway
-from web.persistence.importer import import_csv
+from web.persistence.importer import ImportValidationError, import_csv
 from web.persistence.models import Base, RequestDecision, RequestSlot, ResourceRequest
 from web.persistence.repository import PersistenceError, Repository
 
@@ -74,3 +75,13 @@ class PostgresQualityTests(PostgresTestCase):
         for _ in range(3):
             self.repository.read_view()
             self.assertEqual(self.database.engine.pool.checkedout(), 0)
+
+    def test_malformed_request_metadata_rolls_back_without_python_attribute_errors(self):
+        original = self.repository.snapshot()["requests"][0]
+        for changes in ({"slots": [None]}, {"title": []}, {"type": "CommitteeMeeting", "participants": [None]},
+                        {"type": "Exam", "exam": {"canSplitAcrossRooms": True, "courseCode": []}}):
+            item = deepcopy(original) | changes
+            item.pop("id")
+            with self.subTest(changes=changes), self.assertRaises(ImportValidationError):
+                self.repository.save_request(item)
+        self.assertEqual(len(self.repository.snapshot()["requests"]), 14)
