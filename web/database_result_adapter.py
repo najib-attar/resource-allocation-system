@@ -3,11 +3,11 @@
 try:
     from .backend_result_adapter import BackendResultAdapter
     from .engine_result_projection import clock, result_tables, time_data
-    from .shared_file_state import OUTPUT_HEADERS
+    from .result_table_schema import OUTPUT_HEADERS
 except ImportError:
     from backend_result_adapter import BackendResultAdapter
     from engine_result_projection import clock, result_tables, time_data
-    from shared_file_state import OUTPUT_HEADERS
+    from result_table_schema import OUTPUT_HEADERS
 
 
 INPUT_HEADERS = {

@@ -1,9 +1,9 @@
 """In-memory compatibility tables for existing templates; never writes CSV outputs."""
 
 try:
-    from .shared_file_state import OUTPUT_HEADERS
+    from .result_table_schema import OUTPUT_HEADERS
 except ImportError:
-    from shared_file_state import OUTPUT_HEADERS
+    from result_table_schema import OUTPUT_HEADERS
 
 
 def clock(minutes):

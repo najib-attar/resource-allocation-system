@@ -1,4 +1,4 @@
-"""Single-machine CSV coordination. All writers must use the same OS lock."""
+"""Historical CSV coordination fixtures only; never import from application runtime."""
 
 from contextlib import contextmanager
 from pathlib import Path
@@ -15,14 +15,7 @@ else:
     import fcntl
 
 
-INPUT_FILES = ("users.csv", "spaces.csv", "requests.csv", "user_busy_slots.csv",
-               "request_participants.csv", "config.txt")
-OUTPUT_HEADERS = {
-    "allocations.csv": "allocationId,requestId,spaceId,spaceName,spaceType,building,day,startHour,endHour,assignedParticipants",
-    "request_results.csv": "requestId,requestType,title,purpose,courseCode,courseName,examType,canSplitAcrossRooms,committeeParticipants,requesterName,requesterRole,priority,spaceName,spaceType,spaceBuilding,requiredBuilding,requiredFeature,participants,status,rejectionReason,timeInfo,lifecycleHistory",
-    "request_summaries.csv": "requestId,requestType,title,purpose,requesterName,requesterRole,priority,status,rejectionReason,requiredParticipants,assignedParticipants,allocationCount,allocatedSpaces,requiredFeature,requiredBuilding,summaryText",
-    "allocation_summaries.csv": "allocationId,requestId,requestTitle,requestPurpose,requestType,spaceName,spaceType,building,day,startTime,endTime,assignedParticipants,spaceCapacity",
-}
+from web.result_table_schema import INPUT_FILES, OUTPUT_HEADERS
 
 
 class SharedStateError(RuntimeError):

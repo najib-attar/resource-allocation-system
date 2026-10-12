@@ -9,7 +9,7 @@ from unittest import TestCase, main, mock
 
 from web import app as web_app
 from web.backend_executable import resolve_backend_executable
-from web.shared_file_state import SharedFileState
+from legacy_shared_file_state import SharedFileState
 from web.database_result_adapter import DatabaseResultAdapter
 from web.persistence.importer import import_csv
 from web.persistence.repository import Repository

@@ -66,7 +66,7 @@ def csv_bool(value, default=False):
 
 
 def execution_snapshot(adapter, strategy):
-    """Translate temporary CSV persistence into domain DTOs, not engine decisions."""
+    """Translate explicit offline CSV inputs into DTOs; normal runs snapshot PostgreSQL."""
     def rows(name):
         return adapter.read_csv_table(name)["rows"]
     def optional(row, key):

@@ -35,7 +35,7 @@ class PostgresWebTests(PostgresTestCase):
         self.client = self.configure_web()
 
     def test_normal_views_and_execution_never_use_csv_or_local_result_json(self):
-        with mock.patch("web.shared_file_state.SharedFileState.__init__", side_effect=AssertionError("Operational files used")), \
+        with mock.patch("legacy_shared_file_state.SharedFileState.__init__", side_effect=AssertionError("Operational files used")), \
                 mock.patch.object(BackendResultAdapter, "read_csv_table", side_effect=AssertionError("File reader used")):
             response = self.client.post("/run-allocation")
             self.assertIn("run_status=success", response.location)
@@ -119,7 +119,7 @@ class DatabaseFailureWebTests(TestCase):
     def test_missing_configuration_returns_clear_error_without_file_fallback(self):
         with mock.patch.dict(os.environ, {}, clear=True), \
                 mock.patch.dict(web_app.app.config, {"DATABASE_URL": None}), \
-                mock.patch("web.shared_file_state.SharedFileState.__init__", side_effect=AssertionError("CSV fallback used")):
+                mock.patch("legacy_shared_file_state.SharedFileState.__init__", side_effect=AssertionError("CSV fallback used")):
             response = web_app.app.test_client().get("/")
         self.assertEqual(response.status_code, 503)
         self.assertIn("DATABASE_URL is required", response.get_data(as_text=True))

@@ -18,7 +18,8 @@ from web.backend_executable import resolve_backend_executable
 from web.database_result_adapter import DatabaseResultAdapter
 from web.persistence.importer import import_csv
 from web.persistence.repository import Repository, state_row
-from web.shared_file_state import OUTPUT_HEADERS, SharedFileState, SharedStateBusy, atomic_write
+from web.result_table_schema import OUTPUT_HEADERS
+from legacy_shared_file_state import SharedFileState, SharedStateBusy, atomic_write
 from engine_json_fixtures import fake_result
 from legacy_csv_fixtures import create_legacy_workspace, validate_legacy_outputs
 from postgres_fixtures import PostgresTestCase, ROOT
@@ -80,7 +81,7 @@ def crash_during_save_process(data_dir):
         real_write(path, contents)
         if Path(path).name == "request_participants.csv":
             os._exit(19)
-    with state.locked(), mock.patch("web.shared_file_state.atomic_write", side_effect=crash_write):
+    with state.locked(), mock.patch("legacy_shared_file_state.atomic_write", side_effect=crash_write):
         state.save_request({"requestId": "2", "requestType": "CommitteeMeeting", "title": "Crash save"},
                            [{"requestId": "2", "userId": "2", "participantRole": "Crash role"}],
                            web_app.REQUEST_HEADERS, web_app.REQUEST_PARTICIPANT_HEADERS)

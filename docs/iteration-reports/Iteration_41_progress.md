@@ -114,3 +114,10 @@ real strategies and refusal to overwrite. No reset option or pre-approved fake
 allocations exist. Shared initialization is one validated empty-target transaction;
 CSV import still uses the same safeguards. Malformed metadata receives explicit
 validation errors rather than incidental Python attribute errors.
+
+Runtime CSV cleanup removed `web/shared_file_state.py` and file-generation
+publication from the runtime adapter. Presentation schemas are pure constants in
+`result_table_schema.py`. Historical coordinator/JSON-publication helpers remain
+only under `tests/legacy_*` to preserve useful recovery/parity regressions; runtime
+imports cannot reach them. The full Python suite passed 125 tests (124 passed,
+one POSIX-only skip) after cleanup. Standalone CSV CLI and explicit import remain.
