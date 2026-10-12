@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 class PostgresTestCase(TestCase):
+    migration_target = "head"
     def setUp(self):
         configured = os.environ.get("TEST_DATABASE_URL")
         if not configured:
@@ -29,7 +30,7 @@ class PostgresTestCase(TestCase):
         self.addCleanup(self.cleanup_schema)
         self.url = database_url(configured).set(query={"options": "-csearch_path=" + self.schema}).render_as_string(hide_password=False)
         with mock.patch.dict(os.environ, {"DATABASE_URL": self.url}):
-            command.upgrade(Config(str(ROOT / "alembic.ini")), "head")
+            command.upgrade(Config(str(ROOT / "alembic.ini")), self.migration_target)
         self.database = Database(self.url)
         self.addCleanup(self.database.dispose)
 

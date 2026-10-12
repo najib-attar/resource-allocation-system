@@ -141,9 +141,6 @@ class SharedFileState:
         atomic_write(self.pending_save, json.dumps(record).encode("utf-8"))
         self.recover_save()
 
-    def write_strategy(self, strategy):
-        atomic_write(self.data_dir / "config.txt", f"allocation_strategy={strategy}\n".encode("utf-8"))
-
     def current_data_dir(self):
         if not self.pointer.exists():
             return None
