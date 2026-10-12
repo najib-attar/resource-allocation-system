@@ -86,6 +86,81 @@ complete weekly allocation batch; it is not yet a dated appointment reservation
 system. Shared-room exams retain their existing capacity-sharing policy, so a
 blanket SQL room-overlap prohibition would be incorrect.
 
+## Fictional demonstration database
+
+Create a **new empty development database**, configure `DATABASE_URL`, and migrate
+to head. Then seed directly into PostgreSQL, not into the regression CSV fixtures:
+
+```powershell
+python scripts/seed_demo_database.py --seed 41 --dry-run
+python scripts/seed_demo_database.py --seed 41 --run-allocation
+python web/app.py
+```
+
+Default data: 106 users across all five roles, 20 classrooms/laboratories/meeting
+rooms, six faculty/department units, 120 requests covering all four types, and
+12 professor busy slots. Committee participants, room/participant conflicts,
+features, capacities, recurring teaching and compatible multi-room exams are
+included. Names/IDs are fictional; email addresses use `example.invalid`.
+Only the real C++ engine generates decisions/allocations/suggestions.
+
+`--size large` uses 1,060 users, 200 resources, 1,200 requests and 120 busy slots.
+`--seed` makes input generation reproducible; allocation remains strategy-dependent.
+An empty seed creates pending requests; `--run-allocation` explicitly invokes C++.
+If the engine fails afterward, the seed remains saved and pending, with no partial
+results published. Inspect Users, Spaces, Requests, Allocation Summary and Schedules.
+
+The tool refuses **every populated target** and has no reset/force switch. To
+start another demo, create another empty development database. No reset is
+automated: any later reset of existing development data needs separate explicit
+approval and a verified backup; production data must never be reset by this tool.
+
+## Backup and recovery
+
+Use PostgreSQL client tools matching the server major version. Store backups
+outside the repository with restricted permissions; they may contain personal
+information in a real installation. Keep passwords in environment/service secrets
+or a protected PostgreSQL password file, not command arguments or committed URLs.
+
+```powershell
+# PGHOST/PGPORT/PGUSER and protected authentication settings identify the server.
+pg_dump --format=custom --file=resource-allocation.dump --dbname=resource_allocation
+createdb resource_allocation_restore_check
+pg_restore --exit-on-error --no-owner --no-privileges --dbname=resource_allocation_restore_check resource-allocation.dump
+```
+
+The destination must be **new and empty**. Do not use `--clean`, overwrite a live
+database or delete the original while verifying recovery. A real operational
+restore also requires provisioned roles/privileges and reviewed configuration;
+`--no-owner --no-privileges` above is for an isolated verification destination.
+Point a separate application instance to the restored database, compare entity
+counts, active-run decisions/allocations/suggestions and next generated request ID,
+then verify dashboard/schedules. Restore the schema's Alembic version with the
+dump and run normal upgrades only when reviewed. Backup creation alone is not
+evidence that recovery works.
+
+The automated recovery test uses `pg_dump`/`pg_restore`, creates a unique
+`ras_restore_<uuid>` database and verifies exact published results, identity
+continuation and a new Flask process. It retains that isolated database rather
+than deleting any existing database. Local test schema cleanup never affects it.
+
+## CSV dependency classification
+
+| Category | Current treatment |
+|---|---|
+| Standalone C++ CSV CLI | `src/data/` readers/writers and no-argument CLI preserved. |
+| Optional import/export | Validated `scripts/import_csv.py`, offline snapshot parsing and standalone CLI exports preserved. |
+| Regression fixtures | Original `data/` and `tests/fixtures/` files preserved untouched. |
+| Historical documentation | Previous iteration reports preserved; active guides describe PostgreSQL. |
+| Obsolete operational persistence | `web/shared_file_state.py` and runtime file-generation publication removed. |
+| Historical compatibility tests | Coordinator/result-publication fixtures live only in `tests/legacy_*`; unused legacy strategy writer removed. |
+
+`result_table_schema.py` contains display/import column constants, not storage.
+Legacy-named `read_csv_table` adapter methods return in-memory database projections
+in normal Flask workflows. Renaming all template/view keys would add risk without
+changing authority. The explicit offline CSV display adapter is still used by
+CLI parity tests; it cannot become a fallback when PostgreSQL fails.
+
 ## Tests and CI
 
 Create a separate disposable test database and set:
@@ -101,6 +176,13 @@ clean up only those schemas. They never reset the configured database's public
 schema or use SQLite as a PostgreSQL substitute. The test role needs schema
 creation rights **only in that disposable database**. Without `TEST_DATABASE_URL`,
 database tests explicitly skip; that is not full migration verification.
+
+Real recovery additionally needs `CREATEDB` on the **isolated test server** and
+matching client tools. Set `POSTGRES_TEST_TOOLS_DIR` to their directory locally.
+CI runs matching clients through its PostgreSQL service container using the
+step-scoped `POSTGRES_TEST_TOOLS_CONTAINER`. Without tools, recovery explicitly
+skips; that is incomplete recovery verification. Do not grant the production web
+role these test/admin permissions.
 
 The Linux GitHub Actions job provisions PostgreSQL 17.11, installs pinned direct
 dependencies, builds the authoritative engine, and runs the C++ and Python suites.

@@ -8,32 +8,33 @@ C++17 engine, EngineGateway, executable verification, and JSON protocol v1 remai
 unchanged. CSV is an explicit import/export or standalone CLI compatibility tool,
 not a database fallback or a second writable application store.
 
-```mermaid
-erDiagram
-    ROLE ||--o{ UNIVERSITY_USER : primary_role
-    ROLE ||--o{ USER_ROLE : assigned
-    UNIVERSITY_USER ||--o{ USER_ROLE : has
-    ORGANIZATION_UNIT ||--o{ ORGANIZATION_UNIT : parent
-    ORGANIZATION_UNIT o|--o{ UNIVERSITY_USER : primary_unit
-    UNIVERSITY_USER ||--o{ RESOURCE_REQUEST : submits
-    RESOURCE ||--o{ RESOURCE_REQUEST : preferred_space
-    RESOURCE_REQUEST ||--|{ REQUEST_SLOT : occurrences
-    RESOURCE_REQUEST ||--o| EXAM_DETAILS : exam_metadata
-    RESOURCE_REQUEST ||--o{ REQUEST_PARTICIPANT : committee
-    UNIVERSITY_USER ||--o{ REQUEST_PARTICIPANT : participates
-    UNIVERSITY_USER ||--o{ BUSY_SLOT : unavailable
-    ALLOCATION_RUN ||--o{ REQUEST_DECISION : decides
-    RESOURCE_REQUEST ||--o{ REQUEST_DECISION : evaluated
-    REQUEST_DECISION ||--o{ ALLOCATION : produces
-    RESOURCE ||--o{ ALLOCATION : assigned
-    ALLOCATION ||--o{ ALLOCATION_PARTICIPANT : requires
-    UNIVERSITY_USER ||--o{ ALLOCATION_PARTICIPANT : committed
-    REQUEST_DECISION ||--o| SUGGESTION_GROUP : alternatives
-    SUGGESTION_GROUP ||--o{ MEETING_SUGGESTION : ranked
-    RESOURCE_REQUEST ||--o{ REQUEST_HISTORY : history
-    ALLOCATION_RUN o|--o{ REQUEST_HISTORY : provenance
-    ALLOCATION_RUN o|--|| APPLICATION_STATE : active_run
+## ER diagrams and physical inventory
+
+![High-level ER diagram](database-er-high-level.svg)
+
+- [High-level Mermaid source](database-er-high-level.mmd): principal entities, using only actual foreign-key relationships.
+- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 18 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
+- [Physical schema catalog](database-schema-catalog.md): every column's type/nullability/default, composite keys, unique/check constraints, indexes and deletion policy.
+
+`alembic_version` is the nineteenth physical table, used only by Alembic, not an
+application entity. Application sources/catalog are generated from the models;
+the existing Alembic revision marker is explicitly documented too. Use
+`python scripts/generate_database_diagrams.py`; `--check` detects drift in tests/CI.
+SVGs are rendered with Mermaid CLI 12.0.0 and remain zoomable. For example:
+
+```text
+mmdc -i docs/architecture/database-er-physical.mmd -o docs/architecture/database-er-physical.svg -t neutral -b white
 ```
+
+Mermaid-safe labels such as `varchar_32` mean SQL `varchar(32)`; the catalog uses
+exact PostgreSQL type names.
+
+Cardinalities describe physical constraints: a request can temporarily have zero
+slot rows in direct SQL, although application transactions require at least one.
+An exam-details row belongs to exactly one request; a request has at most one.
+The optional parent/primary-unit/run FKs allow unknown organizational hierarchy
+and pre-publication state. A run may be inactive; only the singleton state selects
+the active run. Composite allocation/suggestion FKs cannot cross run boundaries.
 
 ## Tables
 
@@ -64,6 +65,62 @@ and foreign keys prevent ambiguous references; CHECK constraints validate types,
 positive counts and half-open weekday intervals; UNIQUE constraints prevent
 duplicate participants and repeated per-run allocation IDs. Foreign-key and
 run/request/resource indexes support the current views.
+
+## Table-by-table architecture review
+
+All 18 tables have distinct current responsibilities; no appointment/authentication
+tables were added. The catalog above contains the complete physical verification.
+
+| Table | Necessity, normalization and reviewed relationship |
+|---|---|
+| role | Necessary shared labels; unique names. Primary role controls C++ dispatch; assigned labels do not introduce new policies. |
+| organization_unit | Necessary shared unit names; optional type/parent preserve unknown CSV hierarchy. Self-parent prohibited; general cycle/type policies need a future organizational editor design. |
+| university_user | Necessary identity/profile; unique source order, positive ID and nonnegative year. One profile table avoids unnecessary per-role joins; role-specific empty fields intentionally preserve the protocol. Email is not unique because existing profiles may omit it. |
+| user_role | Necessary many-to-many assignment; composite PK prevents duplicates, unique positive ordinal preserves ordering, reverse role index supports referential lookups. |
+| resource | Necessary independent resource entity; positive capacity and allowed subtype, explicit facilities/availability, unique positive source order. Three booleans match the current feature set; no generic feature framework needed. |
+| resource_request | Necessary request identity/requirements; separate requester and preferred resource FKs, unique positive identity-generated submission order. Per-request revision is retained metadata; global input_revision currently controls publication. |
+| request_slot | Necessary one-to-many occurrences; composite request/positive ordinal PK, weekday/minute checks. Recurring requests retain multiple occurrences, not duplicated parent requests. |
+| exam_details | Necessary optional one-to-one subtype metadata. Correct subtype and required exam metadata are validated by application writes/snapshot construction, not a cross-table SQL trigger. |
+| request_participant | Necessary many-to-many committee membership; composite identity plus unique positive ordinal; reverse user index. Participant role text is descriptive, not access authorization. |
+| busy_slot | Necessary independent commitments; valid weekly intervals, user FK and unique positive source order. Overlapping busy slots are legitimate input, so no artificial uniqueness/exclusion rule. |
+| allocation_run | Necessary execution provenance; unique correlation ID, allowed status/strategy, nonnegative captured revision, timestamp and immutable JSON input/build. Snapshot duplication preserves exactly what an old run evaluated. |
+| application_state | Necessary singleton configuration/publication boundary; PK fixed to 1 and nullable run FK. No redundant index for its single active-run reference. |
+| request_decision | Necessary run/request evaluation; composite PK, unique positive per-run ordinal, status check and request lookup index. JSON duplicates some columns intentionally for complete immutable protocol detail; read/publication guards detect inconsistent projections. |
+| allocation | Necessary decision/resource assignment; bigint DB identity separate from unique run-local engine ID; composite decision FK, interval/count checks and targeted indexes. Redundant run-only index removed; composite/run-engine indexes already cover that prefix. |
+| allocation_participant | Necessary per-allocation human commitments; composite identity and reverse user index. Ordinal zero is retained solely for pre-0041a unknown historical ordering; new application writes use ordered positive values. |
+| suggestion_group | Necessary distinction between no scan and a scan with no alternatives; composite decision PK/FK plus unique positive scan ordinal. |
+| meeting_suggestion | Necessary ranked alternatives; composite group/rank PK, valid interval, nonnegative scores/distances, resource FK/index. Scores are engine output, not recomputed in Flask. |
+| request_history | Necessary timestamped save/import/seed/decision provenance; request FK and optional run FK with lookup indexes. Full engine lifecycle detail remains in the decision payload; this table records application events. |
+
+All FKs use **NO ACTION**, not cascading deletes: referenced history/results cannot
+silently disappear. ORM defaults are not automatic SQL defaults; explicit SQL
+tools must supply required fields. Structural keys, nullability, unique/check
+constraints and deletion behavior are tested against live PostgreSQL for every
+table. Policy/type completeness across subtype tables is also protected by the
+transactional application boundary. Arbitrary direct SQL is not a supported
+alternative application write path.
+
+## Query and integrity findings
+
+Added revision `0041b` validates ordering and scores, adds decision/scan ordering
+uniqueness and six reverse/composite lookup indexes. `0041c` removes the redundant
+allocation run-only index without deleting data. Upgrading invalid old records
+fails atomically; the migration never silently repairs/discards them.
+
+Reads use bounded bulk queries rather than lazy ORM relationships: the 1,200-request
+demo snapshot is tested to use at most 15 SQL statements and return its connection.
+Publication batches allocation inserts rather than flushing once per allocation.
+Normal sessions are short-lived and return connections to a pre-ping pool; readers
+use repeatable read. There is no database transaction held during C++ computation.
+
+Result validation checks duplicated counts/IDs/room metadata against actual returned
+allocations and the captured inputs. The database handles references/rollback;
+C++ still handles capacity sharing, conflicts, eligibility and strategy ordering.
+No SQL overlap rule is introduced that would forbid legitimate shared-room exams.
+
+Full snapshots/results are intentionally loaded for the bounded weekly prototype.
+Unbounded run/history retention and whole-batch rendering will eventually need
+pagination/retention; local demo timings are not a production scalability proof.
 
 ## Time and allocation semantics
 

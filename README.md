@@ -206,7 +206,7 @@ Result: 140 passed, 0 failed
 
 The test runner compiles and runs the backend smoke executable, then compiles and runs the unit and integration tests.
 
-After installing `requirements.txt`, building the authoritative backend, and configuring an isolated `TEST_DATABASE_URL`, run `python -m unittest discover -s tests -p 'test_*.py' -v` for database integrity/concurrency, migrations, gateway, JSON/legacy parity and Flask smoke checks. The verified Windows run executed 113 tests: 112 passed, zero failed, one POSIX-permission test skipped. Without that URL, PostgreSQL tests explicitly skip; such a run is not full verification. Linux CI provides a real PostgreSQL service but has not yet run for this unpublished branch. See the [iteration verification record](docs/iteration-reports/Iteration_41_progress.md) for commands and platform limitations.
+After installing `requirements.txt`, building the authoritative backend, and configuring an isolated `TEST_DATABASE_URL`, run `python -m unittest discover -s tests -p 'test_*.py' -v` for database integrity/concurrency, migrations, gateway, JSON/legacy parity and Flask smoke checks. The verified Windows foundation-review run executed 134 tests: 133 passed, zero failed, one POSIX-permission test skipped. Configure matching PostgreSQL backup tools as described in the [database guide](docs/database-operations.md) to run recovery tests. Without the URL/tools, relevant tests explicitly skip; such a run is not full verification. Linux CI provides a real PostgreSQL service but has not yet run for this unpublished branch. See the [iteration verification record](docs/iteration-reports/Iteration_41_progress.md) for commands and platform limitations.
 
 ## Iterative Development Summary
 
@@ -291,6 +291,8 @@ http://127.0.0.1:5000
 Set `DATABASE_URL` before migrations and web startup; `.env.example` is a reference, not automatically loaded. Import refuses populated targets. The web dashboard does not implement allocation logic: it builds ordered PostgreSQL snapshots, calls `EngineGateway`, and persists validated results transactionally. `DatabaseResultAdapter` supplies one pinned database view per response. No normal web operation reads/writes CSV persistence or `engine-result.json`. C++ retains rules, strategies, availability and suggestions. JSON protocol v1 is unchanged.
 
 ## Web Dashboard Overview
+
+For a new empty development database, `python scripts/seed_demo_database.py --seed 41 --run-allocation` creates reproducible fictional university data and runs the real engine. Use `--size large` for a 1,200-request sanity dataset. Seeding never overwrites/resets existing data. See the [ER diagrams and full schema inventory](docs/architecture/database-design.md) and [demo/recovery guide](docs/database-operations.md).
 
 The current dashboard supports:
 

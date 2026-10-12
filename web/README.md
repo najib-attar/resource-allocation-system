@@ -135,6 +135,7 @@ powershell -ExecutionPolicy Bypass -File tests/run_tests.ps1
 ```
 
 See [Iteration 41 progress](../docs/iteration-reports/Iteration_41_progress.md)
-for exact counts. Legacy file utilities remain for offline compatibility/regression
-tests, not operational persistence. Authentication, HTTP retry idempotency, dated
+for exact counts. Historical file-coordination/publication helpers live only in
+`tests/legacy_*`, not application runtime. Explicit offline CSV display/import/CLI
+support remains. Authentication, HTTP retry idempotency, dated
 appointments and production hardening are not delivered by this migration.

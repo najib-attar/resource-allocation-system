@@ -92,8 +92,8 @@ See [operations](../database-operations.md) for setup, failure semantics and bac
 
 ## Database foundation review follow-up
 
-The initial cutover is complete; the requested comprehensive foundation review
-is in progress. No new feature iteration or additional tables are introduced.
+The initial cutover and requested comprehensive foundation review are locally
+complete. No new feature iteration or additional tables are introduced.
 
 - Reproduced missing ordinal constraints, duplicate decision ordering, missing
   reverse-FK lookup indexes and acceptance of inconsistent allocation projections.
@@ -156,3 +156,11 @@ regression and the complete rerun passed: 134 Python tests total, 133 passed,
 zero failed, one POSIX-only skip on Windows. The recovery test performed a new
 isolated dump/restore and Flask-process restart during that run. No application
 schema, scheduling behavior, fixture or C++ source was changed by this guard.
+
+Read-back guard commit: `27467a3`. Final metadata-derived sources/catalog include
+all 18 application tables and the existing Alembic revision table; both Mermaid
+SVGs rendered successfully and were visually inspected. Schema source drift,
+Python compilation, dependency compatibility, Markdown paths and local CI lint
+were checked. All four original untracked generated CSV hashes remain unchanged;
+only approved Iteration 41 files were staged. Complete local verification is
+recorded in [Iteration 41](Iteration_41.md); remote CI remains explicitly pending.
