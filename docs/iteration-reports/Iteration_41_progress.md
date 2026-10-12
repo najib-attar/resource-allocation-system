@@ -200,3 +200,13 @@ remote results will be inspected on the draft PR, which must not be merged here.
 
 Completion correction commit: `dc397e7`. Final living guides document retry keys,
 deferred subtype constraints, hierarchy safety and non-destructive retention.
+
+Documentation verification commit: `6aa1d1e`. Branch pushed and draft
+[PR #2](https://github.com/najib-attar/resource-allocation-system/pull/2) opened.
+Both remote Linux push/PR runs (`38308473231` / `38308530964`) passed on this
+implementation: 155 Python passed, zero failed/skipped; 140 C++ passed, zero
+failed. Inspected actual logs, including real container-client backup/restore,
+process concurrency and Linux permissions. PR was conflict-free and left draft.
+Final documentation evidence is committed separately and its subsequent checks
+must also pass; nothing is merged or deployed. Original unrelated local files
+remain unstaged and all four generated CSV hashes remain unchanged.

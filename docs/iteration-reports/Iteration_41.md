@@ -99,10 +99,18 @@ No allocation algorithm, JSON contract, authentication or appointment change.
 - [x] Real backup/restore and application restart verified in isolated databases.
 - [x] Full C++/Python tests, local CI lint, syntax and dependency checks passed.
 - [x] Hierarchy, subtype completeness and keyed submission retries verified.
-- [ ] Remote Linux CI execution: pending authorized publication.
+- [x] Remote Linux CI: 155 Python and 140 C++ passed, zero failures/skips.
 
 The current weekly application's database foundation is locally verified. This
 checklist is not a claim of production readiness or future appointment support.
+
+**Draft review:** [PR #2](https://github.com/najib-attar/resource-allocation-system/pull/2)
+targets main and remains unmerged. Both the initial
+[push check](https://github.com/najib-attar/resource-allocation-system/actions/runs/38308473231)
+and [PR check](https://github.com/najib-attar/resource-allocation-system/actions/runs/38308530964)
+passed on implementation commit `6aa1d1e`, including real PostgreSQL recovery via
+matching container tools. Any later commits must also pass the PR checks before
+merge. Human approval remains required; no application deployment occurred.
 
 **Trade-offs and follow-up:** Current weekly scheduling is preserved, not converted
 to calendar dates. No authentication or UC-STU-01 is implemented. Generated old
