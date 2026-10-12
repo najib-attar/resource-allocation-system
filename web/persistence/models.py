@@ -86,7 +86,8 @@ class Resource(Base):
 
 class ResourceRequest(Base):
     __tablename__ = "resource_request"
-    __table_args__ = (CheckConstraint("id > 0 AND participant_count > 0 AND revision > 0"), CheckConstraint(allowed("type", REQUEST_TYPES)), CheckConstraint("submission_order > 0", name="ck_request_submission_order"))
+    __table_args__ = (CheckConstraint("id > 0 AND participant_count > 0 AND revision > 0"), CheckConstraint(allowed("type", REQUEST_TYPES)), CheckConstraint("submission_order > 0", name="ck_request_submission_order"),
+                      CheckConstraint("(submission_key IS NULL AND submission_fingerprint IS NULL) OR (submission_key IS NOT NULL AND submission_fingerprint IS NOT NULL AND submission_key ~ '^[0-9a-f]{32}$' AND submission_fingerprint ~ '^[0-9a-f]{64}$')", name="ck_submission_identity"))
     id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
     submission_order: Mapped[int] = mapped_column(BigInteger, Identity(), unique=True)
     type: Mapped[str] = mapped_column(String(30))
@@ -98,6 +99,8 @@ class ResourceRequest(Base):
     required_feature: Mapped[str] = mapped_column(Text, default="")
     required_building: Mapped[str] = mapped_column(Text, default="")
     revision: Mapped[int] = mapped_column(Integer, default=1)
+    submission_key: Mapped[str | None] = mapped_column(String(32), unique=True)
+    submission_fingerprint: Mapped[str | None] = mapped_column(String(64))
 
 
 class RequestSlot(Base):

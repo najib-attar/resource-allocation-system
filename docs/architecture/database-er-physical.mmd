@@ -124,6 +124,8 @@ erDiagram
         text required_feature
         text required_building
         integer revision
+        varchar_32 submission_key UK "nullable"
+        varchar_64 submission_fingerprint "nullable"
     }
     role {
         integer id PK "identity"
@@ -175,7 +177,7 @@ erDiagram
     allocation_run o|--o{ request_history : run_id
     resource_request ||--o{ request_participant : request_id
     university_user ||--o{ request_participant : user_id
-    resource_request ||--o{ request_slot : request_id
+    resource_request ||--|{ request_slot : request_id
     university_user ||--o{ resource_request : requester_id
     resource ||--o{ resource_request : resource_id
     request_decision ||--o| suggestion_group : run_id_request_id

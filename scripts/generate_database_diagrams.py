@@ -75,7 +75,7 @@ def er_source(tables, physical):
             if parent not in names:
                 continue
             left = "o|" if any(column.nullable for column in fk.columns) else "||"
-            right = "o|" if set(fk.columns.keys()) in unique_sets(table) or table.name == "application_state" else "o{"
+            right = "o|" if set(fk.columns.keys()) in unique_sets(table) or table.name == "application_state" else "|{" if table.name == "request_slot" else "o{"
             label = "_".join(fk.columns.keys())
             lines.append(f"    {parent} {left}--{right} {table.name} : {label}")
     return "\n".join(lines) + "\n"
@@ -108,6 +108,11 @@ def catalog(tables):
     lines += ["## alembic_version (infrastructure)", "", "Alembic's existing revision marker, not an additional application entity.", "",
               "| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |", "|---|---|---|---|---|",
               "| version_num | varchar(32) | PK | no | - |", "", "No foreign keys, additional indexes or cascading deletion.", ""]
+    lines += ["## Deferred request subtype integrity", "",
+              "Revision `0041d` adds commit-time constraint triggers to `resource_request`, `request_slot`, `exam_details` and `request_participant`.",
+              "Every request has 1-10000 slots; non-recurring requests have exactly one. Exam details exist if and only if the request is an Exam. Participant mappings belong only to CommitteeMeeting requests (an empty committee remains a valid rejected engine input).",
+              "Before child writes, a no-op parent revision update serializes each request aggregate and prevents concurrent child-table write skew, including under repeatable read. The triggers do not evaluate allocation rules or increment the application input revision.",
+              "SQLAlchemy metadata/Alembic drift checks do not inspect SQL functions; dedicated live tests verify these migration-owned triggers. The physical diagram shows at least one request slot; subtype-specific cardinality is conditional.", ""]
     return "\n".join(lines)
 
 

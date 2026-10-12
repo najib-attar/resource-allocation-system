@@ -11,7 +11,7 @@ import uuid
 
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import create_engine, select, text
+from sqlalchemy import create_engine, delete, select, text
 from sqlalchemy.exc import IntegrityError
 
 from postgres_fixtures import PostgresTestCase, ROOT
@@ -26,8 +26,6 @@ from web.persistence.repository import Repository
 
 
 class PostgresUpgradeTests(PostgresTestCase):
-    migration_target = "0041a"
-
     def setUp(self):
         super().setUp()
         with TemporaryDirectory() as directory:
@@ -39,6 +37,9 @@ class PostgresUpgradeTests(PostgresTestCase):
         before = execute_allocation(self.repository, EngineGateway(ROOT))
         snapshot = self.repository.snapshot()
         with mock.patch.dict(os.environ, {"DATABASE_URL": self.url}):
+            # Only this owned disposable schema is downgraded. Current ORM fields
+            # cannot initialize a historical schema missing the newer columns.
+            command.downgrade(Config(str(ROOT / "alembic.ini")), "0041a")
             command.upgrade(Config(str(ROOT / "alembic.ini")), "head")
         after = self.repository.snapshot()
         snapshot.pop("runId"); after.pop("runId")
@@ -47,6 +48,8 @@ class PostgresUpgradeTests(PostgresTestCase):
         self.assertGreater(self.repository.save_request(new_request()), 45)
 
     def test_invalid_old_rows_abort_upgrade_without_deleting_or_partially_migrating(self):
+        with mock.patch.dict(os.environ, {"DATABASE_URL": self.url}):
+            command.downgrade(Config(str(ROOT / "alembic.ini")), "0041a")
         with self.database.transaction() as session:
             session.add(RequestSlot(request_id=1, ordinal=-1, day=1, start_minutes=540, end_minutes=600))
         with mock.patch.dict(os.environ, {"DATABASE_URL": self.url}), self.assertRaises(IntegrityError):
@@ -55,6 +58,18 @@ class PostgresUpgradeTests(PostgresTestCase):
             self.assertEqual(session.scalar(text("SELECT version_num FROM alembic_version")), "0041a")
             self.assertIsNotNone(session.get(RequestSlot, (1, -1)))
             self.assertEqual(session.scalar(text("SELECT count(*) FROM pg_constraint WHERE conname = 'ck_user_source_order' AND connamespace = current_schema()::regnamespace")), 0)
+
+    def test_incomplete_historical_subtype_aborts_upgrade_without_deleting_data(self):
+        with mock.patch.dict(os.environ, {"DATABASE_URL": self.url}):
+            command.downgrade(Config(str(ROOT / "alembic.ini")), "0041c")
+        with self.database.transaction() as session:
+            session.execute(delete(RequestSlot).where(RequestSlot.request_id == 1))
+        with mock.patch.dict(os.environ, {"DATABASE_URL": self.url}), self.assertRaises(IntegrityError):
+            command.upgrade(Config(str(ROOT / "alembic.ini")), "head")
+        with self.database.transaction(read_only=True) as session:
+            self.assertEqual(session.scalar(text("SELECT version_num FROM alembic_version")), "0041c")
+            self.assertEqual(session.scalar(text("SELECT count(*) FROM resource_request")), 14)
+            self.assertEqual(session.scalar(text("SELECT count(*) FROM pg_proc WHERE proname = 'ras_check_request_shape' AND pronamespace = current_schema()::regnamespace")), 0)
 
 
 class PostgresRecoveryTests(PostgresTestCase):

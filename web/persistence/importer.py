@@ -10,7 +10,7 @@ try:
 except ImportError:
     from engine_gateway import EngineIntegrationError, execution_snapshot
 from .models import Base, BusySlot, OrganizationUnit, REQUEST_TYPES, RequestHistory, Resource, ResourceRequest, Role, ROLES, SPACE_TYPES, STRATEGIES, User, UserRole
-from .repository import PROFILE_FIELDS, PersistenceError, advance_identity, insert_request, state_row
+from .repository import PROFILE_FIELDS, PersistenceError, advance_identity, insert_request, state_row, validate_unit_hierarchy
 
 
 class ImportValidationError(PersistenceError):
@@ -54,6 +54,10 @@ def validate_request(item, users, resources):
                 label + ": invalid exam metadata.")
         require(all(isinstance(item["exam"].get(key, ""), str) for key in ("courseCode", "courseName", "examType")),
                 label + ": examination metadata must be text.")
+    else:
+        require("exam" not in item, label + ": exam metadata belongs only to Exam requests.")
+    if item["type"] != "CommitteeMeeting":
+        require(not item.get("participants"), label + ": participants belong only to CommitteeMeeting requests.")
 
 
 def validate_snapshot(snapshot):
@@ -154,6 +158,16 @@ def populate_empty_database(database, snapshot, unit_definitions=None, event_kin
     """One-time validated initialization only; never reset or merge a populated target."""
     validate_snapshot(snapshot)
     unit_definitions = unit_definitions or {}
+    unit_names = list(dict.fromkeys(item["primaryUnit"] for item in snapshot["users"] if item["primaryUnit"]))
+    unit_names += [name for name in unit_definitions if name not in unit_names]
+    require(all(isinstance(name, str) and name and isinstance(definition, dict)
+                and (definition.get("type") is None or isinstance(definition["type"], str))
+                and (definition.get("parent") is None or isinstance(definition["parent"], str))
+                for name, definition in unit_definitions.items()), "Malformed organization metadata.")
+    try:
+        validate_unit_hierarchy({name: unit_definitions.get(name, {}).get("parent") for name in unit_names})
+    except PersistenceError as error:
+        raise ImportValidationError(str(error)) from error
     with database.transaction() as session:
         state = state_row(session, lock=True)
         for table in Base.metadata.sorted_tables:
@@ -167,8 +181,6 @@ def populate_empty_database(database, snapshot, unit_definitions=None, event_kin
                     names.append(name)
         roles = {name: Role(name=name) for name in names}
         session.add_all(roles.values())
-        unit_names = list(dict.fromkeys(item["primaryUnit"] for item in snapshot["users"] if item["primaryUnit"]))
-        unit_names += [name for name in unit_definitions if name not in unit_names]
         units = {name: OrganizationUnit(name=name, unit_type=unit_definitions.get(name, {}).get("type")) for name in unit_names}
         session.add_all(units.values())
         session.flush()

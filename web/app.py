@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
 import threading
+import uuid
 
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -10,7 +11,7 @@ try:
     from .allocation_workflow import execute_allocation
     from .database_result_adapter import DatabaseResultAdapter
     from .persistence.database import Database, DatabaseBusy, DatabaseConfigurationError
-    from .persistence.repository import Repository, PersistenceError
+    from .persistence.repository import Repository, PersistenceError, SubmissionConflict
     from .backend_executable import BackendExecutableError, resolve_backend_executable
     from .engine_gateway import EngineGateway, EngineIntegrationError, csv_slots, integer
     from .backend_result_adapter import (
@@ -24,7 +25,7 @@ except ImportError:
     from allocation_workflow import execute_allocation
     from database_result_adapter import DatabaseResultAdapter
     from persistence.database import Database, DatabaseBusy, DatabaseConfigurationError
-    from persistence.repository import Repository, PersistenceError
+    from persistence.repository import Repository, PersistenceError, SubmissionConflict
     from backend_executable import BackendExecutableError, resolve_backend_executable
     from engine_gateway import EngineGateway, EngineIntegrationError, csv_slots, integer
     from backend_result_adapter import (
@@ -192,6 +193,11 @@ def shared_data_error(error):
 def database_error(error):
     app.logger.error("Database operation failed (%s).", type(error).__name__)
     return "Database operation failed. Check PostgreSQL configuration and migrations; previous results remain active.", 503
+
+
+@app.errorhandler(SubmissionConflict)
+def submission_conflict(error):
+    return str(error), 409
 
 
 def read_config_strategy():
@@ -821,6 +827,7 @@ def add_request():
     spaces = spaces_table["rows"]
     form_data = request.form.to_dict() if request.method == "POST" else {
         "requestType": request.args.get("type", "OneTime"),
+        "submissionKey": uuid.uuid4().hex,
     }
     if request.method == "POST":
         form_data["requiredParticipantIds"] = request.form.getlist("requiredParticipantIds")
@@ -829,7 +836,8 @@ def add_request():
     if request.method == "POST":
         row, participant_rows, errors = validate_request_form(form_data, users, spaces)
         if not errors:
-            request_id = get_repository().save_request(request_record(row, participant_rows))
+            request_id = get_repository().save_request(request_record(row, participant_rows),
+                                                       submission_key=request.form.get("submissionKey") or None)
             if request.form.get("submitAction") == "save_run":
                 run_result = run_backend_allocation()
                 return redirect(url_for("request_detail", request_id=request_id,
@@ -850,6 +858,7 @@ def add_request():
         feature_options=FEATURE_OPTIONS,
         building_options=get_building_options(spaces),
         form_data=form_data,
+        submission_key=form_data.get("submissionKey") or uuid.uuid4().hex,
         errors=errors,
     )
 

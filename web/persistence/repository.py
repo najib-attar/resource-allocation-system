@@ -1,5 +1,8 @@
 """Database reads/writes and domain DTO mapping, without allocation algorithms."""
 
+import hashlib
+import json
+import re
 import uuid
 from collections import defaultdict
 
@@ -19,6 +22,38 @@ class PersistenceError(RuntimeError):
 
 class StaleRun(PersistenceError):
     pass
+
+
+class SubmissionConflict(PersistenceError):
+    pass
+
+
+def validate_unit_hierarchy(parents):
+    """Validate a forest iteratively, including long chains and indirect cycles."""
+    completed = set()
+    for unit in parents:
+        path = set()
+        current = unit
+        while current is not None and current not in completed:
+            if current not in parents:
+                raise PersistenceError("Organization hierarchy contains an unknown parent.")
+            if current in path:
+                raise PersistenceError("Organization hierarchy contains a cycle.")
+            path.add(current)
+            current = parents[current]
+        completed.update(path)
+
+
+def submission_fingerprint(item):
+    payload = {key: item[key] for key in ("type", "requesterId", "spaceId", "participantCount", "slots")}
+    payload.update({key: item.get(key, "") for key in ("title", "purpose", "requiredFeature", "requiredBuilding")})
+    if item["type"] == "CommitteeMeeting":
+        payload["participants"] = [{"userId": entry["userId"], "role": entry.get("role") or "Participant"}
+                                   for entry in item.get("participants", [])]
+    if item["type"] == "Exam":
+        payload["exam"] = {key: item["exam"].get(key, "") for key in ("courseCode", "courseName", "examType")}
+        payload["exam"]["canSplitAcrossRooms"] = item["exam"]["canSplitAcrossRooms"]
+    return hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8")).hexdigest()
 
 
 def validate_publication(result, snapshot):
@@ -65,7 +100,9 @@ def slot_dict(item):
 
 def snapshot_from_session(session, strategy, run_id=None):
     roles = {item.id: item.name for item in session.scalars(select(Role))}
-    units = {item.id: item.name for item in session.scalars(select(OrganizationUnit))}
+    unit_records = list(session.scalars(select(OrganizationUnit)))
+    validate_unit_hierarchy({item.id: item.parent_id for item in unit_records})
+    units = {item.id: item.name for item in unit_records}
     assignments = defaultdict(list)
     for item in session.scalars(select(UserRole).order_by(UserRole.user_id, UserRole.ordinal)):
         assignments[item.user_id].append(roles[item.role_id])
@@ -86,6 +123,11 @@ def snapshot_from_session(session, strategy, run_id=None):
     exams = {item.request_id: item for item in session.scalars(select(ExamDetails))}
     requests = []
     for item in session.scalars(select(ResourceRequest).order_by(ResourceRequest.submission_order)):
+        if (not slots[item.id] or len(slots[item.id]) > 10000
+                or (item.type != "Recurring" and len(slots[item.id]) != 1)
+                or (item.type == "Exam") != (item.id in exams)
+                or (item.type != "CommitteeMeeting" and participants[item.id])):
+            raise PersistenceError(f"Request {item.id} has inconsistent subtype records; repair its data before allocation.")
         request = {"id": item.id, "type": item.type, "requesterId": item.requester_id, "spaceId": item.resource_id,
                    "participantCount": item.participant_count, "title": item.title, "purpose": item.purpose,
                    "requiredFeature": item.required_feature, "requiredBuilding": item.required_building,
@@ -139,14 +181,25 @@ class Repository:
             state = state_row(session)
             return snapshot_from_session(session, state.strategy)
 
-    def save_request(self, request):
+    def save_request(self, request, submission_key=None):
         from .importer import validate_request
+        if submission_key is not None and (not isinstance(submission_key, str) or not re.fullmatch(r"[0-9a-f]{32}", submission_key)):
+            raise PersistenceError("Invalid submission key; reopen the form and retry.")
         with self.database.transaction() as session:
             state = state_row(session, lock=True)
             users = set(session.scalars(select(User.id)))
             resources = set(session.scalars(select(Resource.id)))
             validate_request(request, users, resources)
+            fingerprint = submission_fingerprint(request) if submission_key else None
+            if submission_key:
+                previous = session.scalar(select(ResourceRequest).where(ResourceRequest.submission_key == submission_key))
+                if previous is not None:
+                    if previous.submission_fingerprint != fingerprint:
+                        raise SubmissionConflict("Submission key was already used for different request content. Open a new form.")
+                    return previous.id
             record = insert_request(session, request)
+            record.submission_key = submission_key
+            record.submission_fingerprint = fingerprint
             session.add(RequestHistory(request_id=record.id, kind="saved", message="Request saved; pending allocation."))
             state.input_revision += 1
             session.flush()

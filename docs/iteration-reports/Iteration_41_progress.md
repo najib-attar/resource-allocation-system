@@ -83,10 +83,11 @@ No implementation commit has been pushed or merged; publication requires approva
 
 ## Remaining limitations
 
-The updated Linux CI job is configured but not remotely executed on this
-unpublished branch. Local verification used Windows and real PostgreSQL 17.11.
+Local verification uses Windows and real PostgreSQL 17.11; authoritative remote
+Linux results belong to the draft PR checks and must be green before merge.
 Authentication, dated appointment scheduling and UC-STU-01 remain outside scope.
-HTTP retry idempotency and automatic abandoned-run/retention cleanup are not added.
+Exact keyed form retries are now deduplicated. Automatic abandoned-run/retention
+cleanup and engine-job deduplication require a separately approved policy.
 Original generated results stay offline and must be regenerated for PostgreSQL.
 See [operations](../database-operations.md) for setup, failure semantics and backups.
 
@@ -164,3 +165,35 @@ Python compilation, dependency compatibility, Markdown paths and local CI lint
 were checked. All four original untracked generated CSV hashes remain unchanged;
 only approved Iteration 41 files were staged. Complete local verification is
 recorded in [Iteration 41](Iteration_41.md); remote CI remains explicitly pending.
+
+## Final pre-merge completion review
+
+Reproduced acceptance of a three-unit cycle and deletion of the only request slot
+before fixes. Initialization and every snapshot now validate the complete forest
+without recursion. Subtype writes/reads reject incompatible metadata. Additive
+revision `0041d` enforces commit-time slot/exam/participant completeness, with
+parent-row serialization preventing child-table write skew at both read committed
+and repeatable read. Invalid existing subtype data aborts upgrades without loss.
+
+Revision `0041e` adds nullable unique form submission keys/fingerprints without a
+new table. Exact retries return one saved ID/history/revision, including across
+processes; mismatched content returns 409. Submit and Run may execute a new engine
+run after deduplicating the save. Unkeyed legacy callers still create new requests.
+No authentication, appointment logic, C++ code or JSON fields changed.
+
+All data is retained by default. Interrupted runs cannot displace the active run;
+automatic pruning/reconciliation needs an explicit retention policy and remains
+outside current operational workflows. No destructive administrative tool added.
+
+Final local suite: 155 Python tests total, 154 passed, zero failed, one POSIX-only
+skip. Includes 20 new completion regressions and four upgrade/recovery tests.
+Fresh C++ compilation: 140 passed, zero failed; both isolated CLI smokes passed.
+Fresh moderate/large CLI demo databases migrated to `0041e`, passed schema drift
+checks, ran real allocations (74/850 rows), and refused reseeding. Both original
+fixtures and four protected generated CSV hashes remain unchanged.
+
+The full physical Mermaid/SVG/catalog now includes submission columns and the
+committed one-or-more slot cardinality; dedicated tests cover migration-owned SQL
+triggers not inspected by Alembic's metadata drift check. The rendered diagram was
+visually inspected. Complete diff/secret/exclusion review precedes publication;
+remote results will be inspected on the draft PR, which must not be merged here.

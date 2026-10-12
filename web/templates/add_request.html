@@ -25,6 +25,7 @@
     {% endif %}
 
     <form class="request-form" method="post" action="{{ url_for('add_request') }}">
+        <input type="hidden" name="submissionKey" value="{{ submission_key }}">
         <div class="form-section">
             <h3>Common Request Fields</h3>
             <div class="form-grid">

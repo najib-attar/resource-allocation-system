@@ -286,13 +286,17 @@ Ordered request identity, requester, preferred resource and requirements.
 | required_feature | text | - | no | ORM:  |
 | required_building | text | - | no | ORM:  |
 | revision | integer | - | no | ORM: 1 |
+| submission_key | varchar(32) | - | yes | - |
+| submission_fingerprint | varchar(64) | - | yes | - |
 
 - Primary key: `id`.
 - Foreign key: `(requester_id) -> university_user (id)`; NO ACTION.
 - Foreign key: `(resource_id) -> resource (id)`; NO ACTION.
+- Check: `(submission_key IS NULL AND submission_fingerprint IS NULL) OR (submission_key IS NOT NULL AND submission_fingerprint IS NOT NULL AND submission_key ~ '^[0-9a-f]{32}$' AND submission_fingerprint ~ '^[0-9a-f]{64}$')`.
 - Check: `id > 0 AND participant_count > 0 AND revision > 0`.
 - Check: `submission_order > 0`.
 - Check: `type IN ('OneTime','Recurring','Exam','CommitteeMeeting')`.
+- Unique: `submission_key`.
 - Unique: `submission_order`.
 - Index: `ix_resource_request_requester_id (requester_id)`.
 - Index: `ix_resource_request_resource_id (resource_id)`.
@@ -382,3 +386,10 @@ Alembic's existing revision marker, not an additional application entity.
 | version_num | varchar(32) | PK | no | - |
 
 No foreign keys, additional indexes or cascading deletion.
+
+## Deferred request subtype integrity
+
+Revision `0041d` adds commit-time constraint triggers to `resource_request`, `request_slot`, `exam_details` and `request_participant`.
+Every request has 1-10000 slots; non-recurring requests have exactly one. Exam details exist if and only if the request is an Exam. Participant mappings belong only to CommitteeMeeting requests (an empty committee remains a valid rejected engine input).
+Before child writes, a no-op parent revision update serializes each request aggregate and prevents concurrent child-table write skew, including under repeatable read. The triggers do not evaluate allocation rules or increment the application input revision.
+SQLAlchemy metadata/Alembic drift checks do not inspect SQL functions; dedicated live tests verify these migration-owned triggers. The physical diagram shows at least one request slot; subtype-specific cardinality is conditional.
