@@ -130,7 +130,6 @@ RequestTypeRule
 - `docs/iteration-reports/` : Iteration reports, including Iterations 33-40
 - `docs/design/class-diagrams/` : class diagram exports, including Iterations 33-40
 - `docs/testing/` : backend testing and verification reports
-- `docs/development/` : analysis, implementation, testing, documentation, frontend, and Git workflow guidelines
 - `docs/use-cases/` : user-facing feature requirements; not a list of implemented features
 - `src/` : C++ prototype implementation
   - `src/models/` : domain models, requests, factories, users, spaces, allocations, time slots, participants, busy slots, and suggestions
@@ -150,11 +149,8 @@ RequestTypeRule
 - [Design Patterns and Principles Report](docs/design/design-patterns-and-principles/Design_Patterns_and_Principles_Report.pdf)
 - [LaTeX Source](docs/design/design-patterns-and-principles/Design_Patterns_and_Principles_Report.tex)
 
-### Development Documentation
+### Project Documentation
 
-- [Repository Instructions](AGENTS.md): entry point for the development guides.
-- [Analysis and Delivery Workflow](docs/development/WORKFLOW.md)
-- [Git, Iterations, and Review](docs/development/GIT_ITERATIONS.md)
 - [Existing Engine Protocol](docs/engine-protocol.md): compatibility contract for Flask-C++ execution.
 - [Database Design](docs/architecture/database-design.md): entities, ER diagram, constraints and transactional workflow.
 - [Database Operations](docs/database-operations.md): setup, safe import, testing and failure behavior.
