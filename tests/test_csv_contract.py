@@ -1,19 +1,16 @@
 """Exercise Python's CSV writer through the freshly built C++ executable."""
 
 import csv
-import os
 from pathlib import Path
 import subprocess
 from tempfile import TemporaryDirectory
-from unittest import TestCase, main, mock
+from unittest import TestCase, main
 
-from web import app as web_app
 from web.backend_executable import resolve_backend_executable
-from legacy_shared_file_state import SharedFileState
-from web.database_result_adapter import DatabaseResultAdapter
-from web.persistence.importer import import_csv
-from web.persistence.repository import Repository
-from postgres_fixtures import PostgresTestCase
+from web.result_table_schema import INPUT_HEADERS
+
+REQUEST_HEADERS = INPUT_HEADERS["requests"].split(",")
+PARTICIPANT_HEADERS = INPUT_HEADERS["request_participants"].split(",")
 
 
 class CsvContractTests(TestCase):
@@ -31,7 +28,7 @@ class CsvContractTests(TestCase):
             [301, "MeetingRoom", "M301", 20, 1, 1, 0, 1, "Main"],
         ])
         self.write_csv("user_busy_slots.csv", ["userId", "day", "startTime", "endTime", "reason"], [])
-        self.write_csv("request_participants.csv", web_app.REQUEST_PARTICIPANT_HEADERS, [])
+        self.write_csv("request_participants.csv", PARTICIPANT_HEADERS, [])
         (self.data / "config.txt").write_text("allocation_strategy=greedy\n", encoding="utf-8")
 
     def write_csv(self, name, headers, rows, quoting=csv.QUOTE_MINIMAL):
@@ -45,7 +42,7 @@ class CsvContractTests(TestCase):
             return list(csv.DictReader(file, strict=True))
 
     def request_row(self, request_id=1, request_type="OneTime"):
-        return dict.fromkeys(web_app.REQUEST_HEADERS, "") | {
+        return dict.fromkeys(REQUEST_HEADERS, "") | {
             "requestId": str(request_id), "requestType": request_type, "userId": "2",
             "spaceId": "301", "participantCount": "4", "timeData": "1-10-11",
             "title": "Ordinary request", "purpose": "Meeting", "canSplitAcrossRooms": "false",
@@ -57,7 +54,7 @@ class CsvContractTests(TestCase):
         self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", errors="replace"))
         return result
 
-    def test_python_saved_requests_and_participants_roundtrip(self):
+    def test_python_written_requests_and_participants_roundtrip(self):
         title = 'Advanced Algorithms, Part II "Review" \u2014 \u00c7a\u011fr\u0131'
         purpose = 'Discuss "proofs", examples and next steps'
         rows = [self.request_row(1), self.request_row(2, "Exam"), self.request_row(3, "CommitteeMeeting")]
@@ -65,12 +62,8 @@ class CsvContractTests(TestCase):
         rows[1].update(spaceId="101", timeData="2-10-11", courseCode='CS, "301"',
                        courseName='Algorithms, "Part II"', examType="Final")
         rows[2].update(timeData="3-10-11", title='Committee, "Review"')
-        state = SharedFileState(self.data)
-        with state.locked():
-            for row in rows:
-                participants = [{"requestId": "3", "userId": "2", "participantRole": 'Supervisor, "Lead"'}] \
-                    if row["requestId"] == "3" else []
-                state.save_request(row, participants, web_app.REQUEST_HEADERS, web_app.REQUEST_PARTICIPANT_HEADERS)
+        self.write_csv("requests.csv", REQUEST_HEADERS, [[row[key] for key in REQUEST_HEADERS] for row in rows])
+        self.write_csv("request_participants.csv", PARTICIPANT_HEADERS, [[3, 2, 'Supervisor, "Lead"']])
         self.run_backend()
         results = {row["requestId"]: row for row in self.read_rows("request_results.csv")}
         self.assertEqual(results["1"]["title"], title)
@@ -91,11 +84,11 @@ class CsvContractTests(TestCase):
                        [[301, "MeetingRoom", 'Room, "301"', 20, 1, 1, 0, 1, building]], csv.QUOTE_ALL)
         self.write_csv("user_busy_slots.csv", ["userId", "day", "startTime", "endTime", "reason"],
                        [[2, 2, "10:00", "11:00", 'Lecture, "Part I"']], csv.QUOTE_ALL)
-        self.write_csv("request_participants.csv", web_app.REQUEST_PARTICIPANT_HEADERS,
+        self.write_csv("request_participants.csv", PARTICIPANT_HEADERS,
                        [[1, 2, 'Supervisor, "Lead"']], csv.QUOTE_ALL)
         row = self.request_row(1, "CommitteeMeeting")
         row["requiredBuilding"] = building
-        self.write_csv("requests.csv", web_app.REQUEST_HEADERS, [list(row.values())], csv.QUOTE_ALL)
+        self.write_csv("requests.csv", REQUEST_HEADERS, [list(row.values())], csv.QUOTE_ALL)
         self.run_backend()
         result = self.read_rows("request_results.csv")[0]
         self.assertEqual(result["status"], "Approved")
@@ -106,7 +99,7 @@ class CsvContractTests(TestCase):
 
     def test_malformed_quotes_reject_request_and_preserve_following_valid_record(self):
         (self.data / "requests.csv").write_text(
-            ",".join(web_app.REQUEST_HEADERS) + "\n"
+            ",".join(REQUEST_HEADERS) + "\n"
             '1,OneTime,2,301,4,,,1-10-11,"Closed"oops,Meeting,,,,false\n'
             '2,OneTime,2,301,4,,,1-11-12,Ordinary request,Meeting,,,,false\n', encoding="utf-8")
         result = self.run_backend()
@@ -116,41 +109,6 @@ class CsvContractTests(TestCase):
         self.assertIn("Malformed CSV", rows[0]["rejectionReason"])
         self.assertEqual(rows[1]["status"], "Approved")
         self.assertEqual([row["requestId"] for row in self.read_rows("allocations.csv")], ["2"])
-
-
-class CsvWebContractTests(PostgresTestCase):
-    def test_flask_submit_and_run_preserves_comma_quote_and_unicode_title(self):
-        self.backend = resolve_backend_executable(Path(__file__).resolve().parent.parent)
-        temporary = TemporaryDirectory()
-        self.addCleanup(temporary.cleanup)
-        self.data = Path(temporary.name)
-        for name, headers, rows in (
-            ("users.csv", ["userId", "name", "role"], [[2, "Professor", "Instructor"]]),
-            ("spaces.csv", ["spaceId", "type", "name", "capacity", "building"], [[301, "MeetingRoom", "M301", 20, "Main"]]),
-            ("requests.csv", web_app.REQUEST_HEADERS, []),
-        ):
-            with (self.data / name).open("w", encoding="utf-8", newline="") as file:
-                writer = csv.writer(file)
-                writer.writerow(headers)
-                writer.writerows(rows)
-        import_csv(self.database, self.data)
-        repository = Repository(self.database)
-        title = 'Advanced Algorithms, "Part II" \u00c7a\u011fr\u0131'
-        client = self.configure_web()
-        with mock.patch.dict(os.environ, {"RESOURCE_ALLOCATION_BACKEND": str(self.backend.path)}):
-            response = client.post("/add-request", data={
-                "requestType": "OneTime", "userId": "2", "spaceId": "301", "participantCount": "4",
-                "day": "1", "startTime": "10:00", "endTime": "11:00", "title": title,
-                "purpose": "Meeting", "requiredFeature": "None", "requiredBuilding": "Main",
-                "submitAction": "save_run",
-            })
-            self.assertEqual(response.status_code, 302)
-            self.assertEqual(client.get(response.location).status_code, 200)
-            self.assertIsNotNone(repository.read_view()[1])
-            self.assertIsNone(SharedFileState(self.data).read_engine_result())
-            row = DatabaseResultAdapter(repository, web_app.RAW_DATA_FILES).read_csv_table("request_results.csv")["rows"][0]
-            self.assertEqual(row["status"], "Approved")
-            self.assertEqual(row["title"], title)
 
 
 if __name__ == "__main__":

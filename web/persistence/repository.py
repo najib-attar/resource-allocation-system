@@ -182,7 +182,7 @@ class Repository:
             return snapshot_from_session(session, state.strategy)
 
     def save_request(self, request, submission_key=None):
-        from .importer import validate_request
+        from .validation import validate_request
         if submission_key is not None and (not isinstance(submission_key, str) or not re.fullmatch(r"[0-9a-f]{32}", submission_key)):
             raise PersistenceError("Invalid submission key; reopen the form and retry.")
         with self.database.transaction() as session:

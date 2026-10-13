@@ -4,16 +4,16 @@ from tempfile import TemporaryDirectory
 from unittest import TestCase, mock
 import csv
 import json
-import os
 import shutil
 import subprocess
 
 from engine_json_fixtures import fake_result
 from web.backend_executable import BackendExecutable, BackendExecutableError, resolve_backend_executable
-from web.backend_result_adapter import extract_meeting_suggestions
-from legacy_result_adapter import LegacyResultAdapter as BackendResultAdapter
-from web.engine_gateway import EngineGateway, EngineIntegrationError, execution_snapshot, validate_result
-from legacy_shared_file_state import SharedFileState
+from csv_cli_fixtures import extract_meeting_suggestions
+from web.backend_result_adapter import BackendResultAdapter
+from web.engine_result_projection import input_tables, result_tables
+from web.engine_gateway import EngineGateway, EngineIntegrationError, validate_result
+from web.persistence.importer import CsvInputs
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -163,7 +163,8 @@ class JsonEngineIntegrationTests(TestCase):
             for strategy in STRATEGIES:
                 with self.subTest(source=source.name, strategy=strategy):
                     (data / "config.txt").write_text("allocation_strategy=" + strategy, encoding="utf-8")
-                    snapshot = execution_snapshot(BackendResultAdapter(data, []), strategy)
+                    snapshot = CsvInputs(data).snapshot()
+                    snapshot["strategy"] = strategy
                     result, _ = self.gateway.execute(snapshot)
                     legacy = subprocess.run([str(self.backend.path)], cwd=temporary, capture_output=True, encoding="utf-8", timeout=30)
                     self.assertEqual(legacy.returncode, 0, legacy.stderr)
@@ -188,24 +189,6 @@ class JsonEngineIntegrationTests(TestCase):
     def test_clean_fixture_matches_legacy_for_all_five_strategies(self):
         self.compare_legacy(ROOT / "tests" / "fixtures" / "runtime_no_demo")
 
-    def test_json_publication_is_pinned_and_failed_publish_preserves_previous(self):
-        with TemporaryDirectory() as temporary:
-            data = Path(temporary)
-            source = ROOT / "tests" / "fixtures" / "runtime_no_demo"
-            for file in source.iterdir(): shutil.copy2(file, data / file.name)
-            state = SharedFileState(data); adapter = BackendResultAdapter(data, [])
-            with state.locked():
-                snapshot = execution_snapshot(adapter, "greedy"); result, metadata = self.gateway.execute(snapshot)
-                state.publish_engine_result(snapshot, result, metadata)
-            pinned = adapter.pin()
-            previous = (state.root / "engine-result.json").read_bytes()
-            result["requestResults"][0]["title"] = "Later"
-            with state.locked(), mock.patch("legacy_shared_file_state.os.replace", side_effect=OSError("publication denied")):
-                with self.assertRaises(OSError): state.publish_engine_result(snapshot, result, metadata)
-            self.assertEqual((state.root / "engine-result.json").read_bytes(), previous)
-            with state.locked(): state.publish_engine_result(snapshot, result, metadata)
-            self.assertNotEqual(pinned.read_csv_table("request_results.csv")["rows"][0]["title"], adapter.pin().read_csv_table("request_results.csv")["rows"][0]["title"])
-
     def test_suggestions_render_without_history_parsing(self):
         snapshot = input_fixture(); snapshot["spaces"][0]["type"] = "MeetingRoom"
         request = snapshot["requests"][0]; request["type"] = "CommitteeMeeting"; request["participants"] = [{"userId": 1, "role": "Chair"}]
@@ -213,28 +196,16 @@ class JsonEngineIntegrationTests(TestCase):
         result, _ = self.gateway.execute(snapshot)
         result["requestResults"][0]["history"] = []
         from web import app as web_app
-        with TemporaryDirectory() as temporary:
-            data = Path(temporary); state = SharedFileState(data)
-            with (data / "users.csv").open("w", newline="", encoding="utf-8") as file:
-                writer = csv.writer(file); writer.writerow(["userId", "name", "role"]); writer.writerow([1, "Professor", "Instructor"])
-            with (data / "spaces.csv").open("w", newline="", encoding="utf-8") as file:
-                writer = csv.writer(file); writer.writerow(["spaceId", "name", "type", "capacity"]); writer.writerow([101, "Room", "MeetingRoom", 100])
-            with (data / "requests.csv").open("w", newline="", encoding="utf-8") as file:
-                writer = csv.writer(file); writer.writerow(["requestId", "requestType", "userId", "spaceId", "participantCount", "timeData", "title"])
-                writer.writerow([1, "CommitteeMeeting", 1, 101, 10, "1-10-11", "Committee"])
-            with state.locked(): state.publish_engine_result(snapshot, result, {})
-            adapter = BackendResultAdapter(data, web_app.RAW_DATA_FILES)
-            # A dangling old generation pointer must not affect JSON-mode readers.
-            state.pointer.write_text('{"generation":"generation-missing"}', encoding="utf-8")
-            with mock.patch("web.backend_result_adapter.extract_meeting_suggestions", side_effect=AssertionError("history parser used")):
-                item, _ = adapter.pin().get_request_summary("1")
-                self.assertEqual(len(item["meeting_suggestions"]["items"]), 3)
-                repository = mock.Mock()
-                repository.read_view.return_value = (snapshot, {"snapshot": snapshot, "result": result, "build": {}}, 1)
-                with mock.patch.object(web_app, "get_repository", return_value=repository):
-                    response = web_app.app.test_client().get("/request/1")
-                    self.assertEqual(response.status_code, 200)
-                    self.assertIn("Suggested least-change", response.get_data(as_text=True))
+        tables = input_tables(snapshot) | result_tables(snapshot, result)
+        adapter = BackendResultAdapter(tables, web_app.RAW_DATA_FILES, engine_result=result)
+        item, _ = adapter.get_request_summary("1")
+        self.assertEqual(len(item["meeting_suggestions"]["items"]), 3)
+        repository = mock.Mock()
+        repository.read_view.return_value = (snapshot, {"snapshot": snapshot, "result": result, "build": {}}, 1)
+        with mock.patch.object(web_app, "get_repository", return_value=repository):
+            response = web_app.app.test_client().get("/request/1")
+            self.assertEqual(response.status_code, 200)
+            self.assertIn("Suggested least-change", response.get_data(as_text=True))
 
     def test_independent_json_strategies_do_not_modify_config(self):
         from concurrent.futures import ThreadPoolExecutor

@@ -1,9 +1,9 @@
-"""In-memory compatibility tables for existing templates; never writes CSV outputs."""
+"""Project structured input/results into file-free presentation tables."""
 
 try:
-    from .result_table_schema import OUTPUT_HEADERS
+    from .result_table_schema import INPUT_HEADERS, OUTPUT_HEADERS, table_view
 except ImportError:
-    from result_table_schema import OUTPUT_HEADERS
+    from result_table_schema import INPUT_HEADERS, OUTPUT_HEADERS, table_view
 
 
 def clock(minutes):
@@ -12,6 +12,26 @@ def clock(minutes):
 
 def time_data(slots):
     return ";".join(f"{slot['day']}-{clock(slot['startMinutes'])}-{clock(slot['endMinutes'])}" for slot in slots)
+
+
+def input_tables(snapshot):
+    rows = {name: [] for name in INPUT_HEADERS}
+    for user in snapshot["users"]:
+        rows["users"].append(dict(user, userId=user["id"], assignedRoles="|".join(user.get("assignedRoles", []))))
+    for space in snapshot["spaces"]:
+        rows["spaces"].append(dict(space, spaceId=space["id"], isAvailable=space["available"],
+                                      **{"has" + key.title(): value for key, value in space["features"].items()}))
+    for item in snapshot["requests"]:
+        rows["requests"].append(dict(item, **item.get("exam", {}), requestId=item["id"], requestType=item["type"],
+                                        userId=item["requesterId"], spaceId=item["spaceId"], timeData=time_data(item["slots"])))
+        for participant in item.get("participants", []):
+            rows["request_participants"].append(dict(requestId=item["id"], userId=participant["userId"],
+                                                       participantRole=participant.get("role") or "Participant"))
+    for item in snapshot["busySlots"]:
+        slot = item["slot"]
+        rows["user_busy_slots"].append(dict(userId=item["userId"], day=slot["day"], startTime=clock(slot["startMinutes"]),
+                                               endTime=clock(slot["endMinutes"]), reason=item["reason"]))
+    return {name: table_view(headers, rows[name]) for name, headers in INPUT_HEADERS.items()}
 
 
 def result_tables(snapshot, result):
@@ -23,9 +43,9 @@ def result_tables(snapshot, result):
         slot = allocation["slot"]
         row = {key: allocation[key] for key in ("allocationId", "requestId", "spaceId", "spaceName", "spaceType", "building", "assignedParticipants")}
         row.update(day=slot["day"], startHour=clock(slot["startMinutes"]), endHour=clock(slot["endMinutes"]))
-        rows["allocations.csv"].append(row)
+        rows["allocations"].append(row)
         decision = decisions[allocation["requestId"]]
-        rows["allocation_summaries.csv"].append(dict(row, requestTitle=decision["title"], requestPurpose=decision["purpose"],
+        rows["allocation_summaries"].append(dict(row, requestTitle=decision["title"], requestPurpose=decision["purpose"],
             requestType=decision["requestType"], startTime=row["startHour"], endTime=row["endHour"], spaceCapacity=allocation["spaceCapacity"]))
     for decision in result["requestResults"]:
         rid = decision["requestId"]
@@ -37,17 +57,13 @@ def result_tables(snapshot, result):
                    spaceName=space["name"], spaceType=space["type"], spaceBuilding=space.get("building", ""),
                    requiredBuilding=request.get("requiredBuilding", ""), requiredFeature=request.get("requiredFeature", ""),
                    timeInfo=time_data(request["slots"]), lifecycleHistory=" | ".join(decision["history"]))
-        rows["request_results.csv"].append(row)
+        rows["request_results"].append(row)
         assigned = [item for item in result["allocations"] if item["requestId"] == rid]
-        rows["request_summaries.csv"].append(dict(row, requiredParticipants=participants,
+        rows["request_summaries"].append(dict(row, requiredParticipants=participants,
             assignedParticipants=decision["assignedParticipants"], allocationCount=decision["allocationCount"],
             allocatedSpaces=" | ".join(item["spaceName"] for item in assigned),
             summaryText=decision["rejectionReason"] if decision["status"] == "Rejected" else f"Approved: {len(assigned)} allocation(s)."))
-    def scalar(value):
-        return str(value).lower() if type(value) is bool else str(value)
-    return {name: {"exists": True, "headers": headers.split(","), "message": "",
-                   "rows": [{key: scalar(row.get(key, "")) for key in headers.split(",")} for row in rows[name]]}
-            for name, headers in OUTPUT_HEADERS.items()}
+    return {name: table_view(headers, rows[name]) for name, headers in OUTPUT_HEADERS.items()}
 
 
 def suggestion_display(group):

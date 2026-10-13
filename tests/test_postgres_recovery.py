@@ -11,7 +11,7 @@ import uuid
 
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import create_engine, delete, select, text
+from sqlalchemy import create_engine, delete, text
 from sqlalchemy.exc import IntegrityError
 
 from postgres_fixtures import PostgresTestCase, ROOT

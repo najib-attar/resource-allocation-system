@@ -3,7 +3,6 @@
 import json
 import os
 import subprocess
-import uuid
 
 try:
     from .backend_executable import resolve_backend_executable
@@ -16,103 +15,6 @@ PROTOCOL_VERSION = 1
 
 class EngineIntegrationError(RuntimeError):
     pass
-
-
-def integer(value, label, minimum=0):
-    if isinstance(value, bool):
-        raise EngineIntegrationError(f"Invalid {label}")
-    try:
-        number = int(value)
-    except (TypeError, ValueError) as error:
-        raise EngineIntegrationError(f"Invalid {label}") from error
-    if (not str(value).strip().isdigit() or not minimum <= number <= 2147483647):
-        raise EngineIntegrationError(f"Invalid {label}")
-    return number
-
-
-def minutes(value):
-    parts = str(value).split(":")
-    if len(parts) not in (1, 2):
-        raise EngineIntegrationError("Invalid time")
-    hour = integer(parts[0], "hour")
-    minute = integer(parts[1], "minute") if len(parts) == 2 else 0
-    if hour > 24 or minute > 59 or (hour == 24 and minute):
-        raise EngineIntegrationError("Invalid time")
-    return hour * 60 + minute
-
-
-def csv_slots(value):
-    result = []
-    for occurrence in value.split(";"):
-        parts = occurrence.strip().split("-")
-        if len(parts) != 3:
-            raise EngineIntegrationError("Invalid persisted request timeData")
-        day, start, end = integer(parts[0], "day"), minutes(parts[1]), minutes(parts[2])
-        if not 1 <= day <= 7 or not 0 <= start < end <= 1440:
-            raise EngineIntegrationError("Invalid persisted time range")
-        result.append({"day": day, "startMinutes": start, "endMinutes": end})
-    return result
-
-
-def csv_bool(value, default=False):
-    value = (value or "").strip().lower()
-    if not value:
-        return default
-    if value in ("1", "true"):
-        return True
-    if value in ("0", "false"):
-        return False
-    raise EngineIntegrationError("Invalid persisted boolean")
-
-
-def execution_snapshot(adapter, strategy):
-    """Translate explicit offline CSV inputs into DTOs; normal runs snapshot PostgreSQL."""
-    def rows(name):
-        return adapter.read_csv_table(name)["rows"]
-    def optional(row, key):
-        value = row.get(key) or ""
-        return "" if value == "None" else value
-    users = []
-    for row in rows("users.csv"):
-        item = {"id": integer(row.get("userId"), "userId"), "name": row.get("name", ""), "role": row.get("role", "")}
-        for key in ("email", "primaryUnit", "studentNo", "program", "title", "officeRoom", "assistantType", "jobTitle", "adminLevel"):
-            item[key] = optional(row, key)
-        item["status"] = row.get("status") or "active"
-        item["yearLevel"] = integer(row.get("yearLevel") or "0", "yearLevel")
-        item["assignedRoles"] = [part.strip() for part in optional(row, "assignedRoles").split("|") if part.strip()]
-        users.append(item)
-    spaces = [{"id": integer(row.get("spaceId"), "spaceId"), "name": row.get("name", ""),
-               "type": row.get("type", ""), "capacity": integer(row.get("capacity"), "capacity", 1),
-               "building": optional(row, "building"), "available": csv_bool(row.get("isAvailable"), True),
-               "features": {key: csv_bool(row.get(column)) for key, column in
-                            (("projector", "hasProjector"), ("whiteboard", "hasWhiteboard"), ("computers", "hasComputers"))}}
-              for row in rows("spaces.csv")]
-    participants = {}
-    for row in rows("request_participants.csv"):
-        participants.setdefault(integer(row.get("requestId"), "participant requestId"), []).append(
-            {"userId": integer(row.get("userId"), "participant userId"), "role": optional(row, "participantRole")})
-    requests = []
-    for row in rows("requests.csv"):
-        item = {"id": integer(row.get("requestId"), "requestId"), "type": row.get("requestType", ""),
-                "requesterId": integer(row.get("userId"), "requesterId"), "spaceId": integer(row.get("spaceId"), "spaceId"),
-                "participantCount": integer(row.get("participantCount"), "participantCount", 1),
-                "slots": csv_slots(row.get("timeData") or "")}
-        for key in ("title", "purpose", "requiredFeature", "requiredBuilding"):
-            item[key] = optional(row, key)
-        if item["type"] == "Exam":
-            item["exam"] = {key: optional(row, key) for key in ("courseCode", "courseName", "examType")}
-            item["exam"]["canSplitAcrossRooms"] = csv_bool(row.get("canSplitAcrossRooms"))
-        if item["type"] == "CommitteeMeeting":
-            item["participants"] = participants.get(item["id"], [])
-        requests.append(item)
-    known_requests = {item["id"]: item["type"] for item in requests}
-    if any(known_requests.get(rid) != "CommitteeMeeting" for rid in participants):
-        raise EngineIntegrationError("Participant rows must reference a CommitteeMeeting request")
-    busy = [{"userId": integer(row.get("userId"), "busy userId"), "reason": optional(row, "reason"),
-             "slot": {"day": integer(row.get("day"), "busy day"), "startMinutes": minutes(row.get("startTime")),
-                      "endMinutes": minutes(row.get("endTime"))}} for row in rows("user_busy_slots.csv")]
-    return {"protocolVersion": PROTOCOL_VERSION, "runId": uuid.uuid4().hex, "strategy": strategy,
-            "users": users, "spaces": spaces, "busySlots": busy, "requests": requests}
 
 
 def validate_result(result, snapshot):

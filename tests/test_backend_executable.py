@@ -253,15 +253,14 @@ class BackendWebSmokeTests(PostgresTestCase):
                 adapter = DatabaseResultAdapter(repository, web_app.RAW_DATA_FILES)
                 for name in ("allocations.csv", "request_results.csv", "request_summaries.csv",
                              "allocation_summaries.csv"):
-                    self.assertTrue(adapter.pin().read_csv_table(name)["exists"])
+                    self.assertTrue(adapter.get_table(name.removesuffix(".csv"))["exists"])
                     self.assertFalse((data / name).exists())
                 missing = client.get("/request/999999")
                 self.assertEqual(missing.status_code, 200)  # Existing friendly missing-request page.
                 self.assertIn("not found", missing.get_data(as_text=True).lower())
                 self.assertEqual(client.get("/raw-data?file=not_allowed.csv").status_code, 200)
-                adapter = adapter.pin()
-                request_ids = {row["requestId"] for row in adapter.read_csv_table("requests.csv")["rows"]}
-                for row in adapter.read_csv_table("allocations.csv")["rows"]:
+                request_ids = {row["requestId"] for row in adapter.get_table("requests")["rows"]}
+                for row in adapter.get_table("allocations")["rows"]:
                     self.assertIn(row["requestId"], request_ids)
 
 

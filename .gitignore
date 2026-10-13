@@ -44,3 +44,12 @@ cmake-build-release/
 # Keep CSV input data tracked, but ignore generated allocation export if desired
 # Uncomment only if allocations.csv is generated and should not be committed
 # data/allocations.csv
+
+# Personal agent/development instructions remain local only.
+/AGENTS.md
+/docs/development/
+
+# Private work reports and progress/cleanup notes.
+/docs/iteration-reports/Iteration_41.md
+/docs/iteration-reports/*_progress.md
+/docs/architecture/csv-cleanup.md

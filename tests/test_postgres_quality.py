@@ -4,7 +4,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from copy import deepcopy
 
-from sqlalchemy import inspect, select, update
+from sqlalchemy import inspect, update
 from sqlalchemy.exc import IntegrityError
 
 from postgres_fixtures import PostgresTestCase, ROOT

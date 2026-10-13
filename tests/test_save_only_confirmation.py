@@ -7,8 +7,9 @@ import csv
 import subprocess
 import sys
 
+from web.result_table_schema import INPUT_HEADERS
 from web import app as web_app
-from web.backend_result_adapter import BackendResultAdapter, build_committee_participant_display
+from web.backend_result_adapter import build_committee_participant_display
 from web.database_result_adapter import DatabaseResultAdapter
 from web.persistence.importer import import_csv
 from web.persistence.repository import Repository
@@ -30,7 +31,7 @@ class SaveOnlyConfirmationTests(PostgresTestCase):
             {"spaceId": "301", "type": "MeetingRoom", "name": "M301",
              "capacity": "20", "building": "Main"},
         ])
-        self.write_csv("requests.csv", web_app.REQUEST_HEADERS, [
+        self.write_csv("requests.csv", INPUT_HEADERS["requests"].split(","), [
             {"requestId": "1", "requestType": "OneTime", "userId": "1", "spaceId": "301",
              "participantCount": "5", "timeData": "1-09:00-10:00",
              "title": "Existing normal request", "purpose": "Meeting"},
@@ -38,7 +39,7 @@ class SaveOnlyConfirmationTests(PostgresTestCase):
              "participantCount": "5", "timeData": "1-10:00-11:00",
              "title": "Existing committee request", "purpose": "Committee Meeting"},
         ])
-        self.write_csv("request_participants.csv", web_app.REQUEST_PARTICIPANT_HEADERS, [
+        self.write_csv("request_participants.csv", INPUT_HEADERS["request_participants"].split(","), [
             {"requestId": "40", "userId": "2", "participantRole": "Supervisor"},
             {"requestId": "40", "userId": "3", "participantRole": "Participant"},
         ])
@@ -65,7 +66,7 @@ class SaveOnlyConfirmationTests(PostgresTestCase):
             writer.writerows(rows)
 
     def read_rows(self, filename):
-        return DatabaseResultAdapter(self.repository, web_app.RAW_DATA_FILES).read_csv_table(filename)["rows"]
+        return DatabaseResultAdapter(self.repository, web_app.RAW_DATA_FILES).get_table(filename.removesuffix(".csv"))["rows"]
 
     def save_form(self, request_type="OneTime"):
         return {

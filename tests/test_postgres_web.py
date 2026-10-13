@@ -12,13 +12,13 @@ from alembic.config import Config
 
 from postgres_fixtures import PostgresTestCase, ROOT
 from test_postgres_import import copy_inputs
-from test_shared_file_concurrency import form
+from postgres_web_fixtures import form
+from runtime_file_guard import forbid_runtime_files
 from web import app as web_app
 from web.allocation_workflow import execute_allocation
 from web.database_result_adapter import DatabaseResultAdapter
-from web.engine_gateway import EngineGateway, execution_snapshot
-from web.backend_result_adapter import BackendResultAdapter
-from web.persistence.importer import import_csv
+from web.engine_gateway import EngineGateway
+from web.persistence.importer import CsvInputs, import_csv
 from web.persistence.models import Base, STRATEGIES, RequestHistory
 from web.persistence.repository import Repository
 
@@ -35,8 +35,7 @@ class PostgresWebTests(PostgresTestCase):
         self.client = self.configure_web()
 
     def test_normal_views_and_execution_never_use_csv_or_local_result_json(self):
-        with mock.patch("legacy_shared_file_state.SharedFileState.__init__", side_effect=AssertionError("Operational files used")), \
-                mock.patch.object(BackendResultAdapter, "read_csv_table", side_effect=AssertionError("File reader used")):
+        with forbid_runtime_files():
             response = self.client.post("/run-allocation")
             self.assertIn("run_status=success", response.location)
             for route in ("/", "/requests", "/users", "/spaces", "/allocation-summary", "/request/1", "/request/40",
@@ -52,7 +51,8 @@ class PostgresWebTests(PostgresTestCase):
             with self.subTest(strategy=strategy):
                 self.repository.set_strategy(strategy)
                 published = execute_allocation(self.repository, gateway)
-                csv_input = execution_snapshot(BackendResultAdapter(ROOT / "data", []), strategy)
+                csv_input = CsvInputs(ROOT / "data").snapshot()
+                csv_input["strategy"] = strategy
                 csv_input["runId"] = published["runId"]
                 expected, _ = gateway.execute(csv_input)
                 self.assertEqual(published, expected)
@@ -61,7 +61,7 @@ class PostgresWebTests(PostgresTestCase):
     def test_schedule_events_and_resource_attributes_match_published_allocations(self):
         execute_allocation(self.repository, EngineGateway(ROOT))
         adapter = DatabaseResultAdapter(self.repository, web_app.RAW_DATA_FILES)
-        spaces = {row["spaceId"]: row for row in adapter.read_csv_table("spaces.csv")["rows"]}
+        spaces = {row["spaceId"]: row for row in adapter.get_table("spaces")["rows"]}
         for allocation in adapter.engine_result["allocations"]:
             space = spaces[str(allocation["spaceId"])]
             self.assertEqual(allocation["spaceName"], space["name"])
@@ -80,7 +80,7 @@ class PostgresWebTests(PostgresTestCase):
         result = execute_allocation(self.repository, EngineGateway(ROOT))
         self.assertTrue(any(group["items"] for group in result["suggestions"]))
         suggested_request = next(group["requestId"] for group in result["suggestions"] if group["items"])
-        with mock.patch("web.backend_result_adapter.extract_meeting_suggestions", side_effect=AssertionError("History parser used")):
+        with forbid_runtime_files():
             self.assertEqual(self.client.get("/request/40").status_code, 200)
             self.assertIn("Suggested least-change", self.client.get(f"/request/{suggested_request}").get_data(as_text=True))
         with self.database.transaction(read_only=True) as session:
@@ -119,7 +119,7 @@ class DatabaseFailureWebTests(TestCase):
     def test_missing_configuration_returns_clear_error_without_file_fallback(self):
         with mock.patch.dict(os.environ, {}, clear=True), \
                 mock.patch.dict(web_app.app.config, {"DATABASE_URL": None}), \
-                mock.patch("legacy_shared_file_state.SharedFileState.__init__", side_effect=AssertionError("CSV fallback used")):
+                forbid_runtime_files():
             response = web_app.app.test_client().get("/")
         self.assertEqual(response.status_code, 503)
         self.assertIn("DATABASE_URL is required", response.get_data(as_text=True))
