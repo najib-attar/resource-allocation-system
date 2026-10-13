@@ -202,7 +202,7 @@ Result: 140 passed, 0 failed
 
 The test runner compiles and runs the backend smoke executable, then compiles and runs the unit and integration tests.
 
-After installing `requirements.txt`, building the authoritative backend, and configuring an isolated `TEST_DATABASE_URL`, run `python -m unittest discover -s tests -p 'test_*.py' -v` for database integrity/concurrency, migrations, gateway, JSON/legacy parity and Flask smoke checks. The verified Windows completion-review run executed 155 tests: 154 passed, zero failed, one POSIX-permission test skipped. Configure matching PostgreSQL backup tools as described in the [database guide](docs/database-operations.md) to run recovery tests. Without the URL/tools, relevant tests explicitly skip; such a run is not full verification. Linux CI provides a real PostgreSQL service; inspect the draft PR checks before merge. See the [iteration verification record](docs/iteration-reports/Iteration_41_progress.md) for commands and platform limitations.
+After installing `requirements.txt`, building the authoritative backend, and configuring an isolated `TEST_DATABASE_URL`, run `python -m unittest discover -s tests -p 'test_*.py' -v` for database integrity/concurrency, migrations, gateway, JSON/legacy parity and Flask smoke checks. Configure matching PostgreSQL backup tools as described in the [database guide](docs/database-operations.md) to run recovery tests. Without the URL/tools, relevant tests explicitly skip; such a run is not full verification. Linux CI provides a real PostgreSQL service.
 
 ## Iterative Development Summary
 

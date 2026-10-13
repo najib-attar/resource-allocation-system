@@ -48,3 +48,8 @@ cmake-build-release/
 # Personal agent/development instructions remain local only.
 /AGENTS.md
 /docs/development/
+
+# Private work reports and progress/cleanup notes.
+/docs/iteration-reports/Iteration_41.md
+/docs/iteration-reports/*_progress.md
+/docs/architecture/csv-cleanup.md
