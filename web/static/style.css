@@ -1260,3 +1260,54 @@ tr:nth-child(even) td {
 .appointment-card { border-bottom: 1px solid #d6dce4; padding: .8rem 0; }
 .appointment-choice { display: block; margin: .5rem 0; padding: .7rem; text-align: left; width: 100%; }
 .professor-option[hidden] { display: none !important; }
+.panel {
+    background: rgba(255, 255, 255, .94);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    box-shadow: 0 20px 55px rgba(24, 33, 47, .09);
+    padding: clamp(1.1rem, 3vw, 2rem);
+    margin-bottom: 1.3rem;
+    overflow-wrap: anywhere;
+}
+.panel h2, .panel h3 { color: var(--accent-dark); }
+.panel p { line-height: 1.65; }
+.panel form { display: flex; flex-wrap: wrap; gap: .8rem; align-items: end; margin: 1rem 0; }
+.panel form > label { flex: 1 1 200px; }
+.panel form > p { flex-basis: 100%; margin: 0; }
+.panel label { display: block; color: var(--accent-dark); font-weight: 700; }
+.panel input:not([type="checkbox"]):not([type="hidden"]), .panel select, .panel textarea {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin-top: .4rem;
+    padding: .7rem;
+    font: inherit;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: white;
+    color: var(--ink);
+}
+.panel textarea { min-height: 100px; resize: vertical; }
+.panel fieldset { border: 1px solid var(--line); border-radius: 12px; padding: 1rem; margin: 1rem 0; }
+.panel legend { color: var(--accent-dark); font-weight: 800; }
+#appointment-form { display: block; }
+.panel button, .panel a.button, .nav-links button {
+    appearance: none;
+    font: inherit;
+    font-weight: 800;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: .65rem 1rem;
+    background: var(--soft-blue);
+    color: var(--accent-dark);
+    cursor: pointer;
+    text-decoration: none;
+}
+.panel .button { background: var(--accent); color: white; border-color: var(--accent); }
+.panel button:hover, .nav-links button:hover { background: var(--accent-dark); color: white; }
+.panel button:disabled { cursor: wait; opacity: .65; }
+.panel input:focus-visible, .panel select:focus-visible, .panel textarea:focus-visible,
+.panel button:focus-visible { outline: 3px solid var(--highlight); outline-offset: 2px; }
+.panel [role="alert"] { background: var(--soft-amber); padding: 1rem; border-left: 4px solid var(--warning); }
+.appointment-choice { border-radius: 12px !important; width: 100%; }
+.nav-links { align-items: center; }

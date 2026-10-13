@@ -344,3 +344,18 @@ class AppointmentWebTests(AppointmentFixture):
             "duration": 60, "purpose": "Invalid time", "start": "2030-01-07T22:00"})
         self.assertEqual(response.status_code, 409)
         self.assertIn(b"published appointment hours", response.data)
+
+    def test_invitation_reschedule_approval_and_cancel_routes_preserve_revision_rules(self):
+        pid = self.submit(professors=(2, 3), invitees=(4,))
+        path = f"/appointments/{pid}"
+        invited = authorized_client(web_app.app, 4)
+        self.assertEqual(invited.post(path + "/decline-invitation").status_code, 302)
+        self.assertEqual(invited.post(path + "/cancel", data={"revision": 1}).status_code, 403)
+        self.assertEqual(self.client.post(path + "/reschedule", data={"revision": 1, "start": "2030-01-07T11:00"}).status_code, 302)
+        for uid in (2, 3):
+            professor = authorized_client(web_app.app, uid)
+            self.assertEqual(professor.post(path + "/decision", data={"revision": 1, "decision": "approve"}).status_code, 409)
+            self.assertEqual(professor.post(path + "/decision", data={"revision": 2, "decision": "approve"}).status_code, 302)
+        self.assertEqual(self.service.detail(pid, 1)["status"], "Confirmed")
+        self.assertEqual(professor.post(path + "/cancel", data={"revision": 2}).status_code, 302)
+        self.assertEqual(self.service.detail(pid, 1)["status"], "Cancelled")
