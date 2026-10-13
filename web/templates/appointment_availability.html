@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block page_heading %}Published Appointment Hours{% endblock %}
+{% block content %}<section class="panel"><p>Publication requires explicit validity dates. All times are in {{ zone }}; dates are inclusive.</p>
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="hours">
+<div class="appointment-grid"><label>Weekday <select name="day">{% for name in ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] %}<option value="{{ loop.index }}">{{ name }}</option>{% endfor %}</select></label>
+<label>Start <input type="time" name="startTime" required></label><label>End <input type="time" name="endTime" required></label>
+<label>Valid from <input type="date" name="validFrom" required></label><label>Valid through <input type="date" name="validUntil" required></label>
+<label>Excluded dates (comma-separated YYYY-MM-DD) <input name="excludedDates"></label></div><button class="button" type="submit">Publish hours</button></form></section>
+<section class="panel"><h2>Current patterns</h2>{% for row in values.hours %}<article><p>Weekday {{ row.day }} &middot; {{ '%02d:%02d'|format(row.start_minutes//60,row.start_minutes%60) }} &ndash; {{ '%02d:%02d'|format(row.end_minutes//60,row.end_minutes%60) }} &middot; {{ row.valid_from }} to {{ row.valid_until }} &middot; Exclusions: {{ row.excluded_dates|join(', ') or 'None' }}</p>
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="remove-hours"><input type="hidden" name="id" value="{{ row.id }}"><button type="submit">Remove pattern</button></form></article>{% else %}<p>No hours published yet.</p>{% endfor %}</section>{% endblock %}

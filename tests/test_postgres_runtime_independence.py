@@ -58,7 +58,8 @@ from runtime_file_guard import forbid_runtime_files
 with forbid_runtime_files():
     from web import app as web_app
     web_app.app.config['TESTING'] = True
-    client = web_app.app.test_client()
+    from auth_fixtures import authorized_client
+    client = authorized_client(web_app.app)
     for route in ('/', '/request/1', '/allocation-summary', '/schedules?type=space&id=301'):
         assert client.get(route).status_code == 200, route
     response = client.post('/add-request', data={'requestType': 'OneTime', 'userId': '2', 'spaceId': '301',

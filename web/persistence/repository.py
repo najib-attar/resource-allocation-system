@@ -270,7 +270,17 @@ class Repository:
                                                    end_minutes=slot["endMinutes"], score=item["score"], time_distance=item["timeDistanceMinutes"],
                                                    day_distance=item["dayDistance"], conflict_count=item["conflictCount"], reason=item["reason"]))
             run.status, run.build, run.engine_version = "success", build, result["engineVersion"]
+            from .models import AppointmentCommitment
+            from ..calendar_service import assert_commitments_compatible, legacy_intervals
+            commitments = list(session.scalars(select(AppointmentCommitment)))
+            if commitments:
+                intervals, unresolved = legacy_intervals(session, {row.user_id for row in commitments},
+                    min(row.start_at for row in commitments), max(row.end_at for row in commitments), run.id)
+                if unresolved:
+                    raise PersistenceError("New university commitments have unresolved calendar dates for confirmed appointment participants. Configure explicit academic bindings before publishing.")
+                assert_commitments_compatible(session, intervals)
             state.active_run_id = run.id
+            state.calendar_revision += 1
 
     def read_view(self):
         with self.database.transaction(read_only=True) as session:

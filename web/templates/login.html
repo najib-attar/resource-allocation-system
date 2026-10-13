@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Sign In - University Scheduling{% endblock %}
+{% block page_heading %}University Scheduling{% endblock %}
+{% block content %}
+<section class="panel"><h2>Sign in</h2><p>Use the account provisioned for your university identity.</p>
+{% if error %}<p class="message error" role="alert">{{ error }}</p>{% endif %}
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<p><label>Username <input name="username" autocomplete="username" required maxlength="100"></label></p>
+<p><label>Password <input name="password" type="password" autocomplete="current-password" required maxlength="256"></label></p>
+<button class="button" type="submit">Sign in</button></form></section>
+{% endblock %}

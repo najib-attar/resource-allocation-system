@@ -1254,3 +1254,9 @@ tr:nth-child(even) td {
         justify-content: flex-start;
     }
 }
+/* Appointment forms reuse the dashboard's established visual language. */
+.appointment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; }
+.appointment-grid label, #appointment-form label { display: block; margin: .6rem 0; }
+.appointment-card { border-bottom: 1px solid #d6dce4; padding: .8rem 0; }
+.appointment-choice { display: block; margin: .5rem 0; padding: .7rem; text-align: left; width: 100%; }
+.professor-option[hidden] { display: none !important; }

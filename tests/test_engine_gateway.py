@@ -202,8 +202,9 @@ class JsonEngineIntegrationTests(TestCase):
         self.assertEqual(len(item["meeting_suggestions"]["items"]), 3)
         repository = mock.Mock()
         repository.read_view.return_value = (snapshot, {"snapshot": snapshot, "result": result, "build": {}}, 1)
-        with mock.patch.object(web_app, "get_repository", return_value=repository):
-            response = web_app.app.test_client().get("/request/1")
+        from auth_fixtures import authorized_client, mocked_administrator
+        with mock.patch.object(web_app, "get_repository", return_value=repository), mocked_administrator():
+            response = authorized_client(web_app.app).get("/request/1")
             self.assertEqual(response.status_code, 200)
             self.assertIn("Suggested least-change", response.get_data(as_text=True))
 

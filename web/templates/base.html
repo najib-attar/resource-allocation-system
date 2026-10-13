@@ -13,6 +13,11 @@
             <h1>{% block page_heading %}Dashboard{% endblock %}</h1>
         </div>
         <nav class="nav-links" aria-label="Main navigation">
+            {% if g.principal %}
+            <a href="{{ url_for('appointments.index') }}">Appointments</a>
+            <a href="{{ url_for('appointments.calendar') }}">My Calendar</a>
+            {% if g.principal.role == 'Instructor' %}<a href="{{ url_for('appointments.availability') }}">Office Hours</a>{% endif %}
+            {% if g.principal.administrator %}
             <a href="{{ url_for('index') }}">Dashboard</a>
             <a href="{{ url_for('add_request') }}">Add Request</a>
             <a href="{{ url_for('requests') }}">Requests</a>
@@ -21,6 +26,11 @@
             <a href="{{ url_for('users') }}">Users</a>
             <a href="{{ url_for('spaces') }}">Spaces</a>
             <a href="{{ url_for('raw_data') }}">Raw Data</a>
+            <a href="{{ url_for('appointments.bindings') }}">Calendar Setup</a>
+            {% endif %}
+            <span>{{ g.principal.name }}</span>
+            <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Sign out</button></form>
+            {% endif %}
         </nav>
     </header>
 

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block page_heading %}Schedule a Professor Appointment{% endblock %}
+{% block content %}<section class="panel"><p>Times are in {{ zone }}. The organizing student and every professor must be free. Invited students are optional.</p>
+{% if not directory.faculties %}<p role="alert">No faculty hierarchy is configured. Ask an administrator to configure faculty/department membership before scheduling.</p>{% endif %}
+<form method="post" id="appointment-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<p><label>Faculty <select name="facultyId" id="faculty" required><option value="">Select faculty</option>{% for item in directory.faculties %}<option value="{{ item.id }}">{{ item.name }}</option>{% endfor %}</select></label></p>
+<fieldset><legend>Required professors</legend>{% for item in directory.professors %}<label class="professor-option" data-faculty="{{ item.facultyId }}" hidden><input type="checkbox" name="professorIds" value="{{ item.id }}" disabled> {{ item.name }}</label>{% endfor %}</fieldset>
+<fieldset><legend>Optional student invitations</legend>{% for item in directory.students if item.id != g.principal.user_id %}<label><input type="checkbox" name="invitedIds" value="{{ item.id }}"> {{ item.name }}</label>{% endfor %}</fieldset>
+<p><label>Purpose <textarea name="purpose" maxlength="2000" required></textarea></label></p>
+<p><label>Duration (minutes) <input name="duration" type="number" min="1" max="1440" value="30" required></label></p>
+<div class="appointment-grid"><label>Search from <input name="fromDate" type="date" value="{{ today }}" required></label>
+<label>Through <input name="untilDate" type="date" value="{{ today }}" required></label>
+<label>Preferred date/time (optional) <input name="preferredStart" type="datetime-local"></label></div>
+<p><button type="button" id="find-times" class="button" data-url="{{ url_for('appointments.times') }}">Find feasible / recommended times</button></p>
+<p id="times-message" role="status" aria-live="polite"></p><div id="times-list"></div>
+<p><label>Selected or proposed time <input id="appointment-start" name="start" type="datetime-local" required></label></p>
+<p>A proposed time is checked against the same mandatory constraints as recommendations.</p>
+<button class="button" type="submit">Submit for professor approval</button></form></section>
+<script src="{{ url_for('static', filename='appointments.js') }}" defer></script>{% endblock %}

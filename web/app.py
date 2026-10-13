@@ -2,6 +2,10 @@ from pathlib import Path
 import os
 import threading
 import uuid
+import sys
+if not __package__:
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+    __package__ = "web"
 
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -42,6 +46,8 @@ except ImportError:
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
+if not __package__:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 app = Flask(__name__)
 app.config.update(
@@ -146,9 +152,16 @@ def get_repository():
         return Repository(app.extensions["allocation_database"][1])
 
 
+from web.security import init_security
+init_security(app, lambda: get_repository().database)
+
+from web.appointment_routes import create_appointment_blueprint
+app.register_blueprint(create_appointment_blueprint(lambda: get_repository().database,
+    lambda: EngineGateway(PROJECT_ROOT, app.config["BACKEND_TIMEOUT"], app.logger)))
+
 @app.before_request
 def pin_database_view():
-    if request.method in {"GET", "HEAD"} and request.endpoint != "static":
+    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith("appointments."):
         current_results()
 
 
@@ -1003,4 +1016,4 @@ def results():
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=5000, debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=os.environ.get("RESOURCE_ALLOCATION_DEBUG", "0") == "1")
