@@ -49,7 +49,7 @@ class PostgresQualityTests(PostgresTestCase):
                 with self.subTest(table=table.name, columns=columns):
                     self.assertTrue(any(index[:len(columns)] == columns for index in indexes))
 
-    def test_all_eighteen_tables_match_physical_keys_checks_and_nullability(self):
+    def test_all_application_tables_match_physical_keys_checks_and_nullability(self):
         from sqlalchemy import CheckConstraint, UniqueConstraint
         inspector = inspect(self.database.engine)
         self.assertEqual(set(inspector.get_table_names()), set(Base.metadata.tables) | {"alembic_version"})

@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 from postgres_fixtures import PostgresTestCase
 from postgres_web_fixtures import seed_web_database
 from web.account_service import AccountService
-from web.persistence.models import Appointment, AppointmentCommitment, LoginAccount, User
+from web.persistence.models import Appointment, AppointmentCommitment, AppointmentProfessor, LoginAccount, Role, User
 from web.persistence.repository import PersistenceError
 
 
@@ -19,6 +19,9 @@ class AppointmentFoundationTests(PostgresTestCase):
         seed_web_database(self.database, with_request=False)
         self.accounts = AccountService(self.database)
         self.password = secrets.token_urlsafe(24)
+        with self.database.transaction() as session:
+            student_role = session.scalar(select(Role.id).where(Role.name == "Student"))
+            session.add(User(id=1, source_order=2, name="Fictional organizing student", primary_role_id=student_role))
 
     def test_password_is_hashed_and_identity_cannot_be_self_assigned(self):
         self.accounts.provision(2, "ada", self.password)
@@ -57,12 +60,13 @@ class AppointmentFoundationTests(PostgresTestCase):
 
     def _reservation(self, start):
         with self.database.transaction() as session:
-            appointment = Appointment(organizer_id=2, purpose="Fixture reservation", duration_minutes=60,
-                                      start_at=start, end_at=start + timedelta(hours=1))
+            appointment = Appointment(organizer_id=1, purpose="Fixture reservation", duration_minutes=60,
+                                      start_at=start, end_at=start + timedelta(hours=1), status="Confirmed")
             session.add(appointment)
             session.flush()
-            session.add(AppointmentCommitment(appointment_id=appointment.id, user_id=2,
-                                              start_at=start, end_at=start + timedelta(hours=1)))
+            session.add(AppointmentProfessor(appointment_id=appointment.id, user_id=2, revision=1, decision="Approved"))
+            session.add_all(AppointmentCommitment(appointment_id=appointment.id, user_id=uid,
+                            start_at=start, end_at=start + timedelta(hours=1)) for uid in (1, 2))
 
     def test_half_open_reservations_allow_adjacency_and_reject_overlap(self):
         start = datetime(2027, 1, 4, 10, tzinfo=timezone.utc)
@@ -71,7 +75,7 @@ class AppointmentFoundationTests(PostgresTestCase):
         with self.assertRaises(IntegrityError):
             self._reservation(start + timedelta(minutes=30))
         with self.database.transaction(read_only=True) as session:
-            self.assertEqual(len(list(session.scalars(select(AppointmentCommitment)))), 2)
+            self.assertEqual(len(list(session.scalars(select(AppointmentCommitment)))), 4)
 
     def test_duration_and_reservation_interval_checks_reject_invalid_rows(self):
         start = datetime(2027, 1, 4, 10, tzinfo=timezone.utc)
