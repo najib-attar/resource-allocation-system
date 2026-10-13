@@ -209,8 +209,8 @@ powershell -ExecutionPolicy Bypass -File tests\run_tests.ps1
 The latest verified result is:
 
 ```text
-Running 147 test(s)
-Result: 147 passed, 0 failed
+Running 148 test(s)
+Result: 148 passed, 0 failed
 ```
 
 The test runner compiles and runs the backend smoke executable, then compiles and runs the unit and integration tests.

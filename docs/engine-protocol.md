@@ -216,12 +216,12 @@ The university zone is explicitly configured, default Europe/Istanbul.
 |---|---|
 | protocolVersion / operation / runId | 1 / appointment / correlation identifier |
 | action | recommend or validate |
-| organizerId / professorIds / invitedIds | Distinct university identities; required professors nonempty |
+| organizerId / professorIds / invitedIds | Distinct university identities; required professors nonempty; up to 100 professors and 100 invitees |
 | durationMinutes | Positive duration, at most one day |
 | horizon | start/end UTC epoch seconds; bounded search of at most 32 days |
 | published | userId/start/end professor publication windows |
 | busy | userId/start/end blocks and known confirmed commitments |
-| unresolvedIds | Participants whose legacy calendar applicability is unknown |
+| unresolvedIds | Participants whose legacy calendar applicability is unknown; up to all 201 participants |
 | preferredStart | Optional UTC preferred instant for ranking |
 | proposed | Required start/end for validate; manual proposals need not match the recommendation grid |
 | limit | Optional recommendation count 1-100; default 20 |
