@@ -130,7 +130,7 @@ RequestTypeRule
 
 - `docs/srs/` : Software Requirements Specification
 - `docs/analysis/` : Initial domain analysis and domain model
-- `docs/iteration-reports/` : Iteration reports, including Iterations 33-40
+- `docs/iteration-reports/` : Iteration reports, including Iterations 33-41
 - `docs/design/class-diagrams/` : class diagram exports, including Iterations 33-40
 - `docs/testing/` : backend testing and verification reports
 - `docs/use-cases/` : user-facing feature requirements; not a list of implemented features
@@ -157,6 +157,7 @@ RequestTypeRule
 - [Existing Engine Protocol](docs/engine-protocol.md): compatibility contract for Flask-C++ execution.
 - [Database Design](docs/architecture/database-design.md): entities, ER diagram, constraints and transactional workflow.
 - [Database Operations](docs/database-operations.md): setup, safe import, testing and failure behavior.
+- [Iteration 41 Report](docs/iteration-reports/Iteration_41.pdf): PostgreSQL persistence, database tables, diagrams, migration and verification.
 - [Student-Professor Appointment Use Case](docs/use-cases/UC-STU-01-student-professor-appointment.pdf): requirements for a future feature, not current implementation.
 
 ## Data Files
