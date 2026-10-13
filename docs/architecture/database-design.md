@@ -12,7 +12,7 @@ not a database fallback or a second writable application store.
 to `BackendResultAdapter`. Internal table names are logical entities, not CSV paths;
 existing Raw Data bookmarks are explicit presentation aliases. Offline CSV-to-DTO
 conversion belongs only to the importer, never `EngineGateway` or normal request
-persistence. See the [cleanup inventory](csv-cleanup.md) for boundaries and tests.
+persistence.
 
 ## ER diagrams and physical inventory
 

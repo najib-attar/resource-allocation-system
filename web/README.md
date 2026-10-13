@@ -134,8 +134,7 @@ python -m unittest discover -s tests -p 'test_*.py' -v
 powershell -ExecutionPolicy Bypass -File tests/run_tests.ps1
 ```
 
-See [Iteration 41 progress](../docs/iteration-reports/Iteration_41_progress.md)
-for exact counts. Presentation uses file-free `get_table("requests")` views;
+Presentation uses file-free `get_table("requests")` views;
 offline CSV conversion belongs only to the explicit importer. Retired file-lock
 and local-result-publication fixtures have been removed. Standalone C++ CSV
 CLI/import tests remain, including quoting and five-strategy JSON parity. Web

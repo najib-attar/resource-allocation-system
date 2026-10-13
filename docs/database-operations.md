@@ -189,7 +189,7 @@ The automated recovery test uses `pg_dump`/`pg_restore`, creates a unique
 continuation and a new Flask process. It retains that isolated database rather
 than deleting any existing database. Local test schema cleanup never affects it.
 
-## CSV dependency classification
+## CSV Compatibility
 
 | Category | Current treatment |
 |---|---|
@@ -197,8 +197,6 @@ than deleting any existing database. Local test schema cleanup never affects it.
 | Optional import/export | Validated `scripts/import_csv.py`, offline snapshot parsing and standalone CLI exports preserved. |
 | Regression fixtures | Original `data/` and `tests/fixtures/` files preserved untouched. |
 | Historical documentation | Previous iteration reports preserved; active guides describe PostgreSQL. |
-| Obsolete operational persistence | `web/shared_file_state.py` and runtime file-generation publication removed. |
-| Retired shared-file tests | Lock/journal/generation helpers and their four obsolete recovery/publication tests removed; PostgreSQL lock release, rollback and coherent publication coverage retained. |
 
 `BackendResultAdapter` is file-free presentation code; `DatabaseResultAdapter`
 pins one coherent repository view and exposes `get_table("requests")`, not a CSV
@@ -207,9 +205,8 @@ reader. `engine_result_projection.py` shares input/result display projections an
 aliases for database views, not filesystem paths. `CsvInputs` and its DTO conversion
 are confined to the explicit importer. Request validation is shared independently
 of import machinery. Suggestions are presented only from structured engine data.
-See the [cleanup inventory](architecture/csv-cleanup.md) for retained components
-and test coverage. Normal workflows, cold restart and database failures are tested
-with CSV/config/lock/local-result IO forbidden.
+Normal workflows, cold restart and database failures are tested with
+CSV/config/lock/local-result IO forbidden.
 
 ## Tests and CI
 
