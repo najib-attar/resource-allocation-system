@@ -99,13 +99,19 @@ class EngineGateway:
         self.project_root, self.timeout, self.logger = project_root, timeout, logger
 
     def execute(self, snapshot):
+        return self._execute(snapshot, "--json", validate_result)
+
+    def execute_appointment(self, snapshot):
+        return self._execute(snapshot, "--appointments-json", validate_appointment_result)
+
+    def _execute(self, snapshot, mode, validator):
         backend = resolve_backend_executable(self.project_root, os.environ.get("RESOURCE_ALLOCATION_BACKEND"))
         if self.logger:
             self.logger.info("Executing JSON backend %s (built=%s source=%s binary=%s compiler=%s run=%s)",
                              backend.path, backend.metadata["built_at"], backend.metadata["source_sha256"],
                              backend.metadata["binary_sha256"], backend.metadata["compiler"], snapshot["runId"])
         try:
-            completed = subprocess.run([str(backend.path), "--json"], input=json.dumps(snapshot, ensure_ascii=False, allow_nan=False),
+            completed = subprocess.run([str(backend.path), mode], input=json.dumps(snapshot, ensure_ascii=False, allow_nan=False),
                                        encoding="utf-8", capture_output=True, timeout=self.timeout, cwd=self.project_root)
         except subprocess.TimeoutExpired as error:
             raise EngineIntegrationError(f"Backend execution timed out after {self.timeout} seconds. Previous results remain active.") from error
@@ -121,7 +127,37 @@ class EngineGateway:
         if completed.returncode != 0:
             detail = result.get("errors", []) if isinstance(result, dict) else []
             raise EngineIntegrationError(f"Backend failed with exit code {completed.returncode}: {detail}")
-        validate_result(result, snapshot)
+        validator(result, snapshot)
         if result["status"] != "success":
             raise EngineIntegrationError(f"Backend reported error with zero exit code: {result['errors']}")
         return result, backend.metadata
+
+
+def validate_appointment_result(result, snapshot):
+    def require(condition):
+        if not condition:
+            raise EngineIntegrationError("Invalid appointment engine response.")
+    require(isinstance(result, dict) and type(result.get("protocolVersion")) is int
+            and result["protocolVersion"] == 1 and result.get("operation") == "appointment"
+            and result.get("runId") == snapshot["runId"] and result.get("status") == "success"
+            and isinstance(result.get("engineVersion"), str) and bool(result["engineVersion"])
+            and type(result.get("feasible")) is bool and result.get("reasonCode") in {
+                "AVAILABLE", "NO_FEASIBLE_TIME", "UNRESOLVED_CALENDAR", "OUTSIDE_PUBLISHED_AVAILABILITY",
+                "REQUIRED_PARTICIPANT_BUSY", "ORGANIZER_BUSY", "INVALID_INTERVAL"}
+            and isinstance(result.get("recommendations"), list) and result.get("errors") == [])
+    require(result["feasible"] == (result["reasonCode"] == "AVAILABLE"))
+    people = set(snapshot["invitedIds"])
+    for item in result["recommendations"]:
+        require(isinstance(item, dict) and type(item.get("start")) is int and type(item.get("end")) is int
+                and snapshot["horizon"]["start"] <= item["start"] < item["end"] <= snapshot["horizon"]["end"]
+                and item["end"] - item["start"] == snapshot["durationMinutes"] * 60
+                and isinstance(item.get("reason"), str)
+                and type(item.get("preferenceDistanceSeconds")) is int and item["preferenceDistanceSeconds"] >= 0)
+        groups = [item.get(key) for key in ("availableInvitees", "unavailableInvitees", "unresolvedInvitees")]
+        require(all(isinstance(group, list) and all(type(pid) is int for pid in group) for group in groups))
+        combined = [pid for group in groups for pid in group]
+        require(len(combined) == len(set(combined)) and set(combined) == people)
+    require(result["feasible"] == bool(result["recommendations"]))
+    if snapshot["action"] == "validate" and result["feasible"]:
+        require(len(result["recommendations"]) == 1 and all(result["recommendations"][0][key] == snapshot["proposed"][key] for key in ("start", "end")))
+    return result
