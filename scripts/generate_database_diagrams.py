@@ -30,9 +30,20 @@ PURPOSES = {
     "suggestion_group": "Decision-specific suggestion scan, including a scan yielding no alternatives.",
     "meeting_suggestion": "Ranked structured time/resource alternatives returned by C++.",
     "request_history": "Timestamped save/import/decision events with optional run provenance.",
+    "login_account": "Trusted login identity, password hash, administration grant, revocation and throttling.",
+    "academic_period": "Explicit named calendar validity and timezone; no inferred legacy dates.",
+    "legacy_calendar_binding": "Explicit period/planning-week association for an undated busy slot or request.",
+    "professor_availability": "Bounded weekly published office-hour patterns and date exceptions.",
+    "calendar_block": "Private dated unavailable intervals for a university user.",
+    "appointment": "Dated organizer request, duration, current revision and lifecycle state.",
+    "appointment_professor": "Required professor decisions for the appointment revision.",
+    "appointment_invitation": "Optional student participation status; no mandatory acceptance.",
+    "appointment_commitment": "Confirmed mandatory-person reservations with half-open overlap exclusion.",
+    "appointment_event": "Participant-visible, timestamped appointment lifecycle history.",
 }
 MAIN_TABLES = {"role", "organization_unit", "university_user", "resource", "resource_request",
                "busy_slot", "allocation_run", "request_decision", "allocation", "application_state", "request_history"}
+MAIN_TABLES |= {"login_account", "academic_period", "appointment", "appointment_commitment", "professor_availability", "calendar_block"}
 
 
 def kind(column):
@@ -82,7 +93,7 @@ def er_source(tables, physical):
 
 
 def catalog(tables):
-    lines = ["# Physical schema catalog", "", "Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 18 application tables.",
+    lines = ["# Physical schema catalog", "", f"Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the {len(tables)} application tables.",
              "", "All foreign keys use PostgreSQL **NO ACTION**: no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.",
              "ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.", ""]
     for table in tables:
@@ -90,7 +101,7 @@ def catalog(tables):
         for column in table.columns:
             keys = ["PK"] if column.primary_key else []
             keys += ["FK -> " + fk.target_fullname for fk in column.foreign_keys]
-            default = "identity" if column.identity is not None else str(column.server_default.arg) if column.server_default is not None else "ORM: " + str(column.default.arg) if column.default is not None and not column.default.is_callable else "ORM callable" if column.default is not None else "-"
+            default = "identity" if column.identity is not None else "computed: " + str(column.computed.sqltext) if column.computed is not None else str(column.server_default.arg) if column.server_default is not None else "ORM: " + str(column.default.arg) if column.default is not None and not column.default.is_callable else "ORM callable" if column.default is not None else "-"
             sql_type = column.type.compile(dialect=postgresql.dialect()).lower()
             lines.append(f"| {column.name} | {sql_type} | {'; '.join(keys) or '-'} | {'yes' if column.nullable else 'no'} | {default} |")
         lines += ["", "- Primary key: `" + ", ".join(table.primary_key.columns.keys()) + "`."]
@@ -105,6 +116,8 @@ def catalog(tables):
         for index in sorted(table.indexes, key=lambda item: item.name):
             lines.append("- Index: `" + index.name + " (" + ", ".join(index.columns.keys()) + ")`.")
         lines.append("")
+    lines += ["## Confirmed appointment overlap protection", "",
+              "Revision `0042a` uses PostgreSQL btree_gist and an exclusion constraint on `(user_id WITH =, period WITH &&)` in `appointment_commitment`. The generated timestamp range is `[start_at, end_at)`; adjacent reservations are allowed. Cancellation releases commitment rows while appointment/history records remain.", ""]
     lines += ["## alembic_version (infrastructure)", "", "Alembic's existing revision marker, not an additional application entity.", "",
               "| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |", "|---|---|---|---|---|",
               "| version_num | varchar(32) | PK | no | - |", "", "No foreign keys, additional indexes or cascading deletion.", ""]
@@ -142,7 +155,7 @@ def main():
     if stale:
         print("Outdated schema documentation: " + ", ".join(stale), file=sys.stderr)
         return 1
-    print("Schema sources/catalog match all 18 application tables.")
+    print(f"Schema sources/catalog match all {len(Base.metadata.tables)} application tables.")
     return 0
 
 

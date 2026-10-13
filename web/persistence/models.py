@@ -1,9 +1,9 @@
 """Relational records for the existing weekly application, not C++ domain rules."""
 
-from datetime import datetime
+from datetime import date, datetime
 
-from sqlalchemy import BigInteger, Boolean, CheckConstraint, DateTime, ForeignKey, ForeignKeyConstraint, Identity, Index, Integer, String, Text, UniqueConstraint, func
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import BigInteger, Boolean, CheckConstraint, Computed, Date, DateTime, ForeignKey, ForeignKeyConstraint, Identity, Index, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy.dialects.postgresql import ExcludeConstraint, JSONB, TSTZRANGE
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 
@@ -165,6 +165,7 @@ class ApplicationState(Base):
     input_revision: Mapped[int] = mapped_column(BigInteger, default=0)
     strategy: Mapped[str] = mapped_column(String(50), default="greedy")
     active_run_id: Mapped[int | None] = mapped_column(ForeignKey("allocation_run.id"))
+    calendar_revision: Mapped[int] = mapped_column(BigInteger, server_default="0")
 
 
 class RequestDecision(Base):
@@ -236,5 +237,126 @@ class RequestHistory(Base):
     request_id: Mapped[int] = mapped_column(ForeignKey("resource_request.id"), index=True)
     run_id: Mapped[int | None] = mapped_column(ForeignKey("allocation_run.id"), index=True)
     kind: Mapped[str] = mapped_column(String(30))
+    message: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class LoginAccount(Base):
+    __tablename__ = "login_account"
+    __table_args__ = (CheckConstraint("failed_attempts >= 0 AND session_version > 0"),)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True)
+    username: Mapped[str] = mapped_column(String(100), unique=True)
+    password_hash: Mapped[str] = mapped_column(Text)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+    administrator: Mapped[bool] = mapped_column(Boolean, default=False)
+    session_version: Mapped[int] = mapped_column(Integer, default=1)
+    failed_attempts: Mapped[int] = mapped_column(Integer, default=0)
+    locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class AcademicPeriod(Base):
+    __tablename__ = "academic_period"
+    __table_args__ = (CheckConstraint("start_date <= end_date"),)
+    id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
+    name: Mapped[str] = mapped_column(String(200), unique=True)
+    start_date: Mapped[date] = mapped_column(Date)
+    end_date: Mapped[date] = mapped_column(Date)
+    timezone: Mapped[str] = mapped_column(String(100))
+
+
+class LegacyCalendarBinding(Base):
+    __tablename__ = "legacy_calendar_binding"
+    __table_args__ = (
+        CheckConstraint("(busy_slot_id IS NULL) <> (request_id IS NULL)"),
+        UniqueConstraint("period_id", "busy_slot_id"), UniqueConstraint("period_id", "request_id"),
+    )
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    period_id: Mapped[int] = mapped_column(ForeignKey("academic_period.id"), index=True)
+    busy_slot_id: Mapped[int | None] = mapped_column(ForeignKey("busy_slot.id"), index=True)
+    request_id: Mapped[int | None] = mapped_column(ForeignKey("resource_request.id"), index=True)
+    week_start: Mapped[date | None] = mapped_column(Date)
+    excluded_dates: Mapped[list] = mapped_column(JSONB, default=list)
+
+
+class ProfessorAvailability(Base):
+    __tablename__ = "professor_availability"
+    __table_args__ = (*slot_checks(), CheckConstraint("valid_from <= valid_until"))
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), index=True)
+    day: Mapped[int] = mapped_column(Integer)
+    start_minutes: Mapped[int] = mapped_column(Integer)
+    end_minutes: Mapped[int] = mapped_column(Integer)
+    valid_from: Mapped[date] = mapped_column(Date)
+    valid_until: Mapped[date] = mapped_column(Date)
+    timezone: Mapped[str] = mapped_column(String(100))
+    excluded_dates: Mapped[list] = mapped_column(JSONB, default=list)
+
+
+class CalendarBlock(Base):
+    __tablename__ = "calendar_block"
+    __table_args__ = (CheckConstraint("start_at < end_at"), Index("ix_calendar_block_user_start", "user_id", "start_at"))
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"))
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    reason: Mapped[str] = mapped_column(Text, default="")
+
+
+class Appointment(Base):
+    __tablename__ = "appointment"
+    __table_args__ = (
+        CheckConstraint("revision > 0 AND duration_minutes > 0 AND start_at < end_at"),
+        CheckConstraint("end_at = start_at + duration_minutes * interval '1 minute'"),
+        CheckConstraint(allowed("status", ("Pending Approval", "Declined", "Confirmed", "Cancelled"))),
+        Index("ix_appointment_organizer_start", "organizer_id", "start_at"),
+    )
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    organizer_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"))
+    purpose: Mapped[str] = mapped_column(Text)
+    duration_minutes: Mapped[int] = mapped_column(Integer)
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    revision: Mapped[int] = mapped_column(Integer, default=1)
+    status: Mapped[str] = mapped_column(String(30), default="Pending Approval")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class AppointmentProfessor(Base):
+    __tablename__ = "appointment_professor"
+    __table_args__ = (CheckConstraint(allowed("decision", ("Pending", "Approved", "Declined"))), CheckConstraint("revision > 0"))
+    appointment_id: Mapped[int] = mapped_column(ForeignKey("appointment.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True, index=True)
+    revision: Mapped[int] = mapped_column(Integer)
+    decision: Mapped[str] = mapped_column(String(20), default="Pending")
+
+
+class AppointmentInvitation(Base):
+    __tablename__ = "appointment_invitation"
+    __table_args__ = (CheckConstraint(allowed("status", ("Invited", "Declined"))),)
+    appointment_id: Mapped[int] = mapped_column(ForeignKey("appointment.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True, index=True)
+    status: Mapped[str] = mapped_column(String(20), default="Invited")
+
+
+class AppointmentCommitment(Base):
+    __tablename__ = "appointment_commitment"
+    __table_args__ = (
+        CheckConstraint("start_at < end_at"),
+        ExcludeConstraint(("user_id", "="), ("period", "&&"), using="gist", name="ex_appointment_person_overlap"),
+    )
+    appointment_id: Mapped[int] = mapped_column(ForeignKey("appointment.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True)
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    period: Mapped[object] = mapped_column(TSTZRANGE, Computed("tstzrange(start_at, end_at, '[)')", persisted=True))
+
+
+class AppointmentEvent(Base):
+    __tablename__ = "appointment_event"
+    __table_args__ = (CheckConstraint("revision > 0"),)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    appointment_id: Mapped[int] = mapped_column(ForeignKey("appointment.id"), index=True)
+    actor_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), index=True)
+    revision: Mapped[int] = mapped_column(Integer)
     message: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
