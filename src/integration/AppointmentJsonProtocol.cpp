@@ -19,8 +19,8 @@ DatedInterval interval(const json& value) {
     if (result.start >= result.end) throw std::invalid_argument("Interval must have start before end.");
     return result;
 }
-std::vector<int> identifiers(const json& value) {
-    if (!value.is_array() || value.size() > 100) throw std::invalid_argument("Expected a bounded identifier list.");
+std::vector<int> identifiers(const json& value, std::size_t limit = 100) {
+    if (!value.is_array() || value.size() > limit) throw std::invalid_argument("Expected a bounded identifier list.");
     std::vector<int> result;
     std::set<int> seen;
     for (const auto& item : value) {
@@ -61,7 +61,7 @@ int AppointmentJsonProtocol::run(std::istream& stream, std::ostream& output, std
         data.organizerId = static_cast<int>(integer(input.at("organizerId"), 1, 2147483647));
         data.professorIds = identifiers(input.at("professorIds"));
         data.invitedIds = identifiers(input.at("invitedIds"));
-        data.unresolvedIds = identifiers(input.at("unresolvedIds"));
+        data.unresolvedIds = identifiers(input.at("unresolvedIds"), 201);
         if (data.professorIds.empty()) throw std::invalid_argument("At least one professor is required.");
         std::set<int> people{data.organizerId};
         for (int id : data.professorIds) if (!people.insert(id).second) throw std::invalid_argument("Participant roles overlap.");

@@ -71,3 +71,20 @@ TEST_CASE("Appointment protocol validates and recommends without changing alloca
     CHECK_EQ(response["recommendations"].size(),std::size_t(9));
     CHECK(diagnostics.str().empty());
 }
+TEST_CASE("Appointment protocol supports unresolved calendars for the full participant batch") {
+    nlohmann::json professors = nlohmann::json::array(), invited = nlohmann::json::array(), unresolved = nlohmann::json::array();
+    for (int id = 1; id <= 201; ++id) {
+        unresolved.push_back(id);
+        if (id >= 2 && id <= 101) professors.push_back(id);
+        if (id >= 102) invited.push_back(id);
+    }
+    nlohmann::json input = {{"protocolVersion",1},{"operation","appointment"},{"runId","large-batch"},{"action","recommend"},
+        {"organizerId",1},{"professorIds",professors},{"invitedIds",invited},{"unresolvedIds",unresolved}, {"durationMinutes",30},
+        {"horizon",{{"start",1800000000},{"end",1800086400}}},{"published",nlohmann::json::array()},{"busy",nlohmann::json::array()}};
+    std::istringstream in(input.dump());
+    std::ostringstream out, diagnostics;
+    CHECK_EQ(AppointmentJsonProtocol::run(in,out,diagnostics),0);
+    auto response = nlohmann::json::parse(out.str());
+    CHECK_EQ(response["reasonCode"].get<std::string>(),"UNRESOLVED_CALENDAR");
+    CHECK(!response["feasible"].get<bool>());
+}
