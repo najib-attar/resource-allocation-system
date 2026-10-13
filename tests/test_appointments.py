@@ -184,6 +184,18 @@ class AppointmentWorkflowTests(AppointmentFixture):
                                  week_start=date(2030, 1, 7), exclusions=["2030-01-07"])
         self.submit()  # Specific exception excludes the bounded planning week commitment.
         self.submit(start=START + timedelta(days=7))
+        with self.database.transaction() as session:
+            busy = BusySlot(user_id=1, source_order=2, day=3, start_minutes=600, end_minutes=660, reason="First partial semester week")
+            session.add(busy)
+            session.flush()
+            busy_id = busy.id
+            session.add(ProfessorAvailability(user_id=2, day=3, start_minutes=540, end_minutes=1020,
+                valid_from=date(2030, 1, 1), valid_until=date(2030, 1, 31), timezone="Europe/Istanbul", excluded_dates=[]))
+        self.service.bind_legacy("Fictional semester starting Tuesday", date(2030, 1, 8), date(2030, 1, 31),
+                                 busy_id=busy_id, week_start=date(2030, 1, 7))
+        with self.assertRaisesRegex(AppointmentError, "organizing student"):
+            self.submit(start=START + timedelta(days=2))
+        self.submit(start=START + timedelta(days=9))
 
     def test_faculty_roles_and_private_appointment_ownership_are_enforced(self):
         self.assertEqual(len(self.service.directory()["professors"]), 2)
@@ -282,7 +294,7 @@ class CalendarRepresentationTests(PostgresTestCase):
 
     def test_nonexistent_and_ambiguous_local_times_are_not_guessed(self):
         zone = ZoneInfo("America/New_York")
-        for value in ("2030-03-10T02:30", "2030-11-03T01:30", "bad", "2030-01-01T10:00+03:00"):
+        for value in ("2030-03-10T02:30", "2030-11-03T01:30", "bad", "2030-01-01T10:00+03:00", "9999-12-31T10:00"):
             with self.assertRaises(CalendarError):
                 local_instant(value, zone)
 
@@ -351,6 +363,8 @@ class AppointmentWebTests(AppointmentFixture):
             "duration": 60, "purpose": "Invalid time", "start": "2030-01-07T22:00"})
         self.assertEqual(response.status_code, 409)
         self.assertIn(b"published appointment hours", response.data)
+        form["untilDate"] = "9999-12-31"
+        self.assertEqual(self.client.post("/appointments/times", data=form).status_code, 409)
 
     def test_invitation_reschedule_approval_and_cancel_routes_preserve_revision_rules(self):
         pid = self.submit(professors=(2, 3), invitees=(4,))

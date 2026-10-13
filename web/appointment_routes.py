@@ -93,6 +93,8 @@ def create_appointment_blueprint(database_provider, gateway_provider):
     def times():
         actor = student()
         first, last = day(request.form.get("fromDate")), day(request.form.get("untilDate"))
+        if not date(1970, 1, 1) <= first <= last < date(2100, 1, 1):
+            raise AppointmentError("Search dates must be between 1970 and 2099, with the end on or after the start.")
         zone = university_zone()
         start = local_instant(datetime.combine(first, time()), zone)
         end = local_instant(datetime.combine(last + timedelta(days=1), time()), zone)

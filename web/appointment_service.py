@@ -235,6 +235,8 @@ class AppointmentService:
             session.add(AppointmentEvent(appointment_id=record.id, actor_id=actor, revision=record.revision, message="Invited student declined; professor confirmation requirements unchanged."))
 
     def publish_hours(self, actor, day, start_minutes, end_minutes, valid_from, valid_until, exclusions=()):
+        if not date(1970, 1, 1) <= valid_from <= valid_until < date(2100, 1, 1):
+            raise AppointmentError("Published appointment dates must be between 1970 and 2099.")
         if valid_until - valid_from > timedelta(days=730):
             raise AppointmentError("Publish at most two years of explicitly dated availability per pattern.")
         zone = university_zone()
@@ -300,8 +302,8 @@ class AppointmentService:
                 date.fromisoformat(value)
         except (ValueError, TypeError) as error:
             raise AppointmentError("Use explicit YYYY-MM-DD exception dates.") from error
-        if week_start is not None and (week_start.isoweekday() != 1 or not start_date <= week_start <= end_date):
-            raise AppointmentError("Planning week must be a Monday within the academic period.")
+        if week_start is not None and (week_start.isoweekday() != 1 or week_start > end_date or (start_date - week_start).days > 6):
+            raise AppointmentError("Planning week must start on a Monday and overlap the academic period.")
         with self.database.transaction() as session:
             state = state_row(session, True)
             if session.get(BusySlot if busy_id is not None else ResourceRequest, busy_id or request_id) is None:

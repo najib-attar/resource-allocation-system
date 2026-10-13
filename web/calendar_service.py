@@ -40,7 +40,9 @@ def local_instant(value, zone=None):
                         if naive.replace(tzinfo=zone, fold=fold).astimezone(timezone.utc).astimezone(zone).replace(tzinfo=None) == naive}
         if len(alternatives) != 1:
             raise ValueError()
-        return alternatives.pop()
+        result = alternatives.pop()
+        epoch(result)
+        return result
     except (ValueError, TypeError, OverflowError) as error:
         raise CalendarError("Enter an unambiguous existing local date/time, to the minute, in the university timezone.") from error
 
@@ -126,6 +128,8 @@ def legacy_intervals(session, people, start, end, active_run_id=None):
 def calendar_snapshot(session, organizer_id, professor_ids, invited_ids, duration, start, end,
                       action="recommend", proposed=None, preferred=None, exclude_appointment=None):
     start, end = aware(start), aware(end)
+    epoch(start)
+    epoch(end)
     if start >= end or end - start > timedelta(days=32):
         raise CalendarError("Choose a nonempty search period of at most 32 days.")
     if type(duration) is not int or not 1 <= duration <= 1440:
