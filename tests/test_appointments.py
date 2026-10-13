@@ -102,6 +102,13 @@ class AppointmentWorkflowTests(AppointmentFixture):
         with self.assertRaises(AppointmentError):
             self.service.decide(pid, 3, 1, True)
         self.assertEqual(self.service.detail(pid, 1)["status"], "Declined")
+        expired = self.submit(start=START + timedelta(hours=1))
+        with self.database.transaction() as session:
+            row = session.get(Appointment, expired)
+            row.start_at = datetime.now(timezone.utc).replace(second=0, microsecond=0) - timedelta(days=1)
+            row.end_at = row.start_at + timedelta(hours=1)
+        self.service.decide(expired, 2, 1, False)
+        self.assertEqual(self.service.detail(expired, 1)["status"], "Declined")
 
     def test_invitation_decline_and_unanswered_invites_do_not_block(self):
         pid = self.submit(invitees=(4, 5))

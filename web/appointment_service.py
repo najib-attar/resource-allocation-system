@@ -164,7 +164,7 @@ class AppointmentService:
                 if approve:
                     self._current(state, calendar_revision)
                 record = session.get(Appointment, appointment_id, with_for_update=True)
-                if record.revision != revision or record.status != "Pending Approval" or record.start_at <= datetime.now(timezone.utc):
+                if record.revision != revision or record.status != "Pending Approval" or (approve and record.start_at <= datetime.now(timezone.utc)):
                     raise AppointmentError("The appointment revision/state changed or its time has passed. Refresh before deciding.")
                 rows = list(session.scalars(select(AppointmentProfessor).where(AppointmentProfessor.appointment_id == appointment_id)))
                 decision = next(row for row in rows if row.user_id == actor)
