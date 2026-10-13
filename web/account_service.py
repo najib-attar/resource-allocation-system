@@ -40,6 +40,8 @@ class AccountService:
             if user is None:
                 raise PersistenceError("Provision an account only for an existing university user.")
             account = session.get(LoginAccount, user_id, with_for_update=True)
+            if account is None and reset:
+                raise PersistenceError("No account exists to reset. Provision it without the reset option first.")
             if account is not None and not reset:
                 raise PersistenceError("An account already exists; password replacement requires an explicit reset.")
             if account is None:

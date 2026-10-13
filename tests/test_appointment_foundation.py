@@ -36,6 +36,8 @@ class AppointmentFoundationTests(PostgresTestCase):
     def test_provision_refuses_unknown_user_and_unapproved_overwrite(self):
         with self.assertRaises(PersistenceError):
             self.accounts.provision(999, "missing", self.password)
+        with self.assertRaisesRegex(PersistenceError, "No account exists"):
+            self.accounts.provision(2, "ada", self.password, reset=True)
         self.accounts.provision(2, "ada", self.password)
         with self.assertRaises(PersistenceError):
             self.accounts.provision(2, "ada", self.password)
