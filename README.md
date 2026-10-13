@@ -6,6 +6,14 @@ The project focuses on gradually developing a flexible allocation system for res
 
 Iteration 41 adds PostgreSQL application persistence while preserving the [versioned Flask-C++ JSON execution boundary](docs/engine-protocol.md), C++ allocation engine and existing dashboard workflows. See the [database design](docs/architecture/database-design.md) and [setup/migration guide](docs/database-operations.md).
 
+Iteration 42 adds authenticated student-professor appointments: real calendar dates,
+bounded professor office hours/blocks, feasible recommendations, optional invitations,
+unanimous revision-specific professor approval, rescheduling and cancellation. See
+[appointment architecture](docs/architecture/appointments-design.md) and
+[current requirements](docs/srs/UC-STU-01-requirements.md). Existing weekly room
+allocation remains unchanged; legacy calendar applicability requires explicit configuration.
+Technical dashboard views now require a trusted administrative account.
+
 Backend presentation is file-free: database views use `get_table("requests")`, while
 CSV conversion is confined to explicit import and standalone CLI compatibility.
 
@@ -130,7 +138,7 @@ RequestTypeRule
 
 - `docs/srs/` : Software Requirements Specification
 - `docs/analysis/` : Initial domain analysis and domain model
-- `docs/iteration-reports/` : Iteration reports, including Iterations 33-41
+- `docs/iteration-reports/` : Iteration reports, including Iterations 33-42
 - `docs/design/class-diagrams/` : class diagram exports, including Iterations 33-40
 - `docs/testing/` : backend testing and verification reports
 - `docs/use-cases/` : user-facing feature requirements; not a list of implemented features
@@ -158,6 +166,7 @@ RequestTypeRule
 - [Database Design](docs/architecture/database-design.md): entities, ER diagram, constraints and transactional workflow.
 - [Database Operations](docs/database-operations.md): setup, safe import, testing and failure behavior.
 - [Iteration 41 Report](docs/iteration-reports/Iteration_41.pdf): PostgreSQL persistence, database tables, diagrams, migration and verification.
+- [Iteration 42 Report](docs/iteration-reports/Iteration_42.pdf): authenticated dated appointments, calendar coexistence, approval integrity and verification.
 - [Student-Professor Appointment Use Case](docs/use-cases/UC-STU-01-student-professor-appointment.pdf): requirements for a future feature, not current implementation.
 
 ## Data Files
@@ -200,8 +209,8 @@ powershell -ExecutionPolicy Bypass -File tests\run_tests.ps1
 The latest verified result is:
 
 ```text
-Running 140 test(s)
-Result: 140 passed, 0 failed
+Running 147 test(s)
+Result: 147 passed, 0 failed
 ```
 
 The test runner compiles and runs the backend smoke executable, then compiles and runs the unit and integration tests.
@@ -246,6 +255,7 @@ After installing `requirements.txt`, building the authoritative backend, and con
 - Iteration 39 robustness improvement: explicit export success/failure handling across writers, `DataController`, `ResourceAllocationSession`, and `main.cpp`
 - Iteration 40: `SpaceFactory` introduced for centralized space creation and `BackendResultAdapter` introduced to reduce duplicated Flask result parsing
 - Iteration 41: PostgreSQL replaces operational CSV/config/local-result persistence; database snapshots feed the unchanged C++ JSON protocol, with transactional allocation publication and database-backed views
+- Iteration 42: authenticated student-professor appointment workflows, explicit dated calendar applicability, C++ feasibility/recommendations and transactional unanimous approval
 
 ## How to Compile and Run Backend
 
@@ -289,6 +299,15 @@ http://127.0.0.1:5000
 ```
 
 Set `DATABASE_URL` before migrations and web startup; `.env.example` is a reference, not automatically loaded. Import refuses populated targets. The web dashboard does not implement allocation logic: it builds ordered PostgreSQL snapshots, calls `EngineGateway`, and persists validated results transactionally. `DatabaseResultAdapter` supplies one pinned database view per response. No normal web operation reads/writes CSV persistence or `engine-result.json`. C++ retains rules, strategies, availability and suggestions. JSON protocol v1 is unchanged.
+
+Configure `RESOURCE_ALLOCATION_SECRET_KEY` with at least 32 private random characters
+and `RESOURCE_ALLOCATION_TIMEZONE=Europe/Istanbul`. Provision trusted identities
+with `python scripts/manage_accounts.py --user-id <existing-user-id> --username <username>`;
+add `--administrator` only for technical dashboard management. Passwords are prompted,
+not passed on the command line. See [account/calendar setup](docs/database-operations.md#accounts-and-appointment-calendars).
+Use `/appointments/` after sign-in for student/professor workflows; the weekly
+administration grid and dated participant calendar are deliberately separate.
+For HTTPS set `RESOURCE_ALLOCATION_SECURE_COOKIE=1`; debug defaults off.
 
 ## Web Dashboard Overview
 

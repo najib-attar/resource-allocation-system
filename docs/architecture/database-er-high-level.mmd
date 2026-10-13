@@ -25,6 +25,14 @@ erDiagram
         bigint appointment_id PK,FK
         integer user_id PK,FK
     }
+    appointment_invitation {
+        bigint appointment_id PK,FK
+        integer user_id PK,FK
+    }
+    appointment_professor {
+        bigint appointment_id PK,FK
+        integer user_id PK,FK
+    }
     busy_slot {
         integer id PK "identity"
         integer user_id FK
@@ -32,6 +40,12 @@ erDiagram
     calendar_block {
         bigint id PK "identity"
         integer user_id FK
+    }
+    legacy_calendar_binding {
+        bigint id PK "identity"
+        integer period_id FK
+        integer busy_slot_id FK "nullable"
+        integer request_id FK "nullable"
     }
     login_account {
         integer user_id PK,FK
@@ -75,8 +89,15 @@ erDiagram
     university_user ||--o{ appointment : organizer_id
     appointment ||--o{ appointment_commitment : appointment_id
     university_user ||--o{ appointment_commitment : user_id
+    appointment ||--o{ appointment_invitation : appointment_id
+    university_user ||--o{ appointment_invitation : user_id
+    appointment ||--o{ appointment_professor : appointment_id
+    university_user ||--o{ appointment_professor : user_id
     university_user ||--o{ busy_slot : user_id
     university_user ||--o{ calendar_block : user_id
+    busy_slot o|--o{ legacy_calendar_binding : busy_slot_id
+    academic_period ||--o{ legacy_calendar_binding : period_id
+    resource_request o|--o{ legacy_calendar_binding : request_id
     university_user ||--o| login_account : user_id
     organization_unit o|--o{ organization_unit : parent_id
     university_user ||--o{ professor_availability : user_id

@@ -24,6 +24,9 @@ $env:DATABASE_URL = 'postgresql+psycopg://USER:PASSWORD@localhost:5432/resource_
 python -m alembic upgrade head
 python scripts/import_csv.py --data-dir data --dry-run
 python scripts/import_csv.py --data-dir data
+$env:RESOURCE_ALLOCATION_SECRET_KEY = '<at least 32 private random characters>'
+$env:RESOURCE_ALLOCATION_TIMEZONE = 'Europe/Istanbul'
+python scripts/manage_accounts.py --user-id EXISTING_USER_ID --username campus-admin --administrator
 python web/app.py
 ```
 
@@ -31,7 +34,9 @@ The import refuses populated targets and does not modify source CSVs. `DATABASE_
 must be set before migration/startup; `.env.example` is not automatically loaded.
 On Linux, export the same variable and use the same Python commands. Startup from
 `web/` with `python app.py` remains supported after environment configuration.
-Open `http://127.0.0.1:5000`. This is a development server, not a public deployment.
+Open `http://127.0.0.1:5000` and sign in. This is a development server, not a public deployment.
+Technical allocation views require administration. Student/professor appointment
+workflows are available at `/appointments/`, scoped to the authenticated identity.
 
 ## Compile The C++ Backend
 
@@ -66,14 +71,36 @@ this is not automatic C++ hot reload or signed-artifact verification. The
 
 Committee forms show instructor, teaching assistant, staff and administrator
 participants. At least one is required, with a role such as Supervisor or
-CommitteeMember. Professors' appointment approval is a future feature, not part of
-committee request processing. C++ checks loaded busy slots and already approved
+CommitteeMember. Professor appointment approval is a separate dated workflow,
+not part of committee resource-request processing. C++ checks loaded busy slots and already approved
 committee commitments and returns ranked feasible suggestions as structured data.
 
 Normal time selectors remain Monday-Friday, 09:00-17:00 in 30-minute steps.
 Recurring entry accepts the existing weekday/hour or minute syntax, for example
 `2-09:00-10:30;4-13:15-14:00`, and is validated before persistence. Schedule views
-remain weekly, not dated calendars.
+remain weekly. My Calendar separately displays real dated appointments and
+university commitments with explicitly configured academic applicability.
+
+## Student-professor appointments
+
+Students select a configured faculty, professors, purpose/duration and optional
+students, then choose a recommended time or propose a valid manual time. Professors
+publish bounded weekly hours and exclusions; personal/professor blocks are dated.
+Every required professor approves the same revision before confirmation. Pending
+requests reserve nothing. Rejection prevents confirmation; time changes clear
+approvals; organizer/professor cancellation releases commitments. Invited students
+may decline without cancelling; unanswered invitations never block confirmation.
+
+`EngineGateway` calls the separate `--appointments-json` operation for feasibility
+and ranking; C++ has no SQL access. PostgreSQL atomically stores state/approvals and
+half-open mandatory-person reservations, preventing concurrent double-booking.
+Europe/Istanbul is explicitly configurable. Unresolved legacy commitment dates
+require administrator Calendar Setup; no semester or calendar dates are guessed.
+
+Accounts use trusted provisioning, password hashes, revocable signed sessions and
+CSRF-protected forms. No public role assignment or private third-party schedule
+access is offered. See [appointment architecture](../docs/architecture/appointments-design.md)
+and [operations](../docs/database-operations.md#accounts-and-appointment-calendars).
 
 ## Strategy selection
 

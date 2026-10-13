@@ -8,6 +8,11 @@ recommendations. It receives an independent versioned JSON operation through the
 verified engine executable. Existing `--json` allocation protocol v1, weekly
 `TimeSlot`, room strategies and standalone CSV CLI remain unchanged.
 
+![Appointment components](appointments-components.svg)
+
+[Diagram source](appointments-components.mmd) and the [complete database ER diagram](database-er-physical.svg)
+show the implemented boundaries and schema additions.
+
 Professor actors use the existing Instructor role. Login accounts reference
 university users; account administration is a separate explicit grant, not a
 client-selected role. The legacy demonstration/technical dashboard is restricted
@@ -74,3 +79,15 @@ calendar validity/exceptions, unknown legacy applicability, timezone/date bounda
 unanimous revision-specific approvals, optional declines, cancellation, concurrent
 confirmation, privacy/CSRF and existing allocation/JSON regressions. Final ER
 diagrams and the academic iteration report reflect the verified implementation.
+
+## Operational scope
+
+Accounts are provisioned by a trusted utility for existing university identities;
+there is no public self-registration or role selection. Application status/history
+and invitation pages provide in-application notifications, not email delivery.
+Calendar setup requires actual known periods and typed faculty/department membership;
+no production data is automatically changed. Published-hours removal conservatively
+requires resolving the professor's future confirmed appointments first. Search is
+bounded to 32 days and 20 returned recommendations by default; valid manual proposals
+remain supported. Future enrollment integrations could supply identities unavailable
+from anonymous resource attendee counts, without guessing current students' schedules.

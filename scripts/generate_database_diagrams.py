@@ -43,7 +43,8 @@ PURPOSES = {
 }
 MAIN_TABLES = {"role", "organization_unit", "university_user", "resource", "resource_request",
                "busy_slot", "allocation_run", "request_decision", "allocation", "application_state", "request_history"}
-MAIN_TABLES |= {"login_account", "academic_period", "appointment", "appointment_commitment", "professor_availability", "calendar_block"}
+MAIN_TABLES |= {"login_account", "academic_period", "legacy_calendar_binding", "appointment", "appointment_professor",
+                "appointment_invitation", "appointment_commitment", "professor_availability", "calendar_block"}
 
 
 def kind(column):

@@ -1,0 +1,12 @@
+flowchart LR
+  Browser["Authenticated Flask / Jinja browser"] --> Security["AccountService + CSRF / signed sessions"]
+  Security --> Routes["Appointment blueprint"]
+  Routes --> Service["AppointmentService: lifecycle / authorization"]
+  Service --> Calendar["calendar_service: bounded timezone projection"]
+  Service --> DB[("PostgreSQL: accounts / calendars / approvals / commitments")]
+  Calendar --> DB
+  Service --> Gateway["EngineGateway: verified executable / JSON"]
+  Gateway --> Protocol["AppointmentJsonProtocol v1"]
+  Protocol --> Scheduling["AppointmentSchedulingService: feasibility / deterministic ranking"]
+  Gateway --> Legacy["Unchanged allocation JSON v1 / ResourceAllocationSession"]
+  DB --> Presentation["DatabaseResultAdapter: existing room allocation views"]

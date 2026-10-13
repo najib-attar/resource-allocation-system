@@ -17,6 +17,9 @@ $env:DATABASE_URL = 'postgresql+psycopg://USER:PASSWORD@localhost:5432/resource_
 python -m alembic upgrade head
 python scripts/import_csv.py --data-dir data --dry-run
 python scripts/import_csv.py --data-dir data
+$env:RESOURCE_ALLOCATION_SECRET_KEY = '<at least 32 random characters; keep private>'
+$env:RESOURCE_ALLOCATION_TIMEZONE = 'Europe/Istanbul'
+python scripts/manage_accounts.py --user-id EXISTING_ADMIN_USER_ID --username campus-admin --administrator
 python web/app.py
 ```
 
@@ -32,10 +35,60 @@ out of Git. Use a non-superuser application account and restrict network access;
 use authenticated TLS connections for a remote database. CI's trust-authenticated
 database is disposable test infrastructure, not a production configuration.
 
-Open `http://127.0.0.1:5000`. Use Run Allocation after import to publish the first
+Open `http://127.0.0.1:5000` and sign in with the provisioned identity. Use Run Allocation after import to publish the first
 database result. Before that, requests are pending; existing generated result files
 are **not** an operational fallback. The standalone C++ CSV CLI still works in an
 isolated working directory and does not update the database.
+
+## Accounts and appointment calendars
+
+Provision accounts only for existing university users. Passwords are entered via
+`getpass`, never command-line arguments or stored demo defaults. The utility refuses
+overwrite unless `--reset-password` is explicit; resets revoke old signed sessions.
+Student and Instructor roles come from the university identity, not a client-selected
+role. Use `--administrator` only for trusted management accounts. Legacy technical
+dashboard/raw-data/weekly views require administration; appointment records and
+dated calendars are participant-scoped. Signed sessions expire after eight hours;
+all POSTs, including login/logout and legacy forms, require CSRF tokens.
+
+Generate the secret using `python -c "import secrets; print(secrets.token_hex(32))"`
+and configure it privately. Set `RESOURCE_ALLOCATION_SECURE_COOKIE=1` behind HTTPS.
+The local development server binds loopback and debug is disabled unless explicitly
+enabled with `RESOURCE_ALLOCATION_DEBUG=1`; it is not a production server.
+
+Migrations 0042a/0042b add the dated foundation and aggregate integrity checks.
+Migration permissions must permit installing the standard `btree_gist` extension;
+the runtime application account should not have migration/DDL privileges. Restore
+schema-only dumps into a new database with that extension installed in public
+before restoring GiST constraints. Full-database backups should include extensions.
+
+Professors publish weekday hours with explicit validity dates and exceptions.
+Students/professors manage dated personal blocks in My Calendar. Europe/Istanbul
+is explicitly configured; all stored instants are aware, intervals half-open, and
+ambiguous/nonexistent local times rejected. Changing server/browser timezone does
+not assign dates to legacy records.
+
+Administration Calendar Setup associates exactly one legacy busy record or resource
+request with a named academic period, optionally a specific Monday planning week
+and excluded dates. Blank week means recurrence only within the entered validity.
+Use actual known dates; never guess an old record's semester from today's date.
+Unknown mandatory calendar applicability yields an actionable configuration error.
+Optional invitees with unresolved calendars are not counted known-free.
+
+Pending appointments reserve nothing. All required professors must approve the
+same revision, with C++ availability rechecked before confirmation. Time changes
+reset approvals; cancellation releases mandatory commitments. Optional invitations
+need no acceptance and may decline without cancelling. Calendar mutations that
+invalidate confirmed reservations are refused until the appointment is cancelled
+or rescheduled. Removing published hours conservatively requires first resolving
+all future confirmed appointments for that professor.
+
+Search is bounded to 32 days, publication patterns to two years per pattern, duration
+to one day, and returned recommendations to the first 20 by default. Manual valid
+proposals are not restricted to the 15-minute recommendation grid. These are
+transport/search bounds, not inferred academic calendar rules. Known university
+participants are requesters and explicit committee members; attendee counts do
+not provide a student enrollment roster.
 
 ## Import safeguards
 

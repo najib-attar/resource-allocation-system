@@ -165,8 +165,8 @@ existing dashboard, schedules and Raw Data templates. These tables are views of
 JSON, not files written by C++. Structured suggestions are formatted directly.
 `DatabaseResultAdapter` reuses presentation formatting without file reads or history
 parsing for suggestions. Before the first database run, views show pending requests.
-Legacy `BackendResultAdapter` file support remains for offline compatibility/tests,
-not as a fallback when PostgreSQL is unavailable.
+`BackendResultAdapter` is file-free. CSV reading is confined to explicit import
+utilities and standalone CLI compatibility, never a PostgreSQL fallback.
 
 Running the executable **without arguments** keeps the CSV CLI: reads `data/*.csv`
 and `config.txt`, prints console outcomes and exports the original four CSVs.
@@ -195,3 +195,71 @@ all four request types, shared/multi-room exams, structured suggestions, real Fl
 flows and legacy-vs-JSON comparison of two fixtures across all five strategies.
 The existing Linux CI discovers these tests; Windows execution does not verify
 Linux locks/permissions. No result is a proof of correctness for all possible inputs.
+
+## Appointment operation v1 (Iteration 42)
+
+`allocation_system --appointments-json` is a separate operation; existing
+`--json` room-allocation payloads and behavior are unchanged. `EngineGateway`
+uses the same authoritative executable and source/binary manifest checks for both.
+One UTF-8 JSON document enters stdin, one result leaves stdout; diagnostics use
+stderr. Exit 0 means a valid evaluation (including an unavailable proposal);
+invalid protocol/input exits 2. Nonzero exit, timeout or invalid output is never
+accepted as a successful application operation.
+
+The application resolves bounded weekly patterns, explicit academic-period
+bindings and timezone-aware commitments into UTC epoch-second intervals. The
+engine never reads SQL, operating-system timezone, CSV or global config in this
+operation. Intervals are half-open; all instants are minute-aligned, 1970-2100.
+The university zone is explicitly configured, default Europe/Istanbul.
+
+| Input | Meaning |
+|---|---|
+| protocolVersion / operation / runId | 1 / appointment / correlation identifier |
+| action | recommend or validate |
+| organizerId / professorIds / invitedIds | Distinct university identities; required professors nonempty |
+| durationMinutes | Positive duration, at most one day |
+| horizon | start/end UTC epoch seconds; bounded search of at most 32 days |
+| published | userId/start/end professor publication windows |
+| busy | userId/start/end blocks and known confirmed commitments |
+| unresolvedIds | Participants whose legacy calendar applicability is unknown |
+| preferredStart | Optional UTC preferred instant for ranking |
+| proposed | Required start/end for validate; manual proposals need not match the recommendation grid |
+| limit | Optional recommendation count 1-100; default 20 |
+
+```json
+{
+  "protocolVersion": 1, "operation": "appointment", "runId": "example",
+  "action": "recommend", "organizerId": 1, "professorIds": [2],
+  "invitedIds": [], "unresolvedIds": [], "durationMinutes": 30,
+  "horizon": {"start": 1800000000, "end": 1800086400},
+  "published": [{"userId": 2, "start": 1800000000, "end": 1800010800}],
+  "busy": [], "limit": 1
+}
+```
+
+```json
+{
+  "protocolVersion": 1, "operation": "appointment", "engineVersion": "appointments-1",
+  "runId": "example", "status": "success", "feasible": true,
+  "reasonCode": "AVAILABLE", "errors": [],
+  "recommendations": [{"start": 1800000000, "end": 1800001800,
+    "availableInvitees": [], "unavailableInvitees": [], "unresolvedInvitees": [],
+    "preferenceDistanceSeconds": 0,
+    "reason": "Mandatory participants are available within published professor hours; ranked by known-free invitees, preferred-time distance, then time."}]
+}
+```
+
+Feasibility requires coverage by every professor's publication, no organizer or
+required-professor conflict, resolved mandatory calendars and matching duration.
+Unknown optional calendars never block, but are not counted free. Recommendations
+use a 15-minute grid anchored to published windows, rank known-free invitees first,
+then preferred-time distance, then chronology. Manual proposals use the same
+feasibility rule. Stable reason codes are AVAILABLE, NO_FEASIBLE_TIME,
+UNRESOLVED_CALENDAR, OUTSIDE_PUBLISHED_AVAILABILITY, REQUIRED_PARTICIPANT_BUSY,
+ORGANIZER_BUSY and INVALID_INTERVAL. Invalid protocol returns status error with
+structured INVALID_INPUT errors. Python verifies correlation, version, operation,
+status, duration, horizon and the disjoint complete invitee partition.
+
+Feasibility is not a reservation. Flask rechecks before unanimous revision-specific
+confirmation and atomically records mandatory commitments in PostgreSQL. Pending
+requests reserve nothing; a stale calendar snapshot cannot commit confirmation.
