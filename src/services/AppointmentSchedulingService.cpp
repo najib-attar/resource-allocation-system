@@ -47,7 +47,7 @@ std::string AppointmentSchedulingService::validate(const AppointmentSchedulingIn
 }
 
 AppointmentCandidate AppointmentSchedulingService::describe(const AppointmentSchedulingInput& input, DatedInterval slot) {
-    AppointmentCandidate result{slot, {}, {}, {}, input.preferredStart ? std::llabs(slot.start - input.preferredStart) : 0};
+    AppointmentCandidate result{slot, {}, {}, {}, input.preferredStart ? std::llabs(slot.start - *input.preferredStart) : 0};
     for (int id : input.invitedIds) {
         if (contains(input.unresolvedIds, id)) result.unresolvedInvitees.push_back(id);
         else if (busy(input, id, slot)) result.unavailableInvitees.push_back(id);

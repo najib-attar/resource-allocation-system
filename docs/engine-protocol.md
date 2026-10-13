@@ -209,7 +209,8 @@ accepted as a successful application operation.
 The application resolves bounded weekly patterns, explicit academic-period
 bindings and timezone-aware commitments into UTC epoch-second intervals. The
 engine never reads SQL, operating-system timezone, CSV or global config in this
-operation. Intervals are half-open; all instants are minute-aligned, 1970-2100.
+operation. Intervals are half-open. C++ evaluates integer UTC seconds, 1970-2100;
+the application's calendar projection emits minute-aligned instants.
 The university zone is explicitly configured, default Europe/Istanbul.
 
 | Input | Meaning |

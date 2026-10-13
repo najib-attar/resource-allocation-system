@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -18,7 +19,7 @@ struct AppointmentSchedulingInput {
     std::vector<int> unresolvedIds;
     int durationMinutes;
     DatedInterval horizon;
-    std::int64_t preferredStart = 0;
+    std::optional<std::int64_t> preferredStart;
     std::map<int, std::vector<DatedInterval>> published;
     std::map<int, std::vector<DatedInterval>> busy;
 };

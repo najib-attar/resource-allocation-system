@@ -43,6 +43,8 @@ class AppointmentProtocolTests(TestCase):
         self.assertTrue(result["feasible"])
         self.assertEqual(result["recommendations"][0]["start"], 1800000060)
         self.assertTrue(build["source_sha256"])
+        preferred, _ = self.gateway.execute_appointment(value | {"preferredStart": 0})
+        self.assertEqual(preferred["recommendations"][0]["preferenceDistanceSeconds"], 1800000060)
 
     def test_gateway_rejects_malformed_or_mismatched_appointment_output(self):
         result, _ = self.gateway.execute_appointment(snapshot())

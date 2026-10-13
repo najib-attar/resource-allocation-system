@@ -6,7 +6,7 @@
 
 namespace {
 AppointmentSchedulingInput fixture() {
-    return {1, {2, 3}, {4, 5}, {}, 60, {1800000000, 1800086400}, 0,
+    return {1, {2, 3}, {4, 5}, {}, 60, {1800000000, 1800086400}, std::nullopt,
             {{2, {{1800000000, 1800010800}}}, {3, {{1800000000, 1800010800}}}}, {}};
 }
 }
@@ -29,6 +29,9 @@ TEST_CASE("Optional invitees rank appointments without blocking feasibility") {
     CHECK_EQ(values.front().availableInvitees.size(), std::size_t(1));
     CHECK_EQ(values.front().unresolvedInvitees.size(), std::size_t(1));
     CHECK_EQ(AppointmentSchedulingService::validate(input, {1800000000, 1800003600}), "AVAILABLE");
+    CHECK_EQ(AppointmentSchedulingService::describe(input, {1800000000, 1800003600}).preferenceDistance, 0LL);
+    input.preferredStart = 0;
+    CHECK_EQ(AppointmentSchedulingService::describe(input, {1800000000, 1800003600}).preferenceDistance, 1800000000LL);
 }
 TEST_CASE("Unknown mandatory legacy calendars fail safely") {
     auto input = fixture();
