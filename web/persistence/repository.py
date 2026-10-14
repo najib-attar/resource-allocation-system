@@ -270,15 +270,17 @@ class Repository:
                                                    end_minutes=slot["endMinutes"], score=item["score"], time_distance=item["timeDistanceMinutes"],
                                                    day_distance=item["dayDistance"], conflict_count=item["conflictCount"], reason=item["reason"]))
             run.status, run.build, run.engine_version = "success", build, result["engineVersion"]
-            from .models import AppointmentCommitment
+            from .models import AppointmentCommitment, RoomOrganizerCommitment
             from ..calendar_service import assert_commitments_compatible, legacy_intervals
-            commitments = list(session.scalars(select(AppointmentCommitment)))
+            commitments = [row for model in (AppointmentCommitment, RoomOrganizerCommitment) for row in session.scalars(select(model))]
             if commitments:
                 intervals, unresolved = legacy_intervals(session, {row.user_id for row in commitments},
                     min(row.start_at for row in commitments), max(row.end_at for row in commitments), run.id)
                 if unresolved:
                     raise PersistenceError("New university commitments have unresolved calendar dates for confirmed appointment participants. Configure explicit academic bindings before publishing.")
                 assert_commitments_compatible(session, intervals)
+            from ..room_calendar import assert_room_publication
+            assert_room_publication(session, run.id)
             state.active_run_id = run.id
             state.calendar_revision += 1
 

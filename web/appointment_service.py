@@ -10,7 +10,7 @@ from .calendar_service import (CalendarError, assert_commitments_compatible, awa
 from .persistence.models import (AcademicPeriod, Appointment, AppointmentCommitment, AppointmentEvent,
                                 AppointmentInvitation, AppointmentProfessor, BusySlot, CalendarBlock,
                                 LegacyCalendarBinding, OrganizationUnit, ProfessorAvailability,
-                                ResourceRequest, Role, User)
+                                ResourceRequest, Role, User, RoomOrganizerCommitment)
 from .persistence.repository import state_row, validate_unit_hierarchy
 
 
@@ -324,9 +324,11 @@ class AppointmentService:
                                               week_start=week_start, excluded_dates=list(exclusions)))
             session.flush()
             from .calendar_service import legacy_intervals
-            commits = list(session.scalars(select(AppointmentCommitment)))
+            commits = [row for model in (AppointmentCommitment, RoomOrganizerCommitment) for row in session.scalars(select(model))]
             if commits:
                 values, _ = legacy_intervals(session, {row.user_id for row in commits}, min(row.start_at for row in commits),
                                              max(row.end_at for row in commits), state.active_run_id)
                 assert_commitments_compatible(session, values)
+            from .room_calendar import assert_room_publication
+            assert_room_publication(session, state.active_run_id)
             state.calendar_revision += 1

@@ -104,6 +104,9 @@ class EngineGateway:
     def execute_appointment(self, snapshot):
         return self._execute(snapshot, "--appointments-json", validate_appointment_result)
 
+    def execute_room(self, snapshot):
+        return self._execute(snapshot, "--rooms-json", validate_room_result)
+
     def _execute(self, snapshot, mode, validator):
         backend = resolve_backend_executable(self.project_root, os.environ.get("RESOURCE_ALLOCATION_BACKEND"))
         if self.logger:
@@ -131,6 +134,51 @@ class EngineGateway:
         if result["status"] != "success":
             raise EngineIntegrationError(f"Backend reported error with zero exit code: {result['errors']}")
         return result, backend.metadata
+
+
+def validate_room_result(result, snapshot):
+    def require(condition):
+        if not condition:
+            raise EngineIntegrationError('Invalid room-selection engine response.')
+    def number(value, minimum=0):
+        return type(value) is int and minimum <= value <= 2147483647
+    require(isinstance(result, dict) and type(result.get('protocolVersion')) is int and result['protocolVersion'] == 1
+            and result.get('operation') == 'studentRoom' and result.get('runId') == snapshot['runId']
+            and result.get('status') == 'success' and isinstance(result.get('engineVersion'), str) and result['engineVersion']
+            and type(result.get('feasible')) is bool and result.get('reasonCode') in
+            {'AVAILABLE', 'NO_ELIGIBLE_ROOM', 'ORGANIZER_BUSY', 'UNRESOLVED_CALENDAR'} and result.get('errors') == [])
+    rooms = {row['id']: row for row in snapshot['rooms']}
+    for key in ('candidates', 'alternatives'):
+        require(isinstance(result.get(key), list) and len(result[key]) <= (20 if key == 'candidates' else 5))
+        seen = set()
+        for row in result[key]:
+            require(isinstance(row, dict) and number(row.get('roomId'), 1) and row['roomId'] in rooms)
+            space = rooms[row['roomId']]
+            require(number(row.get('facultyId'), 1) and row['facultyId'] == space['facultyId']
+                    and number(row.get('capacity'), 1) and row['capacity'] == space['capacity']
+                    and number(row.get('spareSeats')) and row['spareSeats'] == space['capacity'] - snapshot['attendeeCount']
+                    and number(row.get('extraFacilities')) and row['extraFacilities'] <= 3
+                    and number(row.get('preferencePenalty')) and row['preferencePenalty'] <= 2
+                    and isinstance(row.get('reason'), str) and row['reason'])
+            require(type(row.get('start')) is int and type(row.get('end')) is int
+                    and snapshot['horizon']['start'] <= row['start'] < row['end'] <= snapshot['horizon']['end']
+                    and row['end'] - row['start'] == snapshot['proposed']['end'] - snapshot['proposed']['start'])
+            if key == 'candidates':
+                require(row['start'] == snapshot['proposed']['start'] and row['end'] == snapshot['proposed']['end'])
+                if snapshot['action'] == 'validate':
+                    require(row['roomId'] == snapshot['selectedRoomId'])
+            else:
+                require(row['start'] != snapshot['proposed']['start'])
+            identity = (row['roomId'], row['start'], row['end'])
+            require(identity not in seen)
+            seen.add(identity)
+    require(isinstance(result.get('explanations'), list) and all(isinstance(row, str) for row in result['explanations']))
+    require(result['feasible'] == (result['reasonCode'] == 'AVAILABLE'))
+    if snapshot['action'] != 'attendance':
+        require(result['feasible'] == bool(result['candidates']))
+    else:
+        require(not result['candidates'] and not result['alternatives'])
+    return result
 
 
 def validate_appointment_result(result, snapshot):
