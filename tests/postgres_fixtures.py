@@ -37,11 +37,22 @@ class PostgresTestCase(TestCase):
     def configure_web(self):
         from web import app as web_app
         patch = mock.patch.dict(web_app.app.config, {"TESTING": True, "PROPAGATE_EXCEPTIONS": True,
-                                                     "DATABASE_URL": self.url, "DATABASE_LOCK_TIMEOUT": 5})
+                                                     "DATABASE_URL": self.url, "DATABASE_LOCK_TIMEOUT": 5,
+                                                     "SECRET_KEY": "isolated-test-session-key-not-for-production-use"})
         patch.start()
         self.addCleanup(patch.stop)
         self.addCleanup(self.dispose_web_database)
-        return web_app.app.test_client()
+        from sqlalchemy import select
+        from web.account_service import AccountService
+        from web.persistence.models import LoginAccount, User
+        from auth_fixtures import authorized_client
+        with self.database.transaction(read_only=True) as session:
+            actor = session.scalar(select(User.id).order_by(User.id))
+            account = session.get(LoginAccount, actor)
+            version = account.session_version if account else 1
+        if account is None:
+            AccountService(self.database).provision(actor, "fixture-admin", uuid.uuid4().hex, administrator=True)
+        return authorized_client(web_app.app, actor, version)
 
     def dispose_web_database(self):
         from web import app as web_app

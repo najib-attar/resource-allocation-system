@@ -88,6 +88,9 @@ class PostgresRecoveryTests(PostgresTestCase):
             copy_inputs(Path(directory))
             import_csv(self.database, directory)
         repository = Repository(self.database)
+        from web.account_service import AccountService
+        import secrets
+        AccountService(self.database).provision(1, "recovery-fixture", secrets.token_urlsafe(24), administrator=True)
         result = execute_allocation(repository, EngineGateway(ROOT))
         original_view = repository.read_view()
         url = database_url(self.url)
@@ -104,6 +107,12 @@ class PostgresRecoveryTests(PostgresTestCase):
                 connection.execute(text('CREATE DATABASE "' + restored_name + '"'))
         finally:
             admin.dispose()
+        extension_database = create_engine(url.set(database=restored_name, query={}))
+        try:
+            with extension_database.begin() as connection:
+                connection.execute(text("CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA public"))
+        finally:
+            extension_database.dispose()
         # Never overwrite/drop an existing DB. The newly created recovery DB is retained.
         subprocess.run(restore + ["--exit-on-error", "--no-owner", "--no-privileges", "--dbname=" + restored_name],
                        input=backup, env=env, capture_output=True, check=True, timeout=60)
@@ -115,9 +124,10 @@ class PostgresRecoveryTests(PostgresTestCase):
             recovered.dispose()
             # New pool/session/application instance, not an in-memory result cache.
             self.assertEqual(Repository(recovered).read_view()[1]["result"], result)
-            app_env = env | {"DATABASE_URL": url.set(database=restored_name).render_as_string(hide_password=False)}
+            app_env = env | {"DATABASE_URL": url.set(database=restored_name).render_as_string(hide_password=False),
+                             "PYTHONPATH": os.pathsep.join((str(ROOT), str(ROOT / "tests")))}
             restarted = subprocess.run([sys.executable, "-c",
-                                       "from web.app import app; r=app.test_client().get('/allocation-summary'); "
+                                       "from web.app import app; from auth_fixtures import authorized_client; r=authorized_client(app, 1).get('/allocation-summary'); "
                                        "assert r.status_code == 200; assert b'Approved' in r.data; print('Flask restart passed')"],
                                       cwd=ROOT, env=app_env, capture_output=True, text=True, timeout=30)
             self.assertEqual(restarted.returncode, 0, restarted.stderr)

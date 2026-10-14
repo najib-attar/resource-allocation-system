@@ -32,6 +32,7 @@
 
     <div class="detail-actions">
         <form method="post" action="{{ url_for('run_allocation_now', request_id=item.request_id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button class="button-primary" type="submit">Run Allocation Now</button>
         </form>
         <a class="button-secondary" href="{{ url_for('allocation_summary', highlight=item.request_id) }}">Open in Allocation Summary</a>
@@ -80,7 +81,7 @@
         <div class="committee-participant-list">
             {% for participant in item.committee_participants %}
             <div>
-                <strong>{{ participant.name }}</strong>
+                <strong>{{ participant.name|person_name }}</strong>
                 <span>{{ participant.role }}</span>
                 <small>User {{ participant.user_id }} - {{ participant.user_role }}</small>
             </div>

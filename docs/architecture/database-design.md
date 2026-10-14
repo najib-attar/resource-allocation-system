@@ -1,11 +1,12 @@
-# Iteration 41 - PostgreSQL application persistence
+# PostgreSQL application persistence and dated calendars
 
 ## Boundary and authority
 
 PostgreSQL replaces operational CSV inputs, config.txt, and the published local
 engine-result.json. Flask application services own transactions. The existing
 C++17 engine, EngineGateway, executable verification, and JSON protocol v1 remain
-unchanged. CSV is an explicit import/export or standalone CLI compatibility tool,
+unchanged for room allocation. Iteration 42 adds a separate dated appointment
+operation and authenticated application workflows. CSV is an explicit import/export or standalone CLI compatibility tool,
 not a database fallback or a second writable application store.
 
 `DatabaseResultAdapter` pins one repository view and delegates file-free formatting
@@ -19,10 +20,10 @@ persistence.
 ![High-level ER diagram](database-er-high-level.svg)
 
 - [High-level Mermaid source](database-er-high-level.mmd): principal entities, using only actual foreign-key relationships.
-- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 18 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
+- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 28 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
 - [Physical schema catalog](database-schema-catalog.md): every column's type/nullability/default, composite keys, unique/check constraints, indexes and deletion policy.
 
-`alembic_version` is the nineteenth physical table, used only by Alembic, not an
+`alembic_version` is the twenty-ninth physical table, used only by Alembic, not an
 application entity. Application sources/catalog are generated from the models;
 the existing Alembic revision marker is explicitly documented too. Use
 `python scripts/generate_database_diagrams.py`; `--check` detects drift in tests/CI.
@@ -44,6 +45,45 @@ and pre-publication state. A run may be inactive; only the singleton state selec
 the active run. Composite allocation/suggestion FKs cannot cross run boundaries.
 
 ## Tables
+
+### Dated calendar and identity additions
+
+The original 18 allocation tables remain intact. The following ten additive tables
+support UC-STU-01 without forcing room-independent appointments into resource requests.
+
+| Table | Responsibility / important relationship |
+|---|---|
+| login_account | One optional hashed, revocable login per university user; unique username and explicit administration grant |
+| academic_period | Explicit named inclusive date interval and recorded timezone; no inferred dates |
+| legacy_calendar_binding | Exactly one busy-slot or resource-request reference, academic period, optional planning week, excluded dates |
+| professor_availability | Bounded weekday/minute publication for an Instructor, timezone and excluded dates |
+| calendar_block | Dated user interval, including professor blocks and organizer unavailability |
+| appointment | Student organizer, purpose/duration, aware start/end, revision and lifecycle status |
+| appointment_professor | Required professor decision for the appointment's current revision |
+| appointment_invitation | Optional student invitation, unanswered or declined |
+| appointment_commitment | Confirmed organizer/professor reservation; stored half-open range with per-user GiST exclusion |
+| appointment_event | Participant-visible lifecycle history with actor and revision |
+
+`btree_gist` supplies integer equality alongside timestamp-range overlap. The
+exclusion constraint prohibits overlap for a mandatory person but allows adjacent
+intervals; it does not prohibit shared rooms or reserve optional invitees. Deferred
+aggregate triggers require at least one professor, valid participant roles and
+current revisions. Confirmed appointments require unanimous approvals and the
+exact organizer/professor commitment set with matching times; all other states
+must have no commitments. Child writes serialize on the appointment aggregate.
+
+`application_state.calendar_revision` coordinates calendar publication separately
+from allocation input revisions. C++ evaluates a repeatable-read snapshot outside
+the transaction. The final short locked transaction rejects stale calendar or
+appointment revisions, writes approvals/state/commitments/history together and
+increments calendar revision when confirmed reservations change. Cancellation and
+rescheduling release commitments; changing time resets every approval.
+
+New university result publication checks explicitly mapped commitments against
+confirmed appointments before replacing the active run. Unresolved new applicability
+for a confirmed participant fails safely. The previous run remains authoritative.
+Unbound legacy records are never backfilled or silently ignored during mandatory
+appointment evaluation. Details are in [appointment architecture](appointments-design.md).
 
 | Table | Important columns and relationships |
 |---|---|

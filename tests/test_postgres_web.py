@@ -117,18 +117,21 @@ class PostgresWebTests(PostgresTestCase):
 
 class DatabaseFailureWebTests(TestCase):
     def test_missing_configuration_returns_clear_error_without_file_fallback(self):
+        from auth_fixtures import authorized_client, mocked_administrator, TEST_SECRET
         with mock.patch.dict(os.environ, {}, clear=True), \
-                mock.patch.dict(web_app.app.config, {"DATABASE_URL": None}), \
+                mock.patch.dict(web_app.app.config, {"DATABASE_URL": None, "SECRET_KEY": TEST_SECRET}), \
+                mocked_administrator(), \
                 forbid_runtime_files():
-            response = web_app.app.test_client().get("/")
+            response = authorized_client(web_app.app).get("/")
         self.assertEqual(response.status_code, 503)
         self.assertIn("DATABASE_URL is required", response.get_data(as_text=True))
 
     def test_database_errors_do_not_expose_sql_credentials_or_sensitive_parameters(self):
+        from auth_fixtures import authorized_client, mocked_administrator
         repository = mock.Mock()
         repository.read_view.side_effect = OperationalError("private SQL", {}, RuntimeError("secret-password"))
-        with mock.patch.object(web_app, "get_repository", return_value=repository), self.assertLogs(web_app.app.logger) as logs:
-            response = web_app.app.test_client().get("/")
+        with mock.patch.object(web_app, "get_repository", return_value=repository), mocked_administrator(), self.assertLogs(web_app.app.logger) as logs:
+            response = authorized_client(web_app.app).get("/")
         self.assertEqual(response.status_code, 503)
         self.assertNotIn("secret-password", response.get_data(as_text=True) + " ".join(logs.output))
         self.assertNotIn("private SQL", response.get_data(as_text=True) + " ".join(logs.output))

@@ -21,6 +21,7 @@ from engine_json_fixtures import fake_result
 from postgres_web_fixtures import form, seed_web_database
 from runtime_file_guard import forbid_runtime_files
 from postgres_fixtures import PostgresTestCase, ROOT
+from auth_fixtures import authorized_client
 
 
 def submit_process(url, start, results, title):
@@ -28,7 +29,7 @@ def submit_process(url, start, results, title):
     results.put(("ready", None))
     if not start.wait(10):
         raise RuntimeError("Concurrent submission start signal missing")
-    response = web_app.app.test_client().post("/add-request", data=form(title))
+    response = authorized_client(web_app.app).post("/add-request", data=form(title))
     results.put((response.status_code, response.location))
 
 
@@ -72,7 +73,7 @@ class DatabaseWebConcurrencyTests(PostgresTestCase):
         start = threading.Barrier(2)
         def submit(title):
             start.wait(5)
-            return web_app.app.test_client().post("/add-request", data=form(title))
+            return authorized_client(web_app.app).post("/add-request", data=form(title))
         with ThreadPoolExecutor(2) as pool:
             responses = list(pool.map(submit, ["Thread A", "Thread B"]))
         self.assertEqual([response.status_code for response in responses], [302, 302])
@@ -113,7 +114,7 @@ class DatabaseWebConcurrencyTests(PostgresTestCase):
                 self.assertTrue(release.wait(10))
             return self.fake_execution(command, **kwargs)
         with mock.patch("web.engine_gateway.subprocess.run", side_effect=execution), ThreadPoolExecutor(2) as pool:
-            first = pool.submit(lambda: web_app.app.test_client().post("/run-allocation"))
+            first = pool.submit(lambda: authorized_client(web_app.app).post("/run-allocation"))
             self.assertTrue(started.wait(5))
             self.assertEqual(self.client.post("/set-strategy", data={"strategy": "priority"}).status_code, 302)
             second = self.client.post("/run-allocation")

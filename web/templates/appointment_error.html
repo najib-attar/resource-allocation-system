@@ -1,0 +1,3 @@
+{% extends "base.html" %}
+{% block page_heading %}Appointment unavailable{% endblock %}
+{% block content %}<section class="panel"><p role="alert">{{ message }}</p><a class="button" href="{{ url_for('appointments.index') }}">Back to appointments</a></section>{% endblock %}

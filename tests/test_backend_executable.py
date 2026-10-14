@@ -204,8 +204,9 @@ class BackendExecutionTests(BackendFixture, TestCase):
         self.assertIn("could not start", result["message"])
 
     def test_run_route_redirects_to_clear_validation_error(self):
-        with mock.patch("web.engine_gateway.subprocess.run") as run:
-            response = self.web_app.app.test_client().post("/run-allocation")
+        from auth_fixtures import authorized_client, mocked_administrator
+        with mock.patch("web.engine_gateway.subprocess.run") as run, mocked_administrator():
+            response = authorized_client(self.web_app.app).post("/run-allocation")
         self.assertEqual(response.status_code, 302)
         query = parse_qs(urlparse(response.location).query)
         self.assertEqual(query["run_status"], ["error"])
@@ -240,7 +241,7 @@ class BackendWebSmokeTests(PostgresTestCase):
             with mock.patch.object(web_app, "PROJECT_ROOT", workspace), \
                     mock.patch.object(web_app, "get_repository", return_value=repository), \
                     mock.patch.dict(os.environ, {"RESOURCE_ALLOCATION_BACKEND": str(executable)}):
-                client = web_app.app.test_client()
+                client = self.configure_web()
                 response = client.post("/run-allocation")
                 self.assertEqual(response.status_code, 302)
                 self.assertEqual(parse_qs(urlparse(response.location).query)["run_status"], ["success"])

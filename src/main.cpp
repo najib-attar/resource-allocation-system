@@ -11,13 +11,17 @@
 #include "services/ResourceAllocationSession.h"
 #include "utils/ConsolePrinter.h"
 #include "integration/JsonEngineProtocol.h"
+#include "integration/AppointmentJsonProtocol.h"
 
 int main(int argc, char* argv[]) {
+    if (argc == 2 && std::string(argv[1]) == "--appointments-json") {
+        return AppointmentJsonProtocol::run(std::cin, std::cout, std::cerr);
+    }
     if (argc == 2 && std::string(argv[1]) == "--json") {
         return JsonEngineProtocol::run(std::cin, std::cout, std::cerr);
     }
     if (argc != 1) {
-        std::cerr << "Usage: allocation_system [--json]\n";
+        std::cerr << "Usage: allocation_system [--json | --appointments-json]\n";
         return 2;
     }
     ResourceAllocationSession session;

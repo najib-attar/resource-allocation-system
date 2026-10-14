@@ -1,9 +1,25 @@
 # Physical schema catalog
 
-Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 18 application tables.
+Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 28 application tables.
 
 All foreign keys use PostgreSQL **NO ACTION**: no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
 ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.
+
+## academic_period
+
+Explicit named calendar validity and timezone; no inferred legacy dates.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | integer | PK | no | identity |
+| name | varchar(200) | - | no | - |
+| start_date | date | - | no | - |
+| end_date | date | - | no | - |
+| timezone | varchar(100) | - | no | - |
+
+- Primary key: `id`.
+- Check: `start_date <= end_date`.
+- Unique: `name`.
 
 ## allocation
 
@@ -83,11 +99,106 @@ Singleton strategy, input revision and currently published run.
 | input_revision | bigint | - | no | ORM: 0 |
 | strategy | varchar(50) | - | no | ORM: greedy |
 | active_run_id | bigint | FK -> allocation_run.id | yes | - |
+| calendar_revision | bigint | - | no | 0 |
 
 - Primary key: `id`.
 - Foreign key: `(active_run_id) -> allocation_run (id)`; NO ACTION.
 - Check: `id = 1 AND input_revision >= 0`.
 - Check: `strategy IN ('greedy','priority','multi_room_exam_greedy','multi_room_exam_best_fit','shared_room_exam_best_fit')`.
+
+## appointment
+
+Dated organizer request, duration, current revision and lifecycle state.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| organizer_id | integer | FK -> university_user.id | no | - |
+| purpose | text | - | no | - |
+| duration_minutes | integer | - | no | - |
+| start_at | timestamp with time zone | - | no | - |
+| end_at | timestamp with time zone | - | no | - |
+| revision | integer | - | no | ORM: 1 |
+| status | varchar(30) | - | no | ORM: Pending Approval |
+| created_at | timestamp with time zone | - | no | now() |
+
+- Primary key: `id`.
+- Foreign key: `(organizer_id) -> university_user (id)`; NO ACTION.
+- Check: `end_at = start_at + duration_minutes * interval '1 minute'`.
+- Check: `revision > 0 AND duration_minutes > 0 AND start_at < end_at`.
+- Check: `status IN ('Pending Approval','Declined','Confirmed','Cancelled')`.
+- Index: `ix_appointment_organizer_start (organizer_id, start_at)`.
+
+## appointment_commitment
+
+Confirmed mandatory-person reservations with half-open overlap exclusion.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| appointment_id | bigint | PK; FK -> appointment.id | no | - |
+| user_id | integer | PK; FK -> university_user.id | no | - |
+| start_at | timestamp with time zone | - | no | - |
+| end_at | timestamp with time zone | - | no | - |
+| period | tstzrange | - | no | computed: tstzrange(start_at, end_at, '[)') |
+
+- Primary key: `appointment_id, user_id`.
+- Foreign key: `(appointment_id) -> appointment (id)`; NO ACTION.
+- Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
+- Check: `start_at < end_at`.
+
+## appointment_event
+
+Participant-visible, timestamped appointment lifecycle history.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| appointment_id | bigint | FK -> appointment.id | no | - |
+| actor_id | integer | FK -> university_user.id | no | - |
+| revision | integer | - | no | - |
+| message | text | - | no | - |
+| created_at | timestamp with time zone | - | no | now() |
+
+- Primary key: `id`.
+- Foreign key: `(actor_id) -> university_user (id)`; NO ACTION.
+- Foreign key: `(appointment_id) -> appointment (id)`; NO ACTION.
+- Check: `revision > 0`.
+- Index: `ix_appointment_event_actor_id (actor_id)`.
+- Index: `ix_appointment_event_appointment_id (appointment_id)`.
+
+## appointment_invitation
+
+Optional student participation status; no mandatory acceptance.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| appointment_id | bigint | PK; FK -> appointment.id | no | - |
+| user_id | integer | PK; FK -> university_user.id | no | - |
+| status | varchar(20) | - | no | ORM: Invited |
+
+- Primary key: `appointment_id, user_id`.
+- Foreign key: `(appointment_id) -> appointment (id)`; NO ACTION.
+- Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
+- Check: `status IN ('Invited','Declined')`.
+- Index: `ix_appointment_invitation_user_id (user_id)`.
+
+## appointment_professor
+
+Required professor decisions for the appointment revision.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| appointment_id | bigint | PK; FK -> appointment.id | no | - |
+| user_id | integer | PK; FK -> university_user.id | no | - |
+| revision | integer | - | no | - |
+| decision | varchar(20) | - | no | ORM: Pending |
+
+- Primary key: `appointment_id, user_id`.
+- Foreign key: `(appointment_id) -> appointment (id)`; NO ACTION.
+- Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
+- Check: `decision IN ('Pending','Approved','Declined')`.
+- Check: `revision > 0`.
+- Index: `ix_appointment_professor_user_id (user_id)`.
 
 ## busy_slot
 
@@ -111,6 +222,23 @@ Explicit weekly user commitments, independent of allocation runs.
 - Unique: `source_order`.
 - Index: `ix_busy_slot_user_id (user_id)`.
 
+## calendar_block
+
+Private dated unavailable intervals for a university user.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| user_id | integer | FK -> university_user.id | no | - |
+| start_at | timestamp with time zone | - | no | - |
+| end_at | timestamp with time zone | - | no | - |
+| reason | text | - | no | ORM:  |
+
+- Primary key: `id`.
+- Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
+- Check: `start_at < end_at`.
+- Index: `ix_calendar_block_user_start (user_id, start_at)`.
+
 ## exam_details
 
 Optional one-to-one examination metadata.
@@ -125,6 +253,50 @@ Optional one-to-one examination metadata.
 
 - Primary key: `request_id`.
 - Foreign key: `(request_id) -> resource_request (id)`; NO ACTION.
+
+## legacy_calendar_binding
+
+Explicit period/planning-week association for an undated busy slot or request.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| period_id | integer | FK -> academic_period.id | no | - |
+| busy_slot_id | integer | FK -> busy_slot.id | yes | - |
+| request_id | integer | FK -> resource_request.id | yes | - |
+| week_start | date | - | yes | - |
+| excluded_dates | jsonb | - | no | ORM callable |
+
+- Primary key: `id`.
+- Foreign key: `(busy_slot_id) -> busy_slot (id)`; NO ACTION.
+- Foreign key: `(period_id) -> academic_period (id)`; NO ACTION.
+- Foreign key: `(request_id) -> resource_request (id)`; NO ACTION.
+- Check: `(busy_slot_id IS NULL) <> (request_id IS NULL)`.
+- Unique: `period_id, busy_slot_id`.
+- Unique: `period_id, request_id`.
+- Index: `ix_legacy_calendar_binding_busy_slot_id (busy_slot_id)`.
+- Index: `ix_legacy_calendar_binding_period_id (period_id)`.
+- Index: `ix_legacy_calendar_binding_request_id (request_id)`.
+
+## login_account
+
+Trusted login identity, password hash, administration grant, revocation and throttling.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| user_id | integer | PK; FK -> university_user.id | no | - |
+| username | varchar(100) | - | no | - |
+| password_hash | text | - | no | - |
+| enabled | boolean | - | no | ORM: True |
+| administrator | boolean | - | no | ORM: False |
+| session_version | integer | - | no | ORM: 1 |
+| failed_attempts | integer | - | no | ORM: 0 |
+| locked_until | timestamp with time zone | - | yes | - |
+
+- Primary key: `user_id`.
+- Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
+- Check: `failed_attempts >= 0 AND session_version > 0`.
+- Unique: `username`.
 
 ## meeting_suggestion
 
@@ -169,6 +341,29 @@ Named university units with optional known type and parent.
 - Check: `parent_id IS NULL OR parent_id <> id`.
 - Unique: `name`.
 - Index: `ix_organization_unit_parent_id (parent_id)`.
+
+## professor_availability
+
+Bounded weekly published office-hour patterns and date exceptions.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| user_id | integer | FK -> university_user.id | no | - |
+| day | integer | - | no | - |
+| start_minutes | integer | - | no | - |
+| end_minutes | integer | - | no | - |
+| valid_from | date | - | no | - |
+| valid_until | date | - | no | - |
+| timezone | varchar(100) | - | no | - |
+| excluded_dates | jsonb | - | no | ORM callable |
+
+- Primary key: `id`.
+- Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
+- Check: `day BETWEEN 1 AND 7`.
+- Check: `start_minutes >= 0 AND start_minutes < end_minutes AND end_minutes <= 1440`.
+- Check: `valid_from <= valid_until`.
+- Index: `ix_professor_availability_user_id (user_id)`.
 
 ## request_decision
 
@@ -376,6 +571,10 @@ Ordered many-to-many assigned role labels.
 - Check: `ordinal > 0`.
 - Unique: `user_id, ordinal`.
 - Index: `ix_user_role_role_id (role_id)`.
+
+## Confirmed appointment overlap protection
+
+Revision `0042a` uses PostgreSQL btree_gist and an exclusion constraint on `(user_id WITH =, period WITH &&)` in `appointment_commitment`. The generated timestamp range is `[start_at, end_at)`; adjacent reservations are allowed. Cancellation releases commitment rows while appointment/history records remain.
 
 ## alembic_version (infrastructure)
 

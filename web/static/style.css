@@ -1254,3 +1254,198 @@ tr:nth-child(even) td {
         justify-content: flex-start;
     }
 }
+/* Appointment forms reuse the dashboard's established visual language. */
+.appointment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; }
+.appointment-grid label, #appointment-form label { display: block; margin: .6rem 0; }
+.appointment-card { border-bottom: 1px solid #d6dce4; padding: .8rem 0; }
+.appointment-choice { display: block; margin: .5rem 0; padding: .7rem; text-align: left; width: 100%; }
+.professor-option[hidden] { display: none !important; }
+.panel {
+    background: rgba(255, 255, 255, .94);
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    box-shadow: 0 20px 55px rgba(24, 33, 47, .09);
+    padding: clamp(1.1rem, 3vw, 2rem);
+    margin-bottom: 1.3rem;
+    overflow-wrap: anywhere;
+}
+.panel h2, .panel h3 { color: var(--accent-dark); }
+.panel p { line-height: 1.65; }
+.panel form { display: flex; flex-wrap: wrap; gap: .8rem; align-items: end; margin: 1rem 0; }
+.panel form > label { flex: 1 1 200px; }
+.panel form > p { flex-basis: 100%; margin: 0; }
+.panel label { display: block; color: var(--accent-dark); font-weight: 700; }
+.panel input:not([type="checkbox"]):not([type="hidden"]), .panel select, .panel textarea {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    margin-top: .4rem;
+    padding: .7rem;
+    font: inherit;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: white;
+    color: var(--ink);
+}
+.panel textarea { min-height: 100px; resize: vertical; }
+.panel fieldset { border: 1px solid var(--line); border-radius: 12px; padding: 1rem; margin: 1rem 0; }
+.panel legend { color: var(--accent-dark); font-weight: 800; }
+#appointment-form { display: block; }
+.panel button, .panel a.button, .nav-links button {
+    appearance: none;
+    font: inherit;
+    font-weight: 800;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: .65rem 1rem;
+    background: var(--soft-blue);
+    color: var(--accent-dark);
+    cursor: pointer;
+    text-decoration: none;
+}
+.panel .button { background: var(--accent); color: white; border-color: var(--accent); }
+.panel button:hover, .nav-links button:hover { background: var(--accent-dark); color: white; }
+.panel button:disabled { cursor: wait; opacity: .65; }
+.panel input:focus-visible, .panel select:focus-visible, .panel textarea:focus-visible,
+.panel button:focus-visible { outline: 3px solid var(--highlight); outline-offset: 2px; }
+.panel [role="alert"] { background: var(--soft-amber); padding: 1rem; border-left: 4px solid var(--warning); }
+.appointment-choice { border-radius: 12px !important; width: 100%; }
+.nav-links { align-items: center; }
+
+/* The student portal keeps the existing palette and uses a private, agenda-first layout. */
+.nav-links a[aria-current="page"] { background: var(--accent-dark); color: white; }
+.student-home { display: grid; gap: 1.4rem; }
+.student-welcome { display: flex; justify-content: space-between; align-items: center; gap: 2rem; padding: .8rem 0; }
+.student-welcome h2 { color: var(--accent-dark); font-size: clamp(1.9rem, 3.6vw, 3.2rem); letter-spacing: -.045em; margin: .45rem 0 .8rem; max-width: 870px; overflow-wrap: anywhere; }
+.student-intro, .student-profile { color: var(--muted); line-height: 1.65; }
+.student-profile { font-size: .88rem; }
+.student-today { border-left: 2px solid var(--line); padding-left: 2rem; text-align: center; display: grid; gap: .25rem; flex: 0 0 auto; color: var(--accent-dark); }
+.student-today strong { font-size: 3.7rem; line-height: 1; letter-spacing: -.07em; }
+.student-today small { color: var(--muted); margin-top: .4rem; }
+.student-stat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.student-stat { color: var(--ink); text-decoration: none; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.84); padding: 1.25rem; display: grid; gap: .4rem; }
+.student-stat strong { color: var(--accent-dark); font-size: 2.2rem; line-height: 1; }
+.student-stat span { font-weight: 800; }
+.student-stat small { color: var(--muted); line-height: 1.5; }
+.student-stat:hover { border-color: var(--accent); background: white; }
+.student-main-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 1.4rem; }
+.student-home .panel { margin: 0; min-width: 0; }
+.student-next { padding: clamp(1.4rem, 3vw, 2rem); border-radius: 24px; color: white; background: radial-gradient(ellipse at top right, rgba(242,184,75,.25), transparent 65%), linear-gradient(130deg, var(--accent-dark), var(--accent)); min-width: 0; overflow-wrap: anywhere; }
+.student-next .eyebrow { color: #c4e2ec; }
+.student-next h2 { font-size: 1.15rem; font-weight: 700; margin: .7rem 0 1.4rem; }
+.student-next h3 { font-size: 1.65rem; margin: 1rem 0 .5rem; }
+.student-next p { line-height: 1.6; }
+.student-next .button-primary { background: white; color: var(--accent-dark); }
+.student-next .button-secondary { background: transparent; border: 1px solid #abd5df; color: white; }
+.student-next-date { display: flex; gap: .8rem; align-items: baseline; }
+.student-next-date strong { font-size: 3.3rem; line-height: 1; }
+.student-optional-note { border-left: 3px solid var(--highlight); padding-left: .8rem; }
+.student-empty { padding: .6rem 0; }
+.student-services h2 { margin-top: .6rem; }
+.student-service-card { display: flex; gap: 1rem; align-items: center; padding: 1rem 0; text-decoration: none; color: var(--accent-dark); }
+.student-service-card + .student-service-card { border-top: 1px solid var(--line); }
+.student-service-card > span:nth-child(2) { flex: 1; min-width: 0; }
+.student-service-card strong, .student-service-card small { display: block; }
+.student-service-card small { margin-top: .4rem; color: var(--muted); line-height: 1.5; }
+.student-service-number { border: 1px solid var(--line); border-radius: 12px; padding: .7rem; font-size: .85rem; font-weight: 800; }
+.student-service-card:hover strong, .student-text-link:hover { text-decoration: underline; }
+.student-section-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
+.student-section-heading h2 { margin: .3rem 0; font-size: 1.35rem; }
+.student-request-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; align-items: start; }
+.student-request-grid .panel { padding: 1.3rem; }
+.student-section-count { background: var(--soft-blue); color: var(--accent-dark); border-radius: 999px; padding: .3rem .65rem; font-weight: 800; }
+.student-card-note, .student-empty-copy { color: var(--muted); line-height: 1.6; font-size: .85rem; }
+.student-empty-copy { margin: 1.5rem 0; }
+.student-appointment { border-top: 1px solid var(--line); padding: 1rem 0; overflow-wrap: anywhere; }
+.student-appointment h3 { font-size: 1rem; margin: .65rem 0; }
+.student-appointment h3 a, .student-text-link { color: var(--accent-dark); text-decoration: none; }
+.student-appointment > p { font-size: .85rem; }
+.student-appointment-top { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
+.student-status { display: inline-block; border-radius: 999px; font-size: .72rem; padding: .25rem .5rem; font-weight: 800; }
+.student-status.is-confirmed { color: var(--success); background: var(--soft-green); }
+.student-status.is-pending { color: var(--warning); background: var(--soft-amber); }
+.student-expired { color: var(--danger); font-size: .72rem; }
+.student-text-link { font-size: .85rem; font-weight: 800; }
+.student-calendar-warning { border-left: 4px solid var(--warning); border-radius: 12px; padding: 1rem; background: var(--soft-amber); line-height: 1.7; }
+.student-home a:focus-visible, .student-home button:focus-visible { outline: 3px solid var(--highlight); outline-offset: 3px; }
+@media (max-width: 1000px) {
+    .student-request-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+    .student-welcome { align-items: flex-start; gap: 1rem; }
+    .student-today { padding-left: .8rem; }
+    .student-today strong { font-size: 2.8rem; }
+    .student-today span, .student-today small { font-size: .7rem; }
+    .student-stat-grid, .student-main-grid { grid-template-columns: 1fr; }
+    .student-stat { grid-template-columns: 1fr auto; align-items: center; }
+    .student-stat small { grid-column: 1 / -1; }
+}
+
+/* Shared hourly timetable and bounded, searchable participant selectors. */
+.personal-timetable { min-width: 0; }
+.timetable-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
+.timetable-toolbar h2 { margin: .3rem 0; font-size: 1.8rem; }
+.timetable-toolbar p { color: var(--muted); margin: .4rem 0; }
+.timetable-toolbar form { display: flex; align-items: center; gap: .6rem; margin: 0; }
+.timetable-toolbar input { width: auto; margin: 0; }
+.timetable-weeks { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1.2rem 0; }
+.timetable-weeks a { padding: .55rem .8rem; background: var(--soft-blue); color: var(--accent-dark); border-radius: 8px; text-decoration: none; font-size: .85rem; }
+.timetable-weeks a[aria-current] { background: var(--accent-dark); color: white; }
+.timetable-legend { display: flex; flex-wrap: wrap; gap: 1rem; font-size: .78rem; color: var(--muted); }
+.timetable-legend span { border-left: 3px solid var(--accent); padding-left: .5rem; }
+.timetable-legend .legend-university { border-color: #a97418; }
+.timetable-legend .legend-block { border-color: #73818a; }
+.timetable-legend .legend-optional { border-color: #629b76; }
+.timetable-scroll { max-width: 100%; overflow: auto; border: 1px solid var(--line); border-radius: 12px; }
+.hourly-timetable { width: 100%; min-width: 790px; border-collapse: collapse; table-layout: fixed; margin: 0; }
+.hourly-timetable caption { text-align: left; padding: .7rem; color: var(--muted); font-size: .8rem; }
+.hourly-timetable th, .hourly-timetable td { border: 1px solid var(--line); padding: .45rem; vertical-align: top; }
+.hourly-timetable thead th { background: var(--soft-blue); color: var(--accent-dark); font-size: .85rem; padding: .85rem .5rem; }
+.hourly-timetable thead th:first-child { width: 65px; }
+.hourly-timetable thead span, .hourly-timetable thead small { display: block; margin-top: .3rem; }
+.hourly-timetable tbody th { color: var(--muted); font-size: .8rem; background: #f8faf9; }
+.hourly-timetable td { height: 60px; }
+.hourly-timetable .outside-month { background: #f4f5f4; color: var(--muted); }
+.timetable-event { padding: .45rem .5rem; margin-bottom: .25rem; border-left: 3px solid var(--accent); border-radius: 5px; background: var(--soft-blue); overflow-wrap: anywhere; }
+.timetable-event small, .timetable-event time { display: block; color: var(--muted); font-size: .68rem; line-height: 1.5; }
+.timetable-event a, .timetable-event strong { color: var(--accent-dark); font-size: .8rem; line-height: 1.5; text-decoration: none; }
+.timetable-event a:hover { text-decoration: underline; }
+.timetable-event.event-university { border-color: #a97418; background: var(--soft-amber); }
+.timetable-event.event-personal-block { border-color: #73818a; background: #eef1f2; }
+.timetable-event.event-optional-invitation { border-color: #629b76; background: var(--soft-green); }
+.timetable-event.is-continuation { border-left-style: dashed; }
+.timetable-weekend { margin-top: 1rem; }
+.timetable-weekend summary { cursor: pointer; color: var(--accent-dark); font-weight: 700; }
+.appointment-booking { max-width: 1000px; margin-inline: auto; }
+.booking-intro { font-size: 1.1rem; line-height: 1.7; }
+.participant-picker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.3rem 0; }
+.picker-label { display: block; font-weight: 800; color: var(--accent-dark); margin-bottom: .6rem; }
+.participant-picker { border: 1px solid var(--line); border-radius: 12px; background: white; }
+.participant-picker summary { cursor: pointer; padding: 1rem; color: var(--accent-dark); font-weight: 700; }
+.picker-count { float: right; color: var(--muted); font-size: .8rem; font-weight: 400; }
+.picker-search-label, .picker-hint { display: block; margin: .75rem 1rem; color: var(--muted); font-size: .8rem; }
+.picker-options { max-height: 230px; overflow-y: auto; padding: 0 1rem .5rem; }
+.panel .picker-option { display: flex; align-items: center; gap: .7rem; padding: .65rem .25rem; border-top: 1px solid var(--line); }
+.panel .picker-option[hidden] { display: none; }
+.panel .picker-option input[type="checkbox"] { width: auto; margin: 0; flex: 0 0 auto; }
+.picker-option strong, .picker-option small { display: block; overflow-wrap: anywhere; }
+.picker-option small { color: var(--muted); font-size: .75rem; margin-top: .2rem; }
+.selected-participants { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem; }
+.panel button.participant-chip { border-radius: 7px; padding: .45rem .6rem; font-size: .75rem; }
+.appointment-time-panel { background: #f6f9f8; border: 1px solid var(--line); border-radius: 15px; padding: 1.2rem; margin: 1rem 0; }
+.appointment-time-panel h2 { font-size: 1.2rem; }
+.time-slot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .6rem; max-height: 320px; overflow-y: auto; }
+.panel button.appointment-choice { padding: .8rem .4rem; margin: 0; font-size: .85rem; }
+.panel button.appointment-choice[aria-pressed="true"] { background: var(--accent-dark); color: white; border-color: var(--accent-dark); }
+.selected-time { font-size: .9rem; line-height: 1.65; color: var(--accent-dark); font-weight: 700; }
+.manual-time { border-top: 1px solid var(--line); padding-top: 1rem; }
+.manual-time summary { cursor: pointer; color: var(--muted); font-size: .85rem; }
+.manual-time label { display: block; margin-top: 1rem; }
+@media (max-width: 720px) {
+    .student-welcome > div:first-child { min-width: 0; }
+    .student-profile { overflow-wrap: anywhere; }
+    .participant-picker-grid { grid-template-columns: 1fr; }
+    .timetable-toolbar form { width: 100%; flex-wrap: wrap; }
+    .timetable-toolbar input { min-width: 0; flex: 1; }
+    .personal-timetable { padding: 1rem; }
+}

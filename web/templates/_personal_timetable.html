@@ -1,0 +1,24 @@
+{% macro timetable(schedule, endpoint) %}
+<section class="panel personal-timetable" aria-labelledby="schedule-heading">
+    <div class="timetable-toolbar"><div><p class="eyebrow">My schedule</p><h2 id="schedule-heading">{{ schedule.monthTitle }}</h2><p>{{ schedule.zone }} &middot; Your own commitments</p></div>
+        <form method="get" action="{{ url_for(endpoint) }}"><label for="schedule-month">Month</label><input id="schedule-month" name="month" type="month" value="{{ schedule.month }}" min="1970-01" max="2099-12" required><button type="submit">Show month</button></form>
+    </div>
+    <nav class="timetable-weeks" aria-label="Weeks in selected month">{% for week in schedule.weeks %}<a href="{{ url_for(endpoint, month=schedule.month, week=week.isoformat()) }}"{% if week == schedule.weekStart %} aria-current="page"{% endif %}>{{ week.strftime('%d %b') }} &ndash; {{ (week + timedelta(days=4)).strftime('%d %b') }}</a>{% endfor %}</nav>
+    {% if schedule.unresolved %}<p class="student-calendar-warning" role="alert">Some university commitments have no academic-period binding. Ask an administrator to configure them; an empty timetable is not proof of availability.</p>{% endif %}
+    <p class="timetable-legend"><span class="legend-appointment">Confirmed appointment</span><span class="legend-university">University commitment</span><span class="legend-block">Personal block</span><span class="legend-optional">Optional invitation</span></p>
+    <div class="timetable-scroll" tabindex="0" role="region" aria-label="Monday to Friday hourly timetable">
+        <table class="hourly-timetable"><caption>{{ schedule.weekStart.strftime('%d %b') }} &ndash; {{ (schedule.weekStart + timedelta(days=4)).strftime('%d %b %Y') }}. Exact event times appear inside each hour.</caption>
+            <thead><tr><th scope="col">Time</th>{% for day in schedule.days %}<th scope="col"{% if day.outsideMonth %} class="outside-month"{% endif %}>{{ day.date.strftime('%A') }}<span>{{ day.date.strftime('%d %b') }}</span>{% if day.date == schedule.today %}<small>Today</small>{% endif %}</th>{% endfor %}</tr></thead>
+            <tbody>{% for row in schedule.rows %}<tr><th scope="row">{{ row.label }}</th>{% for cell in row.cells %}<td{% if cell.outsideMonth %} class="outside-month"{% endif %}>
+                {% for event in cell.entries %}<article class="timetable-event event-{{ event.kind|lower|replace(' ', '-') }}{% if event.continues %} is-continuation{% endif %}">
+                    <small>{{ event.kind }}{% if event.continues %} &middot; continues{% endif %}</small>
+                    {% if event.appointmentId %}<a href="{{ url_for('appointments.detail', appointment_id=event.appointmentId) }}">{{ event.title }}</a>{% else %}<strong>{{ event.title }}</strong>{% endif %}
+                    <time datetime="{{ event.start.isoformat() }}">{{ event.start.strftime('%H:%M') }} &ndash; {{ event.end.strftime('%H:%M') }}{% if event.start.date() != event.end.date() %} ({{ event.start.strftime('%d %b') }} &ndash; {{ event.end.strftime('%d %b') }}){% endif %}</time>
+                </article>{% endfor %}
+            </td>{% endfor %}</tr>{% endfor %}</tbody>
+        </table>
+    </div>
+    {% if schedule.weekend %}<details class="timetable-weekend"><summary>Weekend commitments ({{ schedule.weekend|length }})</summary>{% for event in schedule.weekend %}<p>{{ event.start.strftime('%a %d %b %H:%M') }} &ndash; {{ event.end.strftime('%a %d %b %H:%M') }}: {% if event.appointmentId %}<a href="{{ url_for('appointments.detail', appointment_id=event.appointmentId) }}">{{ event.title }}</a>{% else %}{{ event.title }}{% endif %} ({{ event.kind }})</p>{% endfor %}</details>{% endif %}
+    <p class="student-card-note">Pending requests do not reserve time. Empty cells are not an availability check. Only university records linked to your identity and an explicit calendar period are shown.</p>
+</section>
+{% endmacro %}

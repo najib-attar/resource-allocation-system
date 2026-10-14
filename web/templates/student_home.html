@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% from "_student_appointment_card.html" import appointment_card %}
+{% from "_personal_timetable.html" import timetable with context %}
+{% block title %}Student Home | Resource Allocation System{% endblock %}
+{% block page_heading %}Student Home{% endblock %}
+{% block content %}
+<div class="student-home">
+<section class="student-welcome">
+    <div><p class="eyebrow">Your campus, at a glance</p><h2>Welcome, {{ home.profile.name|person_name }}.</h2>
+        <p class="student-intro">Your next meeting, your plans and the things waiting for you. All in one place.</p>
+        {% if home.profile.studentNo or home.profile.program %}<p class="student-profile">{{ home.profile.studentNo }}{% if home.profile.studentNo and home.profile.program %} &middot; {% endif %}{{ home.profile.program }}{% if home.profile.yearLevel %} &middot; Year {{ home.profile.yearLevel }}{% endif %}</p>{% endif %}
+        <div class="hero-actions"><a class="button-primary" href="{{ url_for('appointments.new') }}">Schedule an appointment</a><a class="button-secondary" href="{{ url_for('appointments.calendar', month=home.schedule.month, week=home.weekStart.isoformat()) }}">Open my schedule</a></div>
+    </div>
+    <div class="student-today"><span>{{ home.now.strftime('%A') }}</span><strong>{{ home.now.strftime('%d') }}</strong><span>{{ home.now.strftime('%B %Y') }}</span><small>{{ home.zone }}</small></div>
+</section>
+
+{{ timetable(home.schedule, 'student.home') }}
+
+<section class="student-stat-grid" aria-label="Your appointment summaries">
+    <a class="student-stat" href="#my-bookings"><span>Confirmed bookings</span><strong>{{ home.counts.bookings }}</strong><small>Upcoming appointments you organize</small></a>
+    <a class="student-stat" href="#pending-requests"><span>Awaiting approval</span><strong>{{ home.counts.pending }}</strong><small>Pending requests do not reserve time</small></a>
+    <a class="student-stat" href="#my-invitations"><span>Invitations</span><strong>{{ home.counts.invitations }}</strong><small>Participation is optional</small></a>
+</section>
+
+<div class="student-main-grid">
+<section class="student-next" aria-labelledby="next-meeting-heading">
+    <p class="eyebrow">{{ 'In progress' if home.nextMeeting and home.nextMeeting.inProgress else 'Coming up next' }}</p><h2 id="next-meeting-heading">Your next confirmed meeting</h2>
+    {% if home.nextMeeting %}{% set item = home.nextMeeting %}
+        <div class="student-next-date"><span>{{ item.start.strftime('%a') }}</span><strong>{{ item.start.strftime('%d') }}</strong><span>{{ item.start.strftime('%b %Y') }}</span></div>
+        <h3>{{ item.purpose }}</h3><p>{{ item.start.strftime('%H:%M') }} &ndash; {{ item.end.strftime('%H:%M') }} &middot; {{ home.zone }}</p><p>{{ item.professors|map('person_name')|join(', ') }}</p>
+        {% if not item.organizedByMe %}<p class="student-optional-note">You are an optional invitee. This is not a mandatory reservation for you.</p>{% endif %}
+        <div class="hero-actions"><a class="button-primary" href="{{ url_for('appointments.detail', appointment_id=item.id) }}">Open meeting details</a><a class="button-secondary" href="{{ url_for('student.home', week=item.start.date().isoformat()) }}">Show this week</a></div>
+    {% else %}<div class="student-empty"><h3>Your next meeting starts here.</h3><p>No upcoming confirmed appointments yet. Schedule one, and it will appear here after all required professors approve.</p></div>{% endif %}
+</section>
+<section class="panel student-services" aria-labelledby="services-heading"><p class="eyebrow">Available services</p><h2 id="services-heading">What would you like to do?</h2>
+    <a class="student-service-card" href="{{ url_for('appointments.new') }}"><span class="student-service-number" aria-hidden="true">01</span><span><strong>Meet your professors</strong><small>Choose participants, find a feasible time and submit for approval.</small></span><span aria-hidden="true">&rarr;</span></a>
+    <a class="student-service-card" href="{{ url_for('appointments.index') }}"><span class="student-service-number" aria-hidden="true">02</span><span><strong>Track my appointments</strong><small>View decisions, invitations and appointment history.</small></span><span aria-hidden="true">&rarr;</span></a>
+    <a class="student-service-card" href="{{ url_for('appointments.calendar', month=home.schedule.month, week=home.weekStart.isoformat()) }}"><span class="student-service-number" aria-hidden="true">03</span><span><strong>Manage my schedule</strong><small>Review dated commitments and add your personal blocks.</small></span><span aria-hidden="true">&rarr;</span></a>
+</section>
+</div>
+
+<div class="student-request-grid">
+<section class="panel" id="my-bookings"><div class="student-section-heading"><h2>My confirmed bookings</h2><span class="student-section-count">{{ home.counts.bookings }}</span></div><p class="student-card-note">Upcoming appointments you organize. Optional invitations are separate.</p>
+    {% for item in home.bookings %}{{ appointment_card(item) }}{% else %}<p class="student-empty-copy">No upcoming confirmed bookings. Pending requests will appear here after approval.</p>{% endfor %}
+    <a class="student-text-link" href="{{ url_for('appointments.index') }}">View all appointments &rarr;</a>
+</section>
+<section class="panel" id="pending-requests"><div class="student-section-heading"><h2>Awaiting professor approval</h2><span class="student-section-count">{{ home.counts.pending }}</span></div><p class="student-card-note">Every required professor must approve the same revision. No time is reserved yet.</p>
+    {% for item in home.pending %}{{ appointment_card(item) }}{% else %}<p class="student-empty-copy">No requests awaiting approval.</p>{% endfor %}
+    <a class="student-text-link" href="{{ url_for('appointments.index') }}">View all requests &rarr;</a>
+</section>
+<section class="panel" id="my-invitations"><div class="student-section-heading"><h2>My invitations</h2><span class="student-section-count">{{ home.counts.invitations }}</span></div><p class="student-card-note">You may decline participation. Acceptance is not required and does not block professor approval.</p>
+    {% for item in home.invitations %}{{ appointment_card(item, invitation=true) }}{% else %}<p class="student-empty-copy">No open invitations to upcoming appointments.</p>{% endfor %}
+    <a class="student-text-link" href="{{ url_for('appointments.index') }}">View appointment history &rarr;</a>
+</section>
+</div>
+</div>
+{% endblock %}

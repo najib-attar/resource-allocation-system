@@ -36,7 +36,7 @@
             <dt>Requester</dt>
             <dd>
                 {{ request_row.get("userId", "N/A") }}
-                {% if requester %}- {{ requester.get("name", "Unknown") }} ({{ requester.get("role", "Unknown") }}){% endif %}
+                {% if requester %}- {{ requester.get("name", "Unknown")|person_name }} ({{ requester.get("role", "Unknown") }}){% endif %}
             </dd>
         </div>
         <div>
@@ -76,7 +76,7 @@
         <div class="committee-participant-list">
             {% for participant in committee_participants %}
             <div>
-                <strong>{{ participant.name }}</strong>
+                <strong>{{ participant.name|person_name }}</strong>
                 <span>{{ participant.role }}</span>
                 <small>User {{ participant.user_id }} - {{ participant.user_role }}</small>
             </div>
@@ -91,6 +91,7 @@
         <a href="{{ url_for('allocation_summary', highlight=request_id) }}">View Allocation Summary</a>
         <a href="{{ url_for('requests', highlight=request_id) }}">View Requests</a>
         <form method="post" action="{{ url_for('run_allocation_now', request_id=request_id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit">Run Allocation Now</button>
         </form>
     </div>

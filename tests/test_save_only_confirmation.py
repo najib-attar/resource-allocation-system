@@ -57,7 +57,7 @@ class SaveOnlyConfirmationTests(PostgresTestCase):
         })
         self.run_backend = patch.start()
         self.addCleanup(patch.stop)
-        self.client = web_app.app.test_client()
+        self.client = self.configure_web()
 
     def write_csv(self, filename, headers, rows):
         with (self.data / filename).open("w", encoding="utf-8", newline="") as file:
@@ -214,7 +214,7 @@ class SaveOnlyConfirmationTests(PostgresTestCase):
         web_directory = Path(__file__).resolve().parent.parent / "web"
         completed = subprocess.run([
             sys.executable, "-B", "-c",
-            "import app; from backend_result_adapter import build_committee_participant_display; "
+            "import app; from web.backend_result_adapter import build_committee_participant_display; "
             "assert app.build_committee_participant_display is build_committee_participant_display",
         ], cwd=web_directory, capture_output=True, text=True, timeout=30)
         self.assertEqual(completed.returncode, 0, completed.stderr)

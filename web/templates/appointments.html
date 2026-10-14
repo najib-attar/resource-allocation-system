@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block page_heading %}My Appointments{% endblock %}
+{% block content %}
+<section class="panel"><p>Dates use {{ zone }}. Pending requests reserve no time; all required professors must approve.</p>
+{% if g.principal.role == 'Student' %}<a class="button" href="{{ url_for('appointments.new') }}">Schedule an appointment</a>{% endif %}</section>
+<section class="panel"><h2>Requests and invitations</h2>
+{% if not items %}<p>No appointments yet.</p>{% endif %}
+{% for item in items %}<article class="appointment-card"><h3><a href="{{ url_for('appointments.detail', appointment_id=item.id) }}">{{ item.purpose }}</a></h3>
+<p>{{ item.start|university_time }} &ndash; {{ item.end|university_time }} &middot; {{ item.status }}</p>
+<p>Organizer: {{ item.organizerName|person_name }} &middot; {{ item.professors|length }} professor(s), {{ item.invitations|length }} invitation(s)</p></article>{% endfor %}
+</section>{% endblock %}

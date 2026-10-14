@@ -15,6 +15,7 @@
         </p>
         <div class="hero-actions">
             <form method="post" action="{{ url_for('run_allocation') }}">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button class="button-primary" type="submit">Run Allocation</button>
             </form>
             <a class="button-secondary" href="{{ url_for('add_request') }}">Add Request</a>
@@ -27,6 +28,7 @@
         <h3>{{ strategy_label }}</h3>
         <p class="muted">Current config value: <code>{{ strategy }}</code></p>
         <form class="strategy-form" method="post" action="{{ url_for('set_strategy') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <label for="strategy">Change strategy</label>
             <select id="strategy" name="strategy">
                 {% for option in strategies %}

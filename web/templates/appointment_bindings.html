@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block page_heading %}Legacy Calendar Configuration{% endblock %}
+{% block content %}<section class="panel"><p>No legacy dates are inferred. Enter the actual academic period applicable to exactly one weekly busy record or resource request. A blank planning week means weekly recurrence only within the entered dates. Times use {{ zone }}.</p>
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<label>Academic period name <input name="periodName" required maxlength="200"></label><label>From <input type="date" name="fromDate" required></label><label>Through <input type="date" name="untilDate" required></label>
+<label>Weekly busy record <select name="busyId"><option value="">None</option>{% for row in busy %}<option value="{{ row.id }}">{{ row.id }}: user {{ row.userId }}, weekday {{ row.day }}</option>{% endfor %}</select></label>
+<label>Or resource request <select name="requestId"><option value="">None</option>{% for row in requests %}<option value="{{ row.id }}">{{ row.id }}: {{ row.title }}</option>{% endfor %}</select></label>
+<label>Specific planning week (Monday, optional) <input type="date" name="weekStart"></label><label>Excluded dates (comma-separated) <input name="excludedDates"></label><button class="button" type="submit">Associate explicit period</button></form></section>
+<section class="panel"><h2>Configured associations</h2>{% for row in values %}<p>{{ row.period }} ({{ row.fromDate }} to {{ row.untilDate }}): busy {{ row.busyId or '-' }} / request {{ row.requestId or '-' }} &middot; Week: {{ row.weekStart or 'Bounded weekly recurrence' }} &middot; Exceptions: {{ row.excluded|join(', ') or 'None' }}</p>{% else %}<p>No legacy calendar associations.</p>{% endfor %}</section>{% endblock %}
