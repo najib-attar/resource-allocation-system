@@ -37,6 +37,9 @@ On Linux, export the same variable and use the same Python commands. Startup fro
 Open `http://127.0.0.1:5000` and sign in. This is a development server, not a public deployment.
 Technical allocation views require administration. Student/professor appointment
 workflows are available at `/appointments/`, scoped to the authenticated identity.
+Students normally land at `/student/`; professors retain the appointment list and
+administrators retain the technical dashboard. An explicit permitted sign-in
+destination remains supported.
 
 ## Compile The C++ Backend
 
@@ -78,13 +81,15 @@ committee commitments and returns ranked feasible suggestions as structured data
 Normal time selectors remain Monday-Friday, 09:00-17:00 in 30-minute steps.
 Recurring entry accepts the existing weekday/hour or minute syntax, for example
 `2-09:00-10:30;4-13:15-14:00`, and is validated before persistence. Schedule views
-remain weekly. My Calendar separately displays real dated appointments and
+remain weekly. My Schedule separately displays real dated appointments and
 university commitments with explicitly configured academic applicability.
 
 ## Student-professor appointments
 
 Students select a configured faculty, professors, purpose/duration and optional
-students, then choose a recommended time or propose a valid manual time. Professors
+students through separate searchable lists, select one date, then choose a feasible
+time button or propose a manual time on that date. Input changes clear selected times;
+the engine rechecks them on submission and confirmation. Professors
 publish bounded weekly hours and exclusions; personal/professor blocks are dated.
 Every required professor approves the same revision before confirmation. Pending
 requests reserve nothing. Rejection prevents confirmation; time changes clear
@@ -137,6 +142,15 @@ run record can remain non-authoritative until administrative cleanup.
 
 ## Pages
 
+- `/student/`: student-only Home with a current-month hourly timetable and next confirmed meeting,
+  pending requests, optional invitations and organizer-owned confirmed bookings.
+  All sections read one PostgreSQL snapshot; no timetable entries means no entries
+  shown, not guaranteed availability. Links reuse the existing appointment workflows.
+- `/appointments/`, `/appointments/new`, `/appointments/<id>` and
+  `/appointments/calendar`: authenticated participant-scoped appointment workflows.
+  My Schedule is available to all roles, with month/week selection, Monday-Friday
+  hourly rows and a separate weekend list. Existing `?from=YYYY-MM-DD` links select
+  the corresponding week. Only known, explicitly dated personal commitments are shown.
 - `/`: strategy, run action, counts, recent requests and demo shortcuts.
 - `/users` and `/spaces`: database profiles/resources; existing role filters retained.
 - `/requests` and `/request/<requestId>`: queue, decisions, assignments and suggestions.
@@ -167,6 +181,6 @@ and local-result-publication fixtures have been removed. Standalone C++ CSV
 CLI/import tests remain, including quoting and five-strategy JSON parity. Web
 workflow tests forbid CSV/config/lock/local-result IO, including cold restart and
 PostgreSQL failure. Exact keyed form retries reuse saved requests; unkeyed legacy
-callers retain their original new-request semantics. Authentication, engine-job
-deduplication, dated
-appointments and production hardening are not delivered by this migration.
+callers retain their original new-request semantics. Iteration 42 adds authentication,
+dated appointments and the student home read model; engine-job deduplication and
+production deployment hardening remain outside these iterations.

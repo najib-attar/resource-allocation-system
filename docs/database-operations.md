@@ -63,7 +63,7 @@ schema-only dumps into a new database with that extension installed in public
 before restoring GiST constraints. Full-database backups should include extensions.
 
 Professors publish weekday hours with explicit validity dates and exceptions.
-Students/professors manage dated personal blocks in My Calendar. Europe/Istanbul
+Students/professors manage dated personal blocks in My Schedule. Europe/Istanbul
 is explicitly configured; all stored instants are aware, intervals half-open, and
 ambiguous/nonexistent local times rejected. Changing server/browser timezone does
 not assign dates to legacy records.
@@ -144,9 +144,9 @@ becomes authoritative without successful publication. Administrative retention/
 abandoned-run cleanup is not automated yet.
 
 Keep all operational writes through the repository's transaction/revision protocol.
-Uncoordinated manual SQL can bypass revision checks. The application rebuilds a
-complete weekly allocation batch; it is not yet a dated appointment reservation
-system. Shared-room exams retain their existing capacity-sharing policy, so a
+Uncoordinated manual SQL can bypass revision checks. Room allocation rebuilds a
+complete weekly batch, separately from the dated appointment reservation workflow.
+Shared-room exams retain their existing capacity-sharing policy, so a
 blanket SQL room-overlap prohibition would be incorrect.
 
 ## Integrity upgrades and retention
@@ -185,6 +185,12 @@ storage for current features. They are not enabled in this iteration. Monitor
 growth, preserve backups, and obtain approval before any destructive cleanup.
 
 ## Fictional demonstration database
+
+For a one-command Windows setup including login accounts and explicitly dated
+appointment availability, use `powershell -NoProfile -ExecutionPolicy Bypass -File
+scripts/run_demo.ps1`. See the [demo walkthrough](demo-walkthrough.md). This launcher
+owns a separate local PostgreSQL cluster under Git-ignored `build/local-demos/`;
+it does not connect to or reset the database configured in your normal shell.
 
 Create a **new empty development database**, configure `DATABASE_URL`, and migrate
 to head. Then seed directly into PostgreSQL, not into the regression CSV fixtures:
@@ -293,8 +299,8 @@ before merge rather than treating local lint as remote verification.
 
 ## Scope boundaries
 
-No authentication, appointment approvals/invitations, date/timezone migration or
-public deployment is included. Do not expose the Flask debug server publicly.
-Weekly schedules remain weekday/minute intervals. PostgreSQL stores all currently
-implemented roles/resources/requests/allocations/availability/history/configuration;
-future appointment workflows require a separately reviewed feature iteration.
+Iteration 42 includes authentication and dated appointment approvals/invitations;
+it does not deploy the application publicly or infer dates for undated records.
+Do not expose the Flask development server publicly. Weekly room schedules remain
+weekday/minute intervals, while appointment calendars use explicit dates/timezones.
+PostgreSQL persists both workflows; CSV remains an offline compatibility/import tool.

@@ -20,6 +20,38 @@ to administrative accounts. Appointment records are visible only to their
 organizer, selected professors and invited students; free/busy responses do not
 disclose personal event titles or third-party schedules.
 
+## Student home read model
+
+`StudentDashboardService` reads the authenticated student's summaries and timetable
+in one read-only, repeatable-read PostgreSQL transaction. The student
+blueprint owns navigation; it does not invoke the engine or decide availability.
+Counts distinguish upcoming organizer-owned confirmed bookings, pending requests
+and optional invitations. A next-meeting card may include a nondeclined optional
+invitation, but it is never counted as the student's mandatory reservation.
+Calendar projection reuses explicit legacy bindings and displays unresolved
+applicability as a warning, not as free time. Bounded card lists link to the
+existing appointment/detail/calendar workflows. Professor and administrator
+landing pages, schema and scheduling protocol remain unchanged.
+
+`PersonalScheduleService` provides the same private timetable for all university
+roles. Month selection defaults to university-local today, with week links,
+Monday-Friday columns and hourly rows containing exact event times. Multi-hour
+events continue into later cells; overlapping optional invitations stay visible.
+Weekend commitments remain in a separate list. Event records, not rendered grids,
+are authoritative in PostgreSQL; no per-user duplicate schedule table is created.
+Own university titles can be shown by the calendar projection, without adding
+presentation fields to engine input. Course enrollment cannot be inferred from
+resource attendee counts.
+
+The booking form has separate searchable multi-selects and one date. A single-day
+query uses the existing appointment protocol's optional limit of 100, sufficient
+for its 15-minute recommendation grid; legacy range queries retain their default.
+Input changes invalidate selected times and obsolete browser responses. A manual
+time on the same date remains supported and receives the same C++ validation.
+Submission rejects a time on another date and confirmation still rechecks all
+mandatory participants. Known fictional name suffixes are display-only; database
+names, identifiers and login accounts are unchanged.
+
 ## Calendar semantics
 
 University timezone defaults explicitly to `Europe/Istanbul`, configurable using

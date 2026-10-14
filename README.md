@@ -13,6 +13,14 @@ unanimous revision-specific professor approval, rescheduling and cancellation. S
 [current requirements](docs/srs/UC-STU-01-requirements.md). Existing weekly room
 allocation remains unchanged; legacy calendar applicability requires explicit configuration.
 Technical dashboard views now require a trusted administrative account.
+Students land on a personal Home page with a current-month Monday-Friday hourly
+timetable, their next confirmed meeting, pending requests, optional invitations and confirmed appointments
+they organize. Counts and cards come from one student-scoped PostgreSQL snapshot;
+pending requests are never presented as reservations.
+My Schedule is available to every signed-in user, with week navigation inside the
+selected month. Appointment entry uses separate searchable participant lists,
+one date and selectable feasible times. Existing commitments are shown only when
+linked to the user and explicit calendar dates; course-enrollment rosters are not inferred.
 
 Backend presentation is file-free: database views use `get_table("requests")`, while
 CSV conversion is confined to explicit import and standalone CLI compatibility.
@@ -167,7 +175,7 @@ RequestTypeRule
 - [Database Operations](docs/database-operations.md): setup, safe import, testing and failure behavior.
 - [Iteration 41 Report](docs/iteration-reports/Iteration_41.pdf): PostgreSQL persistence, database tables, diagrams, migration and verification.
 - [Iteration 42 Report](docs/iteration-reports/Iteration_42.pdf): authenticated dated appointments, calendar coexistence, approval integrity and verification.
-- [Student-Professor Appointment Use Case](docs/use-cases/UC-STU-01-student-professor-appointment.pdf): requirements for a future feature, not current implementation.
+- [Student-Professor Appointment Use Case](docs/use-cases/UC-STU-01-student-professor-appointment.pdf): requirements for the implemented appointment workflow.
 
 ## Data Files
 
@@ -277,6 +285,18 @@ The build script requires `g++` on PATH (or `--compiler <compiler-path>`) and wr
 
 ## How to Run Web Dashboard
 
+For a ready-to-explore Windows demo with fictional students, professors, login
+accounts and appointment calendars, run:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run_demo.ps1
+```
+
+This installs the pinned Python packages and uses a separate private PostgreSQL
+demo database. It never resets your existing database. Read the
+[step-by-step demo walkthrough](docs/demo-walkthrough.md) for accounts, explicit
+fictional dates, student/professor approval and administrator screens.
+
 Install application dependencies and initialize a dedicated PostgreSQL database following the [database guide](docs/database-operations.md):
 
 ```bash
@@ -305,7 +325,8 @@ and `RESOURCE_ALLOCATION_TIMEZONE=Europe/Istanbul`. Provision trusted identities
 with `python scripts/manage_accounts.py --user-id <existing-user-id> --username <username>`;
 add `--administrator` only for technical dashboard management. Passwords are prompted,
 not passed on the command line. See [account/calendar setup](docs/database-operations.md#accounts-and-appointment-calendars).
-Use `/appointments/` after sign-in for student/professor workflows; the weekly
+Students land at `/student/` after sign-in; professors use `/appointments/` and
+administrators retain the technical dashboard. The weekly
 administration grid and dated participant calendar are deliberately separate.
 For HTTPS set `RESOURCE_ALLOCATION_SECURE_COOKIE=1`; debug defaults off.
 
@@ -341,6 +362,10 @@ Flask does not check participant availability and does not compute suggestions. 
 
 ## Notes
 
-This repository is an iterative academic prototype with real transactional persistence. Authentication, authorization of web actors and production deployment hardening are not implemented; do not expose the development server publicly.
+This repository is an iterative academic prototype with transactional persistence,
+authenticated appointment workflows and role/ownership authorization. Production
+deployment hardening is not complete; do not expose the development server publicly.
 
-Future work can build on the current structure with authentication, dated calendars and the separately approved appointment use case, richer API integration, and deployment hardening. Those features are not implemented by the database migration.
+Future work can build on the current structure with richer API integration and
+deployment hardening. Existing weekly allocation and dated appointments are
+implemented as separate, compatible workflows.
