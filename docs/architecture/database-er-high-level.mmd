@@ -41,6 +41,10 @@ erDiagram
         bigint id PK "identity"
         integer user_id FK
     }
+    faculty_room_approver {
+        integer faculty_id PK,FK
+        integer user_id FK
+    }
     legacy_calendar_binding {
         bigint id PK "identity"
         integer period_id FK
@@ -78,6 +82,31 @@ erDiagram
     role {
         integer id PK "identity"
     }
+    room_invitation {
+        bigint request_id PK,FK
+        integer user_id PK,FK
+    }
+    room_organizer_commitment {
+        bigint request_id PK,FK
+        integer user_id FK
+    }
+    room_policy {
+        integer resource_id PK,FK
+        integer faculty_id FK
+    }
+    room_reservation {
+        bigint request_id PK,FK
+        integer resource_id FK
+    }
+    student_room_request {
+        bigint id PK "identity"
+        integer organizer_id FK
+        integer resource_id FK
+        integer faculty_id FK
+        integer approver_id FK
+        integer preferred_faculty_id FK "nullable"
+        integer approved_by FK "nullable"
+    }
     university_user {
         integer id PK "identity"
         integer primary_role_id FK
@@ -95,6 +124,8 @@ erDiagram
     university_user ||--o{ appointment_professor : user_id
     university_user ||--o{ busy_slot : user_id
     university_user ||--o{ calendar_block : user_id
+    organization_unit ||--o| faculty_room_approver : faculty_id
+    login_account ||--o{ faculty_room_approver : user_id
     busy_slot o|--o{ legacy_calendar_binding : busy_slot_id
     academic_period ||--o{ legacy_calendar_binding : period_id
     resource_request o|--o{ legacy_calendar_binding : request_id
@@ -107,5 +138,19 @@ erDiagram
     allocation_run o|--o{ request_history : run_id
     university_user ||--o{ resource_request : requester_id
     resource ||--o{ resource_request : resource_id
+    student_room_request ||--o{ room_invitation : request_id
+    university_user ||--o{ room_invitation : user_id
+    student_room_request ||--o| room_organizer_commitment : request_id
+    university_user ||--o{ room_organizer_commitment : user_id
+    organization_unit ||--o{ room_policy : faculty_id
+    resource ||--o| room_policy : resource_id
+    student_room_request ||--o| room_reservation : request_id
+    resource ||--o{ room_reservation : resource_id
+    login_account o|--o{ student_room_request : approved_by
+    login_account ||--o{ student_room_request : approver_id
+    organization_unit ||--o{ student_room_request : faculty_id
+    university_user ||--o{ student_room_request : organizer_id
+    organization_unit o|--o{ student_room_request : preferred_faculty_id
+    resource ||--o{ student_room_request : resource_id
     role ||--o{ university_user : primary_role_id
     organization_unit o|--o{ university_user : primary_unit_id

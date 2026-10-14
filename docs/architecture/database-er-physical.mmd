@@ -103,6 +103,10 @@ erDiagram
         text exam_type
         boolean can_split
     }
+    faculty_room_approver {
+        integer faculty_id PK,FK
+        integer user_id FK
+    }
     legacy_calendar_binding {
         bigint id PK "identity"
         integer period_id FK
@@ -212,6 +216,76 @@ erDiagram
         integer id PK "identity"
         varchar_100 name UK
     }
+    room_access {
+        integer resource_id PK,FK
+        integer user_id PK,FK
+    }
+    room_closure {
+        bigint id PK "identity"
+        integer resource_id FK
+        timestamptz start_at
+        timestamptz end_at
+        text reason
+    }
+    room_event {
+        bigint id PK "identity"
+        bigint request_id FK
+        integer actor_id FK
+        integer revision
+        text message
+        timestamptz created_at
+    }
+    room_invitation {
+        bigint request_id PK,FK
+        integer user_id PK,FK
+        integer revision
+        varchar_20 status
+    }
+    room_organizer_commitment {
+        bigint request_id PK,FK
+        integer user_id FK
+        timestamptz start_at
+        timestamptz end_at
+        tstzrange period
+    }
+    room_policy {
+        integer resource_id PK,FK
+        integer faculty_id FK
+        boolean enabled
+        boolean restricted
+        jsonb categories
+    }
+    room_reservation {
+        bigint request_id PK,FK
+        integer resource_id FK
+        timestamptz start_at
+        timestamptz end_at
+        tstzrange period
+    }
+    student_room_request {
+        bigint id PK "identity"
+        integer organizer_id FK
+        integer resource_id FK
+        integer faculty_id FK
+        integer approver_id FK
+        varchar_30 category
+        text purpose
+        text description
+        text club_affiliation
+        integer attendee_count
+        jsonb required_features
+        integer preferred_faculty_id FK "nullable"
+        text preferred_building
+        timestamptz start_at
+        timestamptz end_at
+        integer duration_minutes
+        integer revision
+        varchar_30 status
+        integer approved_revision "nullable"
+        integer approved_by FK "nullable"
+        text explanation
+        timestamptz created_at
+    }
     suggestion_group {
         bigint run_id PK,FK
         integer request_id PK,FK
@@ -259,6 +333,8 @@ erDiagram
     university_user ||--o{ busy_slot : user_id
     university_user ||--o{ calendar_block : user_id
     resource_request ||--o| exam_details : request_id
+    organization_unit ||--o| faculty_room_approver : faculty_id
+    login_account ||--o{ faculty_room_approver : user_id
     busy_slot o|--o{ legacy_calendar_binding : busy_slot_id
     academic_period ||--o{ legacy_calendar_binding : period_id
     resource_request o|--o{ legacy_calendar_binding : request_id
@@ -276,6 +352,25 @@ erDiagram
     resource_request ||--|{ request_slot : request_id
     university_user ||--o{ resource_request : requester_id
     resource ||--o{ resource_request : resource_id
+    room_policy ||--o{ room_access : resource_id
+    university_user ||--o{ room_access : user_id
+    resource ||--o{ room_closure : resource_id
+    university_user ||--o{ room_event : actor_id
+    student_room_request ||--o{ room_event : request_id
+    student_room_request ||--o{ room_invitation : request_id
+    university_user ||--o{ room_invitation : user_id
+    student_room_request ||--o| room_organizer_commitment : request_id
+    university_user ||--o{ room_organizer_commitment : user_id
+    organization_unit ||--o{ room_policy : faculty_id
+    resource ||--o| room_policy : resource_id
+    student_room_request ||--o| room_reservation : request_id
+    resource ||--o{ room_reservation : resource_id
+    login_account o|--o{ student_room_request : approved_by
+    login_account ||--o{ student_room_request : approver_id
+    organization_unit ||--o{ student_room_request : faculty_id
+    university_user ||--o{ student_room_request : organizer_id
+    organization_unit o|--o{ student_room_request : preferred_faculty_id
+    resource ||--o{ student_room_request : resource_id
     request_decision ||--o| suggestion_group : run_id_request_id
     role ||--o{ university_user : primary_role_id
     organization_unit o|--o{ university_user : primary_unit_id
