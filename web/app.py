@@ -50,6 +50,10 @@ if not __package__:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 app = Flask(__name__)
+from web.presentation import person_name
+app.jinja_env.filters["person_name"] = person_name
+from datetime import timedelta
+app.jinja_env.globals["timedelta"] = timedelta
 app.config.update(
     DATABASE_LOCK_TIMEOUT=float(os.environ.get("RESOURCE_ALLOCATION_DB_LOCK_TIMEOUT", "5")),
     BACKEND_TIMEOUT=float(os.environ.get("RESOURCE_ALLOCATION_ENGINE_TIMEOUT", "30")),
@@ -159,9 +163,12 @@ from web.appointment_routes import create_appointment_blueprint
 app.register_blueprint(create_appointment_blueprint(lambda: get_repository().database,
     lambda: EngineGateway(PROJECT_ROOT, app.config["BACKEND_TIMEOUT"], app.logger)))
 
+from web.student_routes import create_student_blueprint
+app.register_blueprint(create_student_blueprint(lambda: get_repository().database))
+
 @app.before_request
 def pin_database_view():
-    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith("appointments."):
+    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.")):
         current_results()
 
 

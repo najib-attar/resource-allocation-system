@@ -1,11 +1,10 @@
 {% extends "base.html" %}
-{% block page_heading %}My Dated Calendar{% endblock %}
-{% block content %}<section class="panel"><p>Timezone: {{ zone }}. Only your own commitments are shown.</p>
-<form method="get"><label>Show 31 days from <input type="date" name="from" value="{{ first }}"></label><button type="submit">Show</button></form>
-{% if unresolved %}<p role="alert">Some university commitments have unresolved calendar applicability. Contact an administrator; mandatory availability cannot be assumed free.</p>{% endif %}
-<h2>Confirmed appointments</h2>{% for item in items %}<p><a href="{{ url_for('appointments.detail', appointment_id=item.id) }}">{{ item.purpose }}</a> &middot; {{ item.start|university_time }} &ndash; {{ item.end|university_time }}</p>{% else %}<p>No confirmed appointments in this period.</p>{% endfor %}
-<h2>Applicable university commitments</h2>{% for row in events %}<p>{{ row.start|university_time }} &ndash; {{ row.end|university_time }}</p>{% else %}<p>No resolved university commitments in this period.</p>{% endfor %}</section>
+{% from "_personal_timetable.html" import timetable with context %}
+{% block title %}My Schedule | University Scheduling{% endblock %}
+{% block page_heading %}My Schedule{% endblock %}
+{% block content %}
+{{ timetable(schedule, 'appointments.calendar') }}
 <section class="panel"><h2>Block a specific interval</h2><p>Personal blocks define organizer availability; professors can block dates or intervals here.</p>
 <form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="block">
 <label>Start <input type="datetime-local" name="start" required></label><label>End <input type="datetime-local" name="end" required></label><label>Reason <input name="reason" maxlength="2000"></label><button class="button" type="submit">Add block</button></form>
-{% for row in values.blocks %}<p>{{ row.start|university_time }} &ndash; {{ row.end|university_time }} &middot; {{ row.reason }}</p><form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="unblock"><input type="hidden" name="id" value="{{ row.id }}"><button type="submit">Remove block</button></form>{% endfor %}</section>{% endblock %}
+{% for row in schedule.blocks %}<p>{{ row.start|university_time }} &ndash; {{ row.end|university_time }} &middot; {{ row.reason }}</p><form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="unblock"><input type="hidden" name="id" value="{{ row.id }}"><button type="submit">Remove block</button></form>{% endfor %}</section>{% endblock %}

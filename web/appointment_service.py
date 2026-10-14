@@ -36,6 +36,7 @@ class AppointmentService:
         with self.database.transaction(read_only=True) as session:
             units = list(session.scalars(select(OrganizationUnit).order_by(OrganizationUnit.name)))
             parents = {item.id: item.parent_id for item in units}
+            unit_names = {item.id: item.name for item in units}
             validate_unit_hierarchy(parents)
             faculties = [item for item in units if item.unit_type == "Faculty"]
             roles = {item.id: item.name for item in session.scalars(select(Role))}
@@ -43,14 +44,14 @@ class AppointmentService:
             for user in session.scalars(select(User).where(func.lower(User.status) == "active").order_by(User.name, User.id)):
                 role = roles[user.primary_role_id]
                 if role == "Student":
-                    students.append({"id": user.id, "name": user.name})
+                    students.append({"id": user.id, "name": user.name, "unit": unit_names.get(user.primary_unit_id, "")})
                 if role != "Instructor":
                     continue
                 ancestor = user.primary_unit_id
                 while ancestor is not None and ancestor not in {item.id for item in faculties}:
                     ancestor = parents.get(ancestor)
                 if ancestor is not None:
-                    professors.append({"id": user.id, "name": user.name, "facultyId": ancestor})
+                    professors.append({"id": user.id, "name": user.name, "facultyId": ancestor, "unit": unit_names.get(user.primary_unit_id, "")})
             return {"faculties": [{"id": item.id, "name": item.name} for item in faculties],
                     "professors": professors, "students": students}
 
@@ -79,11 +80,15 @@ class AppointmentService:
                 if ancestor is None:
                     raise AppointmentError("Every selected professor must belong to the selected faculty.")
 
-    def evaluate(self, organizer, professors, invitees, duration, start, end, proposed=None, preferred=None, exclude=None, faculty=None):
+    def evaluate(self, organizer, professors, invitees, duration, start, end, proposed=None, preferred=None, exclude=None, faculty=None, limit=None):
         with self.database.transaction(read_only=True) as session:
             self._participants(session, organizer, professors, invitees, faculty)
             snapshot, revision = calendar_snapshot(session, organizer, professors, invitees, duration, start, end,
                                                    "validate" if proposed else "recommend", proposed, preferred, exclude)
+            if limit is not None:
+                if type(limit) is not int or not 1 <= limit <= 100:
+                    raise AppointmentError("Recommendation count must be between 1 and 100.")
+                snapshot["limit"] = limit
         result, _ = self.gateway.execute_appointment(snapshot)
         return result, revision
 

@@ -6,7 +6,8 @@ from flask import Blueprint, abort, g, jsonify, redirect, render_template, reque
 from sqlalchemy import select
 
 from .appointment_service import AppointmentError, AppointmentService, REASONS
-from .calendar_service import CalendarError, legacy_intervals, local_instant, university_zone
+from .calendar_service import CalendarError, local_instant, university_zone
+from .personal_schedule_service import PersonalScheduleService
 from .persistence.models import LegacyCalendarBinding, AcademicPeriod, BusySlot, ResourceRequest
 from .persistence.repository import state_row
 
@@ -82,8 +83,11 @@ def create_appointment_blueprint(database_provider, gateway_provider):
     def new():
         actor = student()
         if request.method == "POST":
+            proposed = local_instant(request.form.get("start"))
+            if "appointmentDate" in request.form and proposed.astimezone(university_zone()).date() != day(request.form.get("appointmentDate")):
+                raise AppointmentError("Select a time on the chosen appointment date.")
             appointment_id = service().submit(actor, ids("professorIds"), ids("invitedIds"), request.form.get("purpose", ""),
-                integer(request.form.get("duration")), local_instant(request.form.get("start")), integer(request.form.get("facultyId")))
+                integer(request.form.get("duration")), proposed, integer(request.form.get("facultyId")))
             return redirect(url_for("appointments.detail", appointment_id=appointment_id))
         directory = service().directory()
         return render_template("appointment_new.html", directory=directory, zone=university_zone().key,
@@ -92,7 +96,9 @@ def create_appointment_blueprint(database_provider, gateway_provider):
     @blueprint.post("/times")
     def times():
         actor = student()
-        first, last = day(request.form.get("fromDate")), day(request.form.get("untilDate"))
+        single_date = "appointmentDate" in request.form
+        first = day(request.form.get("appointmentDate") if single_date else request.form.get("fromDate"))
+        last = first if single_date else day(request.form.get("untilDate"))
         if not date(1970, 1, 1) <= first <= last < date(2100, 1, 1):
             raise AppointmentError("Search dates must be between 1970 and 2099, with the end on or after the start.")
         zone = university_zone()
@@ -101,7 +107,7 @@ def create_appointment_blueprint(database_provider, gateway_provider):
         preferred = local_instant(request.form["preferredStart"]) if request.form.get("preferredStart") else None
         result, _ = service().evaluate(actor, ids("professorIds"), ids("invitedIds"), integer(request.form.get("duration")),
                     max(start, datetime.now(timezone.utc).replace(second=0, microsecond=0) + timedelta(minutes=1)), end,
-                    preferred=preferred, faculty=integer(request.form.get("facultyId")))
+                    preferred=preferred, faculty=integer(request.form.get("facultyId")), limit=100 if single_date else None)
         values = [{**item, "localStart": datetime.fromtimestamp(item["start"], timezone.utc).astimezone(zone).strftime("%Y-%m-%dT%H:%M"),
                    "label": f"{datetime.fromtimestamp(item['start'], timezone.utc).astimezone(zone):%Y-%m-%d %H:%M} - {datetime.fromtimestamp(item['end'], timezone.utc).astimezone(zone):%H:%M}"}
                   for item in result["recommendations"]]
@@ -164,18 +170,9 @@ def create_appointment_blueprint(database_provider, gateway_provider):
             else:
                 raise AppointmentError("Unknown calendar action.")
             return redirect(url_for("appointments.calendar"))
-        zone = university_zone()
-        first = day(request.args.get("from", datetime.now(zone).date().isoformat()))
-        start = local_instant(datetime.combine(first, time()), zone)
-        end = start + timedelta(days=31)
-        with database_provider().transaction(read_only=True) as session:
-            state = state_row(session)
-            intervals, unresolved = legacy_intervals(session, [actor], start, end, state.active_run_id)
-        events = [{"start": datetime.fromtimestamp(row["start"], timezone.utc), "end": datetime.fromtimestamp(row["end"], timezone.utc)} for row in intervals]
-        appointments = [item for item in service().list_for(actor) if item["status"] == "Confirmed" and item["start"] < end and item["end"] > start
-                        and not any(row["id"] == actor and row["status"] == "Declined" for row in item["invitations"])]
-        return render_template("appointment_calendar.html", values=service().availability_for(actor), events=events, items=appointments,
-                               unresolved=bool(unresolved), zone=zone.key, first=first)
+        schedule = PersonalScheduleService(database_provider()).load(actor, month=request.args.get("month"),
+            week=request.args.get("week", request.args.get("from")))
+        return render_template("appointment_calendar.html", schedule=schedule, zone=schedule["zone"])
 
     @blueprint.route("/calendar-setup", methods=["GET", "POST"])
     def bindings():

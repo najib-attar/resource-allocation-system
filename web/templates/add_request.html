@@ -48,7 +48,7 @@
                         {% for user in users %}
                         {% set user_id = user.get("userId", "") %}
                         <option value="{{ user_id }}" {% if form_data.get("userId") == user_id %}selected{% endif %}>
-                            {{ user_id }} - {{ user.get("name", "Unknown") }} ({{ user.get("role", "Unknown") }})
+                            {{ user.get("name", "Unknown")|person_name }} ({{ user.get("role", "Unknown") }})
                         </option>
                         {% endfor %}
                     </select>
@@ -248,7 +248,7 @@
                     <span>
                         <input type="checkbox" name="requiredParticipantIds" value="{{ participant_id }}"
                                {% if participant_id in selected_participants %}checked{% endif %}>
-                        <strong>{{ participant.name }}</strong>
+                        <strong>{{ participant.name|person_name }}</strong>
                         <small>{{ participant_id }} - {{ participant.role }}{% if participant.email %} - {{ participant.email }}{% endif %}</small>
                     </span>
                     <input type="text"

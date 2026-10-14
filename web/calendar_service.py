@@ -24,7 +24,7 @@ def university_zone():
         raise CalendarError("The configured university timezone is unavailable.") from error
 
 
-def local_instant(value, zone=None):
+def local_instant(value, zone=None, check_range=True):
     """Require explicit local wall time and reject DST gaps/folds rather than guessing."""
     zone = zone or university_zone()
     try:
@@ -41,7 +41,8 @@ def local_instant(value, zone=None):
         if len(alternatives) != 1:
             raise ValueError()
         result = alternatives.pop()
-        epoch(result)
+        if check_range:
+            epoch(result)
         return result
     except (ValueError, TypeError, OverflowError) as error:
         raise CalendarError("Enter an unambiguous existing local date/time, to the minute, in the university timezone.") from error
@@ -87,7 +88,7 @@ def expand_weekly(day, start_minutes, end_minutes, valid_from, valid_until, zone
     return result
 
 
-def legacy_intervals(session, people, start, end, active_run_id=None):
+def legacy_intervals(session, people, start, end, active_run_id=None, include_details=False):
     """Known identities only: requester/required committee members, not attendee counts."""
     people = set(people)
     bindings = list(session.scalars(select(LegacyCalendarBinding)))
@@ -98,7 +99,7 @@ def legacy_intervals(session, people, start, end, active_run_id=None):
         target.setdefault(binding.busy_slot_id if binding.busy_slot_id is not None else binding.request_id, []).append(binding)
     output, unresolved = [], set()
 
-    def project(ids, row, choices):
+    def project(ids, row, choices, title):
         ids = people.intersection(ids)
         if not ids:
             return
@@ -110,10 +111,11 @@ def legacy_intervals(session, people, start, end, active_run_id=None):
             intervals = expand_weekly(row.day, row.start_minutes, row.end_minutes,
                                       period.start_date, period.end_date, period.timezone, start, end,
                                       binding.excluded_dates, binding.week_start)
-            output.extend({"userId": pid, "start": epoch(a), "end": epoch(b)} for pid in ids for a, b in intervals)
+            output.extend({"userId": pid, "start": epoch(a), "end": epoch(b),
+                           **({"title": title} if include_details else {})} for pid in ids for a, b in intervals)
 
     for row in session.scalars(select(BusySlot).where(BusySlot.user_id.in_(people))):
-        project([row.user_id], row, busy_bindings.get(row.id, []))
+        project([row.user_id], row, busy_bindings.get(row.id, []), row.reason or "University commitment")
     if active_run_id is not None:
         requests = {row.id: row for row in session.scalars(select(ResourceRequest))}
         participants = {}
@@ -121,7 +123,8 @@ def legacy_intervals(session, people, start, end, active_run_id=None):
             participants.setdefault(row.request_id, []).append(row.user_id)
         for row in session.scalars(select(Allocation).where(Allocation.run_id == active_run_id)):
             request = requests[row.request_id]
-            project([request.requester_id] + participants.get(request.id, []), row, request_bindings.get(request.id, []))
+            project([request.requester_id] + participants.get(request.id, []), row, request_bindings.get(request.id, []),
+                    request.title or request.purpose or "University commitment")
     return output, sorted(unresolved)
 
 

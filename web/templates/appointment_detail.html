@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% block page_heading %}Appointment {{ item.id }}{% endblock %}
 {% block content %}<section class="panel"><h2>{{ item.purpose }}</h2><p>{{ item.start|university_time }} &ndash; {{ item.end|university_time }} ({{ zone }})</p>
-<p>Status: <strong>{{ item.status }}</strong> &middot; Revision {{ item.revision }} &middot; Organizer: {{ item.organizerName }}</p>
-<h3>Required professors</h3><ul>{% for row in item.professors %}<li>{{ row.name }}: {{ row.decision }}</li>{% endfor %}</ul>
-<h3>Student invitations</h3><ul>{% for row in item.invitations %}<li>{{ row.name }}: {{ row.status }}</li>{% else %}<li>No additional students invited.</li>{% endfor %}</ul>
+<p>Status: <strong>{{ item.status }}</strong> &middot; Revision {{ item.revision }} &middot; Organizer: {{ item.organizerName|person_name }}</p>
+<h3>Required professors</h3><ul>{% for row in item.professors %}<li>{{ row.name|person_name }}: {{ row.decision }}</li>{% endfor %}</ul>
+<h3>Student invitations</h3><ul>{% for row in item.invitations %}<li>{{ row.name|person_name }}: {{ row.status }}</li>{% else %}<li>No additional students invited.</li>{% endfor %}</ul>
 {% if item.status == 'Pending Approval' and g.principal.user_id in item.professors|map(attribute='id')|list %}
 <form method="post" action="{{ url_for('appointments.decision', appointment_id=item.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="revision" value="{{ item.revision }}">
 <button class="button" name="decision" value="approve">Approve this revision</button> <button name="decision" value="decline">Decline request</button></form>{% endif %}

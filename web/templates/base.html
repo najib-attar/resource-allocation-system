@@ -14,8 +14,9 @@
         </div>
         <nav class="nav-links" aria-label="Main navigation">
             {% if g.principal %}
+            {% if g.principal.role == 'Student' %}<a href="{{ url_for('student.home') }}"{% if request.endpoint == 'student.home' %} aria-current="page"{% endif %}>Home</a>{% endif %}
             <a href="{{ url_for('appointments.index') }}">Appointments</a>
-            <a href="{{ url_for('appointments.calendar') }}">My Calendar</a>
+            <a href="{{ url_for('appointments.calendar') }}">My Schedule</a>
             {% if g.principal.role == 'Instructor' %}<a href="{{ url_for('appointments.availability') }}">Office Hours</a>{% endif %}
             {% if g.principal.administrator %}
             <a href="{{ url_for('index') }}">Dashboard</a>
@@ -28,7 +29,7 @@
             <a href="{{ url_for('raw_data') }}">Raw Data</a>
             <a href="{{ url_for('appointments.bindings') }}">Calendar Setup</a>
             {% endif %}
-            <span>{{ g.principal.name }}</span>
+            <span>{{ g.principal.name|person_name }}</span>
             <form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Sign out</button></form>
             {% endif %}
         </nav>

@@ -16,6 +16,12 @@ def csrf_token():
     return session["csrf"]
 
 
+def home_endpoint(principal):
+    if principal.administrator:
+        return "index"
+    return "student.home" if principal.role == "Student" else "appointments.index"
+
+
 def init_security(app, database_provider):
     app.config.update(SECRET_KEY=os.environ.get("RESOURCE_ALLOCATION_SECRET_KEY"),
                       SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax",
@@ -43,13 +49,17 @@ def init_security(app, database_provider):
             return None
         if g.principal is None:
             return redirect(url_for("login", next=request.path))
+        if request.endpoint and request.endpoint.startswith("student."):
+            if g.principal.role != "Student":
+                abort(403, description="Student access required.")
+            return None
         if request.endpoint and request.endpoint.startswith("appointments."):
             return None
         if request.endpoint == "logout":
             return None
         if not g.principal.administrator:
             if request.endpoint == "index":
-                return redirect(url_for("appointments.index"))
+                return redirect(url_for(home_endpoint(g.principal)))
             abort(403, description="University administration access required. Your own calendar is available in Appointments.")
 
     @app.route("/login", methods=["GET", "POST"])
@@ -66,7 +76,7 @@ def init_security(app, database_provider):
                 csrf_token()
                 target = request.args.get("next", "")
                 if not target.startswith("/") or target.startswith("//") or "\\" in target:
-                    target = url_for("index") if principal.administrator else url_for("appointments.index")
+                    target = url_for(home_endpoint(principal))
                 return redirect(target)
         return render_template("login.html", error=error), 401 if error else 200
 

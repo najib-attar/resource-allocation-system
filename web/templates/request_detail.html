@@ -81,7 +81,7 @@
         <div class="committee-participant-list">
             {% for participant in item.committee_participants %}
             <div>
-                <strong>{{ participant.name }}</strong>
+                <strong>{{ participant.name|person_name }}</strong>
                 <span>{{ participant.role }}</span>
                 <small>User {{ participant.user_id }} - {{ participant.user_role }}</small>
             </div>

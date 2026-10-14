@@ -1,0 +1,11 @@
+{% macro appointment_card(item, invitation=false) %}
+<article class="student-appointment" data-appointment-id="{{ item.id }}">
+    <div class="student-appointment-top"><span class="student-status {{ 'is-confirmed' if item.status == 'Confirmed' else 'is-pending' }}">{{ item.status }}</span>
+        {% if item.expired %}<span class="student-expired">Requested time has passed</span>{% endif %}</div>
+    <h3><a href="{{ url_for('appointments.detail', appointment_id=item.id) }}">{{ item.purpose }}</a></h3>
+    <p><time datetime="{{ item.start.isoformat() }}">{{ item.start.strftime('%a %d %b %Y, %H:%M') }}</time> &ndash; {{ item.end.strftime('%H:%M') }}</p>
+    <p class="student-card-note">{{ item.professors|map('person_name')|join(', ') }}</p>
+    {% if invitation %}<p class="student-card-note">Organizer: {{ item.organizerName|person_name }}. Your attendance is optional.</p>{% endif %}
+    <a class="student-text-link" href="{{ url_for('appointments.detail', appointment_id=item.id) }}">{{ 'View invitation' if invitation else 'View details' }} <span aria-hidden="true">&rarr;</span></a>
+</article>
+{% endmacro %}

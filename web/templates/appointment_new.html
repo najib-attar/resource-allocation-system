@@ -1,19 +1,26 @@
 {% extends "base.html" %}
 {% block page_heading %}Schedule a Professor Appointment{% endblock %}
-{% block content %}<section class="panel"><p>Times are in {{ zone }}. The organizing student and every professor must be free. Invited students are optional.</p>
+{% block title %}Schedule an Appointment | University Scheduling{% endblock %}
+{% block content %}<section class="panel appointment-booking"><p class="booking-intro">Choose your participants and one date. We will show times when you and every required professor are available.</p><p class="student-card-note">{{ zone }} &middot; Additional student invitations are optional.</p>
 {% if not directory.faculties %}<p role="alert">No faculty hierarchy is configured. Ask an administrator to configure faculty/department membership before scheduling.</p>{% endif %}
 <form method="post" id="appointment-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 <p><label>Faculty <select name="facultyId" id="faculty" required><option value="">Select faculty</option>{% for item in directory.faculties %}<option value="{{ item.id }}">{{ item.name }}</option>{% endfor %}</select></label></p>
-<fieldset><legend>Required professors</legend>{% for item in directory.professors %}<label class="professor-option" data-faculty="{{ item.facultyId }}" hidden><input type="checkbox" name="professorIds" value="{{ item.id }}" disabled> {{ item.name }}</label>{% endfor %}</fieldset>
-<fieldset><legend>Optional student invitations</legend>{% for item in directory.students if item.id != g.principal.user_id %}<label><input type="checkbox" name="invitedIds" value="{{ item.id }}"> {{ item.name }}</label>{% endfor %}</fieldset>
+<div class="participant-picker-grid">
+<div><label class="picker-label" id="professor-picker-label">Required professors</label><details class="participant-picker" data-picker="professorIds"><summary aria-labelledby="professor-picker-label">Choose professors <span class="picker-count">0 selected</span></summary>
+<label class="picker-search-label">Search professors <input type="search" class="picker-search" placeholder="Name or department" autocomplete="off"></label>
+<p class="picker-hint">Select a faculty first.</p><div class="picker-options" role="group" aria-label="Professor choices">{% for item in directory.professors %}<label class="picker-option professor-option" data-faculty="{{ item.facultyId }}" hidden><input type="checkbox" name="professorIds" value="{{ item.id }}" disabled><span><strong>{{ item.name|person_name }}</strong><small>{{ item.unit }}</small></span></label>{% endfor %}</div></details><div class="selected-participants" data-selected="professorIds" aria-live="polite"></div></div>
+<div><label class="picker-label" id="student-picker-label">Invite students (optional)</label><details class="participant-picker" data-picker="invitedIds"><summary aria-labelledby="student-picker-label">Choose students <span class="picker-count">0 selected</span></summary>
+<label class="picker-search-label">Search students <input type="search" class="picker-search" placeholder="Name or department" autocomplete="off"></label>
+<p class="picker-hint">Invitees do not block confirmation.</p><div class="picker-options" role="group" aria-label="Student choices">{% for item in directory.students if item.id != g.principal.user_id %}<label class="picker-option"><input type="checkbox" name="invitedIds" value="{{ item.id }}"><span><strong>{{ item.name|person_name }}</strong><small>{{ item.unit }}</small></span></label>{% endfor %}</div></details><div class="selected-participants" data-selected="invitedIds" aria-live="polite"></div></div>
+</div>
 <p><label>Purpose <textarea name="purpose" maxlength="2000" required></textarea></label></p>
-<p><label>Duration (minutes) <input name="duration" type="number" min="1" max="1440" value="30" required></label></p>
-<div class="appointment-grid"><label>Search from <input name="fromDate" type="date" value="{{ today }}" required></label>
-<label>Through <input name="untilDate" type="date" value="{{ today }}" required></label>
-<label>Preferred date/time (optional) <input name="preferredStart" type="datetime-local"></label></div>
-<p><button type="button" id="find-times" class="button" data-url="{{ url_for('appointments.times') }}">Find feasible / recommended times</button></p>
-<p id="times-message" role="status" aria-live="polite"></p><div id="times-list"></div>
-<p><label>Selected or proposed time <input id="appointment-start" name="start" type="datetime-local" required></label></p>
-<p>A proposed time is checked against the same mandatory constraints as recommendations.</p>
-<button class="button" type="submit">Submit for professor approval</button></form></section>
+<div class="appointment-grid booking-date-row"><label>Duration (minutes) <input name="duration" type="number" min="1" max="1440" value="30" required></label>
+<label>Appointment date <input id="appointment-date" name="appointmentDate" type="date" value="{{ today }}" min="1970-01-01" max="2099-12-31" required></label></div>
+<section class="appointment-time-panel" aria-labelledby="available-times-heading"><div class="student-section-heading"><h2 id="available-times-heading">Available times</h2><button type="button" id="find-times" data-url="{{ url_for('appointments.times') }}">Refresh times</button></div>
+<p id="times-message" role="status" aria-live="polite">Choose a faculty and professors to see available times for this date.</p><div id="times-list" class="time-slot-grid" role="group" aria-label="Available appointment times"></div>
+<input id="appointment-start" name="start" type="hidden"><p id="selected-time" class="selected-time" aria-live="polite">No time selected.</p>
+<details class="manual-time"><summary>Propose another time on the same date</summary><label>Proposed time <input id="manual-time" type="time"></label><p class="student-card-note">This proposal must pass the same availability checks. It is also used as your preferred time when you refresh suggestions.</p></details></section>
+<p class="student-card-note">Times are rechecked when you submit and before confirmation. Pending requests do not reserve time.</p>
+<noscript><p role="alert">Enable JavaScript to load available times and select participants.</p></noscript>
+<button class="button" id="submit-appointment" type="submit" disabled>Submit for professor approval</button></form></section>
 <script src="{{ url_for('static', filename='appointments.js') }}" defer></script>{% endblock %}
