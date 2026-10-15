@@ -2,6 +2,10 @@
 
 ## Responsibilities
 
+![Student room components](student-room-components.svg)
+
+[Editable component source](student-room-components.mmd)
+
 The authenticated student describes a purpose, dated interval, total attendance,
 facilities and optional preferences, rather than naming a mandatory room.
 A separate C++ room-selection operation owns eligibility, conflicts and deterministic
@@ -52,6 +56,18 @@ only free/busy information, never private purposes or participant identities.
 
 ## Delivery
 
-The feature is delivered incrementally through schema/policy, engine/calendar,
-application/frontend and final regression/report milestones. The completed report
-will record actual test evidence, diagrams and remaining operational boundaries.
+The authenticated `/rooms/` inbox presents organizer, assigned-faculty and invitee
+updates. `/rooms/new` gathers needs and automatically reviews ranked candidates;
+`/rooms/<id>` exposes revision-specific actions and history. `/rooms/configuration`
+is a trusted university-administration configuration screen. Permitted free/busy
+at `/rooms/availability/<id>` contains no private event title or participant.
+Student Home and the shared personal timetable include confirmed organizer bookings;
+accepted professor attendance is distinctly optional. These in-app status/history
+views are notifications, not email or push delivery.
+
+The single-machine application keeps short calendar-state serialization for
+publication/confirmation, without holding a transaction during engine computation.
+Full-batch academic projections and list/detail queries suit the demonstration
+scale, not an unbounded production scheduling workload. Authentication deployment
+hardening and email remain outside this use case. Existing unconfigured resources
+need explicit policy setup; no migration guesses an owning faculty or term dates.

@@ -297,6 +297,34 @@ cannot be claimed verified by a Windows local run. The implementation branch is
 published only when authorized; inspect the draft PR's actual Actions results
 before merge rather than treating local lint as remote verification.
 
+## Student room configuration
+
+Apply Alembic head `0043b` before using UC-STU-02. These additive migrations do
+not infer resource owners or academic dates. As a trusted university administrator,
+open **Room Policies**: designate the faculty's active administrative approver,
+set each known room's owning faculty/categories and optional user whitelist, and
+publish dated closures where needed. An unconfigured room is intentionally not
+student-bookable. A missing/disabled approver prevents selection/approval.
+
+`RESOURCE_ALLOCATION_ROOM_STRATEGY=best_fit` is the default student single-room
+selection; `greedy` is also supported. This is independent of the five existing
+academic allocation strategies. The engine is called with `--rooms-json`, never
+shared CSV/config. See [room architecture](architecture/student-room-design.md).
+
+Pending requests reserve nothing. Faculty approval rechecks the exact room and
+current revision, then commits the room and organizing student's commitments
+together. A stale selection needs a new revision. Cancellation releases time but
+retains history. Optional professor RSVP is not an exclusive personal reservation.
+Existing academic allocations still require explicit calendar bindings before
+their applicability can be treated as known. Later academic runs cannot overwrite
+confirmed student bookings or closures. Do not bypass these application services
+with ad-hoc SQL updates to schedules/policies.
+
+The fictional [demo walkthrough](demo-walkthrough.md#student-room-request-demonstration)
+uses a separate profile, explicit January 2030 period and real engine results.
+Existing profiles are not automatically assigned invented room owners. Their
+stored data and credentials are preserved on restart.
+
 ## Scope boundaries
 
 Iteration 42 includes authentication and dated appointment approvals/invitations;

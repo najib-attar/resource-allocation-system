@@ -6,7 +6,9 @@ PostgreSQL replaces operational CSV inputs, config.txt, and the published local
 engine-result.json. Flask application services own transactions. The existing
 C++17 engine, EngineGateway, executable verification, and JSON protocol v1 remain
 unchanged for room allocation. Iteration 42 adds a separate dated appointment
-operation and authenticated application workflows. CSV is an explicit import/export or standalone CLI compatibility tool,
+operation and authenticated application workflows. Iteration 43 adds a separate
+student-room selection operation and faculty-approved exclusive reservations.
+CSV is an explicit import/export or standalone CLI compatibility tool,
 not a database fallback or a second writable application store.
 
 `DatabaseResultAdapter` pins one repository view and delegates file-free formatting
@@ -20,14 +22,15 @@ persistence.
 ![High-level ER diagram](database-er-high-level.svg)
 
 - [High-level Mermaid source](database-er-high-level.mmd): principal entities, using only actual foreign-key relationships.
-- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 28 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
+- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 37 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
 - [Physical schema catalog](database-schema-catalog.md): every column's type/nullability/default, composite keys, unique/check constraints, indexes and deletion policy.
 
-`alembic_version` is the twenty-ninth physical table, used only by Alembic, not an
+`alembic_version` is the thirty-eighth physical table, used only by Alembic, not an
 application entity. Application sources/catalog are generated from the models;
 the existing Alembic revision marker is explicitly documented too. Use
 `python scripts/generate_database_diagrams.py`; `--check` detects drift in tests/CI.
-SVGs are rendered with Mermaid CLI 12.0.0 and remain zoomable. For example:
+The zoomable SVGs reflect these same table/relationship sources (Graphviz layout).
+The portable Mermaid sources can also be rendered with Mermaid CLI, for example:
 
 ```text
 mmdc -i docs/architecture/database-er-physical.mmd -o docs/architecture/database-er-physical.svg -t neutral -b white
@@ -187,13 +190,38 @@ pagination/retention; local demo timings are not a production scalability proof.
 
 ## Time and allocation semantics
 
-Current functionality is a weekly prototype: TimeSlot and protocol v1 have no
-calendar dates. This migration preserves those semantics and does not fabricate
-term dates or implement appointments. A future calendar iteration will add
-bounded weekly patterns and dated occurrences using an approved timezone.
-Appointments will have required organizer/professor commitments, optional student
-invitations and separate approvals; no placeholder appointment tables are needed
-before that use case is implemented.
+### Student room additions (Iteration 43)
+
+| Table | Responsibility / important relationship |
+|---|---|
+| faculty_room_approver | One current designated administrative account per owning faculty |
+| room_policy | One explicit owning faculty and student-use/category/access policy per resource |
+| room_access | Composite room/user whitelist for restricted rooms |
+| room_closure | Date-specific resource unavailability |
+| student_room_request | Organizer, verified room, faculty/approver, requirements, dated interval, revision and decision |
+| room_invitation | Optional Instructor attendance and response for the current revision |
+| room_reservation | One exact confirmed request/resource interval, with per-room GiST overlap exclusion |
+| room_organizer_commitment | Exact organizing-student interval, with per-person exclusion and cross-appointment protection |
+| room_event | Participant-scoped lifecycle/history, actor and revision |
+
+Migrations `0043a` and `0043b` are additive. Unconfigured resources stay unbookable;
+no ownership or academic dates are backfilled. Deferred aggregate triggers enforce
+exact approval/revision/commitments and forbid pending reservations. Room-faculty
+checks, FKs and bounded category/interval constraints protect stored shape.
+Student room exclusivity does not prohibit legitimate sharing among academic exams.
+Before faculty confirmation, C++ validates the exact selected room outside the write
+transaction; the final state-row lock checks the calendar revision and commits
+reservation, organizer commitment and history together. Later academic publication
+uses the same lock and cannot overwrite a confirmed student booking or room closure.
+Cancellation releases reservations atomically without deleting history.
+Optional professor RSVP is not an exclusive personal reservation.
+See [student room architecture](student-room-design.md).
+
+Weekly `TimeSlot` and the original allocation protocol v1 remain undated.
+Appointments and student room requests use separate dated operations, explicit
+academic-period projection and timezone-aware commitments. No term dates are
+inferred for legacy records. Appointment approvals and room-faculty approval are
+distinct lifecycles, sharing calendar-revision coordination rather than rules.
 
 There is deliberately no blanket exclusion constraint on room allocation rows.
 SharedRoomExamBestFitStrategy permits compatible exam sharing and assigns seats
