@@ -23,8 +23,9 @@ from web.persistence.database import Database
 from web.persistence.demo import demo_snapshot
 from web.persistence.importer import populate_empty_database
 from web.persistence.models import (AcademicPeriod, BusySlot, CalendarBlock, LegacyCalendarBinding,
-                                    LoginAccount, ProfessorAvailability, ResourceRequest)
+                                    LoginAccount, OrganizationUnit, ProfessorAvailability, ResourceRequest)
 from web.persistence.repository import PersistenceError, Repository, state_row
+from web.room_request_service import RoomRequestService
 
 
 def demo_inputs(seed):
@@ -80,9 +81,19 @@ def seed_local_demo(database, password, start, end, seed=42):
                     end_at=optional_block + timedelta(hours=2), reason="Fictional optional student conflict"))
         state_row(session, True).calendar_revision += 1
     result = execute_allocation(Repository(database), EngineGateway(ROOT))
+    # Ownership is explicit fictional fixture configuration, never a legacy backfill.
+    room_service = RoomRequestService(database, EngineGateway(ROOT))
+    administrators = [row['id'] for row in snapshot['users'] if row['role'] == 'Administrator']
+    with database.transaction(read_only=True) as session:
+        faculties = list(session.scalars(select(OrganizationUnit.id).where(OrganizationUnit.unit_type == 'Faculty').order_by(OrganizationUnit.name)))
+    for index, faculty_id in enumerate(faculties):
+        room_service.configure_approver(administrators[0], faculty_id, administrators[index % len(administrators)])
+    for index, room in enumerate(snapshot['spaces']):
+        room_service.configure_room(administrators[0], room['id'], faculties[index % len(faculties)], True,
+                                    ['study','meeting','lecture','club','other'])
     return {"seed": seed, "academicStart": start.isoformat(), "academicEnd": end.isoformat(),
             "counts": {key: len(snapshot[key]) for key in ("users", "spaces", "requests", "busySlots")},
-            "accounts": accounts, "allocationCount": len(result["allocations"])}
+            "accounts": accounts, "allocationCount": len(result["allocations"]), "configuredStudentRooms": len(snapshot['spaces'])}
 
 
 def write_settings(path, settings):

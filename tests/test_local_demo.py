@@ -15,7 +15,8 @@ from web.account_service import AccountService
 from web.appointment_service import AppointmentService
 from web.engine_gateway import EngineGateway
 from web.persistence.importer import ImportValidationError
-from web.persistence.models import AcademicPeriod, Allocation, AppointmentCommitment, LoginAccount, ProfessorAvailability
+from web.persistence.models import (AcademicPeriod, Allocation, AppointmentCommitment, FacultyRoomApprover,
+                                    LoginAccount, ProfessorAvailability, RoomPolicy)
 
 
 class LocalDemoConfigurationTests(TestCase):
@@ -53,6 +54,9 @@ class LocalDemoDatabaseTests(PostgresTestCase):
             self.assertEqual(session.scalar(select(func.count()).select_from(ProfessorAvailability)), 60)
             self.assertEqual(session.scalar(select(func.count()).select_from(AcademicPeriod)), 1)
             self.assertGreater(session.scalar(select(func.count()).select_from(Allocation)), 0)
+            self.assertEqual(session.scalar(select(func.count()).select_from(RoomPolicy)), 20)
+            self.assertEqual(session.scalar(select(func.count()).select_from(FacultyRoomApprover)), 2)
+        self.assertEqual(summary['configuredStudentRooms'], 20)
         accounts = AccountService(self.database)
         self.assertEqual(accounts.authenticate('student1', password).role, 'Student')
         self.assertEqual(accounts.authenticate('professor1', password).role, 'Instructor')

@@ -90,6 +90,37 @@ by future confirmed appointments before cancelling/rescheduling them.
 
 ## Explore room allocation
 
+### Student room-request demonstration
+
+For a new fictional database with Iteration 43 room ownership and faculty approvers,
+use a **new profile**, leaving your previous appointment demonstration intact:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run_demo.ps1 `
+  -Profile student-rooms -PostgresPort 55446 -WebPort 5001
+```
+
+1. Sign in as `student1`, then choose **Find a room** from Home or **Room Requests**.
+2. Enter a study/meeting/lecture/club/other purpose, total attendees, facilities,
+   optional faculty/building preferences and professor invitations. Use an explicit
+   fictional date such as `2030-01-14 10:00`, with a 60-minute duration.
+3. Review the ranked room and its owning faculty. Submit for faculty approval;
+   pending requests reserve nothing. The detail page names the assigned approver.
+4. Sign in as `admin` or `admin2`, whichever the detail page assigns. Open
+   **Room Requests**, inspect the pending event and **Recheck and approve** or reject
+   with an explanation. Other faculty approvers cannot approve it.
+5. Return as `student1`: view Confirmed and January 2030 under My Schedule.
+   As an invited professor, open Room Requests to accept or decline optional attendance.
+6. Cancel as organizer or the assigned faculty administrator to release the room.
+   Revise pending requests for a new room/time and approval; confirmed changes require
+   cancellation plus a new request. Activity history remains available.
+
+New demo profiles explicitly configure fictional room ownership. An existing profile
+is never automatically reassigned: use **Room Policies** as its administrator to
+designate faculty approvers and configure the actual known room owners. Unconfigured
+rooms deliberately remain unavailable to student requests. Professor appointments
+and the ordinary administrative allocation dashboard remain separate workflows.
+
 Sign in as `admin`. Open **Users**, **Spaces**, **Requests**, **Allocation Summary**
 and **Schedules**. The seed has already run the real allocation engine. Select a
 strategy on **Dashboard** and use **Run Allocation** to compare its results.
