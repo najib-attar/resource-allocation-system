@@ -4,10 +4,7 @@ import json
 import os
 import subprocess
 
-try:
-    from .backend_executable import resolve_backend_executable
-except ImportError:
-    from backend_executable import resolve_backend_executable
+from .backend_executable import resolve_backend_executable
 
 
 PROTOCOL_VERSION = 1

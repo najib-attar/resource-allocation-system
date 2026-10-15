@@ -9,7 +9,6 @@ from .appointment_service import AppointmentError, AppointmentService, REASONS
 from .calendar_service import CalendarError, local_instant, university_zone
 from .personal_schedule_service import PersonalScheduleService
 from .persistence.models import LegacyCalendarBinding, AcademicPeriod, BusySlot, ResourceRequest
-from .persistence.repository import state_row
 
 
 def create_appointment_blueprint(database_provider, gateway_provider):

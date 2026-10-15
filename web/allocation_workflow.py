@@ -2,16 +2,10 @@
 
 from sqlalchemy.exc import SQLAlchemyError
 
-try:
-    from .backend_executable import BackendExecutableError
-    from .engine_gateway import EngineIntegrationError
-    from .persistence.database import DatabaseBusy
-    from .persistence.repository import PersistenceError, StaleRun
-except ImportError:
-    from backend_executable import BackendExecutableError
-    from engine_gateway import EngineIntegrationError
-    from persistence.database import DatabaseBusy
-    from persistence.repository import PersistenceError, StaleRun
+from .backend_executable import BackendExecutableError
+from .engine_gateway import EngineIntegrationError
+from .persistence.database import DatabaseBusy
+from .persistence.repository import PersistenceError, StaleRun
 
 
 def execute_allocation(repository, gateway, logger=None):

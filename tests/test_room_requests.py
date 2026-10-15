@@ -17,8 +17,8 @@ from web.calendar_service import CalendarError
 from web.engine_gateway import EngineGateway, EngineIntegrationError, validate_room_result
 from web.personal_schedule_service import PersonalScheduleService
 from web.persistence.database import Database
-from web.persistence.models import (ApplicationState, FacultyRoomApprover, LoginAccount, OrganizationUnit, Resource,
-    Role, RoomInvitation, RoomOrganizerCommitment, RoomReservation, StudentRoomRequest, User)
+from web.persistence.models import (ApplicationState, LoginAccount, OrganizationUnit, Resource,
+    Role, RoomOrganizerCommitment, RoomReservation, User)
 from web.persistence.repository import Repository
 from web.room_request_service import RoomRequestService, RoomRequestError
 

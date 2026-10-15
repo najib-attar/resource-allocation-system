@@ -1,6 +1,5 @@
 """Real-engine, real-PostgreSQL acceptance for the complete appointment lifecycle."""
 
-from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime, timedelta, timezone
 import multiprocessing
 import secrets
@@ -17,7 +16,7 @@ from web import app as web_app
 from web.account_service import AccountService
 from web.appointment_service import AppointmentError, AppointmentService
 from web.calendar_service import CalendarError, expand_weekly, local_instant
-from web.engine_gateway import EngineGateway, EngineIntegrationError, validate_appointment_result
+from web.engine_gateway import EngineGateway, EngineIntegrationError
 from web.persistence.database import Database
 from web.persistence.importer import populate_empty_database
 from web.persistence.models import (Appointment, AppointmentCommitment, BusySlot, OrganizationUnit, ProfessorAvailability, User)

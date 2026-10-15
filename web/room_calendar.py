@@ -6,7 +6,7 @@ from sqlalchemy import select
 
 from .calendar_service import CalendarError, epoch, expand_weekly, legacy_intervals
 from .persistence.models import (AcademicPeriod, Allocation, AppointmentCommitment, CalendarBlock,
-    FacultyRoomApprover, LegacyCalendarBinding, LoginAccount, OrganizationUnit, Resource,
+    FacultyRoomApprover, LegacyCalendarBinding, LoginAccount, Resource,
     RoomAccess, RoomClosure, RoomOrganizerCommitment, RoomPolicy, RoomReservation, Role, User)
 from .persistence.repository import state_row
 

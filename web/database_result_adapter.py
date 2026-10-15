@@ -1,13 +1,8 @@
 """Pin one coherent PostgreSQL view and delegate file-free presentation."""
 
-try:
-    from .backend_result_adapter import BackendResultAdapter
-    from .engine_result_projection import input_tables, result_tables
-    from .result_table_schema import OUTPUT_HEADERS, table_view
-except ImportError:
-    from backend_result_adapter import BackendResultAdapter
-    from engine_result_projection import input_tables, result_tables
-    from result_table_schema import OUTPUT_HEADERS, table_view
+from .backend_result_adapter import BackendResultAdapter
+from .engine_result_projection import input_tables, result_tables
+from .result_table_schema import OUTPUT_HEADERS, table_view
 
 
 class DatabaseResultAdapter(BackendResultAdapter):

@@ -6,12 +6,8 @@ from pathlib import Path
 
 from sqlalchemy import func, select
 
-try:
-    from ..engine_gateway import EngineIntegrationError, PROTOCOL_VERSION
-    from ..input_validation import integer, minutes, parse_time_slots
-except ImportError:
-    from engine_gateway import EngineIntegrationError, PROTOCOL_VERSION
-    from input_validation import integer, minutes, parse_time_slots
+from ..engine_gateway import EngineIntegrationError, PROTOCOL_VERSION
+from ..input_validation import integer, minutes, parse_time_slots
 from .models import Base, BusySlot, OrganizationUnit, RequestHistory, Resource, ResourceRequest, Role, ROLES, STRATEGIES, User, UserRole
 from .validation import DataValidationError as ImportValidationError, require, validate_snapshot
 from .repository import PROFILE_FIELDS, PersistenceError, advance_identity, insert_request, state_row, validate_unit_hierarchy
