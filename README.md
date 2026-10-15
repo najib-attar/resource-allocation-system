@@ -17,6 +17,11 @@ Students land on a personal Home page with a current-month Monday-Friday hourly
 timetable, their next confirmed meeting, pending requests, optional invitations and confirmed appointments
 they organize. Counts and cards come from one student-scoped PostgreSQL snapshot;
 pending requests are never presented as reservations.
+All authenticated pages share a profile header with a circular initials avatar,
+name, role and private notification bell. Appointment/room decisions and invitations
+appear in the inbox; read state persists in PostgreSQL. Navigation remains role-aware
+while backend permissions stay authoritative. See [frontend boundaries](docs/architecture/frontend-design.md).
+Photo uploads and room/professor availability alerts are not enabled yet.
 My Schedule is available to every signed-in user, with week navigation inside the
 selected month. Appointment entry uses separate searchable participant lists,
 one date and selectable feasible times. Existing commitments are shown only when

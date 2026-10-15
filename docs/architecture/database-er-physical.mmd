@@ -139,6 +139,13 @@ erDiagram
         integer conflict_count
         text reason
     }
+    notification {
+        bigint id PK "identity"
+        integer recipient_id FK
+        bigint appointment_event_id FK "nullable"
+        bigint room_event_id FK "nullable"
+        timestamptz read_at "nullable"
+    }
     organization_unit {
         integer id PK "identity"
         varchar_255 name UK
@@ -341,6 +348,9 @@ erDiagram
     university_user ||--o| login_account : user_id
     resource ||--o{ meeting_suggestion : resource_id
     suggestion_group ||--o{ meeting_suggestion : run_id_request_id
+    appointment_event o|--o{ notification : appointment_event_id
+    university_user ||--o{ notification : recipient_id
+    room_event o|--o{ notification : room_event_id
     organization_unit o|--o{ organization_unit : parent_id
     university_user ||--o{ professor_availability : user_id
     resource_request ||--o{ request_decision : request_id

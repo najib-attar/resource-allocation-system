@@ -49,12 +49,14 @@ PURPOSES = {
     "room_reservation": "Exact confirmed exclusive room interval; GiST overlap exclusion.",
     "room_organizer_commitment": "Confirmed organizing-student interval with cross-appointment conflict protection.",
     "room_event": "Private timestamped room request lifecycle and invitation history.",
+    "notification": "Recipient-scoped event inbox and durable read state; exactly one appointment/room history event.",
 }
 MAIN_TABLES = {"role", "organization_unit", "university_user", "resource", "resource_request",
                "busy_slot", "allocation_run", "request_decision", "allocation", "application_state", "request_history"}
 MAIN_TABLES |= {"login_account", "academic_period", "legacy_calendar_binding", "appointment", "appointment_professor",
                 "appointment_invitation", "appointment_commitment", "professor_availability", "calendar_block"}
 MAIN_TABLES |= {"room_policy", "faculty_room_approver", "student_room_request", "room_reservation", "room_invitation", "room_organizer_commitment"}
+MAIN_TABLES.add("notification")
 
 
 def kind(column):

@@ -468,3 +468,18 @@ class RoomEvent(Base):
     revision: Mapped[int] = mapped_column(Integer)
     message: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Notification(Base):
+    __tablename__ = "notification"
+    __table_args__ = (
+        CheckConstraint("num_nonnulls(appointment_event_id, room_event_id) = 1"),
+        UniqueConstraint("recipient_id", "appointment_event_id"),
+        UniqueConstraint("recipient_id", "room_event_id"),
+        Index("ix_notification_recipient_read_id", "recipient_id", "read_at", "id"),
+    )
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    recipient_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"))
+    appointment_event_id: Mapped[int | None] = mapped_column(ForeignKey("appointment_event.id"), index=True)
+    room_event_id: Mapped[int | None] = mapped_column(ForeignKey("room_event.id"), index=True)
+    read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

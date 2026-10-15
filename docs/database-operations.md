@@ -299,7 +299,7 @@ before merge rather than treating local lint as remote verification.
 
 ## Student room configuration
 
-Apply Alembic head `0043b` before using UC-STU-02. These additive migrations do
+Apply Alembic head `0043c` before using UC-STU-02 and the notification inbox. These additive migrations do
 not infer resource owners or academic dates. As a trusted university administrator,
 open **Room Policies**: designate the faculty's active administrative approver,
 set each known room's owning faculty/categories and optional user whitelist, and
@@ -326,6 +326,12 @@ Existing profiles are not automatically assigned invented room owners. Their
 stored data and credentials are preserved on restart.
 
 ## Scope boundaries
+
+The shared notification bell uses transactional appointment/room history and
+per-user PostgreSQL read state. Migration `0043c` preserves existing data and
+backfills relevant history. Restart the application after upgrading; the local
+demo launcher performs `alembic upgrade head` automatically. Photo uploads and
+availability-watch alerts are not implemented; the header uses an initials avatar.
 
 Iteration 42 includes authentication and dated appointment approvals/invitations;
 it does not deploy the application publicly or infer dates for undated records.

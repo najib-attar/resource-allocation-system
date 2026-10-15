@@ -22,10 +22,10 @@ persistence.
 ![High-level ER diagram](database-er-high-level.svg)
 
 - [High-level Mermaid source](database-er-high-level.mmd): principal entities, using only actual foreign-key relationships.
-- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 37 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
+- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 38 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
 - [Physical schema catalog](database-schema-catalog.md): every column's type/nullability/default, composite keys, unique/check constraints, indexes and deletion policy.
 
-`alembic_version` is the thirty-eighth physical table, used only by Alembic, not an
+`alembic_version` is the thirty-ninth physical table, used only by Alembic, not an
 application entity. Application sources/catalog are generated from the models;
 the existing Alembic revision marker is explicitly documented too. Use
 `python scripts/generate_database_diagrams.py`; `--check` detects drift in tests/CI.
@@ -216,6 +216,22 @@ uses the same lock and cannot overwrite a confirmed student booking or room clos
 Cancellation releases reservations atomically without deleting history.
 Optional professor RSVP is not an exclusive personal reservation.
 See [student room architecture](student-room-design.md).
+
+### Shared notification inbox
+
+Additive migration `0043c` adds `notification`, bringing the application total to
+38. A recipient FK and exactly one appointment-event or room-event FK identify
+each update. Unique recipient/event pairs prevent duplicates. Source messages
+remain in history, not duplicated or parsed for decisions. `read_at` stores each
+recipient's durable read state; indexes cover recipient/read/ID and both source FKs.
+Existing events are backfilled only for their current authorized participants,
+excluding the actor. New history and recipient entries commit in the same workflow
+transaction, so rollback cannot leave a false approval notification.
+
+Inbox reads recheck current participant/assigned-approver visibility. Removed
+invitees cannot retrieve old private content just because an inbox row remains.
+Mark-all-read uses the displayed ID boundary: later arrivals stay unread. This
+inbox does not reserve time or subscribe to room/professor availability.
 
 Weekly `TimeSlot` and the original allocation protocol v1 remain undated.
 Appointments and student room requests use separate dated operations, explicit

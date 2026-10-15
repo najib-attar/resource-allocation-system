@@ -10,6 +10,7 @@ from .persistence.models import (FacultyRoomApprover, LoginAccount, Organization
     RoomPolicy, RoomReservation, StudentRoomRequest)
 from .persistence.repository import state_row
 from .room_calendar import academic_room_intervals, assert_room_publication, room_snapshot, valid_approvers
+from .notification_service import publish_event
 
 
 class RoomRequestError(CalendarError):
@@ -123,7 +124,7 @@ class RoomRequestService:
         return row['facultyId'], approver
 
     def _event(self, session, record, actor, message):
-        session.add(RoomEvent(request_id=record.id, actor_id=actor, revision=record.revision, message=message))
+        publish_event(session, RoomEvent(request_id=record.id, actor_id=actor, revision=record.revision, message=message))
 
     def submit(self, actor, values, invitees, room_id, request_id=None, revision=None):
         if not isinstance(values, dict):

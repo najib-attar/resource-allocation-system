@@ -1458,3 +1458,55 @@ tr:nth-child(even) td {
 .timetable-legend .legend-room { border-color: #59762d; }
 #room-request-form { display: block; }
 #room-request-form > label { margin: 1rem 0; }
+
+/* Shared account shell; workflow pages keep their own templates and services. */
+.account-controls { display: flex; align-items: center; gap: 1rem; margin-left: auto; }
+.site-header > div:first-child { min-width: 0; flex: 1 1 320px; }
+.site-header h1 { overflow-wrap: anywhere; }
+.profile-identity { display: flex; align-items: center; gap: .7rem; min-width: 0; }
+.profile-avatar { width: 42px; height: 42px; flex: 0 0 42px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: .85rem; color: var(--accent-dark); background: linear-gradient(135deg, #d5e9ed, #f4e7c6); border: 2px solid white; box-shadow: 0 0 0 1px var(--line); }
+.profile-copy { display: flex; flex-direction: column; gap: .15rem; max-width: 260px; min-width: 0; }
+.profile-copy strong { overflow-wrap: anywhere; font-size: .95rem; }
+.profile-copy small { color: var(--muted); font-size: .78rem; }
+.sign-out-form { margin: 0; }
+.sign-out-form button, .notification-toggle, .notification-heading button { font: inherit; cursor: pointer; color: var(--accent-dark); background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: .6rem .85rem; }
+.shell-navigation { width: 100%; align-items: start; }
+.nav-links a[aria-current="page"] { color: white; border-color: var(--accent); background: var(--accent); }
+.administration-navigation { flex: 1 1 100%; }
+.administration-navigation summary { cursor: pointer; color: var(--muted); font-size: .88rem; padding: .5rem 0; font-weight: 700; }
+.administration-links { display: flex; flex-wrap: wrap; gap: .6rem; padding-top: .4rem; }
+.notification-control { position: relative; }
+.notification-toggle { width: 44px; height: 44px; padding: .6rem; display: grid; place-items: center; position: relative; }
+.notification-toggle svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.notification-badge { position: absolute; top: -5px; right: -6px; min-width: 19px; padding: 2px 4px; border-radius: 20px; background: var(--danger); color: white; border: 2px solid white; font-size: .65rem; font-weight: 800; line-height: 1.2; }
+.notification-panel { position: absolute; top: calc(100% + 14px); right: -60px; z-index: 50; width: min(410px, calc(100vw - 2rem)); padding: 1rem; background: white; border: 1px solid var(--line); border-radius: 18px; box-shadow: 0 22px 60px rgba(24,33,47,.2); }
+.notification-panel[hidden], .notification-badge[hidden] { display: none; }
+.notification-heading { display: flex; align-items: center; justify-content: space-between; gap: .8rem; }
+.notification-heading h2 { margin: 0; font-size: 1.05rem; color: var(--accent-dark); }
+.notification-heading button { font-size: .75rem; padding: .45rem .65rem; }
+.notification-heading button:disabled { cursor: default; opacity: .5; }
+.notification-status { font-size: .8rem; color: var(--muted); margin: .8rem 0; }
+.notification-list { list-style: none; padding: 0; margin: 0; }
+.notification-panel .notification-list { max-height: 370px; overflow-y: auto; overscroll-behavior: contain; }
+.notification-item { border-top: 1px solid var(--line); }
+.notification-item a { display: flex; flex-direction: column; gap: .4rem; padding: .9rem .7rem; color: var(--ink); text-decoration: none; border-radius: 10px; font-size: .85rem; overflow-wrap: anywhere; }
+.notification-item.is-unread a { background: #f0f7fa; }
+.notification-item a:hover { background: #e6f0f4; }
+.notification-kind { display: flex; align-items: center; gap: .5rem; color: var(--accent); font-size: .7rem; text-transform: uppercase; letter-spacing: .05em; }
+.unread-dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; }
+.notification-item time { color: var(--muted); font-size: .73rem; }
+.notification-empty { padding: 1.5rem .5rem; color: var(--muted); font-size: .9rem; }
+.notification-all { display: block; padding-top: 1rem; text-align: center; color: var(--accent-dark); font-size: .85rem; font-weight: 700; }
+.notification-inbox { max-width: 850px; margin-inline: auto; }
+.notification-inbox .notification-heading { margin-bottom: 1rem; }
+.notification-inbox .notification-heading p { font-size: .85rem; color: var(--muted); }
+.account-controls button:focus-visible, .notification-item a:focus-visible, .administration-navigation summary:focus-visible { outline: 3px solid var(--highlight); outline-offset: 3px; }
+@media (max-width: 600px) {
+    .account-controls { margin-left: 0; width: 100%; gap: .7rem; }
+    .profile-identity { flex: 1; }
+    .profile-copy { max-width: 160px; }
+    .notification-panel { position: fixed; top: 155px; left: 1rem; right: 1rem; width: auto; max-height: calc(100dvh - 175px); overflow-y: auto; }
+    .notification-panel .notification-list { max-height: 45dvh; }
+    .sign-out-form button { font-size: .8rem; padding: .55rem .65rem; }
+    .notification-heading { flex-wrap: wrap; }
+}

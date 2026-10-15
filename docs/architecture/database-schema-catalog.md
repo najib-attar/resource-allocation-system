@@ -1,6 +1,6 @@
 # Physical schema catalog
 
-Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 37 application tables.
+Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 38 application tables.
 
 All foreign keys use PostgreSQL **NO ACTION**: no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
 ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.
@@ -338,6 +338,29 @@ Ranked structured time/resource alternatives returned by C++.
 - Check: `rank > 0 AND score >= 0 AND time_distance >= 0 AND day_distance >= 0 AND conflict_count >= 0`.
 - Check: `start_minutes >= 0 AND start_minutes < end_minutes AND end_minutes <= 1440`.
 - Index: `ix_meeting_suggestion_resource_id (resource_id)`.
+
+## notification
+
+Recipient-scoped event inbox and durable read state; exactly one appointment/room history event.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| recipient_id | integer | FK -> university_user.id | no | - |
+| appointment_event_id | bigint | FK -> appointment_event.id | yes | - |
+| room_event_id | bigint | FK -> room_event.id | yes | - |
+| read_at | timestamp with time zone | - | yes | - |
+
+- Primary key: `id`.
+- Foreign key: `(appointment_event_id) -> appointment_event (id)`; NO ACTION.
+- Foreign key: `(recipient_id) -> university_user (id)`; NO ACTION.
+- Foreign key: `(room_event_id) -> room_event (id)`; NO ACTION.
+- Check: `num_nonnulls(appointment_event_id, room_event_id) = 1`.
+- Unique: `recipient_id, appointment_event_id`.
+- Unique: `recipient_id, room_event_id`.
+- Index: `ix_notification_appointment_event_id (appointment_event_id)`.
+- Index: `ix_notification_recipient_read_id (recipient_id, read_at, id)`.
+- Index: `ix_notification_room_event_id (room_event_id)`.
 
 ## organization_unit
 

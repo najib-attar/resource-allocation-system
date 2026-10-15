@@ -54,6 +54,12 @@ erDiagram
     login_account {
         integer user_id PK,FK
     }
+    notification {
+        bigint id PK "identity"
+        integer recipient_id FK
+        bigint appointment_event_id FK "nullable"
+        bigint room_event_id FK "nullable"
+    }
     organization_unit {
         integer id PK "identity"
         integer parent_id FK "nullable"
@@ -130,6 +136,7 @@ erDiagram
     academic_period ||--o{ legacy_calendar_binding : period_id
     resource_request o|--o{ legacy_calendar_binding : request_id
     university_user ||--o| login_account : user_id
+    university_user ||--o{ notification : recipient_id
     organization_unit o|--o{ organization_unit : parent_id
     university_user ||--o{ professor_availability : user_id
     resource_request ||--o{ request_decision : request_id
