@@ -1449,3 +1449,10 @@ tr:nth-child(even) td {
     .timetable-toolbar input { min-width: 0; flex: 1; }
     .personal-timetable { padding: 1rem; }
 }
+.room-candidate-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: 12px; }
+.room-candidate { display: flex; flex-direction: column; gap: 8px; padding: 18px; text-align: left; background: #f5f7f2; color: #20382f; border: 1px solid #bdcdbf; border-radius: 12px; }
+.room-candidate[aria-pressed="true"] { border: 2px solid #2b6149; background: #e9f1e4; }
+.room-candidate span, .room-candidate small { line-height: 1.5; }
+.room-request-list { display: grid; gap: 12px; margin-top: 20px; }
+.event-room-booking { background: #eaf1dd; border-left-color: #59762d; }
+.timetable-legend .legend-room { border-color: #59762d; }

@@ -16,6 +16,8 @@
 
 {{ timetable(home.schedule, 'student.home') }}
 
+<section class="panel"><div class="student-section-heading"><h2>My university rooms</h2><a class="button-primary" href="{{ url_for('rooms.new') }}">Find a room</a></div><p>{{ home.roomCounts.confirmed }} upcoming confirmed room bookings &middot; {{ home.roomCounts.pending }} requests awaiting faculty review or a new choice.</p>{% for item in home.roomCards %}<article class="student-appointment-card"><div><h3><a href="{{ url_for('rooms.detail',request_id=item.id) }}">{{ item.purpose }}</a></h3><p>{{ item.roomName }} &middot; {{ item.start.strftime('%d %b %Y %H:%M') }} &ndash; {{ item.end.strftime('%H:%M') }}</p></div><span>{{ item.status }}</span></article>{% else %}<p>No room requests yet. Describe your needs to receive a suitable room recommendation.</p>{% endfor %}<a href="{{ url_for('rooms.index') }}">View all room requests and updates</a></section>
+
 <section class="student-stat-grid" aria-label="Your appointment summaries">
     <a class="student-stat" href="#my-bookings"><span>Confirmed bookings</span><strong>{{ home.counts.bookings }}</strong><small>Upcoming appointments you organize</small></a>
     <a class="student-stat" href="#pending-requests"><span>Awaiting approval</span><strong>{{ home.counts.pending }}</strong><small>Pending requests do not reserve time</small></a>
