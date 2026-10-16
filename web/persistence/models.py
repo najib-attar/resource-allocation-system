@@ -553,11 +553,13 @@ class BorrowItem(Base):
     __table_args__ = (ForeignKeyConstraint(['request_id', 'faculty_id'], ['borrow_request.id', 'borrow_request.faculty_id']),
                       ForeignKeyConstraint(['type_id', 'faculty_id'], ['equipment_type.id', 'equipment_type.faculty_id']),
                       UniqueConstraint('request_id', 'type_id'), UniqueConstraint('id', 'type_id'),
+                      Index('ix_borrow_item_request_faculty', 'request_id', 'faculty_id'),
+                      Index('ix_borrow_item_type_faculty', 'type_id', 'faculty_id'),
                       CheckConstraint("quantity BETWEEN 1 AND 1000 AND jsonb_typeof(specifications) = 'object'"))
     id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
-    request_id: Mapped[int] = mapped_column(Integer, index=True)
+    request_id: Mapped[int] = mapped_column(Integer)
     faculty_id: Mapped[int] = mapped_column(Integer, index=True)
-    type_id: Mapped[int] = mapped_column(Integer, index=True)
+    type_id: Mapped[int] = mapped_column(Integer)
     quantity: Mapped[int] = mapped_column(Integer)
     specifications: Mapped[dict] = mapped_column(JSONB, default=dict)
 
@@ -570,11 +572,14 @@ class EquipmentReservation(Base):
                       CheckConstraint('returned_at IS NULL OR (handed_at IS NOT NULL AND returned_at >= handed_at AND released)'),
                       CheckConstraint('handed_at IS NULL OR (handed_by IS NOT NULL AND handover_condition IS NOT NULL)'),
                       CheckConstraint('returned_at IS NULL OR (received_by IS NOT NULL AND return_condition IS NOT NULL)'),
+                      CheckConstraint('NOT released OR handed_at IS NULL OR returned_at IS NOT NULL', name='ck_equipment_physical_release'),
+                      Index('ix_equipment_reservation_item_type', 'item_id', 'type_id'),
+                      Index('ix_equipment_reservation_unit_type', 'unit_id', 'type_id'),
                       ExcludeConstraint(('unit_id', '='), ('period', '&&'), where="NOT released", using='gist', name='ex_equipment_overlap'))
     id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
-    item_id: Mapped[int] = mapped_column(Integer, index=True)
+    item_id: Mapped[int] = mapped_column(Integer)
     type_id: Mapped[int] = mapped_column(Integer, index=True)
-    unit_id: Mapped[int] = mapped_column(Integer, index=True)
+    unit_id: Mapped[int] = mapped_column(Integer)
     start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     due_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     period: Mapped[object] = mapped_column(TSTZRANGE, Computed("tstzrange(start_at, due_at, '[)')", persisted=True))

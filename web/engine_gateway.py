@@ -156,6 +156,7 @@ def validate_equipment_result(result, snapshot):
         require(type(row.get('availableQuantity')) is int and 0 <= row['availableQuantity'] <= len(units)
                 and row.get('reasonCode') in {'AVAILABLE', 'INELIGIBLE', 'NO_CUSTODIAN', 'INSUFFICIENT_QUANTITY'}
                 and isinstance(row.get('unitIds'), list) and isinstance(row.get('alternativeTypeIds'), list))
+        require(row['reasonCode'] != 'AVAILABLE' or row['availableQuantity'] >= needs[key]['quantity'])
         require(len(row['unitIds']) == (needs[key]['quantity'] if result['feasible'] else 0))
         for uid in row['unitIds']:
             require(type(uid) is int and uid in units and units[uid]['typeId'] == key and uid not in selected)

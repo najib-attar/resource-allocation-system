@@ -120,6 +120,9 @@ class EquipmentWorkflowTests(EquipmentFixture):
     def test_missing_unit_is_not_a_physical_return(self):
         key=self.request();self.service.decide(6,key,True);self.handover(key)
         uid=self.service.detail(1,key)['units'][0]['id']
+        with self.assertRaises(IntegrityError),self.database.transaction() as session:
+            booking=session.scalar(select(EquipmentReservation).where(EquipmentReservation.unit_id==uid))
+            booking.released=True
         self.return_units(key,[uid],'missing','Student could not produce the unit')
         self.assertEqual(self.service.detail(1,key)['status'],'Borrowed')
         self.assertIsNone(self.service.detail(1,key)['units'][0]['returned'])
@@ -161,6 +164,20 @@ class EquipmentWorkflowTests(EquipmentFixture):
             with self.assertRaises(PermissionError): action()
         with self.assertRaises(EquipmentError): self.service.assign_custodian(6,self.faculty,2)
         self.assertNotIn('FIC-BOARD',str(self.service.catalog(1,START,START+timedelta(days=1))))
+        from web.persistence.models import Role, User
+        with self.database.transaction() as session:
+            role=session.scalar(select(Role).where(Role.name=='Staff'))
+            session.add(User(id=7,source_order=7,name='Fictional Equipment Officer',primary_role_id=role.id))
+            faculty=OrganizationUnit(name='Fictional Arts Faculty',unit_type='Faculty');session.add(faculty);session.flush();other=faculty.id
+        AccountService(self.database).provision(7,'equipment-staff','Fictional-officer-password')
+        self.service.assign_custodian(6,other,7)
+        with self.assertRaises(PermissionError):self.service.detail(7,key)
+        with self.assertRaises(PermissionError):self.service.set_condition(7,self.units[0],'maintenance','Wrong faculty')
+        self.service.assign_custodian(6,self.faculty,7)
+        with self.assertRaises(PermissionError):self.service.decide(6,key,True)
+        self.service.decide(7,key,True)
+        self.assertEqual(self.service.detail(1,key)['status'],'Approved')
+        self.assertFalse(any(i['kind']=='equipment' for i in NotificationService(self.database).inbox(6)['items']))
         with self.database.transaction() as session: session.delete(session.get(EquipmentCustodian,self.faculty))
         with self.assertRaises(PermissionError): self.service.decide(6,key,True)
 
@@ -231,6 +248,15 @@ class EquipmentWorkflowTests(EquipmentFixture):
         with self.assertRaises(IntegrityError),self.database.transaction() as session:
             session.get(BorrowRequest,key).status='Approved'
         self.assertEqual(self.service.detail(1,key)['status'],'Pending Approval')
+        other_type=self.service.create_type(6,self.faculty,'Instruments','Different instrument','',{},7,'Desk')
+        other_unit=self.service.add_unit(6,other_type,'FIC-OTHER-TYPE')
+        with self.assertRaises(IntegrityError) as caught,self.database.transaction() as session:
+            line=session.scalar(select(BorrowItem).where(BorrowItem.request_id==key))
+            session.add(EquipmentReservation(item_id=line.id,type_id=self.type_id,unit_id=other_unit,start_at=START,due_at=START+timedelta(days=3)))
+        self.assertEqual(caught.exception.orig.sqlstate,'23503')
+        with self.assertRaises(IntegrityError),self.database.transaction() as session:
+            line=session.scalar(select(BorrowItem).where(BorrowItem.request_id==key))
+            session.add(EquipmentReservation(item_id=line.id,type_id=self.type_id,unit_id=self.units[0],start_at=START,due_at=START+timedelta(days=3)))
         self.assertEqual(len(inspect(self.database.engine).get_table_names()),48)  # 47 application + Alembic.
 
     def test_gateway_rejects_duplicate_or_foreign_engine_assets(self):

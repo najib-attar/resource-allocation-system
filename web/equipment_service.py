@@ -19,6 +19,14 @@ class EquipmentError(CalendarError):
     pass
 
 
+MATCH_MESSAGES = {
+    'NO_CUSTODIAN': 'The owning faculty has no active authorized equipment custodian.',
+    'INELIGIBLE': 'The selected type does not satisfy its faculty eligibility, enabled policy, exact specifications or maximum borrowing duration.',
+    'INSUFFICIENT_QUANTITY': 'There are not enough usable, unborrowed and unreserved units for the requested interval.',
+    'AVAILABLE': 'The complete requested quantity is available under the current borrowing policy.',
+}
+
+
 class EquipmentService:
     def __init__(self, database, gateway):
         self.database, self.gateway = database, gateway
@@ -134,7 +142,8 @@ class EquipmentService:
     def _require_match(self, result):
         if not result['feasible']:
             reasons = sorted({row['reasonCode'] for row in result['items'] if row['reasonCode'] != 'AVAILABLE'})
-            raise EquipmentError('Equipment cannot fulfill the complete request: ' + ', '.join(reasons) + '. Refresh availability or amend the request.')
+            raise EquipmentError('Equipment cannot fulfill the complete request. ' + ' '.join(MATCH_MESSAGES[key] for key in reasons)
+                                 + ' Refresh availability or amend the request.')
 
     def recommend(self, actor, faculty, items, start, due):
         items, (start, due) = self._items(items), self._period(start, due)
@@ -144,6 +153,7 @@ class EquipmentService:
             # Physical identifiers stay private until this student's reservation is approved.
             for row in result['items']:
                 row.pop('unitIds')
+                row['explanation'] = MATCH_MESSAGES[row['reasonCode']]
             return result
 
     def _event(self, session, actor, faculty, message, request_id=None, unit_id=None):

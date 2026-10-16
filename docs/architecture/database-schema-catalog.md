@@ -242,8 +242,8 @@ Same-faculty requested type, quantity and exact additional specifications.
 - Unique: `id, type_id`.
 - Unique: `request_id, type_id`.
 - Index: `ix_borrow_item_faculty_id (faculty_id)`.
-- Index: `ix_borrow_item_request_id (request_id)`.
-- Index: `ix_borrow_item_type_id (type_id)`.
+- Index: `ix_borrow_item_request_faculty (request_id, faculty_id)`.
+- Index: `ix_borrow_item_type_faculty (type_id, faculty_id)`.
 
 ## borrow_request
 
@@ -389,15 +389,16 @@ Specific reserved asset, excluded overlapping interval, physical handover and ve
 - Foreign key: `(item_id, type_id) -> borrow_item (id, type_id)`; NO ACTION.
 - Foreign key: `(received_by) -> login_account (user_id)`; NO ACTION.
 - Foreign key: `(unit_id, type_id) -> equipment_unit (id, type_id)`; NO ACTION.
+- Check: `NOT released OR handed_at IS NULL OR returned_at IS NOT NULL`.
 - Check: `handed_at IS NULL OR (handed_by IS NOT NULL AND handover_condition IS NOT NULL)`.
 - Check: `returned_at IS NULL OR (handed_at IS NOT NULL AND returned_at >= handed_at AND released)`.
 - Check: `returned_at IS NULL OR (received_by IS NOT NULL AND return_condition IS NOT NULL)`.
 - Check: `start_at < due_at`.
 - Index: `ix_equipment_reservation_handed_by (handed_by)`.
-- Index: `ix_equipment_reservation_item_id (item_id)`.
+- Index: `ix_equipment_reservation_item_type (item_id, type_id)`.
 - Index: `ix_equipment_reservation_received_by (received_by)`.
 - Index: `ix_equipment_reservation_type_id (type_id)`.
-- Index: `ix_equipment_reservation_unit_id (unit_id)`.
+- Index: `ix_equipment_reservation_unit_type (unit_id, type_id)`.
 
 ## equipment_type
 

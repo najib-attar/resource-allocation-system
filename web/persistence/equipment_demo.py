@@ -43,7 +43,8 @@ def seed_equipment_demo(database, administrator, seed=44, size='moderate'):
                 session.add(record)
                 session.flush()
                 for number in range(4 if size == 'moderate' else 40):
-                    condition = 'usable' if number % 10 < 8 else rng.choice(['maintenance', 'damaged'])
+                    usable = number < 3 if size == 'moderate' else number % 10 < 8
+                    condition = 'usable' if usable else rng.choice(['maintenance', 'damaged'])
                     unit = EquipmentUnit(type_id=record.id, asset_tag=f'FICTIONAL-{faculty.id}-{index+1:02d}-{number+1:03d}', condition=condition)
                     session.add(unit)
                     session.flush()

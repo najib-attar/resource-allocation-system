@@ -22,7 +22,7 @@
 </form>
 {% if result %}<section class="panel" aria-live="polite"><h2>{{ 'Your complete request is feasible' if result.feasible else 'Your request needs adjustment' }}</h2>
 <p>Selection is deterministic: eligible usable units are selected by inventory ID. Already borrowed equipment is never assumed returned.</p>
-{% for match in result['items'] %}{% set item = items|selectattr('id','equalto',match.typeId)|first %}<p>{{ item.name if item else 'Equipment' }}: {{ match.availableQuantity }} available &middot; {{ match.reasonCode|replace('_',' ') }}</p>
+{% for match in result['items'] %}{% set item = items|selectattr('id','equalto',match.typeId)|first %}<p>{{ item.name if item else 'Equipment' }}: {{ match.availableQuantity }} available &middot; {{ match.explanation }}</p>
 {% for alternative in match.alternativeTypeIds %}{% set alt = items|selectattr('id','equalto',alternative)|first %}<p>Compatible alternative: {{ alt.name if alt else 'refresh the catalog to view this equipment type' }}. Change your selection explicitly; no substitution is automatic.</p>{% endfor %}{% endfor %}
 {% for period in result.alternativePeriods %}<p>Alternative interval: {{ period.startAt|university_time }} to {{ period.endAt|university_time }}. Select these dates above and check again.</p>{% endfor %}
 </section>{% endif %}
