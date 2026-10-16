@@ -17,10 +17,27 @@ Students land on a personal Home page with a current-month Monday-Friday hourly
 timetable, their next confirmed meeting, pending requests, optional invitations and confirmed appointments
 they organize. Counts and cards come from one student-scoped PostgreSQL snapshot;
 pending requests are never presented as reservations.
+All authenticated pages share a profile header with a circular initials avatar,
+name, role and private notification bell. Appointment/room decisions and invitations
+appear in the inbox; read state persists in PostgreSQL. Navigation remains role-aware
+while backend permissions stay authoritative. See [frontend boundaries](docs/architecture/frontend-design.md).
+Photo uploads and room/professor availability alerts are not enabled yet.
 My Schedule is available to every signed-in user, with week navigation inside the
 selected month. Appointment entry uses separate searchable participant lists,
 one date and selectable feasible times. Existing commitments are shown only when
 linked to the user and explicit calendar dates; course-enrollment rosters are not inferred.
+
+Iteration 43 adds student-initiated single-room requests at `/rooms/`: C++ ranks
+eligible rooms from stated needs; the selected room's designated faculty approver
+revalidates before confirmation. Pending requests do not reserve rooms. Professor
+invitations are optional; cancellation releases room/organizer commitments.
+Existing rooms require explicit ownership/access configuration, never inferred dates
+or faculty ownership. See the [student room demonstration](docs/demo-walkthrough.md#student-room-request-demonstration).
+The [room architecture](docs/architecture/student-room-design.md),
+[approved use case](docs/use-cases/UC-STU-02-student-room-allocation.pdf) and
+[current requirements](docs/srs/UC-STU-02-requirements.md) describe the boundaries.
+The [Iteration 43 report](docs/iteration-reports/Iteration_43.pdf) summarizes the
+schema, workflow, architecture and verified regression evidence.
 
 Backend presentation is file-free: database views use `get_table("requests")`, while
 CSV conversion is confined to explicit import and standalone CLI compatibility.

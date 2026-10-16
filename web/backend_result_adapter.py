@@ -1,9 +1,5 @@
-try:
-    from .result_table_schema import RAW_TABLE_ALIASES
-    from .engine_result_projection import suggestion_display
-except ImportError:
-    from result_table_schema import RAW_TABLE_ALIASES
-    from engine_result_projection import suggestion_display
+from .result_table_schema import RAW_TABLE_ALIASES
+from .engine_result_projection import suggestion_display
 
 
 REQUEST_TYPE_LABELS = {

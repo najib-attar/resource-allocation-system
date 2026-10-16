@@ -10,8 +10,9 @@ from .calendar_service import (CalendarError, assert_commitments_compatible, awa
 from .persistence.models import (AcademicPeriod, Appointment, AppointmentCommitment, AppointmentEvent,
                                 AppointmentInvitation, AppointmentProfessor, BusySlot, CalendarBlock,
                                 LegacyCalendarBinding, OrganizationUnit, ProfessorAvailability,
-                                ResourceRequest, Role, User)
+                                ResourceRequest, Role, User, RoomOrganizerCommitment)
 from .persistence.repository import state_row, validate_unit_hierarchy
+from .notification_service import publish_event
 
 
 class AppointmentError(CalendarError):
@@ -119,7 +120,7 @@ class AppointmentService:
             session.flush()
             session.add_all(AppointmentProfessor(appointment_id=record.id, user_id=pid, revision=1) for pid in professors)
             session.add_all(AppointmentInvitation(appointment_id=record.id, user_id=pid) for pid in invitees)
-            session.add(AppointmentEvent(appointment_id=record.id, actor_id=organizer, revision=1, message="Submitted for unanimous professor approval; no time reserved."))
+            publish_event(session, AppointmentEvent(appointment_id=record.id, actor_id=organizer, revision=1, message="Submitted for unanimous professor approval; no time reserved."))
             return record.id
 
     def _visible(self, session, appointment_id, actor):
@@ -182,7 +183,7 @@ class AppointmentService:
                                                          start_at=record.start_at, end_at=record.end_at)
                                     for pid in [record.organizer_id, *professors])
                     state.calendar_revision += 1
-                session.add(AppointmentEvent(appointment_id=record.id, actor_id=actor, revision=revision,
+                publish_event(session, AppointmentEvent(appointment_id=record.id, actor_id=actor, revision=revision,
                                              message=f"Professor {'approved' if approve else 'declined'} revision {revision}; status: {record.status}."))
         except IntegrityError as error:
             if getattr(error.orig, "sqlstate", None) == "23P01":
@@ -213,7 +214,7 @@ class AppointmentService:
             for professor in session.scalars(select(AppointmentProfessor).where(AppointmentProfessor.appointment_id == appointment_id)):
                 professor.revision, professor.decision = record.revision, "Pending"
             state.calendar_revision += 1
-            session.add(AppointmentEvent(appointment_id=record.id, actor_id=actor, revision=record.revision,
+            publish_event(session, AppointmentEvent(appointment_id=record.id, actor_id=actor, revision=record.revision,
                                          message="Time changed; all professor approvals cleared and prior reservations released."))
 
     def cancel(self, appointment_id, actor, revision):
@@ -227,7 +228,7 @@ class AppointmentService:
             record.status = "Cancelled"
             session.execute(delete(AppointmentCommitment).where(AppointmentCommitment.appointment_id == appointment_id))
             state.calendar_revision += 1
-            session.add(AppointmentEvent(appointment_id=record.id, actor_id=actor, revision=record.revision, message="Cancelled; reserved mandatory-participant time released."))
+            publish_event(session, AppointmentEvent(appointment_id=record.id, actor_id=actor, revision=record.revision, message="Cancelled; reserved mandatory-participant time released."))
 
     def decline_invitation(self, appointment_id, actor):
         with self.database.transaction() as session:
@@ -237,7 +238,7 @@ class AppointmentService:
             if actor == record.organizer_id or invitation is None:
                 raise PermissionError("Only an invited student can decline participation; the organizer may cancel instead.")
             invitation.status = "Declined"
-            session.add(AppointmentEvent(appointment_id=record.id, actor_id=actor, revision=record.revision, message="Invited student declined; professor confirmation requirements unchanged."))
+            publish_event(session, AppointmentEvent(appointment_id=record.id, actor_id=actor, revision=record.revision, message="Invited student declined; professor confirmation requirements unchanged."))
 
     def publish_hours(self, actor, day, start_minutes, end_minutes, valid_from, valid_until, exclusions=()):
         if not date(1970, 1, 1) <= valid_from <= valid_until < date(2100, 1, 1):
@@ -324,9 +325,11 @@ class AppointmentService:
                                               week_start=week_start, excluded_dates=list(exclusions)))
             session.flush()
             from .calendar_service import legacy_intervals
-            commits = list(session.scalars(select(AppointmentCommitment)))
+            commits = [row for model in (AppointmentCommitment, RoomOrganizerCommitment) for row in session.scalars(select(model))]
             if commits:
                 values, _ = legacy_intervals(session, {row.user_id for row in commits}, min(row.start_at for row in commits),
                                              max(row.end_at for row in commits), state.active_run_id)
                 assert_commitments_compatible(session, values)
+            from .room_calendar import assert_room_publication
+            assert_room_publication(session, state.active_run_id)
             state.calendar_revision += 1

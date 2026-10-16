@@ -9,7 +9,7 @@ from sqlalchemy import select
 
 from .persistence.models import (AcademicPeriod, Allocation, AppointmentCommitment, BusySlot,
                                  CalendarBlock, LegacyCalendarBinding, ProfessorAvailability,
-                                 ResourceRequest, RequestParticipant)
+                                 ResourceRequest, RequestParticipant, RoomOrganizerCommitment)
 from .persistence.repository import PersistenceError, state_row
 
 
@@ -145,7 +145,7 @@ def calendar_snapshot(session, organizer_id, professor_ids, invited_ids, duratio
                          expand_weekly(row.day, row.start_minutes, row.end_minutes, row.valid_from, row.valid_until,
                                        row.timezone, start, end, row.excluded_dates))
     busy, unresolved = legacy_intervals(session, people, start, end, state.active_run_id)
-    for model in (CalendarBlock, AppointmentCommitment):
+    for model in (CalendarBlock, AppointmentCommitment, RoomOrganizerCommitment):
         query = select(model).where(model.user_id.in_(people), model.start_at < end, model.end_at > start)
         if model is AppointmentCommitment and exclude_appointment is not None:
             query = query.where(model.appointment_id != exclude_appointment)
@@ -167,7 +167,8 @@ def assert_commitments_compatible(session, intervals):
     for value in intervals:
         start = datetime.fromtimestamp(value["start"], timezone.utc)
         end = datetime.fromtimestamp(value["end"], timezone.utc)
-        if session.scalar(select(AppointmentCommitment.appointment_id).where(
-                AppointmentCommitment.user_id == value["userId"], AppointmentCommitment.start_at < end,
-                AppointmentCommitment.end_at > start).limit(1)) is not None:
-            raise CalendarError("This calendar change conflicts with a confirmed appointment. Cancel or reschedule it first.")
+        for model in (AppointmentCommitment, RoomOrganizerCommitment):
+            key = model.appointment_id if model is AppointmentCommitment else model.request_id
+            if session.scalar(select(key).where(model.user_id == value["userId"], model.start_at < end,
+                    model.end_at > start).limit(1)) is not None:
+                raise CalendarError("This calendar change conflicts with a confirmed appointment or room booking. Cancel or reschedule it first.")

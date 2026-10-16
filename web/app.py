@@ -11,43 +11,24 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from flask import Flask, g, has_request_context, redirect, render_template, request, url_for
 
-try:
-    from .allocation_workflow import execute_allocation
-    from .database_result_adapter import DatabaseResultAdapter
-    from .persistence.database import Database, DatabaseBusy, DatabaseConfigurationError
-    from .persistence.repository import Repository, PersistenceError, SubmissionConflict
-    from .backend_executable import BackendExecutableError, resolve_backend_executable
-    from .engine_gateway import EngineGateway, EngineIntegrationError
-    from .input_validation import parse_time_slots, integer
-    from .backend_result_adapter import (
-        REQUEST_TYPE_LABELS,
-        build_committee_participant_display,
-        display_value,
-        format_time_data,
-        index_by_field,
-        safe_int,
-    )
-except ImportError:
-    from allocation_workflow import execute_allocation
-    from database_result_adapter import DatabaseResultAdapter
-    from persistence.database import Database, DatabaseBusy, DatabaseConfigurationError
-    from persistence.repository import Repository, PersistenceError, SubmissionConflict
-    from backend_executable import BackendExecutableError, resolve_backend_executable
-    from engine_gateway import EngineGateway, EngineIntegrationError
-    from input_validation import parse_time_slots, integer
-    from backend_result_adapter import (
-        REQUEST_TYPE_LABELS,
-        build_committee_participant_display,
-        display_value,
-        format_time_data,
-        index_by_field,
-        safe_int,
-    )
+from .allocation_workflow import execute_allocation
+from .database_result_adapter import DatabaseResultAdapter
+from .persistence.database import Database, DatabaseBusy, DatabaseConfigurationError
+from .persistence.repository import Repository, PersistenceError, SubmissionConflict
+from .backend_executable import BackendExecutableError, resolve_backend_executable
+from .engine_gateway import EngineGateway, EngineIntegrationError
+from .input_validation import parse_time_slots, integer
+from .backend_result_adapter import (
+    REQUEST_TYPE_LABELS,
+    build_committee_participant_display,
+    display_value,
+    format_time_data,
+    index_by_field,
+    safe_int,
+)
 
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
-if not __package__:
-    sys.path.insert(0, str(PROJECT_ROOT))
 
 app = Flask(__name__)
 from web.presentation import person_name
@@ -166,9 +147,18 @@ app.register_blueprint(create_appointment_blueprint(lambda: get_repository().dat
 from web.student_routes import create_student_blueprint
 app.register_blueprint(create_student_blueprint(lambda: get_repository().database))
 
+from web.room_request_routes import create_room_blueprint
+app.config['ROOM_SELECTION_STRATEGY'] = os.environ.get('RESOURCE_ALLOCATION_ROOM_STRATEGY', 'best_fit')
+app.register_blueprint(create_room_blueprint(lambda: get_repository().database,
+    lambda: EngineGateway(PROJECT_ROOT, app.config['BACKEND_TIMEOUT'], app.logger),
+    lambda: app.config['ROOM_SELECTION_STRATEGY']))
+
+from web.notification_routes import create_notification_blueprint
+app.register_blueprint(create_notification_blueprint(lambda: get_repository().database))
+
 @app.before_request
 def pin_database_view():
-    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.")):
+    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "rooms.", "notifications.")):
         current_results()
 
 
@@ -674,10 +664,9 @@ def count_records(name):
     return current_results().count_records(name)
 
 
-def build_dashboard_context(run_result=None, strategy_message=None):
+def build_dashboard_context(strategy_message=None):
     requests_table = get_table("requests")
     results_table = get_table("request_results")
-    allocations_table = get_table("allocations")
     results_by_request = index_by_field(results_table["rows"], "requestId")
 
     status_counts = {"Approved": 0, "Rejected": 0, "Pending": 0}
@@ -720,9 +709,6 @@ def build_dashboard_context(run_result=None, strategy_message=None):
         "stats": stats,
         "recent_requests": recent_requests,
         "requests_available": requests_table["exists"],
-        "results_available": results_table["exists"],
-        "allocations_available": allocations_table["exists"],
-        "run_result": run_result,
         "strategy_message": strategy_message,
     }
 
@@ -734,18 +720,17 @@ def run_backend_allocation():
         raise
     except SQLAlchemyError as error:
         app.logger.error("Allocation publication failed (%s).", type(error).__name__)
-        return {"status": "error", "message": "Database publication failed; previous results remain active.", "stdout": "", "stderr": ""}
+        return {"status": "error", "message": "Database publication failed; previous results remain active."}
     except (PersistenceError, DatabaseConfigurationError, EngineIntegrationError, BackendExecutableError) as error:
         app.logger.error("Allocation was not published: %s", error)
-        return {"status": "error", "message": str(error), "stdout": "", "stderr": ""}
+        return {"status": "error", "message": str(error)}
 
 
 def execute_json_backend():
     # Validate before reading persistence too, preserving clear missing/stale-artifact errors.
     resolve_backend_executable(PROJECT_ROOT, os.environ.get("RESOURCE_ALLOCATION_BACKEND"))
-    result = execute_allocation(get_repository(), EngineGateway(PROJECT_ROOT, app.config["BACKEND_TIMEOUT"], app.logger), app.logger)
-    return {"status": "success", "message": "Allocation backend ran successfully. Results were updated.",
-            "stdout": f"JSON run {result['runId']} completed ({result['engineVersion']}).", "stderr": ""}
+    execute_allocation(get_repository(), EngineGateway(PROJECT_ROOT, app.config["BACKEND_TIMEOUT"], app.logger), app.logger)
+    return {"status": "success", "message": "Allocation backend ran successfully. Results were updated."}
 
 
 def render_table_page(template_name, title, name, empty_message):

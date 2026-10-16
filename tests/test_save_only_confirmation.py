@@ -53,7 +53,7 @@ class SaveOnlyConfirmationTests(PostgresTestCase):
             patch.start()
             self.addCleanup(patch.stop)
         patch = mock.patch.object(web_app, "run_backend_allocation", return_value={
-            "status": "success", "message": "Backend explicitly requested.", "stdout": "", "stderr": "",
+            "status": "success", "message": "Backend explicitly requested.",
         })
         self.run_backend = patch.start()
         self.addCleanup(patch.stop)

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}My Notifications{% endblock %}
+{% block page_heading %}My Notifications{% endblock %}
+{% block content %}
+<section class="panel notification-inbox">
+    <div class="notification-heading"><div><h2>Your updates</h2><p>{{ inbox.unreadCount }} unread &middot; Appointments and room requests relevant to you.</p></div>
+    <form method="post" action="{{ url_for('notifications.read') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="throughId" value="{{ inbox.throughId }}"><button{% if not inbox.unreadCount %} disabled{% endif %}>Mark all as read</button></form></div>
+    {% include 'components/_notification_items.html' %}
+    <p class="student-card-note">Showing the latest 100 updates. Full activity history stays on each request. Room/professor availability alerts are not enabled yet.</p>
+</section>
+{% endblock %}

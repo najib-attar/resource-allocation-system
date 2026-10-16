@@ -1,0 +1,15 @@
+flowchart LR
+  Browser["Authenticated Flask / Jinja browser"] --> Routes["Room blueprint: forms / inbox / private detail"]
+  Security["Existing AccountService + role / CSRF"] --> Routes
+  Routes --> Service["RoomRequestService: revision / faculty authorization / lifecycle"]
+  Service --> Projection["room_calendar: explicit academic bindings / dated commitments"]
+  Projection --> DB[("PostgreSQL: ownership / policies / requests / reservations / history")]
+  Service --> DB
+  Service --> Gateway["EngineGateway: manifest verification / JSON transport"]
+  Gateway --> Protocol["RoomRequestJsonProtocol v1 --rooms-json"]
+  Protocol --> Selection["RoomSelectionService: eligibility / deterministic single-room ranking"]
+  Protocol --> Factory["Existing SpaceFactory / Space hierarchy"]
+  DB --> Schedule["PersonalScheduleService / student home"]
+  Academic["Existing allocation publication / calendar binding"] --> Gate["Shared short transaction lock / conflict gate"]
+  Gate --> DB
+  Service --> Gate

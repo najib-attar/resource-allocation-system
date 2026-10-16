@@ -264,3 +264,81 @@ status, duration, horizon and the disjoint complete invitee partition.
 Feasibility is not a reservation. Flask rechecks before unanimous revision-specific
 confirmation and atomically records mandatory commitments in PostgreSQL. Pending
 requests reserve nothing; a stale calendar snapshot cannot commit confirmation.
+
+## Student room operation v1 (Iteration 43)
+
+`allocation_system --rooms-json` evaluates one dated, exclusive student activity.
+The original `--json` and `--appointments-json` contracts are unchanged. The same
+verified executable, UTF-8 stdin/stdout, bounded timeout and structured-error rules
+apply. No files, global strategy config or database are read by this operation.
+Exit 0 includes a valid but infeasible evaluation; invalid input exits 2 with
+`status: error`, `reasonCode: INVALID_INPUT`, structured errors and stderr diagnostics.
+
+| Input | Meaning |
+|---|---|
+| protocolVersion / operation / runId | 1 / studentRoom / nonempty correlation string, at most 100 bytes |
+| action | recommend, validate (exact selectedRoomId), or attendance (optional professor calendar only) |
+| strategy | System-configured best_fit (default) or greedy; not the academic/exam strategy selector |
+| organizerId / organizerRole | Positive university ID; Student, or Instructor for attendance |
+| category / attendeeCount | study, meeting, lecture, club or other; positive total attendance |
+| requiredFeatures | Distinct projector, whiteboard and/or computers |
+| preferredFacultyId / preferredBuilding | 0/empty means no preference, not an access grant |
+| proposed / horizon | Minute-aligned half-open UTC epoch-second intervals, 1970-2100; duration at most one day, search at most 32 days |
+| organizerResolved / organizerBusy | Explicit calendar-resolution flag and dated busy intervals |
+| rooms | Up to 10,000 SpaceFactory-supported rooms with capacity/facilities, availability, faculty/approver IDs, enabled/category/access policy, calendar resolution and busy intervals |
+
+Input is bounded to 16 MiB; each busy collection to 100,000 intervals and each
+whitelist to 10,000 unique positive IDs. Unknown/duplicate types, categories,
+facilities, identifiers, malformed intervals or non-boolean flags are rejected.
+Disabled/unconfigured rooms use facultyId/approverId 0 and cannot be selected.
+
+```json
+{
+  "protocolVersion": 1, "operation": "studentRoom", "runId": "room-example",
+  "action": "recommend", "strategy": "best_fit",
+  "organizerId": 1, "organizerRole": "Student", "category": "study",
+  "attendeeCount": 5, "requiredFeatures": [],
+  "preferredFacultyId": 0, "preferredBuilding": "",
+  "organizerResolved": true, "organizerBusy": [],
+  "proposed": {"start": 1894009200, "end": 1894012800},
+  "horizon": {"start": 1894009200, "end": 1894617600},
+  "rooms": [{
+    "id": 301, "name": "Fictional Study Studio", "type": "Classroom",
+    "capacity": 8, "building": "Main", "available": true,
+    "features": {"projector": false, "whiteboard": true, "computers": false},
+    "facultyId": 10, "approverId": 20, "enabled": true,
+    "restricted": false, "allowedUserIds": [], "categories": ["study"],
+    "calendarResolved": true, "busy": []
+  }]
+}
+```
+
+```json
+{
+  "protocolVersion": 1, "operation": "studentRoom", "engineVersion": "student-rooms-1",
+  "runId": "room-example", "status": "success", "feasible": true,
+  "reasonCode": "AVAILABLE", "errors": [], "explanations": [], "alternatives": [],
+  "candidates": [{"roomId": 301, "facultyId": 10, "capacity": 8,
+    "spareSeats": 3, "extraFacilities": 1, "preferencePenalty": 0,
+    "start": 1894009200, "end": 1894012800,
+    "reason": "Eligible single room; 3 spare seats, all required facilities present; 0 unmatched preferences. Owning faculty approval is required."}]
+}
+```
+
+Best-fit sorts by unmatched faculty/building preferences, spare seats, unnecessary
+facilities, then room ID. Greedy retains source ordering within preference ties.
+Eligibility requires policy/access, ownership/approver, capacity/facilities, resolved
+calendar and no room or organizer overlap. Up to 20 exact-time candidates are
+returned. Only if none exists, recommend scans a deterministic 15-minute grid
+anchored to the search start, returning up to five earliest feasible alternatives.
+The web uses a seven-day search; alternatives need a fresh exact-time evaluation
+before submission. Validation never silently substitutes another room.
+
+Reasons include AVAILABLE, NO_ELIGIBLE_ROOM, ROOM_DISABLED, NO_APPROVER,
+ACCESS_RESTRICTED, INSUFFICIENT_CAPACITY, MISSING_FACILITY, UNRESOLVED_CALENDAR,
+ROOM_BUSY and ORGANIZER_BUSY. `explanations` summarizes rejected candidates and is
+not an authorization grant. Python validates correlation, operation/version,
+collections, room references, capacity arithmetic, duration/horizon and feasibility
+consistency, then adds display names. Private purposes/participants are not sent
+to the engine. Feasibility is not a reservation: faculty confirmation rechecks
+the exact selection and commits under PostgreSQL revision/overlap protection.

@@ -126,6 +126,13 @@ class PostgresCompletionTests(PostgresTestCase):
                          ("appointment", "appointment_professor", "appointment_invitation", "appointment_commitment")})
         expected.update({table + "_shape_lock": (False, False) for table in
                          ("appointment_professor", "appointment_invitation", "appointment_commitment")})
+        expected.update({table + "_complete": (True, True) for table in
+                         ("student_room_request", "room_invitation", "room_reservation", "room_organizer_commitment")})
+        expected.update({table + "_shape_lock": (False, False) for table in
+                         ("room_invitation", "room_reservation", "room_organizer_commitment")})
+        expected.update({name: (False, False) for name in
+                         ("room_policy_faculty", "faculty_room_approver_faculty",
+                          "appointment_room_person_overlap", "room_appointment_person_overlap")})
         self.assertEqual({row[0]: (row[1], row[2]) for row in rows}, expected)
 
     def test_concurrent_child_deletions_cannot_leave_empty_recurring_request(self):

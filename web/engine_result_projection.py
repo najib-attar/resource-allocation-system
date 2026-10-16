@@ -1,9 +1,6 @@
 """Project structured input/results into file-free presentation tables."""
 
-try:
-    from .result_table_schema import INPUT_HEADERS, OUTPUT_HEADERS, table_view
-except ImportError:
-    from result_table_schema import INPUT_HEADERS, OUTPUT_HEADERS, table_view
+from .result_table_schema import INPUT_HEADERS, OUTPUT_HEADERS, table_view
 
 
 def clock(minutes):

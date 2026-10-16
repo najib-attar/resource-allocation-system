@@ -1,7 +1,7 @@
 """The timetable is a private projection, not a second booking database."""
 
 from datetime import date, datetime, timedelta, timezone
-from unittest import TestCase, mock
+from unittest import TestCase
 
 from sqlalchemy import select
 

@@ -12,8 +12,12 @@
 #include "utils/ConsolePrinter.h"
 #include "integration/JsonEngineProtocol.h"
 #include "integration/AppointmentJsonProtocol.h"
+#include "integration/RoomRequestJsonProtocol.h"
 
 int main(int argc, char* argv[]) {
+    if (argc == 2 && std::string(argv[1]) == "--rooms-json") {
+        return RoomRequestJsonProtocol::run(std::cin, std::cout, std::cerr);
+    }
     if (argc == 2 && std::string(argv[1]) == "--appointments-json") {
         return AppointmentJsonProtocol::run(std::cin, std::cout, std::cerr);
     }
@@ -21,7 +25,7 @@ int main(int argc, char* argv[]) {
         return JsonEngineProtocol::run(std::cin, std::cout, std::cerr);
     }
     if (argc != 1) {
-        std::cerr << "Usage: allocation_system [--json | --appointments-json]\n";
+        std::cerr << "Usage: allocation_system [--json | --appointments-json | --rooms-json]\n";
         return 2;
     }
     ResourceAllocationSession session;

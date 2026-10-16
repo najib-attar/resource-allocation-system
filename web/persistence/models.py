@@ -360,3 +360,126 @@ class AppointmentEvent(Base):
     revision: Mapped[int] = mapped_column(Integer)
     message: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+ROOM_CATEGORIES = ("study", "meeting", "lecture", "club", "other")
+ROOM_REQUEST_STATES = ("Pending Faculty Approval", "Needs Revision", "Rejected", "Confirmed", "Cancelled")
+
+
+class FacultyRoomApprover(Base):
+    __tablename__ = "faculty_room_approver"
+    faculty_id: Mapped[int] = mapped_column(ForeignKey("organization_unit.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("login_account.user_id"), index=True)
+
+
+class RoomPolicy(Base):
+    __tablename__ = "room_policy"
+    __table_args__ = (CheckConstraint("jsonb_typeof(categories) = 'array' AND jsonb_array_length(categories) BETWEEN 1 AND 5 AND '[\"study\",\"meeting\",\"lecture\",\"club\",\"other\"]'::jsonb @> categories"),)
+    resource_id: Mapped[int] = mapped_column(ForeignKey("resource.id"), primary_key=True)
+    faculty_id: Mapped[int] = mapped_column(ForeignKey("organization_unit.id"), index=True)
+    enabled: Mapped[bool] = mapped_column(Boolean, default=False)
+    restricted: Mapped[bool] = mapped_column(Boolean, default=False)
+    categories: Mapped[list] = mapped_column(JSONB, default=lambda: list(ROOM_CATEGORIES))
+
+
+class RoomAccess(Base):
+    __tablename__ = "room_access"
+    resource_id: Mapped[int] = mapped_column(ForeignKey("room_policy.resource_id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True, index=True)
+
+
+class RoomClosure(Base):
+    __tablename__ = "room_closure"
+    __table_args__ = (CheckConstraint("start_at < end_at"), Index("ix_room_closure_resource_start", "resource_id", "start_at"))
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    resource_id: Mapped[int] = mapped_column(ForeignKey("resource.id"))
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    reason: Mapped[str] = mapped_column(Text, default="")
+
+
+class StudentRoomRequest(Base):
+    __tablename__ = "student_room_request"
+    __table_args__ = (CheckConstraint(allowed("category", ROOM_CATEGORIES)), CheckConstraint(allowed("status", ROOM_REQUEST_STATES)),
+                      CheckConstraint("revision > 0 AND attendee_count > 0 AND duration_minutes BETWEEN 1 AND 1440 AND start_at < end_at"),
+                      CheckConstraint("end_at = start_at + duration_minutes * interval '1 minute'"),
+                      CheckConstraint("jsonb_typeof(required_features) = 'array' AND '[\"projector\",\"whiteboard\",\"computers\"]'::jsonb @> required_features"),
+                      CheckConstraint("status <> 'Confirmed' OR (approved_revision IS NOT NULL AND approved_revision = revision AND approved_by IS NOT NULL AND approved_by = approver_id)"),
+                      Index("ix_student_room_organizer_start", "organizer_id", "start_at"), Index("ix_student_room_approver_status", "approver_id", "status"))
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    organizer_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"))
+    resource_id: Mapped[int] = mapped_column(ForeignKey("resource.id"), index=True)
+    faculty_id: Mapped[int] = mapped_column(ForeignKey("organization_unit.id"), index=True)
+    approver_id: Mapped[int] = mapped_column(ForeignKey("login_account.user_id"))
+    category: Mapped[str] = mapped_column(String(30))
+    purpose: Mapped[str] = mapped_column(Text)
+    description: Mapped[str] = mapped_column(Text, default="")
+    club_affiliation: Mapped[str] = mapped_column(Text, default="")
+    attendee_count: Mapped[int] = mapped_column(Integer)
+    required_features: Mapped[list] = mapped_column(JSONB, default=list)
+    preferred_faculty_id: Mapped[int | None] = mapped_column(ForeignKey("organization_unit.id"), index=True)
+    preferred_building: Mapped[str] = mapped_column(Text, default="")
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    duration_minutes: Mapped[int] = mapped_column(Integer)
+    revision: Mapped[int] = mapped_column(Integer, default=1)
+    status: Mapped[str] = mapped_column(String(30), default="Pending Faculty Approval")
+    approved_revision: Mapped[int | None] = mapped_column(Integer)
+    approved_by: Mapped[int | None] = mapped_column(ForeignKey("login_account.user_id"), index=True)
+    explanation: Mapped[str] = mapped_column(Text, default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class RoomInvitation(Base):
+    __tablename__ = "room_invitation"
+    __table_args__ = (CheckConstraint(allowed("status", ("Invited", "Accepted", "Declined"))), CheckConstraint("revision > 0"))
+    request_id: Mapped[int] = mapped_column(ForeignKey("student_room_request.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True, index=True)
+    revision: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20), default="Invited")
+
+
+class RoomReservation(Base):
+    __tablename__ = "room_reservation"
+    __table_args__ = (CheckConstraint("start_at < end_at"), ExcludeConstraint(("resource_id", "="), ("period", "&&"), using="gist", name="ex_student_room_overlap"))
+    request_id: Mapped[int] = mapped_column(ForeignKey("student_room_request.id"), primary_key=True)
+    resource_id: Mapped[int] = mapped_column(ForeignKey("resource.id"), index=True)
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    period: Mapped[object] = mapped_column(TSTZRANGE, Computed("tstzrange(start_at, end_at, '[)')", persisted=True))
+
+
+class RoomOrganizerCommitment(Base):
+    __tablename__ = "room_organizer_commitment"
+    __table_args__ = (CheckConstraint("start_at < end_at"), ExcludeConstraint(("user_id", "="), ("period", "&&"), using="gist", name="ex_room_organizer_overlap"))
+    request_id: Mapped[int] = mapped_column(ForeignKey("student_room_request.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), index=True)
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    period: Mapped[object] = mapped_column(TSTZRANGE, Computed("tstzrange(start_at, end_at, '[)')", persisted=True))
+
+
+class RoomEvent(Base):
+    __tablename__ = "room_event"
+    __table_args__ = (CheckConstraint("revision > 0"),)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    request_id: Mapped[int] = mapped_column(ForeignKey("student_room_request.id"), index=True)
+    actor_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), index=True)
+    revision: Mapped[int] = mapped_column(Integer)
+    message: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class Notification(Base):
+    __tablename__ = "notification"
+    __table_args__ = (
+        CheckConstraint("num_nonnulls(appointment_event_id, room_event_id) = 1"),
+        UniqueConstraint("recipient_id", "appointment_event_id"),
+        UniqueConstraint("recipient_id", "room_event_id"),
+        Index("ix_notification_recipient_read_id", "recipient_id", "read_at", "id"),
+    )
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    recipient_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"))
+    appointment_event_id: Mapped[int | None] = mapped_column(ForeignKey("appointment_event.id"), index=True)
+    room_event_id: Mapped[int | None] = mapped_column(ForeignKey("room_event.id"), index=True)
+    read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

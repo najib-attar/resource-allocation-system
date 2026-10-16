@@ -1,6 +1,6 @@
 # Physical schema catalog
 
-Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 28 application tables.
+Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 38 application tables.
 
 All foreign keys use PostgreSQL **NO ACTION**: no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
 ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.
@@ -254,6 +254,20 @@ Optional one-to-one examination metadata.
 - Primary key: `request_id`.
 - Foreign key: `(request_id) -> resource_request (id)`; NO ACTION.
 
+## faculty_room_approver
+
+Current designated administrative account for a room-owning faculty.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| faculty_id | integer | PK; FK -> organization_unit.id | no | - |
+| user_id | integer | FK -> login_account.user_id | no | - |
+
+- Primary key: `faculty_id`.
+- Foreign key: `(faculty_id) -> organization_unit (id)`; NO ACTION.
+- Foreign key: `(user_id) -> login_account (user_id)`; NO ACTION.
+- Index: `ix_faculty_room_approver_user_id (user_id)`.
+
 ## legacy_calendar_binding
 
 Explicit period/planning-week association for an undated busy slot or request.
@@ -324,6 +338,29 @@ Ranked structured time/resource alternatives returned by C++.
 - Check: `rank > 0 AND score >= 0 AND time_distance >= 0 AND day_distance >= 0 AND conflict_count >= 0`.
 - Check: `start_minutes >= 0 AND start_minutes < end_minutes AND end_minutes <= 1440`.
 - Index: `ix_meeting_suggestion_resource_id (resource_id)`.
+
+## notification
+
+Recipient-scoped event inbox and durable read state; exactly one appointment/room history event.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| recipient_id | integer | FK -> university_user.id | no | - |
+| appointment_event_id | bigint | FK -> appointment_event.id | yes | - |
+| room_event_id | bigint | FK -> room_event.id | yes | - |
+| read_at | timestamp with time zone | - | yes | - |
+
+- Primary key: `id`.
+- Foreign key: `(appointment_event_id) -> appointment_event (id)`; NO ACTION.
+- Foreign key: `(recipient_id) -> university_user (id)`; NO ACTION.
+- Foreign key: `(room_event_id) -> room_event (id)`; NO ACTION.
+- Check: `num_nonnulls(appointment_event_id, room_event_id) = 1`.
+- Unique: `recipient_id, appointment_event_id`.
+- Unique: `recipient_id, room_event_id`.
+- Index: `ix_notification_appointment_event_id (appointment_event_id)`.
+- Index: `ix_notification_recipient_read_id (recipient_id, read_at, id)`.
+- Index: `ix_notification_room_event_id (room_event_id)`.
 
 ## organization_unit
 
@@ -507,6 +544,178 @@ Primary engine roles and preserved assigned-role labels; not authentication perm
 
 - Primary key: `id`.
 - Unique: `name`.
+
+## room_access
+
+Allowed university users for explicitly restricted student rooms.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| resource_id | integer | PK; FK -> room_policy.resource_id | no | - |
+| user_id | integer | PK; FK -> university_user.id | no | - |
+
+- Primary key: `resource_id, user_id`.
+- Foreign key: `(resource_id) -> room_policy (resource_id)`; NO ACTION.
+- Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
+- Index: `ix_room_access_user_id (user_id)`.
+
+## room_closure
+
+Dated room unavailability, independent of private request details.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| resource_id | integer | FK -> resource.id | no | - |
+| start_at | timestamp with time zone | - | no | - |
+| end_at | timestamp with time zone | - | no | - |
+| reason | text | - | no | ORM:  |
+
+- Primary key: `id`.
+- Foreign key: `(resource_id) -> resource (id)`; NO ACTION.
+- Check: `start_at < end_at`.
+- Index: `ix_room_closure_resource_start (resource_id, start_at)`.
+
+## room_event
+
+Private timestamped room request lifecycle and invitation history.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| request_id | bigint | FK -> student_room_request.id | no | - |
+| actor_id | integer | FK -> university_user.id | no | - |
+| revision | integer | - | no | - |
+| message | text | - | no | - |
+| created_at | timestamp with time zone | - | no | now() |
+
+- Primary key: `id`.
+- Foreign key: `(actor_id) -> university_user (id)`; NO ACTION.
+- Foreign key: `(request_id) -> student_room_request (id)`; NO ACTION.
+- Check: `revision > 0`.
+- Index: `ix_room_event_actor_id (actor_id)`.
+- Index: `ix_room_event_request_id (request_id)`.
+
+## room_invitation
+
+Optional professor attendance response for the current room request revision.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| request_id | bigint | PK; FK -> student_room_request.id | no | - |
+| user_id | integer | PK; FK -> university_user.id | no | - |
+| revision | integer | - | no | - |
+| status | varchar(20) | - | no | ORM: Invited |
+
+- Primary key: `request_id, user_id`.
+- Foreign key: `(request_id) -> student_room_request (id)`; NO ACTION.
+- Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
+- Check: `revision > 0`.
+- Check: `status IN ('Invited','Accepted','Declined')`.
+- Index: `ix_room_invitation_user_id (user_id)`.
+
+## room_organizer_commitment
+
+Confirmed organizing-student interval with cross-appointment conflict protection.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| request_id | bigint | PK; FK -> student_room_request.id | no | - |
+| user_id | integer | FK -> university_user.id | no | - |
+| start_at | timestamp with time zone | - | no | - |
+| end_at | timestamp with time zone | - | no | - |
+| period | tstzrange | - | no | computed: tstzrange(start_at, end_at, '[)') |
+
+- Primary key: `request_id`.
+- Foreign key: `(request_id) -> student_room_request (id)`; NO ACTION.
+- Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
+- Check: `start_at < end_at`.
+- Index: `ix_room_organizer_commitment_user_id (user_id)`.
+
+## room_policy
+
+Explicit owning faculty, bookability, permitted categories and whitelist policy.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| resource_id | integer | PK; FK -> resource.id | no | - |
+| faculty_id | integer | FK -> organization_unit.id | no | - |
+| enabled | boolean | - | no | ORM: False |
+| restricted | boolean | - | no | ORM: False |
+| categories | jsonb | - | no | ORM callable |
+
+- Primary key: `resource_id`.
+- Foreign key: `(faculty_id) -> organization_unit (id)`; NO ACTION.
+- Foreign key: `(resource_id) -> resource (id)`; NO ACTION.
+- Check: `jsonb_typeof(categories) = 'array' AND jsonb_array_length(categories) BETWEEN 1 AND 5 AND '["study","meeting","lecture","club","other"]'::jsonb @> categories`.
+- Index: `ix_room_policy_faculty_id (faculty_id)`.
+
+## room_reservation
+
+Exact confirmed exclusive room interval; GiST overlap exclusion.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| request_id | bigint | PK; FK -> student_room_request.id | no | - |
+| resource_id | integer | FK -> resource.id | no | - |
+| start_at | timestamp with time zone | - | no | - |
+| end_at | timestamp with time zone | - | no | - |
+| period | tstzrange | - | no | computed: tstzrange(start_at, end_at, '[)') |
+
+- Primary key: `request_id`.
+- Foreign key: `(request_id) -> student_room_request (id)`; NO ACTION.
+- Foreign key: `(resource_id) -> resource (id)`; NO ACTION.
+- Check: `start_at < end_at`.
+- Index: `ix_room_reservation_resource_id (resource_id)`.
+
+## student_room_request
+
+Student needs, selected verified room, faculty approval, dated interval and revision.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| organizer_id | integer | FK -> university_user.id | no | - |
+| resource_id | integer | FK -> resource.id | no | - |
+| faculty_id | integer | FK -> organization_unit.id | no | - |
+| approver_id | integer | FK -> login_account.user_id | no | - |
+| category | varchar(30) | - | no | - |
+| purpose | text | - | no | - |
+| description | text | - | no | ORM:  |
+| club_affiliation | text | - | no | ORM:  |
+| attendee_count | integer | - | no | - |
+| required_features | jsonb | - | no | ORM callable |
+| preferred_faculty_id | integer | FK -> organization_unit.id | yes | - |
+| preferred_building | text | - | no | ORM:  |
+| start_at | timestamp with time zone | - | no | - |
+| end_at | timestamp with time zone | - | no | - |
+| duration_minutes | integer | - | no | - |
+| revision | integer | - | no | ORM: 1 |
+| status | varchar(30) | - | no | ORM: Pending Faculty Approval |
+| approved_revision | integer | - | yes | - |
+| approved_by | integer | FK -> login_account.user_id | yes | - |
+| explanation | text | - | no | ORM:  |
+| created_at | timestamp with time zone | - | no | now() |
+
+- Primary key: `id`.
+- Foreign key: `(approved_by) -> login_account (user_id)`; NO ACTION.
+- Foreign key: `(approver_id) -> login_account (user_id)`; NO ACTION.
+- Foreign key: `(faculty_id) -> organization_unit (id)`; NO ACTION.
+- Foreign key: `(organizer_id) -> university_user (id)`; NO ACTION.
+- Foreign key: `(preferred_faculty_id) -> organization_unit (id)`; NO ACTION.
+- Foreign key: `(resource_id) -> resource (id)`; NO ACTION.
+- Check: `category IN ('study','meeting','lecture','club','other')`.
+- Check: `end_at = start_at + duration_minutes * interval '1 minute'`.
+- Check: `jsonb_typeof(required_features) = 'array' AND '["projector","whiteboard","computers"]'::jsonb @> required_features`.
+- Check: `revision > 0 AND attendee_count > 0 AND duration_minutes BETWEEN 1 AND 1440 AND start_at < end_at`.
+- Check: `status <> 'Confirmed' OR (approved_revision IS NOT NULL AND approved_revision = revision AND approved_by IS NOT NULL AND approved_by = approver_id)`.
+- Check: `status IN ('Pending Faculty Approval','Needs Revision','Rejected','Confirmed','Cancelled')`.
+- Index: `ix_student_room_approver_status (approver_id, status)`.
+- Index: `ix_student_room_organizer_start (organizer_id, start_at)`.
+- Index: `ix_student_room_request_approved_by (approved_by)`.
+- Index: `ix_student_room_request_faculty_id (faculty_id)`.
+- Index: `ix_student_room_request_preferred_faculty_id (preferred_faculty_id)`.
+- Index: `ix_student_room_request_resource_id (resource_id)`.
 
 ## suggestion_group
 

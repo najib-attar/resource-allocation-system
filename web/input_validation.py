@@ -1,9 +1,6 @@
 """Parse numeric and weekly slot form/import values; no persistence operations."""
 
-try:
-    from .engine_gateway import EngineIntegrationError
-except ImportError:
-    from engine_gateway import EngineIntegrationError
+from .engine_gateway import EngineIntegrationError
 
 
 def integer(value, label, minimum=0):
