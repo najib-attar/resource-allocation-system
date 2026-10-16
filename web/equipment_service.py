@@ -261,7 +261,9 @@ class EquipmentService:
             for booking in reservations:
                 booking.handed_at, booking.handed_by, booking.handover_condition = now, actor, condition
             row.status = 'Borrowed'
-            self._event(session, actor, row.faculty_id, 'Physical handover verified. ' + condition, key)
+            self._event(session, actor, row.faculty_id,
+                        'Physical handover verified. Due date at collection: '
+                        +row.due_at.astimezone(timezone.utc).isoformat()+'. '+condition, key)
 
     def intend_return(self, actor, key):
         with self.database.transaction() as session:
@@ -318,12 +320,15 @@ class EquipmentService:
     def decide_extension(self, actor, key, extension_id, approve):
         if type(approve) is not bool:
             raise EquipmentError('Choose approve or reject.')
+        if type(extension_id) is not int or extension_id <= 0:
+            raise EquipmentError('Choose a valid extension request.')
         with self.database.transaction() as session:
             row = self._request(session, actor, key, True)
             self._staff(session, actor, row.faculty_id)
             extension = session.get(BorrowExtension, extension_id)
             if not extension or extension.request_id != key or extension.status != 'Pending' or row.status not in {'Borrowed', 'Partially Returned'}:
                 raise EquipmentError('This extension is no longer awaiting a decision on an active loan.')
+            previous_due = row.due_at
             if approve:
                 if extension.due_at <= max(row.due_at, datetime.now(timezone.utc)):
                     raise EquipmentError('The proposed extension has expired or is no longer later than the current due date.')
@@ -338,7 +343,11 @@ class EquipmentService:
                     booking.due_at = extension.due_at
                 row.due_at = extension.due_at
             extension.status, extension.decided_by = ('Approved' if approve else 'Rejected'), actor
-            self._event(session, actor, row.faculty_id, 'Extension '+extension.status+'.', key)
+            self._event(session, actor, row.faculty_id,
+                        'Extension '+str(extension.id)+' '+extension.status+'. Previous due: '
+                        +previous_due.astimezone(timezone.utc).isoformat()
+                        +'; proposed due: '+extension.due_at.astimezone(timezone.utc).isoformat()
+                        +'; current due: '+row.due_at.astimezone(timezone.utc).isoformat()+'.', key)
 
     def directory(self, actor):
         with self.database.transaction(read_only=True) as session:

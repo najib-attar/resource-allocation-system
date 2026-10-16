@@ -218,6 +218,10 @@ class EquipmentWorkflowTests(EquipmentFixture):
         extension=self.service.request_extension(1,key,START+timedelta(days=5),'Reservation cancelled')
         self.service.decide_extension(6,key,extension,True)
         self.assertEqual(self.service.detail(1,key)['due'],START+timedelta(days=5))
+        history=[event['message'] for event in self.service.detail(1,key)['history']]
+        self.assertTrue(any('Due date at collection: '+(START+timedelta(days=3)).isoformat() in message for message in history))
+        self.assertTrue(any('Previous due: '+(START+timedelta(days=3)).isoformat() in message
+                            and 'current due: '+(START+timedelta(days=5)).isoformat() in message for message in history))
 
     def test_invalid_fields_and_unavailable_condition_fail_safely(self):
         for quantity in (0,-1,True,1.5,1001):
