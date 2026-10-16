@@ -1,6 +1,6 @@
 # Physical schema catalog
 
-Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 38 application tables.
+Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 47 application tables.
 
 All foreign keys use PostgreSQL **NO ACTION**: no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
 ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.
@@ -200,6 +200,80 @@ Required professor decisions for the appointment revision.
 - Check: `revision > 0`.
 - Index: `ix_appointment_professor_user_id (user_id)`.
 
+## borrow_extension
+
+Explicit custodian decision on a proposed later due date for an active loan.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | integer | PK | no | identity |
+| request_id | integer | FK -> borrow_request.id | no | - |
+| due_at | timestamp with time zone | - | no | - |
+| status | varchar(20) | - | no | ORM: Pending |
+| reason | text | - | no | - |
+| decided_by | integer | FK -> login_account.user_id | yes | - |
+| created_at | timestamp with time zone | - | no | now() |
+
+- Primary key: `id`.
+- Foreign key: `(decided_by) -> login_account (user_id)`; NO ACTION.
+- Foreign key: `(request_id) -> borrow_request (id)`; NO ACTION.
+- Check: `status IN ('Pending','Approved','Rejected')`.
+- Index: `ix_borrow_extension_decided_by (decided_by)`.
+- Index: `ix_borrow_extension_request_id (request_id)`.
+- Index: `uq_pending_borrow_extension (request_id)`.
+
+## borrow_item
+
+Same-faculty requested type, quantity and exact additional specifications.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | integer | PK | no | identity |
+| request_id | integer | FK -> borrow_request.id | no | - |
+| faculty_id | integer | FK -> equipment_type.faculty_id; FK -> borrow_request.faculty_id | no | - |
+| type_id | integer | FK -> equipment_type.id | no | - |
+| quantity | integer | - | no | - |
+| specifications | jsonb | - | no | ORM callable |
+
+- Primary key: `id`.
+- Foreign key: `(request_id, faculty_id) -> borrow_request (id, faculty_id)`; NO ACTION.
+- Foreign key: `(type_id, faculty_id) -> equipment_type (id, faculty_id)`; NO ACTION.
+- Check: `quantity BETWEEN 1 AND 1000 AND jsonb_typeof(specifications) = 'object'`.
+- Unique: `id, type_id`.
+- Unique: `request_id, type_id`.
+- Index: `ix_borrow_item_faculty_id (faculty_id)`.
+- Index: `ix_borrow_item_request_id (request_id)`.
+- Index: `ix_borrow_item_type_id (type_id)`.
+
+## borrow_request
+
+Student borrowing interval, purpose, lifecycle and idempotent submission identity.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | integer | PK | no | identity |
+| borrower_id | integer | FK -> university_user.id | no | - |
+| faculty_id | integer | FK -> organization_unit.id | no | - |
+| purpose | text | - | no | - |
+| notes | text | - | no | ORM:  |
+| start_at | timestamp with time zone | - | no | - |
+| due_at | timestamp with time zone | - | no | - |
+| status | varchar(30) | - | no | ORM: Pending Approval |
+| submission_key | varchar(32) | - | no | - |
+| submission_fingerprint | varchar(64) | - | no | - |
+| created_at | timestamp with time zone | - | no | now() |
+
+- Primary key: `id`.
+- Foreign key: `(borrower_id) -> university_user (id)`; NO ACTION.
+- Foreign key: `(faculty_id) -> organization_unit (id)`; NO ACTION.
+- Check: `start_at < due_at`.
+- Check: `status IN ('Pending Approval','Approved','Rejected','Borrowed','Partially Returned','Returned','Cancelled')`.
+- Check: `submission_key ~ '^[0-9a-f]{32}$' AND submission_fingerprint ~ '^[0-9a-f]{64}$'`.
+- Unique: `borrower_id, submission_key`.
+- Unique: `id, faculty_id`.
+- Index: `ix_borrow_faculty_status (faculty_id, status)`.
+- Index: `ix_borrow_request_borrower_id (borrower_id)`.
+
 ## busy_slot
 
 Explicit weekly user commitments, independent of allocation runs.
@@ -238,6 +312,137 @@ Private dated unavailable intervals for a university user.
 - Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
 - Check: `start_at < end_at`.
 - Index: `ix_calendar_block_user_start (user_id, start_at)`.
+
+## equipment_category
+
+Extensible named equipment categories, independent of room types.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | integer | PK | no | identity |
+| name | varchar(150) | - | no | - |
+
+- Primary key: `id`.
+- Unique: `name`.
+
+## equipment_custodian
+
+One current designated equipment staff/administrator account per owning faculty.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| faculty_id | integer | PK; FK -> organization_unit.id | no | - |
+| user_id | integer | FK -> login_account.user_id | no | - |
+
+- Primary key: `faculty_id`.
+- Foreign key: `(faculty_id) -> organization_unit (id)`; NO ACTION.
+- Foreign key: `(user_id) -> login_account (user_id)`; NO ACTION.
+- Index: `ix_equipment_custodian_user_id (user_id)`.
+
+## equipment_event
+
+Actor/time/faculty-scoped inventory, configuration and borrowing lifecycle audit.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| faculty_id | integer | FK -> organization_unit.id | no | - |
+| request_id | integer | FK -> borrow_request.id | yes | - |
+| unit_id | integer | FK -> equipment_unit.id | yes | - |
+| actor_id | integer | FK -> university_user.id | no | - |
+| message | text | - | no | - |
+| created_at | timestamp with time zone | - | no | now() |
+
+- Primary key: `id`.
+- Foreign key: `(actor_id) -> university_user (id)`; NO ACTION.
+- Foreign key: `(faculty_id) -> organization_unit (id)`; NO ACTION.
+- Foreign key: `(request_id) -> borrow_request (id)`; NO ACTION.
+- Foreign key: `(unit_id) -> equipment_unit (id)`; NO ACTION.
+- Index: `ix_equipment_event_actor_id (actor_id)`.
+- Index: `ix_equipment_event_faculty_id (faculty_id)`.
+- Index: `ix_equipment_event_request_id (request_id)`.
+- Index: `ix_equipment_event_unit_id (unit_id)`.
+
+## equipment_reservation
+
+Specific reserved asset, excluded overlapping interval, physical handover and verified return.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | integer | PK | no | identity |
+| item_id | integer | FK -> borrow_item.id | no | - |
+| type_id | integer | FK -> borrow_item.type_id; FK -> equipment_unit.type_id | no | - |
+| unit_id | integer | FK -> equipment_unit.id | no | - |
+| start_at | timestamp with time zone | - | no | - |
+| due_at | timestamp with time zone | - | no | - |
+| period | tstzrange | - | no | computed: tstzrange(start_at, due_at, '[)') |
+| released | boolean | - | no | ORM: False |
+| handed_at | timestamp with time zone | - | yes | - |
+| handed_by | integer | FK -> login_account.user_id | yes | - |
+| handover_condition | text | - | yes | - |
+| returned_at | timestamp with time zone | - | yes | - |
+| received_by | integer | FK -> login_account.user_id | yes | - |
+| return_condition | text | - | yes | - |
+
+- Primary key: `id`.
+- Foreign key: `(handed_by) -> login_account (user_id)`; NO ACTION.
+- Foreign key: `(item_id, type_id) -> borrow_item (id, type_id)`; NO ACTION.
+- Foreign key: `(received_by) -> login_account (user_id)`; NO ACTION.
+- Foreign key: `(unit_id, type_id) -> equipment_unit (id, type_id)`; NO ACTION.
+- Check: `handed_at IS NULL OR (handed_by IS NOT NULL AND handover_condition IS NOT NULL)`.
+- Check: `returned_at IS NULL OR (handed_at IS NOT NULL AND returned_at >= handed_at AND released)`.
+- Check: `returned_at IS NULL OR (received_by IS NOT NULL AND return_condition IS NOT NULL)`.
+- Check: `start_at < due_at`.
+- Index: `ix_equipment_reservation_handed_by (handed_by)`.
+- Index: `ix_equipment_reservation_item_id (item_id)`.
+- Index: `ix_equipment_reservation_received_by (received_by)`.
+- Index: `ix_equipment_reservation_type_id (type_id)`.
+- Index: `ix_equipment_reservation_unit_id (unit_id)`.
+
+## equipment_type
+
+Faculty-owned equipment catalog, exact specifications and configurable borrowing policy.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | integer | PK | no | identity |
+| faculty_id | integer | FK -> organization_unit.id | no | - |
+| category_id | integer | FK -> equipment_category.id | no | - |
+| name | varchar(200) | - | no | - |
+| description | text | - | no | ORM:  |
+| specifications | jsonb | - | no | ORM callable |
+| max_loan_days | integer | - | no | - |
+| eligible_faculty_ids | jsonb | - | no | ORM callable |
+| pickup_instructions | text | - | no | ORM:  |
+| enabled | boolean | - | no | ORM: True |
+
+- Primary key: `id`.
+- Foreign key: `(category_id) -> equipment_category (id)`; NO ACTION.
+- Foreign key: `(faculty_id) -> organization_unit (id)`; NO ACTION.
+- Check: `jsonb_typeof(specifications) = 'object' AND jsonb_typeof(eligible_faculty_ids) = 'array'`.
+- Check: `max_loan_days BETWEEN 1 AND 365`.
+- Unique: `id, faculty_id`.
+- Index: `ix_equipment_type_category_id (category_id)`.
+- Index: `ix_equipment_type_faculty_id (faculty_id)`.
+
+## equipment_unit
+
+Individually identifiable physical asset and current physical condition.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | integer | PK | no | identity |
+| type_id | integer | FK -> equipment_type.id | no | - |
+| asset_tag | varchar(150) | - | no | - |
+| condition | varchar(20) | - | no | ORM: usable |
+| notes | text | - | no | ORM:  |
+
+- Primary key: `id`.
+- Foreign key: `(type_id) -> equipment_type (id)`; NO ACTION.
+- Check: `condition IN ('usable','maintenance','damaged','missing','lost','retired')`.
+- Unique: `asset_tag`.
+- Unique: `id, type_id`.
+- Index: `ix_equipment_unit_type_id (type_id)`.
 
 ## exam_details
 
@@ -349,16 +554,20 @@ Recipient-scoped event inbox and durable read state; exactly one appointment/roo
 | recipient_id | integer | FK -> university_user.id | no | - |
 | appointment_event_id | bigint | FK -> appointment_event.id | yes | - |
 | room_event_id | bigint | FK -> room_event.id | yes | - |
+| equipment_event_id | bigint | FK -> equipment_event.id | yes | - |
 | read_at | timestamp with time zone | - | yes | - |
 
 - Primary key: `id`.
 - Foreign key: `(appointment_event_id) -> appointment_event (id)`; NO ACTION.
+- Foreign key: `(equipment_event_id) -> equipment_event (id)`; NO ACTION.
 - Foreign key: `(recipient_id) -> university_user (id)`; NO ACTION.
 - Foreign key: `(room_event_id) -> room_event (id)`; NO ACTION.
-- Check: `num_nonnulls(appointment_event_id, room_event_id) = 1`.
+- Check: `num_nonnulls(appointment_event_id, room_event_id, equipment_event_id) = 1`.
 - Unique: `recipient_id, appointment_event_id`.
+- Unique: `recipient_id, equipment_event_id`.
 - Unique: `recipient_id, room_event_id`.
 - Index: `ix_notification_appointment_event_id (appointment_event_id)`.
+- Index: `ix_notification_equipment_event_id (equipment_event_id)`.
 - Index: `ix_notification_recipient_read_id (recipient_id, read_at, id)`.
 - Index: `ix_notification_room_event_id (room_event_id)`.
 

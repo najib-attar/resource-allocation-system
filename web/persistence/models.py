@@ -473,13 +473,139 @@ class RoomEvent(Base):
 class Notification(Base):
     __tablename__ = "notification"
     __table_args__ = (
-        CheckConstraint("num_nonnulls(appointment_event_id, room_event_id) = 1"),
+        CheckConstraint("num_nonnulls(appointment_event_id, room_event_id, equipment_event_id) = 1", name="ck_notification_source"),
         UniqueConstraint("recipient_id", "appointment_event_id"),
         UniqueConstraint("recipient_id", "room_event_id"),
+        UniqueConstraint("recipient_id", "equipment_event_id"),
         Index("ix_notification_recipient_read_id", "recipient_id", "read_at", "id"),
     )
     id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
     recipient_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"))
     appointment_event_id: Mapped[int | None] = mapped_column(ForeignKey("appointment_event.id"), index=True)
     room_event_id: Mapped[int | None] = mapped_column(ForeignKey("room_event.id"), index=True)
+    equipment_event_id: Mapped[int | None] = mapped_column(ForeignKey("equipment_event.id"), index=True)
     read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+EQUIPMENT_CONDITIONS = ('usable', 'maintenance', 'damaged', 'missing', 'lost', 'retired')
+BORROW_STATES = ('Pending Approval', 'Approved', 'Rejected', 'Borrowed', 'Partially Returned', 'Returned', 'Cancelled')
+
+
+class EquipmentCategory(Base):
+    __tablename__ = 'equipment_category'
+    id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
+    name: Mapped[str] = mapped_column(String(150), unique=True)
+
+
+class EquipmentCustodian(Base):
+    __tablename__ = 'equipment_custodian'
+    faculty_id: Mapped[int] = mapped_column(ForeignKey('organization_unit.id'), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey('login_account.user_id'), index=True)
+
+
+class EquipmentType(Base):
+    __tablename__ = 'equipment_type'
+    __table_args__ = (UniqueConstraint('id', 'faculty_id'), CheckConstraint('max_loan_days BETWEEN 1 AND 365'),
+                      CheckConstraint("jsonb_typeof(specifications) = 'object' AND jsonb_typeof(eligible_faculty_ids) = 'array'"))
+    id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
+    faculty_id: Mapped[int] = mapped_column(ForeignKey('organization_unit.id'), index=True)
+    category_id: Mapped[int] = mapped_column(ForeignKey('equipment_category.id'), index=True)
+    name: Mapped[str] = mapped_column(String(200))
+    description: Mapped[str] = mapped_column(Text, default='')
+    specifications: Mapped[dict] = mapped_column(JSONB, default=dict)
+    max_loan_days: Mapped[int] = mapped_column(Integer)
+    eligible_faculty_ids: Mapped[list] = mapped_column(JSONB, default=list)
+    pickup_instructions: Mapped[str] = mapped_column(Text, default='')
+    enabled: Mapped[bool] = mapped_column(Boolean, default=True)
+
+
+class EquipmentUnit(Base):
+    __tablename__ = 'equipment_unit'
+    __table_args__ = (UniqueConstraint('id', 'type_id'), CheckConstraint(allowed('condition', EQUIPMENT_CONDITIONS)))
+    id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
+    type_id: Mapped[int] = mapped_column(ForeignKey('equipment_type.id'), index=True)
+    asset_tag: Mapped[str] = mapped_column(String(150), unique=True)
+    condition: Mapped[str] = mapped_column(String(20), default='usable')
+    notes: Mapped[str] = mapped_column(Text, default='')
+
+
+class BorrowRequest(Base):
+    __tablename__ = 'borrow_request'
+    __table_args__ = (UniqueConstraint('id', 'faculty_id'), UniqueConstraint('borrower_id', 'submission_key'),
+                      CheckConstraint(allowed('status', BORROW_STATES)), CheckConstraint('start_at < due_at'),
+                      CheckConstraint("submission_key ~ '^[0-9a-f]{32}$' AND submission_fingerprint ~ '^[0-9a-f]{64}$'"),
+                      Index('ix_borrow_faculty_status', 'faculty_id', 'status'))
+    id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
+    borrower_id: Mapped[int] = mapped_column(ForeignKey('university_user.id'), index=True)
+    faculty_id: Mapped[int] = mapped_column(ForeignKey('organization_unit.id'))
+    purpose: Mapped[str] = mapped_column(Text)
+    notes: Mapped[str] = mapped_column(Text, default='')
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    due_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    status: Mapped[str] = mapped_column(String(30), default='Pending Approval')
+    submission_key: Mapped[str] = mapped_column(String(32))
+    submission_fingerprint: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class BorrowItem(Base):
+    __tablename__ = 'borrow_item'
+    __table_args__ = (ForeignKeyConstraint(['request_id', 'faculty_id'], ['borrow_request.id', 'borrow_request.faculty_id']),
+                      ForeignKeyConstraint(['type_id', 'faculty_id'], ['equipment_type.id', 'equipment_type.faculty_id']),
+                      UniqueConstraint('request_id', 'type_id'), UniqueConstraint('id', 'type_id'),
+                      CheckConstraint("quantity BETWEEN 1 AND 1000 AND jsonb_typeof(specifications) = 'object'"))
+    id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
+    request_id: Mapped[int] = mapped_column(Integer, index=True)
+    faculty_id: Mapped[int] = mapped_column(Integer, index=True)
+    type_id: Mapped[int] = mapped_column(Integer, index=True)
+    quantity: Mapped[int] = mapped_column(Integer)
+    specifications: Mapped[dict] = mapped_column(JSONB, default=dict)
+
+
+class EquipmentReservation(Base):
+    __tablename__ = 'equipment_reservation'
+    __table_args__ = (ForeignKeyConstraint(['item_id', 'type_id'], ['borrow_item.id', 'borrow_item.type_id']),
+                      ForeignKeyConstraint(['unit_id', 'type_id'], ['equipment_unit.id', 'equipment_unit.type_id']),
+                      CheckConstraint('start_at < due_at'),
+                      CheckConstraint('returned_at IS NULL OR (handed_at IS NOT NULL AND returned_at >= handed_at AND released)'),
+                      CheckConstraint('handed_at IS NULL OR (handed_by IS NOT NULL AND handover_condition IS NOT NULL)'),
+                      CheckConstraint('returned_at IS NULL OR (received_by IS NOT NULL AND return_condition IS NOT NULL)'),
+                      ExcludeConstraint(('unit_id', '='), ('period', '&&'), where="NOT released", using='gist', name='ex_equipment_overlap'))
+    id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
+    item_id: Mapped[int] = mapped_column(Integer, index=True)
+    type_id: Mapped[int] = mapped_column(Integer, index=True)
+    unit_id: Mapped[int] = mapped_column(Integer, index=True)
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    due_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    period: Mapped[object] = mapped_column(TSTZRANGE, Computed("tstzrange(start_at, due_at, '[)')", persisted=True))
+    released: Mapped[bool] = mapped_column(Boolean, default=False)
+    handed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    handed_by: Mapped[int | None] = mapped_column(ForeignKey('login_account.user_id'), index=True)
+    handover_condition: Mapped[str | None] = mapped_column(Text)
+    returned_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    received_by: Mapped[int | None] = mapped_column(ForeignKey('login_account.user_id'), index=True)
+    return_condition: Mapped[str | None] = mapped_column(Text)
+
+
+class BorrowExtension(Base):
+    __tablename__ = 'borrow_extension'
+    __table_args__ = (CheckConstraint(allowed('status', ('Pending', 'Approved', 'Rejected'))),
+                      Index('uq_pending_borrow_extension', 'request_id', unique=True, postgresql_where="status = 'Pending'"))
+    id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
+    request_id: Mapped[int] = mapped_column(ForeignKey('borrow_request.id'), index=True)
+    due_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    status: Mapped[str] = mapped_column(String(20), default='Pending')
+    reason: Mapped[str] = mapped_column(Text)
+    decided_by: Mapped[int | None] = mapped_column(ForeignKey('login_account.user_id'), index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class EquipmentEvent(Base):
+    __tablename__ = 'equipment_event'
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    faculty_id: Mapped[int] = mapped_column(ForeignKey('organization_unit.id'), index=True)
+    request_id: Mapped[int | None] = mapped_column(ForeignKey('borrow_request.id'), index=True)
+    unit_id: Mapped[int | None] = mapped_column(ForeignKey('equipment_unit.id'), index=True)
+    actor_id: Mapped[int] = mapped_column(ForeignKey('university_user.id'), index=True)
+    message: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

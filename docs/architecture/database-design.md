@@ -22,10 +22,10 @@ persistence.
 ![High-level ER diagram](database-er-high-level.svg)
 
 - [High-level Mermaid source](database-er-high-level.mmd): principal entities, using only actual foreign-key relationships.
-- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 38 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
+- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 47 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
 - [Physical schema catalog](database-schema-catalog.md): every column's type/nullability/default, composite keys, unique/check constraints, indexes and deletion policy.
 
-`alembic_version` is the thirty-ninth physical table, used only by Alembic, not an
+`alembic_version` is the forty-eighth physical table, used only by Alembic, not an
 application entity. Application sources/catalog are generated from the models;
 the existing Alembic revision marker is explicitly documented too. Use
 `python scripts/generate_database_diagrams.py`; `--check` detects drift in tests/CI.
