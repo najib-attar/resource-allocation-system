@@ -77,7 +77,11 @@ class EquipmentWebTests(EquipmentFixture):
 
     def test_invalid_dates_quantities_and_unknown_operations_fail_safely(self):
         student=self.client(1)
-        self.assertEqual(student.get('/equipment/catalog?start=broken').status_code,409)
+        invalid=student.get('/equipment/catalog?start=broken')
+        self.assertEqual(invalid.status_code,409)
+        self.assertIn(b'Equipment unavailable',invalid.data)
+        self.assertIn(b'Back to equipment',invalid.data)
+        self.assertNotIn(b'Back to appointments',invalid.data)
         self.assertEqual(self.post(student,'/equipment/catalog',{'action':'submit','faculty':str(self.faculty),
             'start':'2030-01-07T10:00','due':'2030-01-10T10:00','qty_'+str(self.type_id):'-1'}).status_code,409)
         self.assertEqual(self.post(student,'/equipment/999999/approve',{}).status_code,403)

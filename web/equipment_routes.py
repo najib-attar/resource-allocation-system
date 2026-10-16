@@ -34,11 +34,11 @@ def create_equipment_blueprint(database_provider, gateway_provider):
 
     @blueprint.errorhandler(PermissionError)
     def forbidden(error):
-        return render_template('appointment_error.html', message=str(error)), 403
+        return render_template('equipment_error.html', message=str(error)), 403
 
     @blueprint.errorhandler(CalendarError)
     def invalid(error):
-        return render_template('appointment_error.html', message=str(error)), 409
+        return render_template('equipment_error.html', message=str(error)), 409
 
     @blueprint.get('/')
     def index():

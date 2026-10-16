@@ -1,0 +1,4 @@
+{% extends 'base.html' %}
+{% block title %}Equipment Request Unavailable{% endblock %}
+{% block page_heading %}Equipment unavailable{% endblock %}
+{% block content %}<section class="panel"><p role="alert">{{ message }}</p><a class="button-secondary" href="{{ url_for('equipment.index') }}">Back to equipment</a></section>{% endblock %}
