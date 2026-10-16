@@ -10,7 +10,7 @@ def create_notification_blueprint(database_provider):
     def inbox(limit=20):
         result = NotificationService(database_provider()).inbox(g.principal.user_id, limit)
         for item in result['items']:
-            endpoint = 'appointments.detail' if item['kind'] == 'appointment' else 'rooms.detail'
+            endpoint = {'appointment': 'appointments.detail', 'room': 'rooms.detail', 'equipment': 'equipment.detail'}[item['kind']]
             key = 'appointment_id' if item['kind'] == 'appointment' else 'request_id'
             item['url'] = url_for(endpoint, **{key: item['subject_id']})
         return result

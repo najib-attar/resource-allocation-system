@@ -104,6 +104,9 @@ class EngineGateway:
     def execute_room(self, snapshot):
         return self._execute(snapshot, "--rooms-json", validate_room_result)
 
+    def execute_equipment(self, snapshot):
+        return self._execute(snapshot, "--equipment-json", validate_equipment_result)
+
     def _execute(self, snapshot, mode, validator):
         backend = resolve_backend_executable(self.project_root, os.environ.get("RESOURCE_ALLOCATION_BACKEND"))
         if self.logger:
@@ -131,6 +134,40 @@ class EngineGateway:
         if result["status"] != "success":
             raise EngineIntegrationError(f"Backend reported error with zero exit code: {result['errors']}")
         return result, backend.metadata
+
+
+def validate_equipment_result(result, snapshot):
+    def require(condition):
+        if not condition:
+            raise EngineIntegrationError('Invalid equipment engine response.')
+    require(isinstance(result, dict) and type(result.get('protocolVersion')) is int and result['protocolVersion'] == 1
+            and result.get('operation') == 'equipment' and result.get('runId') == snapshot['runId']
+            and result.get('status') == 'success' and isinstance(result.get('engineVersion'), str) and bool(result['engineVersion'])
+            and type(result.get('feasible')) is bool and result.get('errors') == [])
+    needs = {item['typeId']: item for item in snapshot['items']}
+    types = {item['id']: item for item in snapshot['types']}
+    units = {item['id']: item for item in snapshot['units']}
+    require(isinstance(result.get('items'), list) and len(result['items']) == len(needs))
+    seen, selected = set(), set()
+    for row in result['items']:
+        require(isinstance(row, dict) and type(row.get('typeId')) is int and row['typeId'] in needs and row['typeId'] not in seen)
+        key = row['typeId']
+        seen.add(key)
+        require(type(row.get('availableQuantity')) is int and 0 <= row['availableQuantity'] <= len(units)
+                and row.get('reasonCode') in {'AVAILABLE', 'INELIGIBLE', 'NO_CUSTODIAN', 'INSUFFICIENT_QUANTITY'}
+                and isinstance(row.get('unitIds'), list) and isinstance(row.get('alternativeTypeIds'), list))
+        require(len(row['unitIds']) == (needs[key]['quantity'] if result['feasible'] else 0))
+        for uid in row['unitIds']:
+            require(type(uid) is int and uid in units and units[uid]['typeId'] == key and uid not in selected)
+            selected.add(uid)
+        require(all(type(t) is int and t in types and t != key for t in row['alternativeTypeIds']))
+    require(result['feasible'] == all(row['reasonCode'] == 'AVAILABLE' for row in result['items']))
+    require(isinstance(result.get('alternativePeriods'), list) and len(result['alternativePeriods']) <= 3)
+    for period in result['alternativePeriods']:
+        require(isinstance(period, dict) and all(type(period.get(k)) is int for k in ('start', 'end'))
+                and period['start'] > snapshot['proposed']['start'] and period['end'] <= 4102444800
+                and period['end'] - period['start'] == snapshot['proposed']['end'] - snapshot['proposed']['start'])
+    return result
 
 
 def validate_room_result(result, snapshot):

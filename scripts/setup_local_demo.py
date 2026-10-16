@@ -26,6 +26,7 @@ from web.persistence.models import (AcademicPeriod, BusySlot, CalendarBlock, Leg
                                     LoginAccount, OrganizationUnit, ProfessorAvailability, ResourceRequest)
 from web.persistence.repository import PersistenceError, Repository, state_row
 from web.room_request_service import RoomRequestService
+from web.persistence.equipment_demo import seed_equipment_demo
 
 
 def demo_inputs(seed):
@@ -91,9 +92,11 @@ def seed_local_demo(database, password, start, end, seed=42):
     for index, room in enumerate(snapshot['spaces']):
         room_service.configure_room(administrators[0], room['id'], faculties[index % len(faculties)], True,
                                     ['study','meeting','lecture','club','other'])
+    equipment = seed_equipment_demo(database, administrators[0], seed=seed)
     return {"seed": seed, "academicStart": start.isoformat(), "academicEnd": end.isoformat(),
             "counts": {key: len(snapshot[key]) for key in ("users", "spaces", "requests", "busySlots")},
-            "accounts": accounts, "allocationCount": len(result["allocations"]), "configuredStudentRooms": len(snapshot['spaces'])}
+            "accounts": accounts, "allocationCount": len(result["allocations"]), "configuredStudentRooms": len(snapshot['spaces']),
+            "equipment": equipment}
 
 
 def write_settings(path, settings):

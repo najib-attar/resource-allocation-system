@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block title %}Equipment Custodian Assignments{% endblock %}
+{% block page_heading %}Equipment Custodians{% endblock %}
+{% block content %}<section class="panel"><h2>Faculty responsibilities</h2><p>Each faculty has one active equipment custodian, separate from its room-approval administrator. Replacing an assignment immediately changes authority for current requests and loans.</p>
+<ul>{% for f in directory.faculties %}<li>{{ f.name }}: {% set assigned = accounts|selectattr('id','equalto',f.custodianId)|first %}{{ assigned.name|person_name if assigned else 'No active authorized custodian' }}</li>{% endfor %}</ul>
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label>Faculty<select name="faculty" required>{% for f in directory.faculties %}<option value="{{ f.id }}">{{ f.name }}</option>{% endfor %}</select></label><label>Active staff or administrator<select name="custodian" required>{% for a in accounts %}<option value="{{ a.id }}">{{ a.name|person_name }} &middot; {{ a.role }}</option>{% endfor %}</select></label><button class="button-primary">Assign or replace custodian</button></form></section>{% endblock %}

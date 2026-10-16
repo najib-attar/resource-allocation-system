@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Equipment Catalog{% endblock %}
+{% block page_heading %}Find Equipment{% endblock %}
+{% block content %}
+<section class="panel"><h2>Choose a borrowing period</h2><p>Times use {{ zone }}. Availability is rechecked at approval; pending requests do not hold equipment.</p>
+<form method="get" class="equipment-inline"><label>Pickup<input type="datetime-local" name="start" value="{{ start }}" required></label><label>Expected return<input type="datetime-local" name="due" value="{{ due }}" required></label><button class="button-secondary">Refresh catalog</button></form></section>
+<form method="post" id="equipment-borrow-form">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="submission_key" value="{{ submission_key }}">
+<input type="hidden" name="start" value="{{ start }}"><input type="hidden" name="due" value="{{ due }}">
+<section class="panel"><h2>Select equipment from one faculty</h2>
+<label>Owning faculty<select name="faculty" id="equipment-faculty" required><option value="">Choose a faculty</option>{% for f in directory.faculties %}<option value="{{ f.id }}"{% if request.form.get('faculty') == f.id|string %} selected{% endif %}>{{ f.name }}{% if not f.custodianId %} (custodian not configured){% endif %}</option>{% endfor %}</select></label>
+<div class="equipment-catalog">{% for item in items %}<article class="equipment-card" data-equipment-faculty="{{ item.facultyId }}">
+    <div><small>{{ item.category }} &middot; {{ item.faculty }}</small><h3 id="equipment-name-{{ item.id }}">{{ item.name }}</h3><p>{{ item.description }}</p>
+    <dl>{% for k,v in item.specifications.items() %}<dt>{{ k }}</dt><dd>{{ v }}</dd>{% endfor %}</dl>
+    <p><strong>{{ item.available }} available</strong> in this period &middot; Maximum {{ item.maxDays }} days</p><p>{{ item.pickup }}</p>
+    {% if item.reason == 'NO_CUSTODIAN' %}<p class="equipment-warning">Faculty custodian configuration is required before borrowing.</p>{% endif %}</div>
+    <label>Quantity<input type="number" min="0" max="1000" name="qty_{{ item.id }}" value="{{ request.form.get('qty_' ~ item.id, '0') }}" aria-labelledby="equipment-name-{{ item.id }}"></label>
+    <details><summary>Additional exact requirements (optional)</summary><label>Specifications as text-valued JSON<input name="spec_{{ item.id }}" value="{{ request.form.get('spec_' ~ item.id, '{}') }}" placeholder='{"architecture":"arm"}'></label><p>All named values must match the catalog specifications. Blank means the selected type is sufficient.</p></details>
+</article>{% else %}<p>No eligible equipment is configured for this borrowing period. Try a shorter duration or contact the faculty desk.</p>{% endfor %}</div></section>
+<section class="panel"><h2>Describe your project</h2><label>Purpose<textarea name="purpose" maxlength="2000" required>{{ request.form.get('purpose','') }}</textarea></label><label>Optional notes<textarea name="notes" maxlength="4000">{{ request.form.get('notes','') }}</textarea></label>
+<div class="equipment-actions"><button name="action" value="recommend" class="button-secondary">Check equipment and alternatives</button><button name="action" value="submit" class="button-primary">Submit for custodian approval</button></div></section>
+</form>
+{% if result %}<section class="panel" aria-live="polite"><h2>{{ 'Your complete request is feasible' if result.feasible else 'Your request needs adjustment' }}</h2>
+<p>Selection is deterministic: eligible usable units are selected by inventory ID. Already borrowed equipment is never assumed returned.</p>
+{% for match in result['items'] %}{% set item = items|selectattr('id','equalto',match.typeId)|first %}<p>{{ item.name if item else 'Equipment' }}: {{ match.availableQuantity }} available &middot; {{ match.reasonCode|replace('_',' ') }}</p>
+{% for alternative in match.alternativeTypeIds %}{% set alt = items|selectattr('id','equalto',alternative)|first %}<p>Compatible alternative: {{ alt.name if alt else 'refresh the catalog to view this equipment type' }}. Change your selection explicitly; no substitution is automatic.</p>{% endfor %}{% endfor %}
+{% for period in result.alternativePeriods %}<p>Alternative interval: {{ period.startAt|university_time }} to {{ period.endAt|university_time }}. Select these dates above and check again.</p>{% endfor %}
+</section>{% endif %}
+<script src="{{ url_for('static',filename='equipment.js') }}" defer></script>
+{% endblock %}

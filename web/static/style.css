@@ -1361,3 +1361,12 @@ tr:nth-child(even) td {
     .sign-out-form button { font-size: .8rem; padding: .55rem .65rem; }
     .notification-heading { flex-wrap: wrap; }
 }
+/* Equipment shares the existing authenticated shell and form controls. */
+.equipment-actions, .equipment-inline { display: flex; gap: 1rem; flex-wrap: wrap; align-items: end; }
+.equipment-catalog, .equipment-management-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
+.equipment-card { border: 1px solid var(--border, #d9ded8); border-radius: 12px; padding: 1.25rem; background: var(--surface, #fff); }
+.equipment-card[hidden] { display: none; }
+.equipment-card dl { display: grid; grid-template-columns: auto 1fr; gap: .25rem 1rem; }
+.equipment-card dd { margin: 0; }
+.equipment-warning { color: #8c2f1d; font-weight: 650; }
+.equipment-management-grid .panel { margin: 0; }

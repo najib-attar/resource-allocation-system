@@ -4,12 +4,13 @@ from datetime import datetime, timezone
 from sqlalchemy import func, literal, or_, select, union_all, update
 
 from .persistence.models import (Appointment, AppointmentEvent, AppointmentInvitation,
-    AppointmentProfessor, Notification, RoomEvent, RoomInvitation, StudentRoomRequest, User)
+    AppointmentProfessor, Notification, RoomEvent, RoomInvitation, StudentRoomRequest, User,
+    BorrowRequest, EquipmentCustodian, EquipmentEvent, LoginAccount, Role)
 
 
 def publish_event(session, event):
     """Persist history and its recipient notifications in the caller's transaction."""
-    if not isinstance(event, (AppointmentEvent, RoomEvent)):
+    if not isinstance(event, (AppointmentEvent, RoomEvent, EquipmentEvent)):
         raise TypeError('Unsupported notification event.')
     session.add(event)
     session.flush()
@@ -19,11 +20,18 @@ def publish_event(session, event):
         for model in (AppointmentProfessor, AppointmentInvitation):
             people.update(session.scalars(select(model.user_id).where(model.appointment_id == parent.id)))
         source = {'appointment_event_id': event.id}
-    else:
+    elif isinstance(event, RoomEvent):
         parent = session.get(StudentRoomRequest, event.request_id)
         people = {parent.organizer_id, parent.approver_id}
         people.update(session.scalars(select(RoomInvitation.user_id).where(RoomInvitation.request_id == parent.id)))
         source = {'room_event_id': event.id}
+    else:
+        parent = session.get(BorrowRequest, event.request_id)
+        people = {parent.borrower_id}
+        assignment = session.get(EquipmentCustodian, parent.faculty_id)
+        if assignment:
+            people.add(assignment.user_id)
+        source = {'equipment_event_id': event.id}
     session.add_all(Notification(recipient_id=person, **source) for person in people if person != event.actor_id)
 
 
@@ -41,7 +49,16 @@ def _visible(actor):
         StudentRoomRequest.purpose.label('subject'), StudentRoomRequest.id.label('subject_id'),
         literal('room').label('kind')).join(RoomEvent, RoomEvent.id == Notification.room_event_id).join(
         StudentRoomRequest, StudentRoomRequest.id == RoomEvent.request_id).where(Notification.recipient_id == actor, room_scope)
-    return union_all(appointments, rooms).subquery()
+    authorized_faculties = select(EquipmentCustodian.faculty_id).join(User, User.id == EquipmentCustodian.user_id).join(
+        LoginAccount, LoginAccount.user_id == User.id).join(Role, Role.id == User.primary_role_id).where(
+        EquipmentCustodian.user_id == actor, func.lower(User.status) == 'active', LoginAccount.enabled.is_(True),
+        or_(LoginAccount.administrator.is_(True), Role.name.in_(['Staff', 'Administrator'])))
+    equipment_scope = or_(BorrowRequest.borrower_id == actor, BorrowRequest.faculty_id.in_(authorized_faculties))
+    equipment = select(Notification.id, Notification.read_at, EquipmentEvent.created_at, EquipmentEvent.message,
+        BorrowRequest.purpose.label('subject'), BorrowRequest.id.label('subject_id'), literal('equipment').label('kind')).join(
+        EquipmentEvent, EquipmentEvent.id == Notification.equipment_event_id).join(
+        BorrowRequest, BorrowRequest.id == EquipmentEvent.request_id).where(Notification.recipient_id == actor, equipment_scope)
+    return union_all(appointments, rooms, equipment).subquery()
 
 
 class NotificationService:
