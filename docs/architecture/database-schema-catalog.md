@@ -230,7 +230,7 @@ Same-faculty requested type, quantity and exact additional specifications.
 |---|---|---|---|---|
 | id | integer | PK | no | identity |
 | request_id | integer | FK -> borrow_request.id | no | - |
-| faculty_id | integer | FK -> equipment_type.faculty_id; FK -> borrow_request.faculty_id | no | - |
+| faculty_id | integer | FK -> borrow_request.faculty_id; FK -> equipment_type.faculty_id | no | - |
 | type_id | integer | FK -> equipment_type.id | no | - |
 | quantity | integer | - | no | - |
 | specifications | jsonb | - | no | ORM callable |
@@ -546,7 +546,7 @@ Ranked structured time/resource alternatives returned by C++.
 
 ## notification
 
-Recipient-scoped event inbox and durable read state; exactly one appointment/room history event.
+Recipient-scoped event inbox and durable read state; exactly one appointment/room/equipment history event.
 
 | Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
 |---|---|---|---|---|

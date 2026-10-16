@@ -49,7 +49,7 @@ PURPOSES = {
     "room_reservation": "Exact confirmed exclusive room interval; GiST overlap exclusion.",
     "room_organizer_commitment": "Confirmed organizing-student interval with cross-appointment conflict protection.",
     "room_event": "Private timestamped room request lifecycle and invitation history.",
-    "notification": "Recipient-scoped event inbox and durable read state; exactly one appointment/room history event.",
+    "notification": "Recipient-scoped event inbox and durable read state; exactly one appointment/room/equipment history event.",
     "equipment_category": "Extensible named equipment categories, independent of room types.",
     "equipment_custodian": "One current designated equipment staff/administrator account per owning faculty.",
     "equipment_type": "Faculty-owned equipment catalog, exact specifications and configurable borrowing policy.",
@@ -123,7 +123,7 @@ def catalog(tables):
         lines += ["## " + table.name, "", PURPOSES[table.name], "", "| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |", "|---|---|---|---|---|"]
         for column in table.columns:
             keys = ["PK"] if column.primary_key else []
-            keys += ["FK -> " + fk.target_fullname for fk in column.foreign_keys]
+            keys += ["FK -> " + fk.target_fullname for fk in sorted(column.foreign_keys, key=lambda fk: fk.target_fullname)]
             default = "identity" if column.identity is not None else "computed: " + str(column.computed.sqltext) if column.computed is not None else str(column.server_default.arg) if column.server_default is not None else "ORM: " + str(column.default.arg) if column.default is not None and not column.default.is_callable else "ORM callable" if column.default is not None else "-"
             sql_type = column.type.compile(dialect=postgresql.dialect()).lower()
             lines.append(f"| {column.name} | {sql_type} | {'; '.join(keys) or '-'} | {'yes' if column.nullable else 'no'} | {default} |")
