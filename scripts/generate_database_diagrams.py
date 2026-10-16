@@ -158,6 +158,8 @@ def artifacts():
         raise RuntimeError("Update table purpose inventory before generating diagrams.")
     return {"database-er-physical.mmd": er_source(tables, True),
             "database-er-high-level.mmd": er_source([item for item in tables if item.name in MAIN_TABLES], False),
+            "equipment-er.mmd": er_source([item for item in tables if item.name.startswith(('equipment_', 'borrow_'))
+                                          or item.name in {'organization_unit', 'university_user', 'login_account', 'notification'}], False),
             "database-schema-catalog.md": catalog(tables)}
 
 

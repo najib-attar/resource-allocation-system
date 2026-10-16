@@ -220,10 +220,10 @@ See [student room architecture](student-room-design.md).
 ### Shared notification inbox
 
 Additive migration `0043c` adds `notification`, bringing the application total to
-38. A recipient FK and exactly one appointment-event or room-event FK identify
-each update. Unique recipient/event pairs prevent duplicates. Source messages
+38 at that revision. Iteration 44 extends its source constraint to exactly one
+appointment, room or equipment event. Unique recipient/event pairs prevent duplicates. Source messages
 remain in history, not duplicated or parsed for decisions. `read_at` stores each
-recipient's durable read state; indexes cover recipient/read/ID and both source FKs.
+recipient's durable read state; indexes cover recipient/read/ID and each source FK.
 Existing events are backfilled only for their current authorized participants,
 excluding the actor. New history and recipient entries commit in the same workflow
 transaction, so rollback cannot leave a false approval notification.
@@ -232,6 +232,30 @@ Inbox reads recheck current participant/assigned-approver visibility. Removed
 invitees cannot retrieve old private content just because an inbox row remains.
 Mark-all-read uses the displayed ID boundary: later arrivals stay unread. This
 inbox does not reserve time or subscribe to room/professor availability.
+
+### Equipment borrowing additions (Iteration 44)
+
+Migrations `0044a`-`0044c` add nine equipment tables, for **47 application
+tables**. [Equipment architecture](equipment-borrowing-design.md) explains the
+separate type/physical-unit model, faculty custodian, requests/items, asset
+reservations, extensions and actor-scoped events. [Focused ER](equipment-er.svg)
+and [Mermaid source](equipment-er.mmd) show the reused identity/ownership links.
+
+Composite FKs enforce request/type faculty consistency and reservation/item/unit
+type consistency. A partial GiST exclusion prevents overlapping unreleased asset
+reservations. Deferred aggregate triggers enforce nonempty item lists, exact
+quantities and physical handover/return state. Half-open aware timestamp intervals
+and leading composite-FK indexes support integrity and efficient lookups. A
+physical-release check forbids releasing a handed-out but unreturned unit. The
+half-open intervals allow adjacent future reservations, but an active unreturned loan always blocks
+new matching until physical return, independent of due date.
+
+Equipment operations use a bounded **faculty-row lock**, not the weekly allocation
+input revision lock. The C++ matching call runs under this scoped transaction;
+failures roll back reservations, lifecycle changes, history and notifications
+together. Different faculties remain independent. Submission identities use a
+borrower/key uniqueness constraint and immutable payload fingerprint. No existing
+room or appointment table is repurposed and no database dependency is added to C++.
 
 Weekly `TimeSlot` and the original allocation protocol v1 remain undated.
 Appointments and student room requests use separate dated operations, explicit
@@ -246,7 +270,7 @@ SQL constraints must not silently impose a different allocation policy.
 
 ## Snapshot, concurrency and publication
 
-All input writes briefly lock application_state using SELECT FOR UPDATE, change
+Weekly allocation input writes briefly lock application_state using SELECT FOR UPDATE, change
 the relevant records, and increment input_revision in the same transaction.
 Request IDs and submission order use PostgreSQL identities, not MAX(id)+1.
 Lock acquisition has a configurable finite timeout.

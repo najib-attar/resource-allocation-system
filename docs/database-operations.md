@@ -299,7 +299,7 @@ before merge rather than treating local lint as remote verification.
 
 ## Student room configuration
 
-Apply Alembic head `0043c` before using UC-STU-02 and the notification inbox. These additive migrations do
+Apply Alembic head before using UC-STU-02 and the notification inbox. These additive migrations do
 not infer resource owners or academic dates. As a trusted university administrator,
 open **Room Policies**: designate the faculty's active administrative approver,
 set each known room's owning faculty/categories and optional user whitelist, and
@@ -338,3 +338,21 @@ it does not deploy the application publicly or infer dates for undated records.
 Do not expose the Flask development server publicly. Weekly room schedules remain
 weekday/minute intervals, while appointment calendars use explicit dates/timezones.
 PostgreSQL persists both workflows; CSV remains an offline compatibility/import tool.
+
+## Equipment borrowing
+
+Upgrade to Alembic head (`0044c`) before serving equipment pages. The nine additive
+inventory/loan tables bring the application total to 47. Existing room/appointment
+data is preserved; `notification` additionally references equipment events.
+See the [equipment guide](equipment-borrowing-guide.md) for authorized custodian
+assignment, inventory registration, policy configuration and fictional seeding.
+New local-demo profiles include equipment; existing profiles are never reseeded.
+The explicit `scripts/seed_equipment_demo.py` utility refuses existing equipment
+configuration and requires acknowledgement of a development database.
+
+Backups/restores must include the entire application schema, not only inventory
+tables: requests, physical loan records, lifecycle history and notification receipts
+are one consistent dataset. The existing pg_dump/pg_restore procedure remains
+applicable. Never repair an overdue loan by deleting reservations or recording an
+unverified return. A busy faculty/engine error rolls back the current equipment
+operation; it does not publish a partial reservation.

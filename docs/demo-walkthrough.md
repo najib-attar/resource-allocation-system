@@ -1,5 +1,9 @@
 # Run and explore the fictional university demo
 
+For the equipment service, see [the equipment walkthrough](equipment-borrowing-guide.md).
+New fictional profiles include inventory automatically; existing profiles remain
+unchanged and can use the explicit additive development seed described there.
+
 From Windows PowerShell in the repository root:
 
 ```powershell
