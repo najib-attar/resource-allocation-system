@@ -58,7 +58,7 @@ def selection(view='month', day=None, now=None):
 def _filters(values, choices):
     if values is None:
         return set(choices)
-    if not isinstance(values, (list, tuple, set)) or any(value not in choices for value in values):
+    if not isinstance(values, (list, tuple, set)) or any(not isinstance(value, str) or value not in choices for value in values):
         raise CalendarError('Choose recognized calendar categories and statuses.')
     return set(values)
 
@@ -165,7 +165,7 @@ class UniversityCalendarService:
                     note += ' Optional invitation: ' + invited[row.id] + '; not a personal reservation.'
                 add('appointment:'+str(row.id), 'appointment', row.purpose, row.start_at, row.end_at, row.status,
                     '/appointments/'+str(row.id), busy=mandatory and row.status == 'Confirmed', note=note,
-                    state='rejected' if not mandatory and invited[row.id] == 'Declined' else None)
+                    state='rejected' if row.status != 'Cancelled' and not mandatory and invited[row.id] == 'Declined' else None)
         if 'room' in categories:
             managed = [fid for fid, uid in valid_approvers(session).items() if uid == actor] if scope == 'relevant' else []
             invited_ids = select(RoomInvitation.request_id).where(RoomInvitation.user_id == actor)
@@ -181,7 +181,7 @@ class UniversityCalendarService:
                     '/rooms/'+str(row.id), busy=own and row.status == 'Confirmed',
                     location=room.name+' - '+room.building,
                     note='Organizer booking.' if own else 'Assigned review or optional invitation; not a personal reservation.',
-                    state='rejected' if not own and invitations.get(row.id) == 'Declined' else None)
+                    state='rejected' if row.status != 'Cancelled' and not own and invitations.get(row.id) == 'Declined' else None)
         if 'equipment' in categories:
             self._equipment(session, actor, start, end, scope, now, add)
         if 'personal' in categories:
@@ -266,6 +266,8 @@ class UniversityCalendarService:
                         row.status, path, note='Custodian-verified physical return.', state='completed')
 
     def academic_detail(self, actor, key, day):
+        if type(key) is not int or not 0 < key <= 2147483647:
+            raise CalendarError('Choose a valid academic activity.')
         selected = selection('day', day)
         with self.database.transaction(read_only=True) as session:
             _identity(session, actor)
@@ -288,7 +290,8 @@ class UniversityCalendarService:
                     Role.id == User.primary_role_id).where(Role.name == 'Instructor', User.status == 'active').order_by(User.name))]}
 
     def publish(self, actor, key, public, instructor=None):
-        if type(public) is not bool or (instructor is not None and (type(instructor) is not int or instructor <= 0)):
+        if (type(key) is not int or not 0 < key <= 2147483647 or type(public) is not bool
+                or (instructor is not None and (type(instructor) is not int or not 0 < instructor <= 2147483647))):
             raise CalendarError('Select a valid publication state and optional professor.')
         with self.database.transaction() as session:
             if not _identity(session, actor):

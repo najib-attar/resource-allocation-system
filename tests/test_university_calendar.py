@@ -92,6 +92,7 @@ class UnifiedCalendarTests(RoomFixture):
         self.assertEqual(event['state'], 'cancelled')
         self.assertFalse(event['busy'])
         self.assertFalse(self.load(states=['confirmed'])['events'])
+        self.assertEqual(self.load(4, states=['cancelled'])['events'][0]['state'], 'cancelled')
 
     def test_pending_reschedule_moves_event_and_revises_approval_progress(self):
         key = self.appointment()
@@ -116,6 +117,7 @@ class UnifiedCalendarTests(RoomFixture):
         self.assertEqual(self.load(2)['events'][0]['state'], 'rejected')
         self.rooms.cancel(key, 1, 1)
         self.assertEqual(self.load()['events'][0]['state'], 'cancelled')
+        self.assertEqual(self.load(2, states=['cancelled'])['events'][0]['state'], 'cancelled')
 
     def test_replaced_or_disabled_reviewer_does_not_retain_calendar_scope(self):
         self.request_room(room=301)
@@ -225,8 +227,11 @@ class UnifiedCalendarTests(RoomFixture):
         self.assertFalse(self.load(categories=[])['events'])
         self.assertFalse(self.load(states=[])['events'])
         self.assertFalse(self.load(scope='published')['events'])
-        for args in ({'categories':['bad']}, {'states':['bad']}, {'scope':'bad'}):
+        for args in ({'categories':['bad']}, {'states':['bad']}, {'categories':[{}]}, {'scope':'bad'}):
             with self.assertRaises(CalendarError): self.load(**args)
+        for key in (-1, 2147483648):
+            with self.assertRaises(CalendarError): self.calendar.publish(6, key, True)
+            with self.assertRaises(CalendarError): self.calendar.academic_detail(1, key, '2030-01-07')
         with self.database.transaction() as session:
             session.get(LoginAccount, 1).enabled = False
         with self.assertRaises(PermissionError): self.load()
