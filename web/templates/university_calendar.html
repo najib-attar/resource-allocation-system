@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% from 'components/_calendar_event.html' import event_card %}
+{% block title %}University Calendar | Resource Allocation System{% endblock %}
+{% block page_heading %}University Calendar{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='calendar.css') }}">{% endblock %}
+{% block content %}
+<section class="calendar-intro"><div><p class="eyebrow">Your university, connected</p><h2>{{ calendar.title }}</h2><p>University time: <strong>{{ calendar.zone }}</strong>. Activities come directly from their services.</p></div>
+<div class="calendar-actions"><a href="{{ url_for('appointments.calendar') }}">Manage personal blocks</a>{% if calendar.administrator %}<a href="{{ url_for('calendar.publications') }}">Publish academic schedules</a>{% endif %}</div></section>
+<section class="panel calendar-controls" aria-label="Calendar controls">
+<nav class="calendar-toolbar" aria-label="Calendar navigation"><div>{% if calendar.previous %}<a class="button-secondary" rel="prev" href="{{ calendar_link(day=calendar.previous) }}">Previous</a>{% endif %}<a class="button-secondary" href="{{ calendar_link(day=calendar.today) }}">Today</a>{% if calendar.next %}<a class="button-secondary" rel="next" href="{{ calendar_link(day=calendar.next) }}">Next</a>{% endif %}</div>
+<div>{% for view in ['month', 'week', 'day'] %}<a class="button-secondary" {% if view == calendar.view %}aria-current="page"{% endif %} href="{{ calendar_link(view=view) }}">{{ view|capitalize }}</a>{% endfor %}</div></nav>
+<form method="get" class="calendar-filters"><input type="hidden" name="filtered" value="1"><input type="hidden" name="view" value="{{ calendar.view }}">
+<div class="calendar-filter-row"><label>Date <input type="date" name="date" value="{{ calendar.date }}" min="1970-01-01" max="2099-12-31" required></label><label>Show <select name="scope">{% for key,label in calendar.scopeOptions.items() %}<option value="{{ key }}"{% if key == calendar.scope %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label><button class="button-primary">Apply filters</button></div>
+<fieldset><legend>Activity categories</legend>{% for key,label in calendar.categoryOptions.items() %}<label class="calendar-checkbox category-key-{{ key }}"><input type="checkbox" name="category" value="{{ key }}"{% if key in calendar.categories %} checked{% endif %}>{{ label }}</label>{% endfor %}</fieldset>
+<fieldset><legend>Status</legend>{% for key,label in calendar.stateOptions.items() %}<label class="calendar-checkbox"><input type="checkbox" name="state" value="{{ key }}"{% if key in calendar.states %} checked{% endif %}>{{ label }}</label>{% endfor %}</fieldset>
+</form></section>
+{% for message in calendar.warnings %}<p class="calendar-warning" role="status">{{ message }}</p>{% endfor %}
+<p class="calendar-explanation">{{ calendar.events|length }} activities in this view. Pending activities do not reserve time. Equipment entries are reminders, not busy intervals. Optional invitations and staff review responsibilities are not personal reservations. Click any activity for details.</p>
+{% if not calendar.events %}<div class="calendar-empty" role="status"><h3>No activities in this view</h3><p>Try another date, audience or filter. Weekly records without explicit academic dates are not expanded.</p></div>{% endif %}
+{% if calendar.view == 'month' %}
+<section class="calendar-month" aria-label="Monthly calendar"><div class="calendar-weekdays" aria-hidden="true">{% for name in ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] %}<strong>{{ name }}</strong>{% endfor %}</div>
+<div class="calendar-month-days">{% for day in calendar.days %}<section class="calendar-day{% if day.outsideMonth %} outside-month{% endif %}{% if day.date == calendar.today %} is-today{% endif %}" aria-label="{{ day.date.strftime('%A %d %B %Y') }}"><a class="calendar-date" href="{{ calendar_link(view='day',day=day.date) }}"><time datetime="{{ day.date }}">{{ day.date.day }}</time><span class="calendar-mobile-weekday">{{ day.date.strftime('%a') }}</span></a>{% for event in day.entries %}{{ event_card(event,true) }}{% endfor %}</section>{% endfor %}</div></section>
+{% else %}
+<div class="calendar-table-scroll" tabindex="0" aria-label="{{ calendar.view|capitalize }} timetable; scroll horizontally on small screens"><table class="calendar-timetable"><thead><tr><th scope="col">Time</th>{% for day in calendar.days %}<th scope="col"{% if day.date == calendar.today %} class="is-today"{% endif %}><a href="{{ calendar_link(view='day',day=day.date) }}">{{ day.date.strftime('%a %d %b') }}</a></th>{% endfor %}</tr></thead><tbody>{% for row in calendar.rows %}<tr><th scope="row">{{ row.label }}</th>{% for entries in row.cells %}<td>{% if entries %}<div class="calendar-cell" tabindex="0" aria-label="Activities at {{ row.label }}; scroll for more">{% for event in entries %}{{ event_card(event,calendar.view=='week') }}{% endfor %}</div>{% endif %}</td>{% endfor %}</tr>{% endfor %}</tbody></table></div>
+{% endif %}
+<p class="calendar-explanation">This is a read-only projection, not an availability promise. Changes, approvals, cancellation and verified equipment returns remain in the original service. Published academic schedules do not imply student enrollment.</p>
+{% endblock %}

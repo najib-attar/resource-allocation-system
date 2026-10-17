@@ -301,6 +301,8 @@ erDiagram
         integer revision
         varchar_32 submission_key UK "nullable"
         varchar_64 submission_fingerprint "nullable"
+        boolean calendar_public
+        integer academic_instructor_id FK "nullable"
     }
     role {
         integer id PK "identity"
@@ -463,6 +465,7 @@ erDiagram
     resource_request ||--o{ request_participant : request_id
     university_user ||--o{ request_participant : user_id
     resource_request ||--|{ request_slot : request_id
+    university_user o|--o{ resource_request : academic_instructor_id
     university_user ||--o{ resource_request : requester_id
     resource ||--o{ resource_request : resource_id
     room_policy ||--o{ room_access : resource_id

@@ -197,6 +197,21 @@ strategy on **Dashboard** and use **Run Allocation** to compare its results.
 separate from dated appointment calendars; anonymous exam attendees do not define
 student enrollment schedules.
 
+## One calendar across services
+
+Open **Calendar** after sign-in. The primary fictional academic period is recorded
+in the local setup summary; navigate to those dates if the current month is empty.
+Month, Week and Day retain category/status filters when navigating. The accepted,
+rejected and pending service examples appear with distinct statuses, and clicking
+an event opens the existing authorized detail page. Equipment pickup/return entries
+are reminders only. Professor calendars include their own teaching commitments;
+faculty reviewers/custodians additionally see assigned work, not unrelated private
+appointments. **My Schedule** still provides personal blocks.
+
+Academic records remain private by default. An administrator may explicitly publish
+non-committee academic scheduling metadata through **Academic Publication**, after
+configuring real validity dates in **Calendar Setup**. No enrollment is inferred.
+
 ## Restart and options
 
 `Ctrl+C` stops Flask. Rerun the same command to resume with existing requests,

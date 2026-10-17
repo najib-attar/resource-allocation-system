@@ -10,6 +10,7 @@ from sqlalchemy import or_, select
 
 from .calendar_service import CalendarError, aware, epoch
 from .notification_service import event_history, publish_event
+from .equipment_access import custodian_faculties, valid_custodians
 from .persistence.models import (BorrowExtension, BorrowItem, BorrowRequest, EquipmentCategory,
     EquipmentCustodian, EquipmentEvent, EquipmentReservation, EquipmentType, EquipmentUnit,
     EQUIPMENT_CONDITIONS, LoginAccount, OrganizationUnit, Role, User)
@@ -56,13 +57,8 @@ class EquipmentService:
         return row
 
     def _custodian(self, session, faculty):
-        assignment = session.get(EquipmentCustodian, faculty)
-        if not assignment:
-            return None
-        user = session.get(User, assignment.user_id)
-        account = session.get(LoginAccount, assignment.user_id)
-        role = session.get(Role, user.primary_role_id).name
-        return user.id if user.status.casefold() == 'active' and account.enabled and (account.administrator or role in {'Staff', 'Administrator'}) else None
+        return session.scalar(valid_custodians().where(EquipmentCustodian.faculty_id == faculty)
+                              .with_only_columns(EquipmentCustodian.user_id))
 
     def _staff(self, session, actor, faculty):
         self._user(session, actor)
@@ -401,8 +397,7 @@ class EquipmentService:
     def list_for(self, actor):
         with self.database.transaction(read_only=True) as session:
             self._user(session, actor)
-            faculties = [fid for fid in session.scalars(select(EquipmentCustodian.faculty_id).where(EquipmentCustodian.user_id == actor))
-                         if self._custodian(session, fid) == actor]
+            faculties = list(session.scalars(custodian_faculties(actor)))
             keys = list(session.scalars(select(BorrowRequest.id).where(or_(BorrowRequest.borrower_id == actor,
                 BorrowRequest.faculty_id.in_(faculties))).order_by(BorrowRequest.created_at.desc(), BorrowRequest.id.desc())))
         return [self.detail(actor, key) for key in keys]

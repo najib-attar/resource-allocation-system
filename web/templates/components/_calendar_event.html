@@ -1,0 +1,10 @@
+{% macro event_card(event, compact=false) -%}
+<a class="calendar-event category-{{ event.category }} state-{{ event.state }}{% if compact %} is-compact{% endif %}" href="{{ event.url }}" data-event-id="{{ event.id }}" title="{{ event.title }}. {{ event.label }}. {{ event.note }}">
+    <span class="calendar-event-time">{% if event.end and event.start.date() != event.end.date() %}{{ event.start.strftime('%d %b %H:%M') }}&ndash;{{ event.end.strftime('%d %b %H:%M') }}{% else %}{{ event.start.strftime('%H:%M') }}{% if event.end %}&ndash;{{ event.end.strftime('%H:%M') }}{% else %} &middot; reminder{% endif %}{% endif %}</span>
+    <strong>{{ event.title }}</strong>
+    <span class="calendar-state">{{ event.label }}{% if event.status not in [event.label, 'Confirmed'] %} &middot; {{ event.status }}{% endif %}</span>
+    {% if event.location %}<span>{{ event.location }}</span>{% endif %}
+    {% if not compact %}<small>{{ event.note }}</small>{% endif %}
+    {% if event.busy and not compact %}<small>Personal commitment</small>{% endif %}
+</a>
+{%- endmacro %}

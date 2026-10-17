@@ -17,7 +17,7 @@ PURPOSES = {
     "university_user": "University identity and profile; primary role and optional primary unit.",
     "user_role": "Ordered many-to-many assigned role labels.",
     "resource": "Typed classrooms, laboratories and meeting rooms with facilities and capacity.",
-    "resource_request": "Ordered request identity, requester, preferred resource and requirements.",
+    "resource_request": "Ordered request identity, requirements and private-by-default academic publication; optional explicit instructor label.",
     "request_slot": "Ordered weekly occurrences; multiple rows represent recurrence.",
     "exam_details": "Optional one-to-one examination metadata.",
     "request_participant": "Ordered required committee participants and descriptive roles.",

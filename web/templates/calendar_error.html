@@ -1,0 +1,4 @@
+{% extends 'base.html' %}
+{% block title %}Calendar Unavailable | University Scheduling{% endblock %}
+{% block page_heading %}Calendar unavailable{% endblock %}
+{% block content %}<section class="panel"><p role="alert">{{ message }}</p><a class="button-secondary" href="{{ url_for('calendar.index') }}">Return to calendar</a></section>{% endblock %}

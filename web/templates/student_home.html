@@ -9,7 +9,7 @@
     <div><p class="eyebrow">Your campus, at a glance</p><h2>Welcome, {{ home.profile.name|person_name }}.</h2>
         <p class="student-intro">Your next meeting, your plans and the things waiting for you. All in one place.</p>
         {% if home.profile.studentNo or home.profile.program %}<p class="student-profile">{{ home.profile.studentNo }}{% if home.profile.studentNo and home.profile.program %} &middot; {% endif %}{{ home.profile.program }}{% if home.profile.yearLevel %} &middot; Year {{ home.profile.yearLevel }}{% endif %}</p>{% endif %}
-        <div class="hero-actions"><a class="button-primary" href="{{ url_for('appointments.new') }}">Schedule an appointment</a><a class="button-secondary" href="{{ url_for('appointments.calendar', month=home.schedule.month, week=home.weekStart.isoformat()) }}">Open my schedule</a></div>
+        <div class="hero-actions"><a class="button-primary" href="{{ url_for('appointments.new') }}">Schedule an appointment</a><a class="button-secondary" href="{{ url_for('calendar.index') }}">Open university calendar</a></div>
     </div>
     <div class="student-today"><span>{{ home.now.strftime('%A') }}</span><strong>{{ home.now.strftime('%d') }}</strong><span>{{ home.now.strftime('%B %Y') }}</span><small>{{ home.zone }}</small></div>
 </section>
