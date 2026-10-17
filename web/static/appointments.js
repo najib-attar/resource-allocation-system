@@ -11,9 +11,31 @@ const start = document.getElementById("appointment-start");
 const selected = document.getElementById("selected-time");
 const submit = document.getElementById("submit-appointment");
 const manual = document.getElementById("manual-time");
+const validation = document.getElementById("appointment-validation");
 let controller;
 let sequence = 0;
 let debounce;
+
+function feedback(text, error = false) {
+    message.textContent = text;
+    message.setAttribute("role", error ? "alert" : "status");
+    message.closest(".booking-times-state")?.classList.toggle("is-error", error);
+}
+
+function showValidation() {
+    if (!validation) return;
+    const errors = [...form.elements].filter(field => field.willValidate && !field.validity.valid);
+    const items = validation.querySelector("ul");
+    items.replaceChildren();
+    errors.forEach(field => {
+        field.setAttribute("aria-invalid", "true");
+        const item = document.createElement("li");
+        const label = field.labels?.[0]?.textContent.trim().replace(/\s+/g, " ") || field.name;
+        item.textContent = `${label}: ${field.validationMessage}`;
+        items.append(item);
+    });
+    validation.hidden = errors.length === 0;
+}
 
 function ready() {
     return faculty.value && form.querySelector('[name="professorIds"]:checked') &&
@@ -26,9 +48,11 @@ function invalidate() {
     clearTimeout(debounce);
     start.value = "";
     selected.textContent = "No time selected.";
+    selected.classList.remove("is-selected");
     submit.disabled = true;
     refresh.disabled = false;
     list.replaceChildren();
+    list.setAttribute("aria-busy", "false");
 }
 
 function updatePickers() {
@@ -68,13 +92,14 @@ function updatePickers() {
 async function loadTimes() {
     invalidate();
     if (!ready()) {
-        message.textContent = "Choose a faculty, at least one professor, a duration and one date.";
+        feedback("Choose a faculty, at least one professor, a duration and one date.");
         return;
     }
     const current = sequence;
     controller = new AbortController();
     refresh.disabled = true;
-    message.textContent = "Checking your calendar and required professors' availability...";
+    list.setAttribute("aria-busy", "true");
+    feedback("Checking your calendar and required professors' availability...");
     const data = new FormData(form);
     if (manual.value) data.set("preferredStart", `${date.value}T${manual.value}`);
     try {
@@ -85,8 +110,8 @@ async function loadTimes() {
         const result = await response.json();
         if (current !== sequence) return;
         if (!response.ok) throw new Error(result.error || "Availability could not be checked.");
-        message.textContent = result.items.length ?
-            "Choose a time. Suggestions are ranked by invited-student availability, your preferred time, then earliest start." : result.reason;
+        feedback(result.items.length ?
+            "Choose a time. Suggestions are ranked by invited-student availability, your preferred time, then earliest start." : result.reason);
         result.items.forEach(item => {
             const choice = document.createElement("button");
             choice.type = "button";
@@ -100,14 +125,18 @@ async function loadTimes() {
                 start.value = item.localStart;
                 manual.value = "";
                 selected.textContent = `Selected: ${item.label}. ${item.reason}`;
+                selected.classList.add("is-selected");
                 submit.disabled = false;
             });
             list.append(choice);
         });
     } catch (error) {
-        if (current === sequence && error.name !== "AbortError") message.textContent = error.message;
+        if (current === sequence && error.name !== "AbortError") feedback(error.message, true);
     } finally {
-        if (current === sequence) refresh.disabled = false;
+        if (current === sequence) {
+            refresh.disabled = false;
+            list.setAttribute("aria-busy", "false");
+        }
     }
 }
 
@@ -115,7 +144,7 @@ function changed() {
     invalidate();
     manual.value = "";
     updatePickers();
-    message.textContent = ready() ? "Updating available times..." : "Choose a faculty and professors to see available times.";
+    feedback(ready() ? "Updating available times..." : "Choose a faculty and professors to see available times.");
     if (ready()) debounce = setTimeout(loadTimes, 200);
 }
 
@@ -130,13 +159,20 @@ manual.addEventListener("input", () => {
     if (ready() && manual.value && manual.validity.valid) {
         start.value = `${date.value}T${manual.value}`;
         selected.textContent = `Proposed: ${date.value} ${manual.value}. Availability will be validated on submission.`;
+        selected.classList.add("is-selected");
         submit.disabled = false;
     }
 });
 form.addEventListener("submit", event => {
     if (!ready() || !start.value) {
         event.preventDefault();
-        message.textContent = "Select an available time or enter a proposal before submitting.";
+        feedback("Select an available time or enter a proposal before submitting.", true);
+        message.scrollIntoView({block: "center"});
     }
+});
+form.addEventListener("invalid", showValidation, true);
+form.addEventListener("input", event => {
+    if (event.target.validity?.valid) event.target.removeAttribute("aria-invalid");
+    if (validation && !validation.hidden) showValidation();
 });
 updatePickers();

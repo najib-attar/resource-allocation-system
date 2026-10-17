@@ -1,26 +1,67 @@
-{% extends "base.html" %}
-{% block page_heading %}Schedule a Professor Appointment{% endblock %}
+{% extends 'base.html' %}
+{% from 'components/ui.html' import icon, badge %}
+{% block page_heading %}Schedule an Appointment{% endblock %}
 {% block title %}Schedule an Appointment | University Scheduling{% endblock %}
-{% block content %}<section class="panel appointment-booking"><p class="booking-intro">Choose your participants and one date. We will show times when you and every required professor are available.</p><p class="student-card-note">{{ zone }} &middot; Additional student invitations are optional.</p>
-{% if not directory.faculties %}<p role="alert">No faculty hierarchy is configured. Ask an administrator to configure faculty/department membership before scheduling.</p>{% endif %}
-<form method="post" id="appointment-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-<p><label>Faculty <select name="facultyId" id="faculty" required><option value="">Select faculty</option>{% for item in directory.faculties %}<option value="{{ item.id }}">{{ item.name }}</option>{% endfor %}</select></label></p>
-<div class="participant-picker-grid">
-<div><label class="picker-label" id="professor-picker-label">Required professors</label><details class="participant-picker" data-picker="professorIds"><summary aria-labelledby="professor-picker-label">Choose professors <span class="picker-count">0 selected</span></summary>
-<label class="picker-search-label">Search professors <input type="search" class="picker-search" placeholder="Name or department" autocomplete="off"></label>
-<p class="picker-hint">Select a faculty first.</p><div class="picker-options" role="group" aria-label="Professor choices">{% for item in directory.professors %}<label class="picker-option professor-option" data-faculty="{{ item.facultyId }}" hidden><input type="checkbox" name="professorIds" value="{{ item.id }}" disabled><span><strong>{{ item.name|person_name }}</strong><small>{{ item.unit }}</small></span></label>{% endfor %}</div></details><div class="selected-participants" data-selected="professorIds" aria-live="polite"></div></div>
-<div><label class="picker-label" id="student-picker-label">Invite students (optional)</label><details class="participant-picker" data-picker="invitedIds"><summary aria-labelledby="student-picker-label">Choose students <span class="picker-count">0 selected</span></summary>
-<label class="picker-search-label">Search students <input type="search" class="picker-search" placeholder="Name or department" autocomplete="off"></label>
-<p class="picker-hint">Invitees do not block confirmation.</p><div class="picker-options" role="group" aria-label="Student choices">{% for item in directory.students if item.id != g.principal.user_id %}<label class="picker-option"><input type="checkbox" name="invitedIds" value="{{ item.id }}"><span><strong>{{ item.name|person_name }}</strong><small>{{ item.unit }}</small></span></label>{% endfor %}</div></details><div class="selected-participants" data-selected="invitedIds" aria-live="polite"></div></div>
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='prototype.css') }}">{% endblock %}
+{% block content %}
+<div class="portal-prototype booking-prototype">
+    <a class="ui-back-link" href="{{ url_for('appointments.index') }}">&larr; Back to my appointments</a>
+    <div class="booking-page-heading"><p class="ui-overline">Professor appointments</p><h2>A conversation starts here.</h2><p>Choose who to meet, tell us why, then find a time that works.</p></div>
+    {% if not directory.faculties %}<div class="ui-alert ui-alert--warning" role="alert">{{ icon('info') }}No faculty hierarchy is configured. Ask an administrator to configure faculty/department membership before scheduling.</div>{% endif %}
+    <div class="booking-layout">
+        <form method="post" id="appointment-form" class="booking-form" aria-describedby="booking-rules">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="ui-alert ui-alert--danger" id="appointment-validation" role="alert" hidden><strong>Please check your request.</strong><ul></ul></div>
+            <fieldset class="ui-card booking-section">
+                <legend><span class="booking-step">1</span>Choose your participants</legend>
+                <p class="ui-note">All selected professors must approve. Additional student invitations are optional.</p>
+                <label class="ui-field" for="faculty">Faculty <span class="ui-required">Required</span>
+                    <select name="facultyId" id="faculty" aria-describedby="faculty-help" required><option value="">Select faculty</option>{% for item in directory.faculties %}<option value="{{ item.id }}">{{ item.name }}</option>{% endfor %}</select>
+                </label><p class="ui-field-help" id="faculty-help">Professors are listed by their faculty membership.</p>
+                <div class="participant-picker-grid">
+                    <div><span class="ui-field-label" id="professor-picker-label">Required professors</span>
+                        <details class="participant-picker" data-picker="professorIds"><summary aria-labelledby="professor-picker-label">Choose professors <span class="picker-count">0 selected</span></summary>
+                            <label class="picker-search-label">Search professors <input type="search" class="picker-search" placeholder="Name or department" autocomplete="off"></label>
+                            <p class="picker-hint">Select a faculty first.</p><div class="picker-options" role="group" aria-label="Professor choices">{% for item in directory.professors %}<label class="picker-option professor-option" data-faculty="{{ item.facultyId }}" hidden><input type="checkbox" name="professorIds" value="{{ item.id }}" disabled><span><strong>{{ item.name|person_name }}</strong><small>{{ item.unit }}</small></span></label>{% endfor %}</div>
+                        </details><div class="selected-participants" data-selected="professorIds" aria-live="polite"></div>
+                    </div>
+                    <div><span class="ui-field-label" id="student-picker-label">Invite students <span class="ui-optional">Optional</span></span>
+                        <details class="participant-picker" data-picker="invitedIds"><summary aria-labelledby="student-picker-label">Choose students <span class="picker-count">0 selected</span></summary>
+                            <label class="picker-search-label">Search students <input type="search" class="picker-search" placeholder="Name or department" autocomplete="off"></label>
+                            <p class="picker-hint">Invitees do not block confirmation.</p><div class="picker-options" role="group" aria-label="Student choices">{% for item in directory.students if item.id != g.principal.user_id %}<label class="picker-option"><input type="checkbox" name="invitedIds" value="{{ item.id }}"><span><strong>{{ item.name|person_name }}</strong><small>{{ item.unit }}</small></span></label>{% endfor %}</div>
+                        </details><div class="selected-participants" data-selected="invitedIds" aria-live="polite"></div>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset class="ui-card booking-section">
+                <legend><span class="booking-step">2</span>Tell us about your meeting</legend>
+                <label class="ui-field" for="appointment-purpose">Purpose <span class="ui-required">Required</span><textarea id="appointment-purpose" name="purpose" maxlength="2000" rows="3" placeholder="For example, discuss my project proposal" aria-describedby="purpose-help" required></textarea></label>
+                <p class="ui-field-help" id="purpose-help">Briefly explain what you would like to discuss. Visible to your appointment participants.</p>
+                <div class="booking-fields-row"><label class="ui-field" for="appointment-duration">Duration (minutes)<input id="appointment-duration" name="duration" type="number" min="1" max="1440" value="30" aria-describedby="duration-help" required></label>
+                    <label class="ui-field" for="appointment-date">Appointment date<input id="appointment-date" name="appointmentDate" type="date" value="{{ today }}" min="1970-01-01" max="2099-12-31" required></label></div>
+                <p class="ui-field-help" id="duration-help">Choose one date. All times use {{ zone }}.</p>
+            </fieldset>
+
+            <fieldset class="ui-card booking-section">
+                <legend><span class="booking-step">3</span>Choose an available time</legend>
+                <div class="ui-section-heading"><h2 id="available-times-heading">Available times</h2><button class="ui-button ui-button--secondary" type="button" id="find-times" data-url="{{ url_for('appointments.times') }}">{{ icon('clock', 16) }}Refresh times</button></div>
+                <div class="booking-times-state"><p id="times-message" role="status" aria-live="polite">Choose a faculty and professors to see available times for this date.</p></div>
+                <div id="times-list" class="time-slot-grid" role="group" aria-label="Available appointment times" aria-busy="false"></div>
+                <input id="appointment-start" name="start" type="hidden"><p id="selected-time" class="booking-selected-time" aria-live="polite">No time selected.</p>
+                <details class="manual-time"><summary>Propose another time on the same date</summary><label class="ui-field" for="manual-time">Proposed time<input id="manual-time" type="time" aria-describedby="manual-time-help"></label><p class="ui-field-help" id="manual-time-help">Must be within published availability and pass the same conflict checks. Used as your preferred time when refreshing suggestions.</p></details>
+            </fieldset>
+            <div class="booking-submit"><p>{{ icon('info', 17) }}Availability is rechecked when you submit.</p><button class="ui-button ui-button--primary" id="submit-appointment" type="submit" disabled>Submit for professor approval {{ icon('arrow', 17) }}</button></div>
+            <noscript><p class="ui-alert ui-alert--warning" role="alert">Enable JavaScript to load available times and select participants. Your request has not been submitted.</p></noscript>
+        </form>
+        <aside class="booking-guide" aria-labelledby="booking-guide-heading">
+            <div class="ui-card"><span class="ui-icon-tile">{{ icon('meeting', 24) }}</span><h2 id="booking-guide-heading">What happens next?</h2><p>After you submit, your request will be:</p>{{ badge('Pending approval', 'warning') }}
+                <ol><li><strong>Professors review</strong><span>Each required professor accepts or declines the same proposal.</span></li><li><strong>Availability is rechecked</strong><span>Pending requests do not reserve time.</span></li><li><strong>Your meeting is confirmed</strong><span>After everyone approves and the time remains available, it appears in your calendar.</span></li></ol>
+                <p id="booking-rules" class="ui-note">Optional invitees may decline. Their response does not prevent confirmation.</p>
+            </div>
+            <p class="booking-timezone">{{ icon('clock', 16) }}University time: {{ zone }}</p>
+        </aside>
+    </div>
 </div>
-<p><label>Purpose <textarea name="purpose" maxlength="2000" required></textarea></label></p>
-<div class="appointment-grid booking-date-row"><label>Duration (minutes) <input name="duration" type="number" min="1" max="1440" value="30" required></label>
-<label>Appointment date <input id="appointment-date" name="appointmentDate" type="date" value="{{ today }}" min="1970-01-01" max="2099-12-31" required></label></div>
-<section class="appointment-time-panel" aria-labelledby="available-times-heading"><div class="student-section-heading"><h2 id="available-times-heading">Available times</h2><button type="button" id="find-times" data-url="{{ url_for('appointments.times') }}">Refresh times</button></div>
-<p id="times-message" role="status" aria-live="polite">Choose a faculty and professors to see available times for this date.</p><div id="times-list" class="time-slot-grid" role="group" aria-label="Available appointment times"></div>
-<input id="appointment-start" name="start" type="hidden"><p id="selected-time" class="selected-time" aria-live="polite">No time selected.</p>
-<details class="manual-time"><summary>Propose another time on the same date</summary><label>Proposed time <input id="manual-time" type="time"></label><p class="student-card-note">This proposal must pass the same availability checks. It is also used as your preferred time when you refresh suggestions.</p></details></section>
-<p class="student-card-note">Times are rechecked when you submit and before confirmation. Pending requests do not reserve time.</p>
-<noscript><p role="alert">Enable JavaScript to load available times and select participants.</p></noscript>
-<button class="button" id="submit-appointment" type="submit" disabled>Submit for professor approval</button></form></section>
-<script src="{{ url_for('static', filename='appointments.js') }}" defer></script>{% endblock %}
+<script src="{{ url_for('static', filename='appointments.js') }}" defer></script>
+{% endblock %}
