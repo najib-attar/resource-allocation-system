@@ -1,0 +1,23 @@
+<section class="panel">
+    <h2>{{ 'Operational audit log' if item.canAudit else 'My activity' }}</h2>
+    <p>History is retained after a decision. The request's status above is its current state.</p>
+    <ol>
+    {% for event in item.history %}
+        <li>
+            <p>{{ event.message }}</p>
+            <small><time datetime="{{ event.at.isoformat() }}">{{ event.at|university_time(seconds=true) }}</time>
+                {% if item.canAudit %}&middot; From: {{ event.actor|person_name }}
+                {% if event.revision %}&middot; Revision {{ event.revision }}{% endif %}
+                {% if event.unitId %}&middot; Inventory unit {{ event.unitId }}{% endif %}
+                {% elif event.ownAction %}&middot; Your action{% endif %}
+            </small>
+            {% if item.canAudit %}
+            <p class="student-card-note">Notified:
+                {% for person in event.recipients %}{{ person.name|person_name }}{% if not loop.last %}, {% endif %}
+                {% else %}No additional recipients for this action.{% endfor %}
+            </p>
+            {% endif %}
+        </li>
+    {% else %}<li>No recorded activity.</li>{% endfor %}
+    </ol>
+</section>

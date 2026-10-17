@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}Equipment Borrowing{% endblock %}
+{% block page_heading %}Equipment Borrowing{% endblock %}
+{% block content %}
+<section class="panel">
+    <p class="eyebrow">University equipment desk</p><h2>Your requests and loans</h2>
+    <p>Pending requests reserve nothing. Collect and return equipment through the faculty custodian.</p>
+    <div class="equipment-actions">
+        {% if g.principal.role == 'Student' %}<a class="button-primary" href="{{ url_for('equipment.catalog') }}">Browse and borrow</a>{% endif %}
+        {% for faculty in directory.faculties if faculty.custodianId == g.principal.user_id %}<a class="button-secondary" href="{{ url_for('equipment.inventory',faculty_id=faculty.id) }}">{{ faculty.name }} inventory</a>{% endfor %}
+        {% if directory.isAdmin %}<a class="button-secondary" href="{{ url_for('equipment.custodians') }}">Assign custodians</a>{% endif %}
+    </div>
+    <div class="room-request-list">{% for item in items %}
+        <article class="student-appointment-card"><div><small>{{ 'Faculty lending desk' if item.isCustodian else 'Your borrowing request' }}</small>
+        <h3><a href="{{ url_for('equipment.detail',request_id=item.id) }}">{{ item.purpose }}</a></h3>
+        <p>{{ item.faculty }}{% if item.isCustodian %} &middot; {{ item.borrower|person_name }}{% endif %}</p>
+        <p>Pickup {{ item.start|university_time }} &middot; Due {{ item.due|university_time }}</p>
+        <p>{% for line in item['items'] %}{{ line.quantity }} &times; {{ line.name }}{% if not loop.last %}; {% endif %}{% endfor %}</p></div>
+        <div><span class="status-badge">{{ item.status }}</span>{% if item.overdue %}<p class="equipment-warning" role="status">Overdue: physical return required</p>{% endif %}</div></article>
+    {% else %}<p>No borrowing requests yet.</p>{% endfor %}</div>
+</section>
+{% endblock %}

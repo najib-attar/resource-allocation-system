@@ -59,6 +59,8 @@ def init_security(app, database_provider):
             return None
         if request.endpoint and request.endpoint.startswith("notifications."):
             return None
+        if request.endpoint and request.endpoint.startswith("equipment."):
+            return None
         if request.endpoint == "logout":
             return None
         if not g.principal.administrator:

@@ -24,6 +24,7 @@ class LocalDemoConfigurationTests(TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'settings.json'
             settings = prepare_settings(path)
+            self.assertEqual(settings['databaseName'], 'resource_allocation')
             self.assertEqual(settings, prepare_settings(path))
             self.assertGreaterEqual(len(settings['sessionSecret']), 32)
             self.assertNotEqual(settings['postgresPassword'], settings['demoPassword'])
@@ -32,6 +33,18 @@ class LocalDemoConfigurationTests(TestCase):
             self.assertEqual(settings, prepare_settings(path))
             path.write_text(json.dumps([]), encoding='utf-8')
             with self.assertRaisesRegex(ValueError, 'not an owned'):
+                prepare_settings(path)
+
+    def test_existing_database_name_is_preserved_and_unexpected_names_are_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'settings.json'
+            settings = prepare_settings(path)
+            settings['databaseName'] = 'ras_university_demo'
+            path.write_text(json.dumps(settings), encoding='utf-8')
+            self.assertEqual(prepare_settings(path)['databaseName'], 'ras_university_demo')
+            settings['databaseName'] = "unexpected'; DROP DATABASE postgres;--"
+            path.write_text(json.dumps(settings), encoding='utf-8')
+            with self.assertRaisesRegex(ValueError, 'Invalid saved'):
                 prepare_settings(path)
 
     def test_inputs_are_seeded_fictional_and_professor_pair_shares_faculty(self):

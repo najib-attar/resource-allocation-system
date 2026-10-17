@@ -19,7 +19,7 @@ they organize. Counts and cards come from one student-scoped PostgreSQL snapshot
 pending requests are never presented as reservations.
 All authenticated pages share a profile header with a circular initials avatar,
 name, role and private notification bell. Appointment/room decisions and invitations
-appear in the inbox; read state persists in PostgreSQL. Navigation remains role-aware
+and equipment updates appear in the inbox; read state persists in PostgreSQL. Navigation remains role-aware
 while backend permissions stay authoritative. See [frontend boundaries](docs/architecture/frontend-design.md).
 Photo uploads and room/professor availability alerts are not enabled yet.
 My Schedule is available to every signed-in user, with week navigation inside the
@@ -41,6 +41,17 @@ schema, workflow, architecture and verified regression evidence.
 
 Backend presentation is file-free: database views use `get_table("requests")`, while
 CSV conversion is confined to explicit import and standalone CLI compatibility.
+
+Iteration 44 adds **student equipment borrowing** at `/equipment/`: faculty-owned
+equipment types and individually tracked assets, deterministic C++ matching,
+custodian approvals/reservations, physical handover, partial verified returns,
+condition tracking, extensions, overdue attention flags and private notifications.
+Pending requests hold nothing; due dates never imply physical return. See the
+[use case](docs/use-cases/UC-STU-03-student-equipment-borrowing.pdf),
+[equipment guide](docs/equipment-borrowing-guide.md), and
+[architecture](docs/architecture/equipment-borrowing-design.md). The
+[Iteration 44 report](docs/iteration-reports/Iteration_44.pdf) summarizes the
+workflow, database additions, architectural decisions and executed verification.
 
 ## Current Prototype Features
 
@@ -234,8 +245,8 @@ powershell -ExecutionPolicy Bypass -File tests\run_tests.ps1
 The latest verified result is:
 
 ```text
-Running 148 test(s)
-Result: 148 passed, 0 failed
+Running 172 test(s)
+Result: 172 passed, 0 failed
 ```
 
 The test runner compiles and runs the backend smoke executable, then compiles and runs the unit and integration tests.
@@ -309,8 +320,10 @@ accounts and appointment calendars, run:
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run_demo.ps1
 ```
 
-This installs the pinned Python packages and uses a separate private PostgreSQL
-demo database. It never resets your existing database. Read the
+This installs the pinned Python packages and reuses one private PostgreSQL
+application database for every service, populated with fictional data. The default
+local profile is `build/local-demos/university-demo/`; new setups name the database
+`resource_allocation`. Existing settings and data are never reset. Read the
 [step-by-step demo walkthrough](docs/demo-walkthrough.md) for accounts, explicit
 fictional dates, student/professor approval and administrator screens.
 

@@ -26,6 +26,7 @@ from web.persistence.models import (AcademicPeriod, BusySlot, CalendarBlock, Leg
                                     LoginAccount, OrganizationUnit, ProfessorAvailability, ResourceRequest)
 from web.persistence.repository import PersistenceError, Repository, state_row
 from web.room_request_service import RoomRequestService
+from web.persistence.equipment_demo import seed_equipment_demo
 
 
 def demo_inputs(seed):
@@ -91,9 +92,11 @@ def seed_local_demo(database, password, start, end, seed=42):
     for index, room in enumerate(snapshot['spaces']):
         room_service.configure_room(administrators[0], room['id'], faculties[index % len(faculties)], True,
                                     ['study','meeting','lecture','club','other'])
+    equipment = seed_equipment_demo(database, administrators[0], seed=seed)
     return {"seed": seed, "academicStart": start.isoformat(), "academicEnd": end.isoformat(),
             "counts": {key: len(snapshot[key]) for key in ("users", "spaces", "requests", "busySlots")},
-            "accounts": accounts, "allocationCount": len(result["allocations"]), "configuredStudentRooms": len(snapshot['spaces'])}
+            "accounts": accounts, "allocationCount": len(result["allocations"]), "configuredStudentRooms": len(snapshot['spaces']),
+            "equipment": equipment}
 
 
 def write_settings(path, settings):
@@ -111,7 +114,7 @@ def prepare_settings(path, seed=None, start=None, end=None, port=None):
         settings = json.loads(path.read_text(encoding="utf-8"))
         if not isinstance(settings, dict) or settings.get("kind") != "university-local-demo" or settings.get("version") != 1:
             raise ValueError("This directory is not an owned local demo. Its files were not changed.")
-        if (settings.get("postgresUser") != "ras_demo" or settings.get("databaseName") != "ras_university_demo" or
+        if (settings.get("postgresUser") != "ras_demo" or settings.get("databaseName") not in {"resource_allocation", "ras_university_demo"} or
                 type(settings.get("postgresPort")) is not int or not 1 <= settings["postgresPort"] <= 65535 or
                 type(settings.get("seeded")) is not bool or type(settings.get("seed")) is not int or
                 any(not isinstance(settings.get(key), str) or len(settings[key]) < minimum for key, minimum in
@@ -129,7 +132,7 @@ def prepare_settings(path, seed=None, start=None, end=None, port=None):
     settings = {"kind": "university-local-demo", "version": 1, "profileId": secrets.token_hex(16),
                 "seed": seed if seed is not None else 42, "academicStart": first.isoformat(), "academicEnd": last.isoformat(),
                 "postgresPort": port if port is not None else 55443, "postgresUser": "ras_demo",
-                "databaseName": "ras_university_demo", "postgresPassword": secrets.token_hex(24),
+                "databaseName": "resource_allocation", "postgresPassword": secrets.token_hex(24),
                 "demoPassword": secrets.token_urlsafe(18), "sessionSecret": secrets.token_hex(32), "seeded": False}
     write_settings(path, settings)
     return settings

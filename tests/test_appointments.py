@@ -141,7 +141,7 @@ class AppointmentWorkflowTests(AppointmentFixture):
         second = self.submit(organizer=4)
         self.service.decide(second, 2, 1, True)
         self.assertEqual(self.service.detail(second, 4)["status"], "Confirmed")
-        self.assertIn("released", self.service.detail(pid, 1)["history"][-1])
+        self.assertIn("released", self.service.detail(pid, 1)["history"][-1]["message"])
 
     def test_organizer_and_professor_blocks_are_mandatory_optional_students_are_not(self):
         self.service.block(4, START, START + timedelta(hours=1))

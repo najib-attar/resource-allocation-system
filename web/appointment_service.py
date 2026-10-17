@@ -12,7 +12,7 @@ from .persistence.models import (AcademicPeriod, Appointment, AppointmentCommitm
                                 LegacyCalendarBinding, OrganizationUnit, ProfessorAvailability,
                                 ResourceRequest, Role, User, RoomOrganizerCommitment)
 from .persistence.repository import state_row, validate_unit_hierarchy
-from .notification_service import publish_event
+from .notification_service import event_history, publish_event
 
 
 class AppointmentError(CalendarError):
@@ -143,7 +143,8 @@ class AppointmentService:
                     "duration": record.duration_minutes, "revision": record.revision, "status": record.status,
                     "professors": [{"id": row.user_id, "name": names[row.user_id], "decision": row.decision} for row in professors],
                     "invitations": [{"id": row.user_id, "name": names[row.user_id], "status": row.status} for row in invitations],
-                    "history": [row.message for row in session.scalars(select(AppointmentEvent).where(AppointmentEvent.appointment_id == record.id).order_by(AppointmentEvent.id))]}
+                    "canAudit": False,
+                    "history": event_history(session, AppointmentEvent, record.id, actor)}
 
     def list_for(self, actor):
         with self.database.transaction(read_only=True) as session:

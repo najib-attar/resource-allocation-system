@@ -6,6 +6,7 @@
     {% if g.principal.role == 'Student' %}{{ nav_link('student.home', 'Home') }}{% endif %}
     {{ nav_link('appointments.index', 'Appointments') }}
     {{ nav_link('rooms.index', 'Room Requests') }}
+    {{ nav_link('equipment.index', 'Equipment') }}
     {{ nav_link('appointments.calendar', 'My Schedule') }}
     {% if g.principal.role == 'Instructor' %}{{ nav_link('appointments.availability', 'Office Hours') }}{% endif %}
     {% if g.principal.administrator %}
@@ -17,6 +18,7 @@
             {{ nav_link('schedules', 'Schedules') }}{{ nav_link('users', 'Users') }}
             {{ nav_link('spaces', 'Spaces') }}{{ nav_link('raw_data', 'Raw Data') }}
             {{ nav_link('appointments.bindings', 'Calendar Setup') }}{{ nav_link('rooms.configuration', 'Room Policies') }}
+            {{ nav_link('equipment.custodians', 'Equipment Custodians') }}
         </div>
     </details>
     {% endif %}

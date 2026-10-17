@@ -13,4 +13,4 @@
 <form method="post" action="{{ url_for('appointments.reschedule', appointment_id=item.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="revision" value="{{ item.revision }}"><label>New proposed time ({{ zone }}) <input type="datetime-local" name="start" required></label><button type="submit">Change time and reset approvals</button></form>{% endif %}
 {% if g.principal.user_id in item.invitations|map(attribute='id')|list %}
 <form method="post" action="{{ url_for('appointments.decline', appointment_id=item.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">Decline my invitation</button></form><p>Unanswered or declined invitations do not block professor confirmation.</p>{% endif %}
-<h3>Activity</h3><ul>{% for event in item.history %}<li>{{ event }}</li>{% endfor %}</ul></section>{% endblock %}
+</section>{% include 'components/_activity_history.html' %}{% endblock %}

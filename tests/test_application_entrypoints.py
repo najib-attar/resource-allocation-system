@@ -17,7 +17,8 @@ class ApplicationEntrypointTests(TestCase):
         result = subprocess.run([sys.executable, "-m", "flask", "--app", "web.app", "routes"],
             cwd=ROOT, env=environment, capture_output=True, text=True, timeout=30)
         self.assertEqual(result.returncode, 0, result.stderr)
-        for endpoint in ("student.home", "appointments.index", "rooms.index", "notifications.feed", "allocation_summary"):
+        for endpoint in ("student.home", "appointments.index", "rooms.index", "equipment.index",
+                         "equipment.catalog", "equipment.custodians", "notifications.feed", "allocation_summary"):
             with self.subTest(endpoint=endpoint):
                 self.assertIn(endpoint, result.stdout)
 
@@ -31,7 +32,7 @@ with patch.object(Flask, 'run') as serve:
     namespace = runpy.run_path(sys.argv[1], run_name='__main__')
 serve.assert_called_once()
 application = namespace['app']
-assert application.blueprints.keys() >= {'student', 'appointments', 'rooms', 'notifications'}
+assert application.blueprints.keys() >= {'student', 'appointments', 'rooms', 'equipment', 'notifications'}
 for name in application.jinja_env.list_templates():
     application.jinja_env.get_template(name)
 """

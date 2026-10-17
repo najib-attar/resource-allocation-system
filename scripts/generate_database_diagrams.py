@@ -49,7 +49,16 @@ PURPOSES = {
     "room_reservation": "Exact confirmed exclusive room interval; GiST overlap exclusion.",
     "room_organizer_commitment": "Confirmed organizing-student interval with cross-appointment conflict protection.",
     "room_event": "Private timestamped room request lifecycle and invitation history.",
-    "notification": "Recipient-scoped event inbox and durable read state; exactly one appointment/room history event.",
+    "notification": "Recipient-scoped event inbox and durable read state; exactly one appointment/room/equipment history event.",
+    "equipment_category": "Extensible named equipment categories, independent of room types.",
+    "equipment_custodian": "One current designated equipment staff/administrator account per owning faculty.",
+    "equipment_type": "Faculty-owned equipment catalog, exact specifications and configurable borrowing policy.",
+    "equipment_unit": "Individually identifiable physical asset and current physical condition.",
+    "borrow_request": "Student borrowing interval, purpose, lifecycle and idempotent submission identity.",
+    "borrow_item": "Same-faculty requested type, quantity and exact additional specifications.",
+    "equipment_reservation": "Specific reserved asset, excluded overlapping interval, physical handover and verified return.",
+    "borrow_extension": "Explicit custodian decision on a proposed later due date for an active loan.",
+    "equipment_event": "Actor/time/faculty-scoped inventory, configuration and borrowing lifecycle audit.",
 }
 MAIN_TABLES = {"role", "organization_unit", "university_user", "resource", "resource_request",
                "busy_slot", "allocation_run", "request_decision", "allocation", "application_state", "request_history"}
@@ -57,6 +66,7 @@ MAIN_TABLES |= {"login_account", "academic_period", "legacy_calendar_binding", "
                 "appointment_invitation", "appointment_commitment", "professor_availability", "calendar_block"}
 MAIN_TABLES |= {"room_policy", "faculty_room_approver", "student_room_request", "room_reservation", "room_invitation", "room_organizer_commitment"}
 MAIN_TABLES.add("notification")
+MAIN_TABLES |= {"equipment_category", "equipment_type", "equipment_unit", "equipment_custodian", "borrow_request", "borrow_item", "equipment_reservation", "borrow_extension", "equipment_event"}
 
 
 def kind(column):
@@ -113,7 +123,7 @@ def catalog(tables):
         lines += ["## " + table.name, "", PURPOSES[table.name], "", "| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |", "|---|---|---|---|---|"]
         for column in table.columns:
             keys = ["PK"] if column.primary_key else []
-            keys += ["FK -> " + fk.target_fullname for fk in column.foreign_keys]
+            keys += ["FK -> " + fk.target_fullname for fk in sorted(column.foreign_keys, key=lambda fk: fk.target_fullname)]
             default = "identity" if column.identity is not None else "computed: " + str(column.computed.sqltext) if column.computed is not None else str(column.server_default.arg) if column.server_default is not None else "ORM: " + str(column.default.arg) if column.default is not None and not column.default.is_callable else "ORM callable" if column.default is not None else "-"
             sql_type = column.type.compile(dialect=postgresql.dialect()).lower()
             lines.append(f"| {column.name} | {sql_type} | {'; '.join(keys) or '-'} | {'yes' if column.nullable else 'no'} | {default} |")
@@ -148,6 +158,8 @@ def artifacts():
         raise RuntimeError("Update table purpose inventory before generating diagrams.")
     return {"database-er-physical.mmd": er_source(tables, True),
             "database-er-high-level.mmd": er_source([item for item in tables if item.name in MAIN_TABLES], False),
+            "equipment-er.mmd": er_source([item for item in tables if item.name.startswith(('equipment_', 'borrow_'))
+                                          or item.name in {'organization_unit', 'university_user', 'login_account', 'notification'}], False),
             "database-schema-catalog.md": catalog(tables)}
 
 

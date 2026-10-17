@@ -189,8 +189,14 @@ growth, preserve backups, and obtain approval before any destructive cleanup.
 For a one-command Windows setup including login accounts and explicitly dated
 appointment availability, use `powershell -NoProfile -ExecutionPolicy Bypass -File
 scripts/run_demo.ps1`. See the [demo walkthrough](demo-walkthrough.md). This launcher
-owns a separate local PostgreSQL cluster under Git-ignored `build/local-demos/`;
-it does not connect to or reset the database configured in your normal shell.
+owns one local PostgreSQL cluster under Git-ignored
+`build/local-demos/university-demo/`. Its saved settings select the single
+application database (`resource_allocation` for new setups), shared by academic
+allocations, appointments, student room requests and equipment borrowing. It does
+not reset existing data or connect to an unrelated database from your normal
+shell. The current local walkthrough uses this database directly; no second
+operational demo database is needed. Disposable test and recovery databases remain
+isolated and must be removed when their verification finishes.
 
 Create a **new empty development database**, configure `DATABASE_URL`, and migrate
 to head. Then seed directly into PostgreSQL, not into the regression CSV fixtures:
@@ -299,7 +305,7 @@ before merge rather than treating local lint as remote verification.
 
 ## Student room configuration
 
-Apply Alembic head `0043c` before using UC-STU-02 and the notification inbox. These additive migrations do
+Apply Alembic head before using UC-STU-02 and the notification inbox. These additive migrations do
 not infer resource owners or academic dates. As a trusted university administrator,
 open **Room Policies**: designate the faculty's active administrative approver,
 set each known room's owning faculty/categories and optional user whitelist, and
@@ -321,7 +327,8 @@ confirmed student bookings or closures. Do not bypass these application services
 with ad-hoc SQL updates to schedules/policies.
 
 The fictional [demo walkthrough](demo-walkthrough.md#student-room-request-demonstration)
-uses a separate profile, explicit January 2030 period and real engine results.
+uses the same primary local profile as appointments and equipment, an explicit
+fictional academic period, and real engine results.
 Existing profiles are not automatically assigned invented room owners. Their
 stored data and credentials are preserved on restart.
 
@@ -338,3 +345,21 @@ it does not deploy the application publicly or infer dates for undated records.
 Do not expose the Flask development server publicly. Weekly room schedules remain
 weekday/minute intervals, while appointment calendars use explicit dates/timezones.
 PostgreSQL persists both workflows; CSV remains an offline compatibility/import tool.
+
+## Equipment borrowing
+
+Upgrade to Alembic head (`0044c`) before serving equipment pages. The nine additive
+inventory/loan tables bring the application total to 47. Existing room/appointment
+data is preserved; `notification` additionally references equipment events.
+See the [equipment guide](equipment-borrowing-guide.md) for authorized custodian
+assignment, inventory registration, policy configuration and fictional seeding.
+New local-demo profiles include equipment; existing profiles are never reseeded.
+The explicit `scripts/seed_equipment_demo.py` utility refuses existing equipment
+configuration and requires acknowledgement of a development database.
+
+Backups/restores must include the entire application schema, not only inventory
+tables: requests, physical loan records, lifecycle history and notification receipts
+are one consistent dataset. The existing pg_dump/pg_restore procedure remains
+applicable. Never repair an overdue loan by deleting reservations or recording an
+unverified return. A busy faculty/engine error rolls back the current equipment
+operation; it does not publish a partial reservation.

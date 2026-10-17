@@ -272,7 +272,7 @@ class RoomWorkflowTests(RoomFixture):
         key=self.request_room()
         self.rooms.decide(key,7,1,True)
         self.assertEqual(len(self.rooms.availability(4,302,date(2030,1,7))['busy']),1)
-        client=self.configure_web()
+        self.configure_web()
         other=authorized_client(web_app.app,4,1)
         page=other.get('/rooms/availability/302?date=2030-01-07')
         self.assertEqual(page.status_code,200)

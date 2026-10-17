@@ -9,7 +9,8 @@ param(
     [string]$AcademicEnd,
     [ValidateRange(1,65535)][int]$PostgresPort,
     [ValidateRange(1,65535)][int]$WebPort = 5000,
-    [switch]$SetupOnly
+    [switch]$SetupOnly,
+    [switch]$ServiceExamples
 )
 
 $ErrorActionPreference = 'Stop'
@@ -86,7 +87,8 @@ try {
     }
     $env:PGPASSWORD = $settings.postgresPassword
     $pgArgs = @('-h', '127.0.0.1', '-p', [string]$settings.postgresPort, '-U', $settings.postgresUser)
-    $exists = & (Join-Path $PostgresBin 'psql.exe') @pgArgs -X -t -A -d postgres -c "SELECT 1 FROM pg_database WHERE datname = 'ras_university_demo'"
+    # The Python settings validator restricts databaseName to supported literal names.
+    $exists = & (Join-Path $PostgresBin 'psql.exe') @pgArgs -X -t -A -d postgres -c "SELECT 1 FROM pg_database WHERE datname = '$($settings.databaseName)'"
     if ($LASTEXITCODE -ne 0) { throw 'Cannot connect to the owned demo PostgreSQL server.' }
     if ($exists -ne '1') { Invoke-Checked (Join-Path $PostgresBin 'createdb.exe') ($pgArgs + @($settings.databaseName)) }
     $env:DATABASE_URL = "postgresql+psycopg://$($settings.postgresUser):$($settings.postgresPassword)@127.0.0.1:$($settings.postgresPort)/$($settings.databaseName)"
@@ -100,6 +102,9 @@ try {
     & $demoPython -c 'from pathlib import Path; from web.backend_executable import resolve_backend_executable; resolve_backend_executable(Path.cwd())' 2>$null
     if ($LASTEXITCODE -ne 0) { Invoke-Checked $demoPython @('scripts/build_backend.py', '--compiler', $compiler) }
     Invoke-Checked $demoPython @('scripts/setup_local_demo.py', '--state-dir', $directory, 'seed')
+    if ($ServiceExamples) {
+        Invoke-Checked $demoPython @('scripts/seed_service_examples.py', '--state-dir', $directory)
+    }
     Invoke-Checked $demoPython @('scripts/setup_local_demo.py', '--state-dir', $directory, 'show')
     if ($SetupOnly) {
         Write-Host 'Demo prepared. Rerun without -SetupOnly to start the website.'

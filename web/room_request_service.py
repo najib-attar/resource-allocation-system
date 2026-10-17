@@ -10,7 +10,7 @@ from .persistence.models import (FacultyRoomApprover, LoginAccount, Organization
     RoomPolicy, RoomReservation, StudentRoomRequest)
 from .persistence.repository import state_row
 from .room_calendar import academic_room_intervals, assert_room_publication, room_snapshot, valid_approvers
-from .notification_service import publish_event
+from .notification_service import event_history, publish_event
 
 
 class RoomRequestError(CalendarError):
@@ -177,6 +177,7 @@ class RoomRequestService:
             invitees = list(session.scalars(select(RoomInvitation).where(RoomInvitation.request_id == row.id).order_by(RoomInvitation.user_id)))
             names = {u.id:u.name for u in session.scalars(select(User).where(User.id.in_({row.organizer_id,row.approver_id,*[i.user_id for i in invitees]})))}
             room, faculty = session.get(Resource,row.resource_id), session.get(OrganizationUnit,row.faculty_id)
+            can_approve = row.approver_id == actor and valid_approvers(session).get(row.faculty_id) == actor
             return {'id':row.id,'organizerId':row.organizer_id,'organizerName':names[row.organizer_id],
                 'approverId':row.approver_id,'approverName':names[row.approver_id], 'facultyId':row.faculty_id,'facultyName':faculty.name,
                 'roomId':room.id,'roomName':room.name,'roomType':room.type,'building':room.building,'capacity':room.capacity,
@@ -184,9 +185,9 @@ class RoomRequestService:
                 'count':row.attendee_count,'features':row.required_features,'start':row.start_at,'end':row.end_at,
                 'duration':row.duration_minutes,'preferredFaculty':row.preferred_faculty_id,'preferredBuilding':row.preferred_building,
                 'revision':row.revision,'status':row.status,'explanation':row.explanation,
-                'canApprove':row.approver_id == actor and valid_approvers(session).get(row.faculty_id) == actor,
+                'canApprove':can_approve, 'canAudit':can_approve,
                 'invitations':[{'id':i.user_id,'name':names[i.user_id],'status':i.status} for i in invitees],
-                'history':[{'message':e.message,'time':e.created_at} for e in session.scalars(select(RoomEvent).where(RoomEvent.request_id == row.id).order_by(RoomEvent.id))]}
+                'history':event_history(session,RoomEvent,row.id,actor,audit=can_approve)}
 
     def list_for(self, actor):
         with self.database.transaction(read_only=True) as session:

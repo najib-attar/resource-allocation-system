@@ -156,9 +156,13 @@ app.register_blueprint(create_room_blueprint(lambda: get_repository().database,
 from web.notification_routes import create_notification_blueprint
 app.register_blueprint(create_notification_blueprint(lambda: get_repository().database))
 
+from web.equipment_routes import create_equipment_blueprint
+app.register_blueprint(create_equipment_blueprint(lambda: get_repository().database,
+    lambda: EngineGateway(PROJECT_ROOT, app.config['BACKEND_TIMEOUT'], app.logger)))
+
 @app.before_request
 def pin_database_view():
-    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "rooms.", "notifications.")):
+    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "rooms.", "notifications.", "equipment.")):
         current_results()
 
 

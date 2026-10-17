@@ -70,7 +70,7 @@ class PostgresWorkflowTests(PostgresTestCase):
             with self.subTest(strategy=strategy):
                 self.repository.set_strategy(strategy)
                 result = execute_allocation(self.repository, EngineGateway(ROOT))
-                live, document, run_id = self.repository.read_view()
+                _, document, run_id = self.repository.read_view()
                 self.assertEqual(document["result"], result)
                 self.assertEqual(document["snapshot"]["strategy"], strategy)
                 self.assertTrue(document["build"]["binary_sha256"])
@@ -159,7 +159,7 @@ class PostgresWorkflowTests(PostgresTestCase):
             self.assertEqual(session.scalar(select(func.count()).select_from(Allocation).where(Allocation.run_id == run_id)), 0)
 
     def test_saved_view_remains_coherent_after_later_publication(self):
-        old, _ = self.publish_fake("old")
+        self.publish_fake("old")
         snapshot, pinned, _ = self.repository.read_view()
         self.publish_fake("new")
         self.assertTrue(all(item["rejectionReason"] == "old" for item in pinned["result"]["requestResults"]))

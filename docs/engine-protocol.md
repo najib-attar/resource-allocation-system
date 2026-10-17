@@ -1,5 +1,54 @@
 # Allocation Engine Protocol, Version 1
 
+## Equipment borrowing operation (Iteration 44)
+
+`allocation_system --equipment-json` accepts a separate version-1 operation named
+`equipment`. Existing room allocation, appointments, student rooms and standalone
+CSV invocations are unchanged. No SQL/files or presentation-only borrower/asset
+labels cross this operation. stdout is exactly one JSON document; diagnostics use
+stderr; exit 0 means a validated result (possibly infeasible), exit 2 invalid input.
+The gateway still verifies source/binary build hashes and enforces its timeout.
+
+Input: `protocolVersion:1`, `operation:"equipment"`, nonempty `runId`, positive
+`facultyId`, boolean `custodianActive`, `borrowerFacultyIds` (known organizational
+ancestry), `proposed:{start,end}` (UTC epoch seconds, minute-aligned, half-open,
+at most 365 elapsed days). `items` has 1-50 distinct `{typeId,quantity,specifications}`
+rows; quantities are 1-1000 and specifications are exact text-valued objects of
+at most 50 keys. `types` has at most 1000 objects with `id`, `facultyId`,
+`categoryId`, `maxLoanDays` (1-365), `enabled`, `specifications`, `eligibleFacultyIds`.
+`units` has at most 10000 `{id,typeId,condition,held,reservations}` objects;
+reservations contain `{start,end}`, at most 1000 per unit. IDs are positive 32-bit
+integers; dates are 1970-2100. Unknown/malformed references fail explicitly.
+`held` means physically handed out and unreturned, independent of the due date.
+
+Output echoes version/operation/run ID and adds `engineVersion:"equipment-1"`,
+`status`, boolean `feasible`, `errors`, `items`, and `alternativePeriods`. Each item
+has `typeId`, `availableQuantity`, `unitIds`, `reasonCode` (`AVAILABLE`,
+`NO_CUSTODIAN`, `INELIGIBLE`, `INSUFFICIENT_QUANTITY`), `alternativeTypeIds`.
+If any item fails, every `unitIds` array is empty. Otherwise each contains exactly
+the requested quantity in stable ascending inventory-ID order. Compatible
+alternative types and at most three later feasible intervals require explicit
+application selection, never automatic substitution. See the
+[equipment design](architecture/equipment-borrowing-design.md) for ranking rules.
+The student presentation removes unit IDs before rendering unapproved candidates.
+
+```json
+{"protocolVersion":1,"operation":"equipment","runId":"example","facultyId":1,
+ "custodianActive":true,"borrowerFacultyIds":[1],
+ "proposed":{"start":1894003200,"end":1894089600},
+ "items":[{"typeId":1,"quantity":1,"specifications":{}}],
+ "types":[{"id":1,"facultyId":1,"categoryId":1,"maxLoanDays":7,"enabled":true,
+           "specifications":{"architecture":"arm"},"eligibleFacultyIds":[]}],
+ "units":[{"id":1,"typeId":1,"condition":"usable","held":false,"reservations":[]}]}
+```
+
+```json
+{"protocolVersion":1,"operation":"equipment","engineVersion":"equipment-1",
+ "runId":"example","status":"success","feasible":true,"errors":[],
+ "items":[{"typeId":1,"availableQuantity":1,"unitIds":[1],"reasonCode":"AVAILABLE",
+           "alternativeTypeIds":[]}],"alternativePeriods":[]}
+```
+
 ## Boundary and Invocation
 
 Application persistence is PostgreSQL. **Execution is JSON**, independent of
