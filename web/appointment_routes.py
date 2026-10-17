@@ -61,8 +61,8 @@ def create_appointment_blueprint(database_provider, gateway_provider):
         return [day(item.strip()).isoformat() for item in request.form.get("excludedDates", "").split(",") if item.strip()]
 
     @blueprint.app_template_filter("university_time")
-    def university_time(value):
-        return value.astimezone(university_zone()).strftime("%Y-%m-%d %H:%M")
+    def university_time(value, seconds=False):
+        return value.astimezone(university_zone()).strftime("%Y-%m-%d %H:%M:%S %Z" if seconds else "%Y-%m-%d %H:%M")
 
     @blueprint.errorhandler(PermissionError)
     def unauthorized(error):

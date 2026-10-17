@@ -113,7 +113,7 @@ class EquipmentMigrationDemoTests(PostgresTestCase):
         self.assertTrue(result['feasible'])
 
     def test_large_fictional_inventory_matches_real_engine(self):
-        faculty=seed_appointments(self.database)
+        seed_appointments(self.database)
         for actor in (1,6):
             AccountService(self.database).provision(actor,'large-equipment-'+str(actor),'Fictional-demo-password',administrator=actor==6)
         result=seed_equipment_demo(self.database,6,44,'large')

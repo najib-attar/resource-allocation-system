@@ -4,8 +4,10 @@
         <a href="{{ item.url }}" data-notification-id="{{ item.id }}">
             <span class="notification-kind">{{ {'appointment': 'Appointment update', 'room': 'Room request update', 'equipment': 'Equipment update'}[item.kind] }}{% if not item.read_at %}<span class="unread-dot" aria-label="Unread"></span>{% endif %}</span>
             <strong>{{ item.subject }}</strong>
+            <span class="status-badge">Current status: {{ item.current_status }}</span>
             <span>{{ item.message }}</span>
-            <time datetime="{{ item.created_at.isoformat() }}">{{ item.created_at|university_time }}</time>
+            <small>From: {{ item.sender_name|person_name }} &middot; To: {{ item.recipient_name|person_name }}</small>
+            <time datetime="{{ item.created_at.isoformat() }}">{{ item.created_at|university_time(seconds=true) }}</time>
         </a>
     </li>
 {% else %}

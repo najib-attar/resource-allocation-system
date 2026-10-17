@@ -114,7 +114,7 @@ def prepare_settings(path, seed=None, start=None, end=None, port=None):
         settings = json.loads(path.read_text(encoding="utf-8"))
         if not isinstance(settings, dict) or settings.get("kind") != "university-local-demo" or settings.get("version") != 1:
             raise ValueError("This directory is not an owned local demo. Its files were not changed.")
-        if (settings.get("postgresUser") != "ras_demo" or settings.get("databaseName") != "ras_university_demo" or
+        if (settings.get("postgresUser") != "ras_demo" or settings.get("databaseName") not in {"resource_allocation", "ras_university_demo"} or
                 type(settings.get("postgresPort")) is not int or not 1 <= settings["postgresPort"] <= 65535 or
                 type(settings.get("seeded")) is not bool or type(settings.get("seed")) is not int or
                 any(not isinstance(settings.get(key), str) or len(settings[key]) < minimum for key, minimum in
@@ -132,7 +132,7 @@ def prepare_settings(path, seed=None, start=None, end=None, port=None):
     settings = {"kind": "university-local-demo", "version": 1, "profileId": secrets.token_hex(16),
                 "seed": seed if seed is not None else 42, "academicStart": first.isoformat(), "academicEnd": last.isoformat(),
                 "postgresPort": port if port is not None else 55443, "postgresUser": "ras_demo",
-                "databaseName": "ras_university_demo", "postgresPassword": secrets.token_hex(24),
+                "databaseName": "resource_allocation", "postgresPassword": secrets.token_hex(24),
                 "demoPassword": secrets.token_urlsafe(18), "sessionSecret": secrets.token_hex(32), "seeded": False}
     write_settings(path, settings)
     return settings

@@ -15,7 +15,7 @@ from web.equipment_service import EquipmentService, EquipmentError
 from web.notification_service import NotificationService
 from web.persistence.database import Database
 from web.persistence.models import (BorrowRequest, BorrowItem, EquipmentReservation, EquipmentType,
-    EquipmentUnit, EquipmentCustodian, EquipmentEvent, OrganizationUnit)
+    EquipmentCustodian, EquipmentEvent, OrganizationUnit)
 
 
 def approve_process(url, key, queue):

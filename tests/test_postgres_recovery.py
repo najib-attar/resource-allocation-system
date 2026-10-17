@@ -107,13 +107,22 @@ class PostgresRecoveryTests(PostgresTestCase):
                 connection.execute(text('CREATE DATABASE "' + restored_name + '"'))
         finally:
             admin.dispose()
+        def remove_owned_restore():
+            # This invocation created the UUID-named database; never target an existing database.
+            cleanup = create_engine(url.set(database="postgres", query={}), isolation_level="AUTOCOMMIT")
+            try:
+                with cleanup.connect() as connection:
+                    connection.execute(text('DROP DATABASE "' + restored_name + '"'))
+            finally:
+                cleanup.dispose()
+        self.addCleanup(remove_owned_restore)
         extension_database = create_engine(url.set(database=restored_name, query={}))
         try:
             with extension_database.begin() as connection:
                 connection.execute(text("CREATE EXTENSION IF NOT EXISTS btree_gist WITH SCHEMA public"))
         finally:
             extension_database.dispose()
-        # Never overwrite/drop an existing DB. The newly created recovery DB is retained.
+        # Restore only into this invocation's disposable database.
         subprocess.run(restore + ["--exit-on-error", "--no-owner", "--no-privileges", "--dbname=" + restored_name],
                        input=backup, env=env, capture_output=True, check=True, timeout=60)
         recovered = Database(url.set(database=restored_name))
@@ -131,6 +140,6 @@ class PostgresRecoveryTests(PostgresTestCase):
                                        "assert r.status_code == 200; assert b'Approved' in r.data; print('Flask restart passed')"],
                                       cwd=ROOT, env=app_env, capture_output=True, text=True, timeout=30)
             self.assertEqual(restarted.returncode, 0, restarted.stderr)
-            print("Verified isolated restore database: " + restored_name)
+            print("Verified temporary restore database (removed after test): " + restored_name)
         finally:
             recovered.dispose()

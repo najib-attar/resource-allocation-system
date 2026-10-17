@@ -9,7 +9,7 @@ import uuid
 from sqlalchemy import or_, select
 
 from .calendar_service import CalendarError, aware, epoch
-from .notification_service import publish_event
+from .notification_service import event_history, publish_event
 from .persistence.models import (BorrowExtension, BorrowItem, BorrowRequest, EquipmentCategory,
     EquipmentCustodian, EquipmentEvent, EquipmentReservation, EquipmentType, EquipmentUnit,
     EQUIPMENT_CONDITIONS, LoginAccount, OrganizationUnit, Role, User)
@@ -354,8 +354,7 @@ class EquipmentService:
             _, account, role = self._user(session, actor)
             return {'faculties': [{'id': f.id, 'name': f.name, 'custodianId': self._custodian(session, f.id)} for f in session.scalars(
                         select(OrganizationUnit).where(OrganizationUnit.unit_type == 'Faculty').order_by(OrganizationUnit.name))],
-                    'isAdmin': account.administrator or role == 'Administrator',
-                    'custodianFaculties': list(session.scalars(select(EquipmentCustodian.faculty_id).where(EquipmentCustodian.user_id == actor)))}
+                    'isAdmin': account.administrator or role == 'Administrator'}
 
     def catalog(self, actor, start, due):
         start, due = self._period(start, due)
@@ -387,7 +386,8 @@ class EquipmentService:
             bookings = self._reservations(session, key)
             return {'id': row.id, 'borrowerId': row.borrower_id, 'borrower': session.get(User, row.borrower_id).name,
                 'faculty': session.get(OrganizationUnit, row.faculty_id).name, 'facultyId': row.faculty_id,
-                'isCustodian': custodian == actor, 'isBorrower': row.borrower_id == actor, 'status': row.status,
+                'isCustodian': custodian == actor, 'canAudit': custodian == actor,
+                'isBorrower': row.borrower_id == actor, 'status': row.status,
                 'purpose': row.purpose, 'notes': row.notes, 'start': row.start_at, 'due': row.due_at,
                 'overdue': any(b.handed_at is not None and b.returned_at is None and b.due_at < datetime.now(timezone.utc) for b in bookings),
                 'items': [{'name': session.get(EquipmentType, i.type_id).name, 'quantity': i.quantity, 'specifications': i.specifications} for i in self._lines(session, key)],
@@ -396,8 +396,7 @@ class EquipmentService:
                     'handoverCondition': b.handover_condition, 'returnCondition': b.return_condition, 'released': b.released} for b in bookings],
                 'extensions': [{'id': e.id, 'due': e.due_at, 'reason': e.reason, 'status': e.status} for e in session.scalars(
                     select(BorrowExtension).where(BorrowExtension.request_id == key).order_by(BorrowExtension.id))],
-                'history': [{'message': e.message, 'at': e.created_at, 'actor': session.get(User, e.actor_id).name, 'unitId': e.unit_id} for e in session.scalars(
-                    select(EquipmentEvent).where(EquipmentEvent.request_id == key).order_by(EquipmentEvent.id))]}
+                'history': event_history(session, EquipmentEvent, key, actor, audit=custodian == actor)}
 
     def list_for(self, actor):
         with self.database.transaction(read_only=True) as session:
