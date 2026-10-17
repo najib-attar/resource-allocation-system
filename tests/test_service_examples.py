@@ -176,4 +176,3 @@ class ServiceExampleTests(RoomFixture):
         page = student.get('/notifications/').get_data(as_text=True)
         self.assertIn('&lt;script&gt;Fictional professor&lt;/script&gt;', page)
         self.assertNotIn('<script>Fictional professor</script>', page)
-
