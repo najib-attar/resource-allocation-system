@@ -16,8 +16,8 @@
 .ui-button { display: inline-flex; justify-content: center; align-items: center; gap: 9px; padding: 12px 16px; min-height: 44px; border: 1px solid transparent; border-radius: var(--ui-radius-sm); font: inherit; font-size: 12px; font-weight: 600; text-decoration: none; cursor: pointer; line-height: 1.5; }
 .ui-button--primary { color: white; background: var(--ui-primary); border-color: var(--ui-primary); }
 .ui-button--primary:hover { background: var(--ui-primary-hover); }
-.ui-button--secondary { color: var(--ui-ink); background: white; border-color: #cdd6df; }
-.ui-button--secondary:hover { background: #f1f5f4; border-color: #9eafa8; }
+.ui-button--secondary { color: var(--ui-ink); background: white; border-color: var(--ui-control-line); }
+.ui-button--secondary:hover { background: #f1f5f4; border-color: var(--ui-primary); }
 .ui-button:disabled { opacity: .55; cursor: not-allowed; }
 .ui-icon-tile { width: 40px; height: 40px; display: inline-grid; place-items: center; border-radius: 10px; background: var(--ui-primary-soft); color: var(--ui-primary); flex-shrink: 0; }
 .ui-icon-tile--amber { color: #8c611e; background: #fff4e3; }
@@ -99,7 +99,7 @@
 .booking-step { display: inline-grid; place-items: center; width: 27px; height: 27px; border-radius: 7px; color: var(--ui-primary); background: var(--ui-primary-soft); border: 1px solid #d3e4dc; font-size: 12px; }
 .ui-field { display: block; font-size: 12px; font-weight: 500; color: var(--ui-ink); }
 .ui-field-label { display: block; font-size: 12px; margin-bottom: 8px; }
-.ui-field input, .ui-field select, .ui-field textarea, .booking-prototype .picker-search { display: block; width: 100%; border: 1px solid #bdc9d4; border-radius: var(--ui-radius-sm); background: white; color: var(--ui-ink); font: inherit; font-size: 13px; padding: 11px 12px; margin-top: 8px; min-height: 44px; }
+.ui-field input, .ui-field select, .ui-field textarea, .booking-prototype .picker-search { display: block; width: 100%; border: 1px solid var(--ui-control-line); border-radius: var(--ui-radius-sm); background: white; color: var(--ui-ink); font: inherit; font-size: 13px; padding: 11px 12px; margin-top: 8px; min-height: 44px; }
 .ui-field textarea { resize: vertical; line-height: 1.6; }
 .ui-field input[aria-invalid="true"], .ui-field select[aria-invalid="true"], .ui-field textarea[aria-invalid="true"] { border-color: var(--ui-danger); }
 .ui-field-help { font-size: 12px; color: var(--ui-muted); margin-block: 7px 0; }
@@ -107,7 +107,7 @@
 .ui-required { color: var(--ui-primary); }
 .booking-fields-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 20px; }
 .booking-prototype .participant-picker-grid { margin: 20px 0 0; gap: 16px; }
-.booking-prototype .participant-picker { border-radius: 6px; border-color: #bdc9d4; }
+.booking-prototype .participant-picker { border-radius: 6px; border-color: var(--ui-control-line); }
 .booking-prototype .participant-picker summary { font-size: 13px; font-weight: 400; padding: 13px 10px; color: var(--ui-ink); }
 .booking-prototype .picker-count { font-size: 10px; }
 .booking-prototype .picker-options { padding: 0 12px 8px; max-height: 240px; }
@@ -124,7 +124,7 @@
 .booking-times-state.is-error p { color: var(--ui-danger); }
 .booking-prototype .time-slot-grid { margin-top: 16px; grid-template-columns: repeat(auto-fill, minmax(125px, 1fr)); gap: 8px; }
 .booking-prototype .time-slot-grid:empty { margin: 0; }
-.booking-prototype .appointment-choice { border: 1px solid #aebfb7; border-radius: 6px; background: white; color: var(--ui-primary); font: inherit; font-size: 11px; padding: 12px 6px; cursor: pointer; min-height: 44px; }
+.booking-prototype .appointment-choice { border: 1px solid var(--ui-control-line); border-radius: 6px; background: white; color: var(--ui-primary); font: inherit; font-size: 11px; padding: 12px 6px; cursor: pointer; min-height: 44px; }
 .booking-prototype .appointment-choice:hover { background: var(--ui-primary-soft); }
 .booking-prototype .appointment-choice[aria-pressed="true"] { color: white; background: var(--ui-primary); border-color: var(--ui-primary); box-shadow: 0 0 0 2px #c7e0d4; }
 .booking-selected-time { color: var(--ui-muted); font-size: 12px; margin-block: 16px; }

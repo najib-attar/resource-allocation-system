@@ -2,6 +2,8 @@
 
 from datetime import timedelta
 from html.parser import HTMLParser
+from pathlib import Path
+import re
 from unittest import TestCase, mock
 
 from flask import g, render_template_string
@@ -66,12 +68,29 @@ class SharedShellTests(TestCase):
         self.assertTrue(all(path.startswith('/static/') for path in assets))
         self.assertTrue(all(node.get('aria-hidden') == 'true' for node in doc.select('svg')))
 
-    def test_ui_components_escape_data_without_color_only_statuses(self):
+    def test_ui_components_escape_data_and_preserve_accessible_states(self):
         with web_app.app.test_request_context('/'):
             html = render_template_string('{% from "components/ui.html" import badge, stat_card %}{{ badge(label, "warning") }}{{ stat_card(label, 0, "No requests", "/appointments/") }}', label='<img src=x>')
         self.assertNotIn('<img', html)
         self.assertIn('&lt;img src=x&gt;', html)
         self.assertIn('No requests', html)
+        css = (Path(__file__).resolve().parents[1] / 'web/static/tokens.css').read_text()
+        tokens = dict(re.findall(r'--(ui-[\w-]+):\s*(#[\da-fA-F]+)', css))
+        def luminance(value):
+            value = value.lstrip('#')
+            if len(value) == 3:
+                value = ''.join(character * 2 for character in value)
+            rgb = [int(value[index:index + 2], 16) / 255 for index in (0, 2, 4)]
+            rgb = [level / 12.92 if level <= .04045 else ((level + .055) / 1.055) ** 2.4 for level in rgb]
+            return sum(level * weight for level, weight in zip(rgb, (.2126, .7152, .0722)))
+        pairs = [('ui-ink', 'ui-surface', 4.5), ('ui-muted', 'ui-surface', 4.5),
+                 ('ui-surface', 'ui-primary', 4.5), ('ui-success', 'ui-success-soft', 4.5),
+                 ('ui-warning', 'ui-warning-soft', 4.5), ('ui-danger', 'ui-danger-soft', 4.5),
+                 ('ui-control-line', 'ui-surface', 3)]
+        for foreground, background, minimum in pairs:
+            with self.subTest(foreground=foreground):
+                low, high = sorted((luminance(tokens[foreground]), luminance(tokens[background])))
+                self.assertGreaterEqual((high + .05) / (low + .05), minimum)
 
 
 class FrontendPrototypeWorkflowTests(AppointmentFixture):
