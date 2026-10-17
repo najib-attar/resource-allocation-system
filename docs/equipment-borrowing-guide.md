@@ -5,8 +5,9 @@
 Build with `python scripts/build_backend.py`, configure PostgreSQL and the existing
 session secret, then run `python -m alembic upgrade head`. Head `0044c` is
 additive and leaves existing users, room allocations and appointments intact.
-Normal Flask operation still uses PostgreSQL only. Run the existing demo launcher
-for a new fictional profile; new profiles now include equipment inventory.
+Normal Flask operation still uses PostgreSQL only. The existing launcher reuses
+the same primary local database as appointments and rooms; fresh setups include
+equipment inventory. A second operational database is not required.
 
 For an **existing fictional development database** with accounts/faculties but no
 equipment configuration, explicitly select its `DATABASE_URL` and run:

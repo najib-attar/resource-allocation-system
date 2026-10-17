@@ -189,8 +189,14 @@ growth, preserve backups, and obtain approval before any destructive cleanup.
 For a one-command Windows setup including login accounts and explicitly dated
 appointment availability, use `powershell -NoProfile -ExecutionPolicy Bypass -File
 scripts/run_demo.ps1`. See the [demo walkthrough](demo-walkthrough.md). This launcher
-owns a separate local PostgreSQL cluster under Git-ignored `build/local-demos/`;
-it does not connect to or reset the database configured in your normal shell.
+owns one local PostgreSQL cluster under Git-ignored
+`build/local-demos/university-demo/`. Its saved settings select the single
+application database (`resource_allocation` for new setups), shared by academic
+allocations, appointments, student room requests and equipment borrowing. It does
+not reset existing data or connect to an unrelated database from your normal
+shell. The current local walkthrough uses this database directly; no second
+operational demo database is needed. Disposable test and recovery databases remain
+isolated and must be removed when their verification finishes.
 
 Create a **new empty development database**, configure `DATABASE_URL`, and migrate
 to head. Then seed directly into PostgreSQL, not into the regression CSV fixtures:
@@ -321,7 +327,8 @@ confirmed student bookings or closures. Do not bypass these application services
 with ad-hoc SQL updates to schedules/policies.
 
 The fictional [demo walkthrough](demo-walkthrough.md#student-room-request-demonstration)
-uses a separate profile, explicit January 2030 period and real engine results.
+uses the same primary local profile as appointments and equipment, an explicit
+fictional academic period, and real engine results.
 Existing profiles are not automatically assigned invented room owners. Their
 stored data and credentials are preserved on restart.
 

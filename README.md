@@ -320,8 +320,10 @@ accounts and appointment calendars, run:
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run_demo.ps1
 ```
 
-This installs the pinned Python packages and uses a separate private PostgreSQL
-demo database. It never resets your existing database. Read the
+This installs the pinned Python packages and reuses one private PostgreSQL
+application database for every service, populated with fictional data. The default
+local profile is `build/local-demos/university-demo/`; new setups name the database
+`resource_allocation`. Existing settings and data are never reset. Read the
 [step-by-step demo walkthrough](docs/demo-walkthrough.md) for accounts, explicit
 fictional dates, student/professor approval and administrator screens.
 
