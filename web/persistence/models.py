@@ -87,7 +87,8 @@ class Resource(Base):
 class ResourceRequest(Base):
     __tablename__ = "resource_request"
     __table_args__ = (CheckConstraint("id > 0 AND participant_count > 0 AND revision > 0"), CheckConstraint(allowed("type", REQUEST_TYPES)), CheckConstraint("submission_order > 0", name="ck_request_submission_order"),
-                      CheckConstraint("(submission_key IS NULL AND submission_fingerprint IS NULL) OR (submission_key IS NOT NULL AND submission_fingerprint IS NOT NULL AND submission_key ~ '^[0-9a-f]{32}$' AND submission_fingerprint ~ '^[0-9a-f]{64}$')", name="ck_submission_identity"))
+                      CheckConstraint("(submission_key IS NULL AND submission_fingerprint IS NULL) OR (submission_key IS NOT NULL AND submission_fingerprint IS NOT NULL AND submission_key ~ '^[0-9a-f]{32}$' AND submission_fingerprint ~ '^[0-9a-f]{64}$')", name="ck_submission_identity"),
+                      CheckConstraint("NOT calendar_public OR type <> 'CommitteeMeeting'", name="ck_calendar_public_request_type"))
     id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
     submission_order: Mapped[int] = mapped_column(BigInteger, Identity(), unique=True)
     type: Mapped[str] = mapped_column(String(30))
@@ -101,6 +102,8 @@ class ResourceRequest(Base):
     revision: Mapped[int] = mapped_column(Integer, default=1)
     submission_key: Mapped[str | None] = mapped_column(String(32), unique=True)
     submission_fingerprint: Mapped[str | None] = mapped_column(String(64))
+    calendar_public: Mapped[bool] = mapped_column(Boolean, server_default="false")
+    academic_instructor_id: Mapped[int | None] = mapped_column(ForeignKey("university_user.id"), index=True)
 
 
 class RequestSlot(Base):

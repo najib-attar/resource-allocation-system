@@ -713,7 +713,7 @@ Typed classrooms, laboratories and meeting rooms with facilities and capacity.
 
 ## resource_request
 
-Ordered request identity, requester, preferred resource and requirements.
+Ordered request identity, requirements and private-by-default academic publication; optional explicit instructor label.
 
 | Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
 |---|---|---|---|---|
@@ -730,16 +730,21 @@ Ordered request identity, requester, preferred resource and requirements.
 | revision | integer | - | no | ORM: 1 |
 | submission_key | varchar(32) | - | yes | - |
 | submission_fingerprint | varchar(64) | - | yes | - |
+| calendar_public | boolean | - | no | false |
+| academic_instructor_id | integer | FK -> university_user.id | yes | - |
 
 - Primary key: `id`.
+- Foreign key: `(academic_instructor_id) -> university_user (id)`; NO ACTION.
 - Foreign key: `(requester_id) -> university_user (id)`; NO ACTION.
 - Foreign key: `(resource_id) -> resource (id)`; NO ACTION.
 - Check: `(submission_key IS NULL AND submission_fingerprint IS NULL) OR (submission_key IS NOT NULL AND submission_fingerprint IS NOT NULL AND submission_key ~ '^[0-9a-f]{32}$' AND submission_fingerprint ~ '^[0-9a-f]{64}$')`.
+- Check: `NOT calendar_public OR type <> 'CommitteeMeeting'`.
 - Check: `id > 0 AND participant_count > 0 AND revision > 0`.
 - Check: `submission_order > 0`.
 - Check: `type IN ('OneTime','Recurring','Exam','CommitteeMeeting')`.
 - Unique: `submission_key`.
 - Unique: `submission_order`.
+- Index: `ix_resource_request_academic_instructor_id (academic_instructor_id)`.
 - Index: `ix_resource_request_requester_id (requester_id)`.
 - Index: `ix_resource_request_resource_id (resource_id)`.
 

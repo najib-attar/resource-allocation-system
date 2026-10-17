@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block title %}Academic Activity | University Calendar{% endblock %}
+{% block page_heading %}Academic activity{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static',filename='calendar.css') }}">{% endblock %}
+{% block content %}<section class="panel"><h2>{{ item.title }}</h2><p>Scheduling information only. Enrollment, private participant details and request history are not published here.</p>{% for warning in item.warnings %}<p role="status">{{ warning }}</p>{% endfor %}{% for event in item.events %}<article><h3>{{ event.start|university_time }} &ndash; {{ event.end|university_time }}</h3><p>{{ event.location }}</p><p>{{ event.note }}</p><p>{{ event.label }}</p></article>{% else %}<p>No current allocation on this date. The active run or academic period may have changed.</p>{% endfor %}<a href="{{ url_for('calendar.index') }}">Back to calendar</a></section>{% endblock %}

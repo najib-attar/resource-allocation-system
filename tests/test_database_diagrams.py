@@ -1,5 +1,6 @@
 from pathlib import Path
 from unittest import TestCase
+from xml.etree import ElementTree
 
 from scripts.generate_database_diagrams import artifacts
 from web.persistence.models import Base
@@ -17,3 +18,7 @@ class DatabaseDiagramTests(TestCase):
         for table in Base.metadata.tables.values():
             self.assertIn("    " + table.name + " {", physical)
             self.assertTrue(all(column.name in physical for column in table.columns))
+        rendered = ' '.join(ElementTree.parse(ROOT / 'docs/architecture/database-er-physical.svg').getroot().itertext())
+        for table in Base.metadata.tables.values():
+            self.assertIn(table.name, rendered)
+            self.assertTrue(all(column.name in rendered for column in table.columns))

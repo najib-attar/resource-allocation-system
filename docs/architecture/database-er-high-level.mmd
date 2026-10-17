@@ -132,6 +132,7 @@ erDiagram
         integer id PK "identity"
         integer requester_id FK
         integer resource_id FK
+        integer academic_instructor_id FK "nullable"
     }
     role {
         integer id PK "identity"
@@ -211,6 +212,7 @@ erDiagram
     allocation_run ||--o{ request_decision : run_id
     resource_request ||--o{ request_history : request_id
     allocation_run o|--o{ request_history : run_id
+    university_user o|--o{ resource_request : academic_instructor_id
     university_user ||--o{ resource_request : requester_id
     resource ||--o{ resource_request : resource_id
     student_room_request ||--o{ room_invitation : request_id

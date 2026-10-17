@@ -3,10 +3,11 @@
 from datetime import datetime, timezone
 from sqlalchemy import func, literal, or_, select, union_all, update
 from sqlalchemy.orm import aliased
+from .equipment_access import custodian_faculties
 
 from .persistence.models import (Appointment, AppointmentEvent, AppointmentInvitation,
     AppointmentProfessor, Notification, RoomEvent, RoomInvitation, StudentRoomRequest, User,
-    BorrowRequest, EquipmentCustodian, EquipmentEvent, LoginAccount, Role)
+    BorrowRequest, EquipmentCustodian, EquipmentEvent)
 
 
 def publish_event(session, event):
@@ -82,10 +83,7 @@ def _visible(actor):
         literal('room').label('kind'), RoomEvent.actor_id, Notification.recipient_id,
         StudentRoomRequest.status.label('current_status')).join(RoomEvent, RoomEvent.id == Notification.room_event_id).join(
         StudentRoomRequest, StudentRoomRequest.id == RoomEvent.request_id).where(Notification.recipient_id == actor, room_scope)
-    authorized_faculties = select(EquipmentCustodian.faculty_id).join(User, User.id == EquipmentCustodian.user_id).join(
-        LoginAccount, LoginAccount.user_id == User.id).join(Role, Role.id == User.primary_role_id).where(
-        EquipmentCustodian.user_id == actor, func.lower(User.status) == 'active', LoginAccount.enabled.is_(True),
-        or_(LoginAccount.administrator.is_(True), Role.name.in_(['Staff', 'Administrator'])))
+    authorized_faculties = custodian_faculties(actor)
     equipment_scope = or_(BorrowRequest.borrower_id == actor, BorrowRequest.faculty_id.in_(authorized_faculties))
     equipment = select(Notification.id, Notification.read_at, EquipmentEvent.created_at, EquipmentEvent.message,
         BorrowRequest.purpose.label('subject'), BorrowRequest.id.label('subject_id'), literal('equipment').label('kind'),
