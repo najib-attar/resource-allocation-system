@@ -348,7 +348,7 @@ PostgreSQL persists both workflows; CSV remains an offline compatibility/import 
 
 ## Equipment borrowing
 
-Upgrade to Alembic head (`0044c`) before serving equipment pages. The nine additive
+Upgrade to Alembic head before serving equipment pages. The nine additive
 inventory/loan tables bring the application total to 47. Existing room/appointment
 data is preserved; `notification` additionally references equipment events.
 See the [equipment guide](equipment-borrowing-guide.md) for authorized custodian
@@ -363,3 +363,22 @@ are one consistent dataset. The existing pg_dump/pg_restore procedure remains
 applicable. Never repair an overdue loan by deleting reservations or recording an
 unverified return. A busy faculty/engine error rolls back the current equipment
 operation; it does not publish a partial reservation.
+
+## Unified calendar
+
+Run `python -m alembic upgrade head` before serving the unified calendar (`0045a`).
+The additive migration preserves all existing requests and adds private-by-default
+academic publication metadata; there are still 47 application tables. Back up
+existing databases before upgrades using the procedure above.
+
+All roles use **Calendar**. Month/week/day navigation and filters read live records;
+refresh after changes in another window. Personal blocks remain in **My Schedule**.
+Administrators may publish academic titles, times, locations and optional instructor
+labels using **Academic Publication**, after explicitly binding the relevant period
+in **Calendar Setup**. Do not publish a private title or guess legacy academic dates.
+Committees cannot be published. Published schedules do not imply enrollment, and
+instructor labels do not create new scheduling commitments.
+
+No calendar-specific seed, result file or background synchronization task is needed.
+Equipment reminders depend on actual loan/reservation records; a due date is not
+a verified return. Cancellation and rescheduling remain in the original workflows.

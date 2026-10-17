@@ -314,3 +314,17 @@ Alembic revisions are reviewed and tested against real PostgreSQL. Development
 and CI use isolated databases. Connection URLs/secrets come from the environment,
 never source control. Ordinary web reads/writes must succeed with the CSV data
 directory and local result JSON unavailable after cutover.
+
+## Unified calendar publication (0045a)
+
+The calendar adds no event tables. It projects the current allocation run, explicit
+academic-period bindings, appointments, room requests, equipment custody and own
+blocks in one repeatable-read transaction. `resource_request.calendar_public` is
+NOT NULL and defaults to false; a database check prohibits publishing committees.
+The nullable indexed `academic_instructor_id` references an existing university
+identity and is an explicitly chosen display label, not an inferred enrollment or
+new scheduling commitment. Only administrators may publish, and changes enter
+request history. Existing engine snapshots and JSON protocols are unchanged.
+
+See [calendar architecture and privacy](unified-calendar-design.md). The regenerated
+physical/high-level Mermaid and SVG diagrams include the instructor foreign key.

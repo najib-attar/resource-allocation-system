@@ -53,6 +53,13 @@ Pending requests hold nothing; due dates never imply physical return. See the
 [Iteration 44 report](docs/iteration-reports/Iteration_44.pdf) summarizes the
 workflow, database additions, architectural decisions and executed verification.
 
+Iteration 45 adds a **unified university calendar** at `/calendar/`, combining
+authorized academic activities, appointments, room requests and equipment reminders
+in month/week/day views without duplicating booking records or scheduling rules.
+See the [calendar requirements](docs/srs/unified-calendar-requirements.md),
+[architecture](docs/architecture/unified-calendar-design.md) and
+[Iteration 45 report](docs/iteration-reports/Iteration_45.pdf).
+
 ## Current Prototype Features
 
 The current prototype supports:
@@ -253,6 +260,11 @@ The test runner compiles and runs the backend smoke executable, then compiles an
 
 After installing `requirements.txt`, building the authoritative backend, and configuring an isolated `TEST_DATABASE_URL`, run `python -m unittest discover -s tests -p 'test_*.py' -v` for database integrity/concurrency, migrations, gateway, JSON/legacy parity and Flask smoke checks. Configure matching PostgreSQL backup tools as described in the [database guide](docs/database-operations.md) to run recovery tests. Without the URL/tools, relevant tests explicitly skip; such a run is not full verification. Linux CI provides a real PostgreSQL service.
 
+Iteration 45 local verification: 314 Python tests run, 313 passed and one expected
+Windows skip (POSIX executable permissions); 21 calendar cases are included in that
+total. All 172 C++ tests passed. Additional role-specific Flask, isolated CLI and
+desktop/mobile browser checks passed; see the iteration report for details.
+
 ## Iterative Development Summary
 
 - Iterations 1-4: basic one-time request support and initial allocation rules
@@ -361,6 +373,23 @@ administration grid and dated participant calendar are deliberately separate.
 For HTTPS set `RESOURCE_ALLOCATION_SECURE_COOKIE=1`; debug defaults off.
 
 ## Web Dashboard Overview
+
+### Unified University Calendar
+
+Open **Calendar** after signing in. `/calendar/` combines appointments, room
+activities, explicitly dated academic schedules and equipment pickup/return
+reminders. Choose month, week or day; use Previous, Next, Today and category/status
+filters. Details link back to the original service. Pending/cancelled activities,
+optional invitations and staff responsibilities are distinguished from personal
+commitments. Equipment deadlines never reserve a person's time.
+
+Private events are scoped server-side to their participants or designated staff.
+The **Published academic schedule** audience includes only administrator-published
+academic metadata, not enrollment lists. Existing records are private by default;
+administrators use **Academic Publication** and **Calendar Setup** to publish and
+explicitly date academic activities. Undated legacy records produce a warning,
+not guessed calendar dates. The existing **My Schedule** page still manages blocks.
+See the [calendar architecture](docs/architecture/unified-calendar-design.md).
 
 For a new empty development database, `python scripts/seed_demo_database.py --seed 41 --run-allocation` creates reproducible fictional university data and runs the real engine. Use `--size large` for a 1,200-request sanity dataset. Seeding never overwrites/resets existing data. See the [ER diagrams and full schema inventory](docs/architecture/database-design.md) and [demo/recovery guide](docs/database-operations.md).
 
