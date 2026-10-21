@@ -19,7 +19,7 @@ from test_room_requests import RoomFixture
 from web.engine_gateway import EngineGateway, EngineIntegrationError
 from web.notification_service import NotificationService
 from web.persistence.database import Database
-from web.persistence.models import (ApplicationState, BorrowRequest, EquipmentReservation,
+from web.persistence.models import (ApplicationState, BorrowRequest, EquipmentReservation, EquipmentType,
     RoomEvent, WaitingListEntry)
 from web.waiting_list_service import POLICY_VERSION, WaitingListError, WaitingListService
 
@@ -78,6 +78,7 @@ class WaitingRoomTests(RoomFixture):
         for actor in (4, 6, 2):
             with self.assertRaises(PermissionError): self.waiting.review(key, actor, True)
             with self.assertRaises(PermissionError): self.waiting.detail(key, actor)
+            with self.assertRaises(PermissionError): self.waiting.cancel(key, actor)
         self.assertEqual(self.waiting.list_for(4), [])
         self.assertEqual(len(self.waiting.list_for(7)), 1)
         self.waiting.review(key, 7, False, 'Not an eligible university activity')
@@ -116,6 +117,176 @@ class WaitingRoomTests(RoomFixture):
         self.assertEqual(sum('You reached eligible waiting position one' in m for m in messages), 1)
         self.assertTrue(any('Joined waiting list' in row['message'] for row in NotificationService(self.database).inbox(4)['items']))
 
+    def test_pending_and_preapproved_cancellation_remove_active_eligibility_not_history(self):
+        pending, approved = self.join(), self.join(actor=4)
+        self.waiting.review(approved, 7, True)
+        for key, actor in ((pending, 1), (approved, 4)):
+            self.waiting.cancel(key, actor)
+            detail = self.waiting.detail(key, actor)
+            self.assertEqual(detail['status'], 'Cancelled')
+            self.assertIsNone(detail['position'])
+            self.assertTrue(detail['history'])
+        self.open_room()
+        self.assertEqual(self.totals(), (0, 0))
+        with self.database.transaction(read_only=True) as session:
+            self.assertEqual(self.waiting._active(session, 'room', self.other_faculty), [])
+            self.assertEqual(session.scalar(select(func.count()).select_from(WaitingListEntry)), 2)
+
+    def test_room_availability_does_not_bypass_pending_review(self):
+        key = self.join()
+        self.open_room()
+        self.assertEqual(self.waiting.detail(key, 1)['status'], 'Pending Review')
+        self.assertEqual(self.totals(), (0, 0))
+        self.waiting.review(key, 7, True)
+        self.assertEqual(self.waiting.detail(key, 1)['status'], 'Assigned')
+        with self.assertRaises(WaitingListError): self.waiting.review(key, 7, True)
+        self.assertEqual(self.totals(), (1, 1))
+
+    def test_cancellation_stays_committed_when_remaining_queue_engine_is_unavailable(self):
+        first, second = self.join(), self.join(actor=4)
+        for key in (first, second): self.waiting.review(key, 7, True)
+        with mock.patch('web.engine_gateway.EngineGateway.execute_room', side_effect=EngineIntegrationError('fixture outage')):
+            with self.assertLogs('web.waiting_list_state', level='ERROR'):
+                self.waiting.cancel(first, 1)
+        self.assertEqual(self.waiting.detail(first, 1)['status'], 'Cancelled')
+        self.assertEqual(self.waiting.detail(second, 4)['position'], 1)
+        self.assertEqual(self.totals(), (0, 0))
+        self.open_room()
+        self.assertEqual(self.waiting.detail(second, 4)['status'], 'Assigned')
+
+    def test_rejection_is_durable_when_other_waiters_cannot_be_rechecked(self):
+        first, second = self.join(), self.join(actor=4)
+        self.waiting.review(second, 7, True)
+        with mock.patch('web.engine_gateway.EngineGateway.execute_room', side_effect=EngineIntegrationError('fixture outage')):
+            with self.assertLogs('web.waiting_list_state', level='ERROR'):
+                self.waiting.review(first, 7, False, 'Activity rejected by owning faculty')
+        self.assertEqual(self.waiting.detail(first, 1)['status'], 'Rejected')
+        self.assertIsNone(self.waiting.detail(first, 1)['position'])
+        self.open_room()
+        self.assertEqual(self.waiting.detail(second, 4)['status'], 'Assigned')
+
+    def test_normal_approval_competing_with_queue_promotion_reserves_only_once(self):
+        from threading import Barrier
+        from web.calendar_service import CalendarError
+        from web.persistence.models import RoomClosure
+        key = self.join()
+        self.waiting.review(key, 7, True)
+        with self.database.transaction() as session:
+            session.delete(session.scalar(select(RoomClosure).where(RoomClosure.resource_id == 302)))
+        normal = self.request_room(actor=4)
+        barrier = Barrier(2)
+
+        def approve_normal():
+            barrier.wait(timeout=10)
+            try:
+                return self.rooms.decide(normal, 7, 1, True)
+            except CalendarError:
+                return 'Availability changed'
+
+        def promote():
+            barrier.wait(timeout=10)
+            return self.waiting.process('room', self.other_faculty)
+
+        with ThreadPoolExecutor(2) as workers:
+            ordinary, queued = workers.submit(approve_normal), workers.submit(promote)
+            ordinary.result(timeout=30), queued.result(timeout=30)
+        confirmed = self.rooms.detail(normal, 4)['status'] == 'Confirmed'
+        assigned = self.waiting.detail(key, 1)['status'] == 'Assigned'
+        self.assertEqual(int(confirmed) + int(assigned), 1)
+        self.assertEqual(self.totals(), (1, 1))
+
+    def test_cancellation_racing_with_assignment_cannot_erase_confirmed_reservation(self):
+        from threading import Event
+        from web.persistence.models import RoomClosure
+        key = self.join()
+        self.waiting.review(key, 7, True)
+        with self.database.transaction() as session:
+            session.delete(session.scalar(select(RoomClosure).where(RoomClosure.resource_id == 302)))
+        entered, release = Event(), Event()
+        execute = self.waiting.gateway.execute_room
+
+        def pause(snapshot):
+            entered.set()
+            if not release.wait(10): raise RuntimeError('Fixture synchronization timed out')
+            return execute(snapshot)
+
+        with mock.patch.object(self.waiting.gateway, 'execute_room', side_effect=pause), ThreadPoolExecutor(2) as workers:
+            assignment = workers.submit(self.waiting.process, 'room', self.other_faculty)
+            self.assertTrue(entered.wait(10))
+            cancellation = workers.submit(self.waiting.cancel, key, 1)
+            release.set()
+            self.assertEqual(assignment.result(timeout=20), [key])
+            with self.assertRaises(WaitingListError): cancellation.result(timeout=20)
+        self.assertEqual(self.waiting.detail(key, 1)['status'], 'Assigned')
+        self.assertEqual(self.totals(), (1, 1))
+
+    def test_assignment_notification_failure_rolls_back_then_retries_without_duplicates(self):
+        from web.notification_service import publish_event
+        from web.persistence.models import RoomClosure
+        key = self.join()
+        self.waiting.review(key, 7, True)
+        with self.database.transaction() as session:
+            session.delete(session.scalar(select(RoomClosure).where(RoomClosure.resource_id == 302)))
+
+        def fail_after_write(session, event, **kwargs):
+            publish_event(session, event, **kwargs)
+            if event.message.startswith('Automatically assigned'):
+                raise RuntimeError('Injected notification failure')
+
+        with mock.patch('web.waiting_list_state.publish_event', side_effect=fail_after_write):
+            with self.assertRaises(RuntimeError): self.waiting.process('room', self.other_faculty)
+        self.assertEqual(self.waiting.detail(key, 1)['status'], 'Preapproved')
+        self.assertEqual(self.totals(), (0, 0))
+        self.assertFalse(any('Automatically assigned' in row['message'] for row in NotificationService(self.database).inbox(1)['items']))
+        self.assertEqual(self.waiting.process('room', self.other_faculty), [key])
+        self.assertEqual(self.waiting.process('room', self.other_faculty), [])
+        messages = NotificationService(self.database).inbox(1)['items']
+        self.assertEqual(sum('Automatically assigned' in row['message'] for row in messages), 1)
+
+    def test_adjacent_intervals_can_use_same_room_without_overlapping(self):
+        from web.persistence.models import RoomClosure
+        for room in (301, 302, 303):
+            self.rooms.close_room(6, room, START+timedelta(hours=1), START+timedelta(hours=2), 'Adjacent fixture occupancy')
+        keys = [self.join(), self.join(start=START+timedelta(hours=1))]
+        for key in keys: self.waiting.review(key, 7, True)
+        with self.database.transaction() as session:
+            for closure in session.scalars(select(RoomClosure).where(RoomClosure.resource_id == 302)):
+                session.delete(closure)
+        self.assertEqual(self.waiting.process('room', self.other_faculty), keys)
+        self.assertEqual(self.totals(), (2, 2))
+
+    def test_exact_notice_boundary_and_equivalent_timezones_keep_correct_queue(self):
+        from zoneinfo import ZoneInfo
+        from web.persistence.models import RoomClosure
+        first = self.join()
+        second = self.join(actor=4, start=START.astimezone(ZoneInfo('Europe/Istanbul')))
+        self.assertEqual(self.waiting.detail(second, 4)['position'], 2)
+        for key in (first, second): self.waiting.review(key, 7, True)
+        with self.database.transaction() as session:
+            session.delete(session.scalar(select(RoomClosure).where(RoomClosure.resource_id == 302)))
+        late = WaitingListService(self.database, EngineGateway(ROOT), clock=lambda: START-timedelta(minutes=60)+timedelta(seconds=1))
+        self.assertEqual(late.process('room', self.other_faculty), [])
+        self.assertEqual(self.totals(), (0, 0))
+        boundary = WaitingListService(self.database, EngineGateway(ROOT), clock=lambda: START-timedelta(minutes=60))
+        self.assertEqual(boundary.process('room', self.other_faculty), [first])
+        self.assertEqual(boundary.detail(second, 4)['status'], 'Preapproved')
+        self.assertEqual(self.totals(), (1, 1))
+
+    def test_lowering_current_notice_does_not_reduce_already_recorded_minimum(self):
+        from web.persistence.models import RoomClosure
+        key = self.join()
+        self.waiting.review(key, 7, True)
+        current = WaitingListService(self.database, EngineGateway(ROOT), clock=lambda: START-timedelta(minutes=90))
+        current.configure_notice(6, 120)
+        current.configure_notice(6, 30)
+        with self.database.transaction() as session:
+            session.delete(session.scalar(select(RoomClosure).where(RoomClosure.resource_id == 302)))
+        self.assertEqual(current.process('room', self.other_faculty), [])
+        detail = current.detail(key, 1)
+        self.assertEqual(detail['noticeMinutes'], 120)
+        self.assertIsNone(detail['position'])
+        self.assertIn('advance notice', detail['explanation'])
+
     def test_direct_approval_and_revision_cannot_bypass_waiting_review(self):
         key = self.join()
         parent = self.waiting.detail(key, 1)['requestId']
@@ -141,6 +312,9 @@ class WaitingRoomTests(RoomFixture):
         expired = WaitingListService(self.database, EngineGateway(ROOT), clock=lambda: START)
         expired.process('room', self.other_faculty)
         self.assertEqual(expired.detail(key, 1)['status'], 'Expired')
+        expired.process('room', self.other_faculty)
+        self.assertEqual(sum('Waiting list expired.' in row['message']
+            for row in NotificationService(self.database).inbox(1)['items']), 1)
 
     def test_eligibility_change_and_staff_replacement_cannot_use_old_authority(self):
         key = self.join()
@@ -366,6 +540,138 @@ class WaitingEquipmentTests(EquipmentFixture):
         return self.waiting.join_equipment(actor, self.faculty, [{'typeId': self.type_id, 'quantity': quantity}],
             START, START+timedelta(days=3), 'Fictional waiting project', '', POLICY_VERSION, True, key or uuid.uuid4().hex)
 
+    def test_pending_and_preapproved_equipment_cancellation_remove_active_eligibility(self):
+        pending, approved = self.join(), self.join(actor=5)
+        self.waiting.review(approved, 6, True)
+        parent = self.waiting.detail(pending, 1)['requestId']
+        self.service.cancel(1, parent)
+        self.waiting.cancel(approved, 5)
+        self.service.cancel(4, self.blocker)
+        for key, actor in ((pending, 1), (approved, 5)):
+            detail = self.waiting.detail(key, actor)
+            self.assertEqual(detail['status'], 'Cancelled')
+            self.assertIsNone(detail['position'])
+            self.assertTrue(detail['history'])
+        with self.database.transaction(read_only=True) as session:
+            self.assertEqual(self.waiting._active(session, 'equipment', self.faculty), [])
+            self.assertEqual(session.scalar(select(func.count()).select_from(EquipmentReservation)
+                .where(EquipmentReservation.released.is_(False))), 0)
+
+    def test_equipment_availability_does_not_bypass_pending_review(self):
+        key = self.join(quantity=2)
+        self.service.cancel(4, self.blocker)
+        entry = self.waiting.detail(key, 1)
+        self.assertEqual(entry['status'], 'Pending Review')
+        self.assertEqual(self.service.detail(1, entry['requestId'])['units'], [])
+        self.waiting.review(key, 6, True)
+        self.assertEqual(self.waiting.detail(key, 1)['status'], 'Assigned')
+        with self.assertRaises(WaitingListError): self.waiting.review(key, 6, True)
+        self.assertEqual(len(self.service.detail(1, entry['requestId'])['units']), 2)
+
+    def test_equipment_waiter_expiry_does_not_release_an_existing_physical_loan(self):
+        self.handover(self.blocker)
+        key = self.join()
+        self.waiting.review(key, 6, True)
+        expired = WaitingListService(self.database, EngineGateway(ROOT), clock=lambda: START)
+        self.assertEqual(expired.process('equipment', self.faculty), [])
+        self.assertEqual(expired.detail(key, 1)['status'], 'Expired')
+        self.assertEqual(self.service.detail(4, self.blocker)['status'], 'Borrowed')
+        with self.database.transaction(read_only=True) as session:
+            self.assertEqual(session.scalar(select(func.count()).select_from(EquipmentReservation)
+                .where(EquipmentReservation.released.is_(False))), 2)
+
+    def test_equipment_cancellation_stays_committed_during_engine_outage(self):
+        first, second = self.join(), self.join(actor=5)
+        for key in (first, second): self.waiting.review(key, 6, True)
+        with mock.patch('web.engine_gateway.EngineGateway.execute_equipment', side_effect=EngineIntegrationError('fixture outage')):
+            with self.assertLogs('web.waiting_list_state', level='ERROR'):
+                self.waiting.cancel(first, 1)
+        self.assertEqual(self.waiting.detail(first, 1)['status'], 'Cancelled')
+        self.assertEqual(self.waiting.detail(second, 5)['position'], 1)
+        self.service.cancel(4, self.blocker)
+        self.assertEqual(self.waiting.detail(second, 5)['status'], 'Assigned')
+
+    def test_equipment_normal_approval_competes_with_queue_for_same_units(self):
+        from threading import Barrier
+        from web.calendar_service import CalendarError
+        key = self.join(quantity=2)
+        self.waiting.review(key, 6, True)
+        with self.database.transaction() as session:
+            session.get(BorrowRequest, self.blocker).status = 'Cancelled'
+            for booking in self.service._reservations(session, self.blocker): booking.released = True
+        normal = self.request(quantity=2, actor=5)
+        barrier = Barrier(2)
+
+        def approve_normal():
+            barrier.wait(timeout=10)
+            try:
+                self.service.decide(6, normal, True)
+            except CalendarError:
+                return 'Unavailable'
+
+        def promote():
+            barrier.wait(timeout=10)
+            return self.waiting.process('equipment', self.faculty)
+
+        with ThreadPoolExecutor(2) as workers:
+            ordinary, queued = workers.submit(approve_normal), workers.submit(promote)
+            ordinary.result(timeout=30), queued.result(timeout=30)
+        approved = self.service.detail(5, normal)['status'] == 'Approved'
+        assigned = self.waiting.detail(key, 1)['status'] == 'Assigned'
+        self.assertEqual(int(approved) + int(assigned), 1)
+        with self.database.transaction(read_only=True) as session:
+            self.assertEqual(session.scalar(select(func.count()).select_from(EquipmentReservation)
+                .where(EquipmentReservation.released.is_(False))), 2)
+
+    def test_partial_availability_never_silently_reduces_requested_quantity(self):
+        self.handover(self.blocker)
+        key = self.join(quantity=2)
+        self.waiting.review(key, 6, True)
+        self.return_units(self.blocker, self.units[:1], 'usable', 'First physical unit returned')
+        self.assertEqual(self.waiting.detail(key, 1)['status'], 'Preapproved')
+        parent = self.waiting.detail(key, 1)['requestId']
+        self.assertEqual(self.service.detail(1, parent)['units'], [])
+        self.return_units(self.blocker, self.units[1:], 'usable', 'Remaining physical unit returned')
+        self.assertEqual(self.waiting.detail(key, 1)['status'], 'Assigned')
+        loan = self.service.detail(1, parent)
+        self.assertEqual(len(loan['units']), 2)
+        self.assertEqual(len({unit['id'] for unit in loan['units']}), 2)
+        self.assertTrue(all(unit['handed'] is None for unit in loan['units']))
+
+    def test_equipment_assignment_notification_failure_rolls_back_all_units(self):
+        from web.notification_service import publish_event
+        key = self.join(quantity=2)
+        self.waiting.review(key, 6, True)
+        with self.database.transaction() as session:
+            session.get(BorrowRequest, self.blocker).status = 'Cancelled'
+            for booking in self.service._reservations(session, self.blocker): booking.released = True
+
+        def fail_after_write(session, event, **kwargs):
+            publish_event(session, event, **kwargs)
+            if event.message.startswith('Automatically assigned'):
+                raise RuntimeError('Injected notification failure')
+
+        with mock.patch('web.waiting_list_state.publish_event', side_effect=fail_after_write):
+            with self.assertRaises(RuntimeError): self.waiting.process('equipment', self.faculty)
+        entry = self.waiting.detail(key, 1)
+        self.assertEqual(entry['status'], 'Preapproved')
+        self.assertEqual(self.service.detail(1, entry['requestId'])['units'], [])
+        self.assertEqual(self.waiting.process('equipment', self.faculty), [key])
+        self.assertEqual(self.waiting.process('equipment', self.faculty), [])
+        self.assertEqual(sum('Automatically assigned' in row['message']
+            for row in NotificationService(self.database).inbox(1)['items']), 1)
+
+    def test_changed_equipment_specifications_cannot_fulfill_original_mandatory_needs(self):
+        key = self.waiting.join_equipment(1, self.faculty,
+            [{'typeId': self.type_id, 'quantity': 1, 'specifications': {'architecture': 'arm'}}],
+            START, START+timedelta(days=3), 'Architecture-specific project', '', POLICY_VERSION, True, uuid.uuid4().hex)
+        self.waiting.review(key, 6, True)
+        with self.database.transaction() as session:
+            session.get(EquipmentType, self.type_id).specifications = {'architecture': 'riscv'}
+        self.service.cancel(4, self.blocker)
+        self.assertEqual(self.waiting.detail(key, 1)['status'], 'Ineligible')
+        self.assertEqual(self.service.detail(1, self.waiting.detail(key, 1)['requestId'])['units'], [])
+
     def test_equipment_release_promotes_one_full_fcfs_request_and_keeps_handover_separate(self):
         first, second = self.join(quantity=2), self.join(actor=5)
         self.waiting.review(first, 6, True)
@@ -444,6 +750,7 @@ class WaitingEquipmentTests(EquipmentFixture):
         with self.assertRaises(CalendarError): self.service.decide(6, entry['requestId'], True)
         for actor in (2, 4):
             with self.assertRaises(PermissionError): self.waiting.detail(key, actor)
+            with self.assertRaises(PermissionError): self.waiting.cancel(key, actor)
         self.waiting.review(key, 6, False, 'Borrowing purpose not approved')
         self.assertEqual(self.service.detail(1, entry['requestId'])['status'], 'Rejected')
 

@@ -252,7 +252,11 @@ class WaitingListService:
                 queue_event(session, entry, actor, 'Waiting-list pre-approval. '+entry.explanation)
             else:
                 self._close(session, entry, actor, 'Rejected', reason.strip())
-            self._process_locked(session, kind, faculty, state)
+            if approve:
+                self._process_locked(session, kind, faculty, state)
+            else:
+                self._positions(session, self._active(session, kind, faculty))
+                refresh_after_commit(session, self.database, self.gateway, kind, faculty, self.rooms.strategy, self.clock)
 
     def _close(self, session, entry, actor, status, explanation):
         parent = self._parent(session, entry)
@@ -266,7 +270,7 @@ class WaitingListService:
         with self.database.transaction() as session:
             entry = self._access(session, key, actor)
             kind, faculty = self._kind(entry), entry.faculty_id
-            state = self._lock(session, kind, faculty)
+            self._lock(session, kind, faculty)
             session.refresh(entry)
             self._access(session, key, actor)
             if entry.status == 'Cancelled':
@@ -274,7 +278,8 @@ class WaitingListService:
             if entry.status not in WAITING_ACTIVE:
                 raise WaitingListError('Only a waiting entry can be withdrawn. Use the normal reservation lifecycle after assignment.')
             self._close(session, entry, actor, 'Cancelled', 'Withdrawn without penalty; no active queue position remains.')
-            self._process_locked(session, kind, faculty, state)
+            self._positions(session, self._active(session, kind, faculty))
+            refresh_after_commit(session, self.database, self.gateway, kind, faculty, self.rooms.strategy, self.clock)
 
     def process(self, kind, faculty):
         """Internal processing has no caller authority: stored pre-approval is revalidated."""
