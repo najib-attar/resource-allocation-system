@@ -814,7 +814,7 @@ class WaitingEquipmentTests(EquipmentFixture):
     def test_migration_keeps_single_queue_and_can_upgrade_from_previous_head(self):
         self.assertIn('waiting_list_entry', inspect(self.database.engine).get_table_names())
         with self.database.transaction(read_only=True) as session:
-            self.assertEqual(session.scalar(text('select version_num from alembic_version')), '0047a')
+            self.assertEqual(session.scalar(text('select version_num from alembic_version')), '0048a')
 
     def test_equipment_flask_submission_and_staff_review_reuse_existing_forms(self):
         from web import app as web_app

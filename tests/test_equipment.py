@@ -261,7 +261,7 @@ class EquipmentWorkflowTests(EquipmentFixture):
         with self.assertRaises(IntegrityError),self.database.transaction() as session:
             line=session.scalar(select(BorrowItem).where(BorrowItem.request_id==key))
             session.add(EquipmentReservation(item_id=line.id,type_id=self.type_id,unit_id=self.units[0],start_at=START,due_at=START+timedelta(days=3)))
-        self.assertEqual(len(inspect(self.database.engine).get_table_names()),49)  # 48 application + Alembic.
+        self.assertEqual(len(inspect(self.database.engine).get_table_names()),51)  # 50 application + Alembic.
 
     def test_gateway_rejects_duplicate_or_foreign_engine_assets(self):
         with self.database.transaction(read_only=True) as session:

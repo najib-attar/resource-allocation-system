@@ -12,6 +12,8 @@ from web.persistence.models import Base
 
 
 PURPOSES = {
+    'resource_feedback': 'Private optional room/equipment usage report, immutable reporter/booking association, current review state and retry identity.',
+    'feedback_event': 'Private actor/time/status history, staff responses and idempotent actions; existing notification receipts are reused.',
     "waiting_list_entry": "Shared consent, responsible-staff preapproval, contextual FCFS identity and notification milestones; requirements and reservations remain in the original room/borrowing records.",
     "role": "Primary engine roles and preserved assigned-role labels; not authentication permissions.",
     "organization_unit": "Named university units with optional known type and parent.",
@@ -50,7 +52,7 @@ PURPOSES = {
     "room_reservation": "Exact confirmed exclusive room interval; GiST overlap exclusion.",
     "room_organizer_commitment": "Confirmed organizing-student interval with cross-appointment conflict protection.",
     "room_event": "Private timestamped room request lifecycle and invitation history.",
-    "notification": "Recipient-scoped event inbox and durable read state; exactly one appointment/room/equipment history event.",
+    "notification": "Recipient-scoped event inbox and durable read state; exactly one appointment/room/equipment/private-feedback history event.",
     "equipment_category": "Extensible named equipment categories, independent of room types.",
     "equipment_custodian": "One current designated equipment staff/administrator account per owning faculty.",
     "equipment_type": "Faculty-owned equipment catalog, exact specifications and configurable borrowing policy.",
@@ -68,6 +70,7 @@ MAIN_TABLES |= {"login_account", "academic_period", "legacy_calendar_binding", "
 MAIN_TABLES |= {"room_policy", "faculty_room_approver", "student_room_request", "room_reservation", "room_invitation", "room_organizer_commitment"}
 MAIN_TABLES.add("notification")
 MAIN_TABLES.add("waiting_list_entry")
+MAIN_TABLES |= {'resource_feedback', 'feedback_event'}
 MAIN_TABLES |= {"equipment_category", "equipment_type", "equipment_unit", "equipment_custodian", "borrow_request", "borrow_item", "equipment_reservation", "borrow_extension", "equipment_event"}
 
 
@@ -163,6 +166,9 @@ def artifacts():
             "waiting-list-er.mmd": er_source([item for item in tables if item.name in {
                 'waiting_list_entry', 'student_room_request', 'borrow_request', 'university_user',
                 'login_account', 'organization_unit'}], True),
+            "feedback-er.mmd": er_source([item for item in tables if item.name in {
+                'resource_feedback', 'feedback_event', 'notification', 'student_room_request',
+                'equipment_reservation', 'university_user', 'organization_unit'}], False),
             "equipment-er.mmd": er_source([item for item in tables if item.name.startswith(('equipment_', 'borrow_'))
                                           or item.name in {'organization_unit', 'university_user', 'login_account', 'notification'}], False),
             "database-schema-catalog.md": catalog(tables)}

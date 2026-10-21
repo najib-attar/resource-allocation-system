@@ -190,6 +190,17 @@ erDiagram
         integer faculty_id PK,FK
         integer user_id FK
     }
+    feedback_event {
+        bigint id PK "identity"
+        bigint report_id FK
+        integer actor_id FK
+        integer revision
+        varchar_20 status
+        text message
+        varchar_32 action_key
+        varchar_64 fingerprint
+        timestamptz created_at
+    }
     legacy_calendar_binding {
         bigint id PK "identity"
         integer period_id FK
@@ -228,6 +239,7 @@ erDiagram
         bigint appointment_event_id FK "nullable"
         bigint room_event_id FK "nullable"
         bigint equipment_event_id FK "nullable"
+        bigint feedback_event_id FK "nullable"
         timestamptz read_at "nullable"
     }
     organization_unit {
@@ -287,6 +299,26 @@ erDiagram
         boolean whiteboard
         boolean computers
         boolean available
+    }
+    resource_feedback {
+        bigint id PK "identity"
+        bigint room_request_id FK "nullable"
+        integer room_resource_id FK "nullable"
+        integer room_revision "nullable"
+        integer equipment_reservation_id FK "nullable"
+        integer reporter_id FK
+        integer faculty_id FK
+        integer assigned_to_id FK
+        varchar_20 category
+        text description
+        varchar_20 status
+        varchar_10 priority
+        text response
+        integer revision
+        varchar_32 submission_key
+        varchar_64 fingerprint
+        timestamptz created_at
+        timestamptz updated_at
     }
     resource_request {
         integer id PK "identity"
@@ -466,6 +498,8 @@ erDiagram
     resource_request ||--o| exam_details : request_id
     organization_unit ||--o| faculty_room_approver : faculty_id
     login_account ||--o{ faculty_room_approver : user_id
+    university_user ||--o{ feedback_event : actor_id
+    resource_feedback ||--o{ feedback_event : report_id
     busy_slot o|--o{ legacy_calendar_binding : busy_slot_id
     academic_period ||--o{ legacy_calendar_binding : period_id
     resource_request o|--o{ legacy_calendar_binding : request_id
@@ -474,6 +508,7 @@ erDiagram
     suggestion_group ||--o{ meeting_suggestion : run_id_request_id
     appointment_event o|--o{ notification : appointment_event_id
     equipment_event o|--o{ notification : equipment_event_id
+    feedback_event o|--o{ notification : feedback_event_id
     university_user ||--o{ notification : recipient_id
     room_event o|--o{ notification : room_event_id
     organization_unit o|--o{ organization_unit : parent_id
@@ -485,6 +520,12 @@ erDiagram
     resource_request ||--o{ request_participant : request_id
     university_user ||--o{ request_participant : user_id
     resource_request ||--|{ request_slot : request_id
+    login_account ||--o{ resource_feedback : assigned_to_id
+    equipment_reservation o|--o{ resource_feedback : equipment_reservation_id
+    organization_unit ||--o{ resource_feedback : faculty_id
+    university_user ||--o{ resource_feedback : reporter_id
+    student_room_request o|--o{ resource_feedback : room_request_id
+    resource o|--o{ resource_feedback : room_resource_id
     university_user o|--o{ resource_request : academic_instructor_id
     university_user ||--o{ resource_request : requester_id
     resource ||--o{ resource_request : resource_id
