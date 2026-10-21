@@ -1,25 +1,42 @@
+{% from 'components/ui.html' import icon %}
 <!doctype html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Resource Allocation Dashboard{% endblock %}</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='tokens.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='shell.css') }}">
     {% block styles %}{% endblock %}
 </head>
-<body>
-    <header class="site-header">
-        <div>
-            <p class="eyebrow">Resource Allocation System</p>
-            <h1>{% block page_heading %}Dashboard{% endblock %}</h1>
-        </div>
-        {% if g.principal %}{% include 'components/_account_controls.html' %}{% endif %}
+<body{% if g.principal %} class="app-body"{% endif %}>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    {% if g.principal %}
+    <aside class="app-sidebar" id="app-sidebar" aria-label="University navigation">
+        <a class="app-brand" href="{{ url_for('student.home' if g.principal.role == 'Student' and not g.principal.administrator else 'index') }}">
+            <span class="app-brand-mark">{{ icon('book', 25) }}</span><span>University<span class="app-brand-subtitle">Resources &amp; scheduling</span></span>
+        </a>
+        <button class="sidebar-close ui-icon-button" type="button" data-navigation-close aria-label="Close navigation" hidden>{{ icon('close') }}</button>
         {% include 'components/_navigation.html' %}
-    </header>
-
-    <main class="page-shell">
-        {% block content %}{% endblock %}
-    </main>
-    {% if g.principal %}<script src="{{ url_for('static', filename='notifications.js') }}" defer></script>{% endif %}
+        <div class="sidebar-note">One campus. Connected services.<span>Your academic day, organized.</span></div>
+    </aside>
+    <div class="sidebar-backdrop" data-navigation-backdrop hidden></div>
+    {% endif %}
+    <div{% if g.principal %} class="app-workspace"{% endif %}>
+        <header class="{{ 'app-topbar' if g.principal else 'site-header' }}">
+            {% if g.principal %}<button class="navigation-toggle ui-icon-button" type="button" data-navigation-toggle aria-label="Open navigation" aria-expanded="false" aria-controls="app-sidebar" hidden>{{ icon('menu') }}</button>{% endif %}
+            <div class="app-heading"><p class="{{ 'app-breadcrumb' if g.principal else 'eyebrow' }}">{{ 'University portal' if g.principal else 'Resource Allocation System' }}</p><h1>{% block page_heading %}Dashboard{% endblock %}</h1></div>
+            {% if g.principal %}{% include 'components/_account_controls.html' %}{% endif %}
+        </header>
+        <main id="main-content" class="{{ 'app-content' if g.principal else 'page-shell' }}" tabindex="-1">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+    {% if g.principal %}
+    <script src="{{ url_for('static', filename='shell.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='notifications.js') }}" defer></script>
+    {% endif %}
 </body>
 </html>

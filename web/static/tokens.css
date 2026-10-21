@@ -1,0 +1,33 @@
+:root {
+    --ui-font: "Bahnschrift", "Avenir Next", "Trebuchet MS", sans-serif;
+    --ui-bg: #f5f6f8;
+    --ui-surface: #fff;
+    --ui-ink: #202e3b;
+    --ui-muted: #5b6a79;
+    --ui-line: #dfe5eb;
+    --ui-control-line: #81908f;
+    --ui-primary: #17695d;
+    --ui-primary-hover: #105247;
+    --ui-primary-soft: #eaf4f0;
+    --ui-sidebar: #172f36;
+    --ui-sidebar-muted: #b0c5c9;
+    --ui-warning: #845315;
+    --ui-warning-soft: #fff4df;
+    --ui-success: #176044;
+    --ui-success-soft: #e8f5ec;
+    --ui-danger: #a52d36;
+    --ui-danger-soft: #fff0f0;
+    --ui-focus: #176fbd;
+    --ui-space-1: .25rem;
+    --ui-space-2: .5rem;
+    --ui-space-3: .75rem;
+    --ui-space-4: 1rem;
+    --ui-space-5: 1.5rem;
+    --ui-space-6: 2rem;
+    --ui-space-7: 3rem;
+    --ui-radius-sm: 6px;
+    --ui-radius: 12px;
+    --ui-radius-lg: 16px;
+    --ui-shadow: 0 2px 5px #152a3610;
+    --ui-sidebar-width: 240px;
+}

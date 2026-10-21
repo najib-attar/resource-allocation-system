@@ -1,0 +1,37 @@
+{% macro icon(name, size=20) -%}
+{% set paths = {
+    'home': '<path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/>',
+    'calendar': '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 11h18m-13 4h2m4 0h2"/>',
+    'meeting': '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18m-14 4h3m-3 3h7m3-3h.01"/>',
+    'room': '<path d="M4 21h16M6 21V4l12-2v19M10 12h.01"/>',
+    'equipment': '<rect x="3" y="3" width="18" height="13" rx="2"/><path d="M8 21h8m-4-5v5M7 7h10"/>',
+    'clock': '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    'users': '<circle cx="9" cy="8" r="3"/><path d="M3 21v-3a6 6 0 0 1 12 0v3m2-16a3 3 0 0 1 0 6m2 4a5 5 0 0 1 2 4v2"/>',
+    'settings': '<path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="3"/><circle cx="15" cy="17" r="3"/>',
+    'arrow': '<path d="M5 12h14m-5-5 5 5-5 5"/>',
+    'chevron': '<path d="m9 5 7 7-7 7"/>',
+    'plus': '<path d="M12 5v14M5 12h14"/>',
+    'check': '<path d="m5 12 4 4L19 6"/>',
+    'info': '<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10h.01"/>',
+    'menu': '<path d="M4 6h16M4 12h16M4 18h16"/>',
+    'close': '<path d="m6 6 12 12M6 18 18 6"/>',
+    'book': '<path d="M3 4h6a4 4 0 0 1 3 2 4 4 0 0 1 3-2h6v15h-6a4 4 0 0 0-3 2 4 4 0 0 0-3-2H3zM12 6v15"/>',
+    'logout': '<path d="M9 4H4v16h5m0-8h12m-4-4 4 4-4 4"/>'
+} %}
+<svg class="ui-icon" width="{{ size }}" height="{{ size }}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">{{ paths.get(name, paths['info'])|safe }}</svg>
+{%- endmacro %}
+
+{% macro badge(label, tone='neutral') -%}
+<span class="ui-badge ui-badge--{{ tone }}"><span class="ui-status-dot" aria-hidden="true"></span>{{ label }}</span>
+{%- endmacro %}
+
+{% macro stat_card(label, value, note, href, symbol='calendar', tone='teal') -%}
+<a class="ui-stat-card" href="{{ href }}">
+    <span class="ui-stat-top"><span>{{ label }}</span><span class="ui-icon-tile ui-icon-tile--{{ tone }}">{{ icon(symbol) }}</span></span>
+    <strong class="ui-stat-value">{{ value }}</strong><span class="ui-stat-note">{{ note }}</span>
+</a>
+{%- endmacro %}
+
+{% macro section_heading(title, href='', label='View all') -%}
+<div class="ui-section-heading"><h2>{{ title }}</h2>{% if href %}<a class="ui-text-link" href="{{ href }}">{{ label }} {{ icon('arrow', 16) }}</a>{% endif %}</div>
+{%- endmacro %}

@@ -1,59 +1,79 @@
-{% extends "base.html" %}
-{% from "_student_appointment_card.html" import appointment_card %}
-{% from "_personal_timetable.html" import timetable with context %}
+{% extends 'base.html' %}
+{% from 'components/ui.html' import icon, badge, stat_card, section_heading %}
+{% from '_student_appointment_card.html' import appointment_card %}
+{% from '_personal_timetable.html' import timetable with context %}
 {% block title %}Student Home | Resource Allocation System{% endblock %}
 {% block page_heading %}Student Home{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='prototype.css') }}">{% endblock %}
 {% block content %}
-<div class="student-home">
-<section class="student-welcome">
-    <div><p class="eyebrow">Your campus, at a glance</p><h2>Welcome, {{ home.profile.name|person_name }}.</h2>
-        <p class="student-intro">Your next meeting, your plans and the things waiting for you. All in one place.</p>
-        {% if home.profile.studentNo or home.profile.program %}<p class="student-profile">{{ home.profile.studentNo }}{% if home.profile.studentNo and home.profile.program %} &middot; {% endif %}{{ home.profile.program }}{% if home.profile.yearLevel %} &middot; Year {{ home.profile.yearLevel }}{% endif %}</p>{% endif %}
-        <div class="hero-actions"><a class="button-primary" href="{{ url_for('appointments.new') }}">Schedule an appointment</a><a class="button-secondary" href="{{ url_for('calendar.index') }}">Open university calendar</a></div>
+<div class="portal-prototype student-portal">
+    <section class="portal-welcome" aria-labelledby="welcome-heading">
+        <div><p class="ui-overline">Your student workspace</p><h2 id="welcome-heading">Welcome back, {{ home.profile.name|person_name }}.</h2>
+            <p>A clearer view of your campus day. Pick up where you left off.</p>
+            {% if home.profile.studentNo or home.profile.program %}<p class="portal-profile">{{ home.profile.studentNo }}{% if home.profile.studentNo and home.profile.program %} &middot; {% endif %}{{ home.profile.program }}{% if home.profile.yearLevel %} &middot; Year {{ home.profile.yearLevel }}{% endif %}</p>{% endif %}
+        </div>
+        <div class="portal-date">{{ icon('calendar', 18) }}<span><time datetime="{{ home.now.date().isoformat() }}">{{ home.now.strftime('%A, %d %B %Y') }}</time><small>{{ home.zone }}</small></span></div>
+    </section>
+
+    <section class="portal-stat-grid" aria-label="Your appointment summaries">
+        {{ stat_card('Confirmed bookings', home.counts.bookings, 'Upcoming appointments you organize', '#my-bookings', 'check') }}
+        {{ stat_card('Awaiting approval', home.counts.pending, 'Appointment requests awaiting a decision', '#pending-requests', 'clock', 'amber') }}
+        {{ stat_card('Invitations', home.counts.invitations, 'Optional appointment invitations', '#my-invitations', 'users', 'blue') }}
+        {{ stat_card('Room bookings', home.roomCounts.confirmed, 'Upcoming confirmed room reservations', '#my-rooms', 'room') }}
+    </section>
+
+    <div class="portal-overview-grid">
+        <section class="ui-card portal-next" aria-labelledby="next-meeting-heading">
+            <div class="ui-section-heading"><p class="ui-overline">{{ 'In progress' if home.nextMeeting and home.nextMeeting.inProgress else 'Coming up next' }}</p>{{ icon('meeting', 21) }}</div>
+            <h2 id="next-meeting-heading">Your next confirmed meeting</h2>
+            {% if home.nextMeeting %}{% set item = home.nextMeeting %}
+                <div class="portal-meeting-main"><div class="portal-date-tile"><span>{{ item.start.strftime('%b') }}</span><strong>{{ item.start.strftime('%d') }}</strong><span>{{ item.start.strftime('%a') }}</span></div>
+                    <div><h3>{{ item.purpose }}</h3><p>{{ item.start.strftime('%H:%M') }} &ndash; {{ item.end.strftime('%H:%M') }} &middot; {{ home.zone }}</p><p>{{ item.professors|map('person_name')|join(', ') }}</p></div>
+                </div>
+                {% if not item.organizedByMe %}<p class="ui-note">You are an optional invitee, not a mandatory reservation.</p>{% endif %}
+                <div class="ui-actions"><a class="ui-button ui-button--primary" href="{{ url_for('appointments.detail', appointment_id=item.id) }}">Open meeting details {{ icon('arrow', 16) }}</a><a class="ui-text-link" href="{{ url_for('student.home', week=item.start.date().isoformat()) }}#my-timetable">Show this week</a></div>
+            {% else %}<div class="portal-next-empty"><span class="ui-icon-tile">{{ icon('calendar', 24) }}</span><h3>A little space in your schedule.</h3><p>No upcoming confirmed appointments. Your next meeting will appear here after professor approval.</p></div><a class="ui-text-link" href="{{ url_for('appointments.new') }}">Schedule an appointment {{ icon('arrow', 16) }}</a>{% endif %}
+        </section>
+
+        <section class="ui-card portal-quick-actions" aria-labelledby="quick-actions-heading">
+            <p class="ui-overline">Student services</p><h2 id="quick-actions-heading">What would you like to do?</h2>
+            {% for endpoint, label, description, symbol in [
+                ('appointments.new', 'Schedule an appointment', 'Find a time to meet your professors.', 'meeting'),
+                ('rooms.new', 'Find a university room', 'A space for your next study session or activity.', 'room'),
+                ('equipment.catalog', 'Borrow equipment', 'Explore equipment for your university projects.', 'equipment')
+            ] %}
+            <a class="portal-service" href="{{ url_for(endpoint) }}"><span class="ui-icon-tile">{{ icon(symbol, 20) }}</span><span><strong>{{ label }}</strong><small>{{ description }}</small></span>{{ icon('chevron', 16) }}</a>
+            {% endfor %}
+        </section>
     </div>
-    <div class="student-today"><span>{{ home.now.strftime('%A') }}</span><strong>{{ home.now.strftime('%d') }}</strong><span>{{ home.now.strftime('%B %Y') }}</span><small>{{ home.zone }}</small></div>
-</section>
 
-{{ timetable(home.schedule, 'student.home') }}
+    <div class="portal-lists-grid">
+        <section class="ui-card" id="pending-requests">
+            {{ section_heading('Awaiting professor approval', url_for('appointments.index')) }}
+            <p class="ui-note">Every required professor must approve. Pending requests do not reserve time.</p>
+            {% for item in home.pending %}{{ appointment_card(item) }}{% else %}<div class="ui-empty">{{ icon('check', 22) }}<p>No requests awaiting approval.<small>New appointment requests will appear here.</small></p></div>{% endfor %}
+        </section>
+        <section class="ui-card" id="my-rooms">
+            {{ section_heading('My university rooms', url_for('rooms.index')) }}
+            <p class="ui-note">{{ home.roomCounts.confirmed }} confirmed &middot; {{ home.roomCounts.pending }} awaiting review or a new choice</p>
+            {% for item in home.roomCards %}<article class="portal-room-row">
+                <div class="ui-row-heading"><h3><a href="{{ url_for('rooms.detail', request_id=item.id) }}">{{ item.purpose }}</a></h3>{{ badge(item.status, 'success' if item.status == 'Confirmed' else 'warning') }}</div>
+                <p>{{ icon('room', 15) }} {{ item.roomName }}</p><p>{{ item.start.strftime('%d %b %Y, %H:%M') }} &ndash; {{ item.end.strftime('%H:%M') }}</p>
+            </article>{% else %}<div class="ui-empty">{{ icon('room', 22) }}<p>No room requests yet.<small>Find a suitable space for your activity.</small></p></div>{% endfor %}
+        </section>
+    </div>
 
-<section class="panel"><div class="student-section-heading"><h2>My university rooms</h2><a class="button-primary" href="{{ url_for('rooms.new') }}">Find a room</a></div><p>{{ home.roomCounts.confirmed }} upcoming confirmed room bookings &middot; {{ home.roomCounts.pending }} requests awaiting faculty review or a new choice.</p>{% for item in home.roomCards %}<article class="student-appointment-card"><div><h3><a href="{{ url_for('rooms.detail',request_id=item.id) }}">{{ item.purpose }}</a></h3><p>{{ item.roomName }} &middot; {{ item.start.strftime('%d %b %Y %H:%M') }} &ndash; {{ item.end.strftime('%H:%M') }}</p></div><span>{{ item.status }}</span></article>{% else %}<p>No room requests yet. Describe your needs to receive a suitable room recommendation.</p>{% endfor %}<a href="{{ url_for('rooms.index') }}">View all room requests and updates</a></section>
+    <section class="portal-calendar-banner" aria-labelledby="calendar-link-heading"><span class="ui-icon-tile">{{ icon('calendar', 25) }}</span><div><h2 id="calendar-link-heading">Your university, on one calendar.</h2><p>Appointments, rooms and equipment reminders, together.</p></div><a class="ui-button ui-button--secondary" href="{{ url_for('calendar.index') }}">Open university calendar {{ icon('arrow', 16) }}</a></section>
 
-<section class="student-stat-grid" aria-label="Your appointment summaries">
-    <a class="student-stat" href="#my-bookings"><span>Confirmed bookings</span><strong>{{ home.counts.bookings }}</strong><small>Upcoming appointments you organize</small></a>
-    <a class="student-stat" href="#pending-requests"><span>Awaiting approval</span><strong>{{ home.counts.pending }}</strong><small>Pending requests do not reserve time</small></a>
-    <a class="student-stat" href="#my-invitations"><span>Invitations</span><strong>{{ home.counts.invitations }}</strong><small>Participation is optional</small></a>
-</section>
+    <div class="portal-lists-grid">
+        <section class="ui-card" id="my-bookings">{{ section_heading('My confirmed bookings', url_for('appointments.index')) }}<p class="ui-note">Upcoming appointments you organize. Optional invitations are separate.</p>{% for item in home.bookings %}{{ appointment_card(item) }}{% else %}<div class="ui-empty"><p>No upcoming confirmed bookings.</p></div>{% endfor %}</section>
+        <section class="ui-card" id="my-invitations">{{ section_heading('My invitations', url_for('appointments.index')) }}<p class="ui-note">Participation is optional. You may decline without blocking professor approval.</p>{% for item in home.invitations %}{{ appointment_card(item, invitation=true) }}{% else %}<div class="ui-empty"><p>No open invitations to upcoming appointments.</p></div>{% endfor %}</section>
+    </div>
 
-<div class="student-main-grid">
-<section class="student-next" aria-labelledby="next-meeting-heading">
-    <p class="eyebrow">{{ 'In progress' if home.nextMeeting and home.nextMeeting.inProgress else 'Coming up next' }}</p><h2 id="next-meeting-heading">Your next confirmed meeting</h2>
-    {% if home.nextMeeting %}{% set item = home.nextMeeting %}
-        <div class="student-next-date"><span>{{ item.start.strftime('%a') }}</span><strong>{{ item.start.strftime('%d') }}</strong><span>{{ item.start.strftime('%b %Y') }}</span></div>
-        <h3>{{ item.purpose }}</h3><p>{{ item.start.strftime('%H:%M') }} &ndash; {{ item.end.strftime('%H:%M') }} &middot; {{ home.zone }}</p><p>{{ item.professors|map('person_name')|join(', ') }}</p>
-        {% if not item.organizedByMe %}<p class="student-optional-note">You are an optional invitee. This is not a mandatory reservation for you.</p>{% endif %}
-        <div class="hero-actions"><a class="button-primary" href="{{ url_for('appointments.detail', appointment_id=item.id) }}">Open meeting details</a><a class="button-secondary" href="{{ url_for('student.home', week=item.start.date().isoformat()) }}">Show this week</a></div>
-    {% else %}<div class="student-empty"><h3>Your next meeting starts here.</h3><p>No upcoming confirmed appointments yet. Schedule one, and it will appear here after all required professors approve.</p></div>{% endif %}
-</section>
-<section class="panel student-services" aria-labelledby="services-heading"><p class="eyebrow">Available services</p><h2 id="services-heading">What would you like to do?</h2>
-    <a class="student-service-card" href="{{ url_for('appointments.new') }}"><span class="student-service-number" aria-hidden="true">01</span><span><strong>Meet your professors</strong><small>Choose participants, find a feasible time and submit for approval.</small></span><span aria-hidden="true">&rarr;</span></a>
-    <a class="student-service-card" href="{{ url_for('appointments.index') }}"><span class="student-service-number" aria-hidden="true">02</span><span><strong>Track my appointments</strong><small>View decisions, invitations and appointment history.</small></span><span aria-hidden="true">&rarr;</span></a>
-    <a class="student-service-card" href="{{ url_for('appointments.calendar', month=home.schedule.month, week=home.weekStart.isoformat()) }}"><span class="student-service-number" aria-hidden="true">03</span><span><strong>Manage my schedule</strong><small>Review dated commitments and add your personal blocks.</small></span><span aria-hidden="true">&rarr;</span></a>
-</section>
-</div>
-
-<div class="student-request-grid">
-<section class="panel" id="my-bookings"><div class="student-section-heading"><h2>My confirmed bookings</h2><span class="student-section-count">{{ home.counts.bookings }}</span></div><p class="student-card-note">Upcoming appointments you organize. Optional invitations are separate.</p>
-    {% for item in home.bookings %}{{ appointment_card(item) }}{% else %}<p class="student-empty-copy">No upcoming confirmed bookings. Pending requests will appear here after approval.</p>{% endfor %}
-    <a class="student-text-link" href="{{ url_for('appointments.index') }}">View all appointments &rarr;</a>
-</section>
-<section class="panel" id="pending-requests"><div class="student-section-heading"><h2>Awaiting professor approval</h2><span class="student-section-count">{{ home.counts.pending }}</span></div><p class="student-card-note">Every required professor must approve the same revision. No time is reserved yet.</p>
-    {% for item in home.pending %}{{ appointment_card(item) }}{% else %}<p class="student-empty-copy">No requests awaiting approval.</p>{% endfor %}
-    <a class="student-text-link" href="{{ url_for('appointments.index') }}">View all requests &rarr;</a>
-</section>
-<section class="panel" id="my-invitations"><div class="student-section-heading"><h2>My invitations</h2><span class="student-section-count">{{ home.counts.invitations }}</span></div><p class="student-card-note">You may decline participation. Acceptance is not required and does not block professor approval.</p>
-    {% for item in home.invitations %}{{ appointment_card(item, invitation=true) }}{% else %}<p class="student-empty-copy">No open invitations to upcoming appointments.</p>{% endfor %}
-    <a class="student-text-link" href="{{ url_for('appointments.index') }}">View appointment history &rarr;</a>
-</section>
-</div>
+    <details class="portal-timetable" id="my-timetable"{% if request.args.get('week') or request.args.get('month') or home.calendarUnresolved %} open{% endif %}>
+        <summary>{{ icon('clock', 20) }}<span>My monthly schedule<small>{{ home.schedule.monthTitle }} &middot; Monday to Friday, hour by hour</small></span>{{ icon('chevron', 17) }}</summary>
+        {{ timetable(home.schedule, 'student.home') }}
+    </details>
+    {% if home.calendarUnresolved %}<p class="ui-alert ui-alert--warning" role="status">{{ icon('info') }}Some university commitments need an academic-period binding. Open your timetable for details; empty cells are not proof of availability.</p>{% endif %}
 </div>
 {% endblock %}

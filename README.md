@@ -13,7 +13,7 @@ unanimous revision-specific professor approval, rescheduling and cancellation. S
 [current requirements](docs/srs/UC-STU-01-requirements.md). Existing weekly room
 allocation remains unchanged; legacy calendar applicability requires explicit configuration.
 Technical dashboard views now require a trusted administrative account.
-Students land on a personal Home page with a current-month Monday-Friday hourly
+Students land on a personal Home page with an expandable current-month Monday-Friday hourly
 timetable, their next confirmed meeting, pending requests, optional invitations and confirmed appointments
 they organize. Counts and cards come from one student-scoped PostgreSQL snapshot;
 pending requests are never presented as reservations.
@@ -59,6 +59,13 @@ in month/week/day views without duplicating booking records or scheduling rules.
 See the [calendar requirements](docs/srs/unified-calendar-requirements.md),
 [architecture](docs/architecture/unified-calendar-design.md) and
 [Iteration 45 report](docs/iteration-reports/Iteration_45.pdf).
+
+The current frontend design prototype introduces a shared role-aware sidebar,
+compact account/notification header, real-data student dashboard and grouped
+professor-appointment form. Other service pages retain their existing interiors
+while sharing the new shell. The broader visual rollout awaits review; see the
+[frontend audit, design system and rollout plan](docs/architecture/frontend-design.md)
+and the [Iteration 46 prototype report](docs/iteration-reports/Iteration_46.pdf).
 
 ## Current Prototype Features
 
