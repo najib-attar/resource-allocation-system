@@ -5,6 +5,7 @@
 <section class="panel appointment-booking"><p class="booking-intro">Tell us what you need. We recommend an eligible room; its owning faculty reviews your request.</p><p>{{ zone }} &middot; One room &middot; Pending requests do not hold a room</p>
 <form method="post" id="room-request-form" data-url="{{ url_for('rooms.candidates') }}">
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% if item %}<input type="hidden" name="revision" value="{{ item.revision }}">{% endif %}
+{% if not item %}<input type="hidden" name="submission_key" value="{{ submission_key }}">{% endif %}
 <div class="appointment-grid"><label>Activity <select name="category" required>{% for value,label in [('study','Group study'),('meeting','Meeting'),('lecture','Student-led lecture'),('club','Club activity'),('other','Other university purpose')] %}<option value="{{ value }}"{% if item and item.category == value %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></label>
 <label>Total attendees <input type="number" name="count" min="1" max="2147483647" value="{{ item.count if item else 5 }}" required><small>Include yourself and invited professors.</small></label></div>
 <label>Purpose <input name="purpose" maxlength="2000" value="{{ item.purpose if item else '' }}" required></label>
@@ -19,5 +20,9 @@
 <section class="appointment-time-panel"><div class="student-section-heading"><h2>Recommended rooms</h2><button type="button" id="find-rooms">Refresh rooms</button></div><p id="room-message" role="status" aria-live="polite">Enter your purpose and requirements to see suitable rooms.</p><div id="room-candidates" class="room-candidate-grid"></div><div id="room-alternatives"></div><input type="hidden" name="roomId" id="selected-room"><p id="room-selection" class="selected-time">No room selected.</p></section>
 <p class="student-card-note">The recommended room is selected first; you may choose another verified candidate. Availability and policy are checked again at submission and approval. Changes require a new faculty approval.</p>
 <button type="submit" id="submit-room" disabled>Submit for faculty approval</button><noscript><p>Enable JavaScript to review ranked room candidates.</p></noscript>
+{% if not item %}<fieldset id="room-waiting-option" hidden><legend>No suitable room? Join a waiting list</legend>
+<label>Owning faculty for waiting-list review<select name="waitingFaculty"><option value="">Choose one owning faculty</option>{% for faculty in directory.faculties %}<option value="{{ faculty.id }}">{{ faculty.name }}</option>{% endfor %}</select></label>
+<p>Only compatible rooms owned by this faculty can be assigned under its pre-approval. Requirements and time remain unchanged.</p>
+{% include 'components/_waiting_consent.html' %}<button name="action" value="wait" class="button-secondary">Join waiting list</button></fieldset>{% endif %}
 </form></section><script src="{{ url_for('static',filename='rooms.js') }}" defer></script>
 {% endblock %}

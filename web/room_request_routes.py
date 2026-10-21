@@ -4,6 +4,8 @@ from datetime import date, datetime, timezone
 from flask import Blueprint, abort, g, jsonify, redirect, render_template, request, url_for
 from .calendar_service import CalendarError, local_instant, university_zone
 from .room_request_service import RoomRequestService, RoomRequestError
+from .waiting_list_service import WaitingListService
+import uuid
 
 
 def create_room_blueprint(database_provider, gateway_provider, strategy_provider):
@@ -11,6 +13,9 @@ def create_room_blueprint(database_provider, gateway_provider, strategy_provider
 
     def service():
         return RoomRequestService(database_provider(),gateway_provider(),strategy_provider())
+
+    def waiting():
+        return WaitingListService(database_provider(), gateway_provider(), strategy_provider())
 
     def actor():
         return g.principal.user_id
@@ -68,9 +73,14 @@ def create_room_blueprint(database_provider, gateway_provider, strategy_provider
     def new():
         student()
         if request.method == 'POST':
+            if request.form.get('action') == 'wait':
+                key = waiting().join_room(actor(), fields(), invitees(), integer(request.form.get('waitingFaculty')),
+                    request.form.get('policyVersion'), request.form.get('acceptWaiting') == 'yes', request.form.get('submission_key'))
+                return redirect(url_for('waiting.detail', entry_id=key))
             key=service().submit(actor(),fields(),invitees(),integer(request.form.get('roomId')))
             return redirect(url_for('rooms.detail',request_id=key))
         return render_template('room_request_new.html',directory=service().directory(actor()),item=None,
+                               waiting_policy=waiting().policy(), submission_key=uuid.uuid4().hex,
                                today=datetime.now(university_zone()).strftime('%Y-%m-%d'),zone=university_zone().key)
 
     @blueprint.post('/candidates')
@@ -87,6 +97,7 @@ def create_room_blueprint(database_provider, gateway_provider, strategy_provider
     def detail(request_id):
         item=service().detail(request_id,actor())
         return render_template('room_request_detail.html',item=item,zone=university_zone().key,
+                               waiting=waiting().for_parent('room', request_id, actor()),
                                calendar_date=item['start'].astimezone(university_zone()).date().isoformat())
 
     @blueprint.route('/<int:request_id>/revise',methods=['GET','POST'])

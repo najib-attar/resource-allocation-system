@@ -18,6 +18,8 @@ function invalidate() {
     submit.disabled = true;
     refresh.disabled = false;
     candidates.replaceChildren();
+    const waiting = document.getElementById("room-waiting-option");
+    if (waiting) waiting.hidden = true;
     alternatives.replaceChildren();
     selection.textContent = "No room selected.";
 }
@@ -47,6 +49,8 @@ async function load() {
         if (current !== sequence) return;
         if (!response.ok) throw new Error(result.error || "Room evaluation failed.");
         message.textContent = result.candidates.length ? "Review the recommended room or choose another eligible candidate." : result.messages.join(" ") || "No eligible room was found.";
+        const waiting = document.getElementById("room-waiting-option");
+        if (waiting) waiting.hidden = result.candidates.length > 0;
         result.candidates.forEach((value, index) => {
             const button = document.createElement("button");
             button.type = "button";
@@ -86,6 +90,7 @@ async function load() {
 }
 
 form.querySelectorAll("input:not([type=hidden]):not([type=search]),select,textarea").forEach(input => input.addEventListener("input", () => {
+    if (input.closest('#room-waiting-option')) return;
     invalidate();
     message.textContent = "Requirements changed; checking updated candidates...";
     if (form.checkValidity()) timer = setTimeout(load, 300);
@@ -96,6 +101,13 @@ document.getElementById("room-professor-search").addEventListener("input", event
 });
 refresh.addEventListener("click", load);
 form.addEventListener("submit", event => {
+    if (event.submitter?.value === "wait") {
+        if (!form.elements.waitingFaculty.value || !form.elements.acceptWaiting.checked) {
+            event.preventDefault();
+            message.textContent = "Choose an owning faculty and explicitly accept the waiting-list policy.";
+        }
+        return;
+    }
     if (!room.value) { event.preventDefault(); message.textContent = "Review a verified room candidate first."; }
 });
 if (form.checkValidity()) load();

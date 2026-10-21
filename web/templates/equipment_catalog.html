@@ -19,6 +19,7 @@
 </article>{% else %}<p>No eligible equipment is configured for this borrowing period. Try a shorter duration or contact the faculty desk.</p>{% endfor %}</div></section>
 <section class="panel"><h2>Describe your project</h2><label>Purpose<textarea name="purpose" maxlength="2000" required>{{ request.form.get('purpose','') }}</textarea></label><label>Optional notes<textarea name="notes" maxlength="4000">{{ request.form.get('notes','') }}</textarea></label>
 <div class="equipment-actions"><button name="action" value="recommend" class="button-secondary">Check equipment and alternatives</button><button name="action" value="submit" class="button-primary">Submit for custodian approval</button></div></section>
+<section class="panel"><details><summary>Equipment unavailable? Join its waiting list</summary>{% include 'components/_waiting_consent.html' %}<button name="action" value="wait" class="button-secondary">Join waiting list for this complete request</button><p>The custodian can pre-approve without holding inventory. Eligibility is checked again; available requests use normal submission instead.</p></details></section>
 </form>
 {% if result %}<section class="panel" aria-live="polite"><h2>{{ 'Your complete request is feasible' if result.feasible else 'Your request needs adjustment' }}</h2>
 <p>Selection is deterministic: eligible usable units are selected by inventory ID. Already borrowed equipment is never assumed returned.</p>

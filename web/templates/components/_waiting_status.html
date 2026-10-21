@@ -1,0 +1,2 @@
+{% set waiting_active = waiting and waiting.status in ['Pending Review','Preapproved'] %}
+{% if waiting %}<section class="panel"><h2>Waiting list: {{ waiting.status }}</h2><p>{{ waiting.explanation }}</p><p><a href="{{ url_for('waiting.detail',entry_id=waiting.id) }}">View waiting-list review, consent and queue position</a></p>{% if waiting_active %}<p>No resource is reserved. Decisions must use waiting-list review, not normal approval.</p>{% endif %}</section>{% endif %}

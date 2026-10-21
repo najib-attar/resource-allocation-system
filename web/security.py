@@ -63,6 +63,8 @@ def init_security(app, database_provider):
             return None
         if request.endpoint and request.endpoint.startswith("calendar."):
             return None
+        if request.endpoint and request.endpoint.startswith("waiting."):
+            return None
         if request.endpoint == "logout":
             return None
         if not g.principal.administrator:

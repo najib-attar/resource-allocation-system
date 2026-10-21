@@ -10,7 +10,7 @@ from .persistence.models import (Appointment, AppointmentEvent, AppointmentInvit
     BorrowRequest, EquipmentCustodian, EquipmentEvent)
 
 
-def publish_event(session, event):
+def publish_event(session, event, *, recipient_ids=None, notify_actor=False):
     """Persist history and its recipient notifications in the caller's transaction."""
     if not isinstance(event, (AppointmentEvent, RoomEvent, EquipmentEvent)):
         raise TypeError('Unsupported notification event.')
@@ -34,7 +34,9 @@ def publish_event(session, event):
         if assignment:
             people.add(assignment.user_id)
         source = {'equipment_event_id': event.id}
-    session.add_all(Notification(recipient_id=person, **source) for person in people if person != event.actor_id)
+    if recipient_ids is not None:
+        people = set(recipient_ids)
+    session.add_all(Notification(recipient_id=person, **source) for person in people if notify_actor or person != event.actor_id)
 
 
 def event_history(session, model, parent_id, actor, *, audit=False):

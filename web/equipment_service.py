@@ -11,6 +11,7 @@ from sqlalchemy import or_, select
 from .calendar_service import CalendarError, aware, epoch
 from .notification_service import event_history, publish_event
 from .equipment_access import custodian_faculties, valid_custodians
+from .waiting_list_state import close_waiting, guard_waiting, refresh_after_commit
 from .persistence.models import (BorrowExtension, BorrowItem, BorrowRequest, EquipmentCategory,
     EquipmentCustodian, EquipmentEvent, EquipmentReservation, EquipmentType, EquipmentUnit,
     EQUIPMENT_CONDITIONS, LoginAccount, OrganizationUnit, Role, User)
@@ -177,14 +178,26 @@ class EquipmentService:
                 return existing.id
             self._faculty(session, faculty, True)
             self._require_match(self._match(session, actor, faculty, items, start, due))
-            row = BorrowRequest(borrower_id=actor, faculty_id=faculty, start_at=start, due_at=due, purpose=purpose,
-                notes=notes, submission_key=submission_key, submission_fingerprint=fingerprint)
-            session.add(row)
-            session.flush()
-            session.add_all(BorrowItem(request_id=row.id, faculty_id=faculty, type_id=i['typeId'], quantity=i['quantity'],
-                                       specifications=i['specifications']) for i in items)
+            row = self._store(session, actor, faculty, items, start, due, purpose, notes, submission_key, fingerprint)
             self._event(session, actor, faculty, 'Submitted for custodian approval; pending requests reserve no units.', row.id)
             return row.id
+
+    def _store(self, session, actor, faculty, items, start, due, purpose, notes, submission_key, fingerprint):
+        row = BorrowRequest(borrower_id=actor, faculty_id=faculty, start_at=start, due_at=due, purpose=purpose,
+            notes=notes, submission_key=submission_key, submission_fingerprint=fingerprint)
+        session.add(row)
+        session.flush()
+        session.add_all(BorrowItem(request_id=row.id, faculty_id=faculty, type_id=i['typeId'], quantity=i['quantity'],
+                                   specifications=i['specifications']) for i in items)
+        session.flush()
+        return row
+
+    def _reserve(self, session, row, result):
+        by_type = {i.type_id: i for i in self._lines(session, row.id)}
+        for item in result['items']:
+            session.add_all(EquipmentReservation(item_id=by_type[item['typeId']].id, type_id=item['typeId'], unit_id=uid,
+                start_at=row.start_at, due_at=row.due_at) for uid in item['unitIds'])
+        row.status = 'Approved'
 
     def _request(self, session, actor, key, lock=False):
         self._user(session, actor)
@@ -215,6 +228,7 @@ class EquipmentService:
         with self.database.transaction() as session:
             row = self._request(session, actor, key, True)
             self._staff(session, actor, row.faculty_id)
+            guard_waiting(session, equipment=key)
             if row.status != 'Pending Approval':
                 raise EquipmentError('Only a pending request may be decided; refresh its status.')
             if approve:
@@ -223,10 +237,7 @@ class EquipmentService:
                 lines = self._lines(session, key)
                 result = self._match(session, row.borrower_id, row.faculty_id, self._needs(lines), row.start_at, row.due_at)
                 self._require_match(result)
-                by_type = {i.type_id: i for i in lines}
-                for item in result['items']:
-                    session.add_all(EquipmentReservation(item_id=by_type[item['typeId']].id, type_id=item['typeId'], unit_id=uid,
-                        start_at=row.start_at, due_at=row.due_at) for uid in item['unitIds'])
+                self._reserve(session, row, result)
             row.status = 'Approved' if approve else 'Rejected'
             self._event(session, actor, row.faculty_id, row.status + '. ' + reason, key)
 
@@ -240,7 +251,9 @@ class EquipmentService:
                     raise EquipmentError('Collected equipment must be physically returned, not cancelled.')
                 booking.released = True
             row.status = 'Cancelled'
+            close_waiting(session, actor, equipment=key)
             self._event(session, actor, row.faculty_id, 'Cancelled before collection; reservations released.', key)
+            refresh_after_commit(session, self.database, self.gateway, 'equipment', row.faculty_id)
 
     def handover(self, actor, key, condition):
         condition = self._text(condition, 'handover inspection')
@@ -294,6 +307,7 @@ class EquipmentService:
                 self._event(session, actor, row.faculty_id, 'Custodian inspection: '+condition+'. '+notes, key, uid)
             returned = sum(b.returned_at is not None for b in bookings)
             row.status = 'Returned' if returned == len(bookings) else 'Partially Returned' if returned else 'Borrowed'
+            refresh_after_commit(session, self.database, self.gateway, 'equipment', row.faculty_id)
 
     def request_extension(self, actor, key, due, reason):
         due = aware(due)
@@ -416,6 +430,7 @@ class EquipmentService:
             else:
                 session.add(EquipmentCustodian(faculty_id=faculty, user_id=custodian))
             self._event(session, actor, faculty, f'Equipment custodian assignment changed from {previous} to {custodian}.')
+            refresh_after_commit(session, self.database, self.gateway, 'equipment', faculty)
 
     def create_type(self, actor, faculty, category, name, description, specifications, max_days, pickup, eligible_faculties=None):
         name, category = self._text(name, 'equipment name', 200), self._text(category, 'category', 150)
@@ -458,6 +473,7 @@ class EquipmentService:
             session.add(unit)
             session.flush()
             self._event(session, actor, equipment.faculty_id, 'Inventory unit registered: '+asset_tag+'; '+condition, unit_id=unit.id)
+            refresh_after_commit(session, self.database, self.gateway, 'equipment', equipment.faculty_id)
             return unit.id
 
     def set_condition(self, actor, unit_id, condition, notes):
@@ -478,6 +494,7 @@ class EquipmentService:
                 raise EquipmentError('Verify the physical return before marking an outstanding unit usable.')
             unit.condition, unit.notes = condition, notes
             self._event(session, actor, equipment.faculty_id, 'Inventory condition: '+condition+'. '+notes, unit_id=unit_id)
+            refresh_after_commit(session, self.database, self.gateway, 'equipment', equipment.faculty_id)
 
     def inventory(self, actor, faculty):
         with self.database.transaction(read_only=True) as session:
@@ -506,6 +523,7 @@ class EquipmentService:
             self._staff(session, actor, row.faculty_id)
             row.enabled, row.max_loan_days = enabled, max_days
             self._event(session, actor, row.faculty_id, f'Equipment policy changed: type {type_id}, enabled={enabled}, maximum days={max_days}. Existing loans retained.')
+            refresh_after_commit(session, self.database, self.gateway, 'equipment', row.faculty_id)
 
     def management_directory(self, actor):
         with self.database.transaction(read_only=True) as session:
