@@ -71,3 +71,9 @@ Full-batch academic projections and list/detail queries suit the demonstration
 scale, not an unbounded production scheduling workload. Authentication deployment
 hardening and email remain outside this use case. Existing unconfigured resources
 need explicit policy setup; no migration guesses an owning faculty or term dates.
+
+UC-STU-05 adds an optional [shared waiting-list coordinator](waiting-lists-design.md)
+for unavailable eligible requests. It reuses this engine and reservation helpers;
+pre-approval covers compatible rooms only in the selected owning faculty. Unlike
+ordinary room evaluation, promotion holds the existing calendar lock through its
+bounded final engine evaluation to keep selection and reservation atomic.

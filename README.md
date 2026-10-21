@@ -69,6 +69,17 @@ and the [Iteration 46 prototype report](docs/iteration-reports/Iteration_46.pdf)
 
 ## Current Prototype Features
 
+Iteration 47 adds **resource waiting lists** at `/waiting-lists/` for unavailable
+eligible room and equipment requests: versioned consent, owning-faculty review,
+contextual FCFS positions and safe automatic assignment using existing C++ matching
+and reservations. An administrator must explicitly configure minimum advance
+notice; no default is invented. Physical equipment handover remains separate.
+See [requirements](docs/srs/UC-STU-05-requirements.md),
+[architecture and ER](docs/architecture/waiting-lists-design.md),
+[acceptance cases](docs/testing/waiting-list-test-cases.md), and
+[configuration/recovery](docs/database-operations.md#resource-waiting-lists), and
+the [Iteration 47 report](docs/iteration-reports/Iteration_47.pdf).
+
 The current prototype supports:
 
 - abstract `Request` base class with inheritance
@@ -188,7 +199,7 @@ RequestTypeRule
 
 - `docs/srs/` : Software Requirements Specification
 - `docs/analysis/` : Initial domain analysis and domain model
-- `docs/iteration-reports/` : Iteration reports, including Iterations 33-42
+- `docs/iteration-reports/` : Iteration reports, including Iterations 33-47
 - `docs/design/class-diagrams/` : class diagram exports, including Iterations 33-40
 - `docs/testing/` : backend testing and verification reports
 - `docs/use-cases/` : user-facing feature requirements; not a list of implemented features

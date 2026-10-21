@@ -22,10 +22,10 @@ persistence.
 ![High-level ER diagram](database-er-high-level.svg)
 
 - [High-level Mermaid source](database-er-high-level.mmd): principal entities, using only actual foreign-key relationships.
-- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 47 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
+- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 48 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
 - [Physical schema catalog](database-schema-catalog.md): every column's type/nullability/default, composite keys, unique/check constraints, indexes and deletion policy.
 
-`alembic_version` is the forty-eighth physical table, used only by Alembic, not an
+`alembic_version` is the forty-ninth physical table, used only by Alembic, not an
 application entity. Application sources/catalog are generated from the models;
 the existing Alembic revision marker is explicitly documented too. Use
 `python scripts/generate_database_diagrams.py`; `--check` detects drift in tests/CI.
@@ -328,3 +328,19 @@ request history. Existing engine snapshots and JSON protocols are unchanged.
 
 See [calendar architecture and privacy](unified-calendar-design.md). The regenerated
 physical/high-level Mermaid and SVG diagrams include the instructor foreign key.
+
+## Shared waiting-list extension (0047a)
+
+`waiting_list_entry` adds queue metadata, not another request/reservation store.
+Exactly one unique room-request or borrowing-request FK is present. Deferred
+triggers verify owner/faculty consistency and prohibit active queues from holding
+confirmed parents. Unique student/submission identity and fingerprints protect
+retries; queue/faculty/status indexes support fair scans. Consent version/time,
+current pre-approval, contextual queue key and durable notification milestone
+flags live here. `application_state.waiting_notice_minutes` is nullable with a
+positive-value check; NULL intentionally disables automatic assignment.
+
+Existing calendar-state/faculty locks, GiST exclusions, aggregate integrity,
+event tables and notification receipts are reused. See the focused
+[waiting-list ER](waiting-list-er.svg), [Mermaid source](waiting-list-er.mmd)
+and [transaction/authority design](waiting-lists-design.md).

@@ -76,3 +76,14 @@ snapshot sizes and a process timeout. A busy faculty returns retry guidance;
 engine failures roll back the operation. Existing approved results remain intact.
 Use the existing database backup/recovery procedures; do not edit SQL loan state
 by hand or bypass physical-return verification.
+
+## Waiting for unavailable equipment
+
+If the complete eligible request cannot currently be fulfilled, expand the waiting
+option in the catalog, read the policy and explicitly agree before joining.
+**Waiting Lists** shows review status and contextual estimated/eligible position.
+The current faculty custodian can pre-approve without reserving stock. A later
+safe automatic assignment reserves the full request, but never counts as pickup.
+The existing handover, physical return and cancellation rules still apply.
+See [waiting-list requirements](srs/UC-STU-05-requirements.md) and
+[advance-notice configuration/recovery](database-operations.md#resource-waiting-lists).

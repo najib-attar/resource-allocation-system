@@ -382,3 +382,37 @@ instructor labels do not create new scheduling commitments.
 No calendar-specific seed, result file or background synchronization task is needed.
 Equipment reminders depend on actual loan/reservation records; a due date is not
 a verified return. Cancellation and rescheduling remain in the original workflows.
+
+## Resource waiting lists
+
+Back up first, then run `python -m alembic upgrade head` before serving waiting-list
+pages (revision `0047a`). This is additive: original room, equipment, appointment
+and academic records are retained. There are now 48 application tables plus Alembic.
+
+An administrator must open **Administration -> Waiting-list Policy** and explicitly
+set positive minimum advance-notice minutes. No university default is assumed.
+Until configured, students may consent/join and staff may review, but no automatic
+assignment occurs. Larger minima already recorded for entries are not reduced.
+
+Students join from an unavailable eligible room/equipment form after reading and
+accepting policy `waiting-lists-v1`. **Waiting Lists** displays their own queue;
+responsible faculty staff use the same page for scoped pre-approval/rejection.
+Release/return and relevant configuration actions trigger rechecks after commit.
+Equipment must be physically returned; a due date alone releases nothing.
+
+For periodic expiry, recovery after interruption, or explicit external maintenance:
+
+```powershell
+python scripts/process_waiting_lists.py
+python scripts/process_waiting_lists.py --kind equipment
+```
+
+Use the application's existing `DATABASE_URL` and authoritative engine build.
+An operating-system timer may run this command. It is idempotent; no job broker or
+second persistence system is needed. Post-commit refresh errors are logged while
+the completed physical return/cancellation stays committed. Retry after fixing
+engine/database availability; never manually insert a fake confirmation.
+
+See [queue architecture, notice, privacy and limitations](architecture/waiting-lists-design.md)
+and [current requirements](srs/UC-STU-05-requirements.md). Live verification uses
+isolated PostgreSQL schemas, never the operational demonstration database.

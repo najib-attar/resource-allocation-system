@@ -74,3 +74,8 @@ an unreturned/overdue or unusable unit threatens pickup; they cannot override th
 physical handover check. Overdue alerts refresh on the lending inbox, rather than
 introducing a scheduler. A few safe configuration fields remain management forms,
 not a generic policy language. No CSV persistence or direct C++ database access.
+
+The optional [UC-STU-05 coordinator](waiting-lists-design.md) reuses matching,
+request/item storage, the exact reservation helper and faculty locks. Verified
+returns/repairs/releases recheck queues after commit. Pre-approval reserves nothing;
+automatic reservation still requires this service's separate physical handover.
