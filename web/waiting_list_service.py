@@ -428,5 +428,4 @@ class WaitingListService:
                 'positionLabel': 'Eligible' if eligible else 'Estimated', 'acceptedAt': entry.accepted_at,
                 'policyVersion': entry.policy_version, 'noticeMinutes': entry.notice_minutes,
                 'canReview': reviewer, 'canAudit': reviewer,
-                'history': event_history(session, RoomEvent if kind == 'room' else EquipmentEvent, parent.id, actor, audit=reviewer),
-                'isOwner': actor == entry.owner_id}
+                'history': event_history(session, RoomEvent if kind == 'room' else EquipmentEvent, parent.id, actor, audit=reviewer)}
