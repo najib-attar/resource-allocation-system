@@ -205,6 +205,24 @@ class WaitingRoomTests(RoomFixture):
         self.assertTrue(any('Automatically assigned' in row['message'] for row in NotificationService(self.database).inbox(2)['items']))
         self.assertFalse(any('position one' in row['message'] for row in NotificationService(self.database).inbox(2)['items']))
 
+    def test_academic_publication_rechecks_newly_freed_rooms(self):
+        from web.allocation_workflow import execute_allocation
+        from web.persistence.models import RoomClosure, RequestSlot
+        from web.persistence.repository import state_row
+        with self.database.transaction() as session:
+            session.delete(session.scalar(select(RoomClosure).where(RoomClosure.resource_id == 302)))
+        repository = self.academic(room=302)
+        execute_allocation(repository, EngineGateway(ROOT))
+        key = self.join()
+        self.waiting.review(key, 7, True)
+        self.assertEqual(self.waiting.detail(key, 1)['status'], 'Preapproved')
+        with self.database.transaction() as session:
+            session.scalar(select(RequestSlot)).day = 2  # Explicit fixture move to Tuesday.
+            state_row(session, True).input_revision += 1
+        execute_allocation(repository, EngineGateway(ROOT))
+        self.assertEqual(self.waiting.detail(key, 1)['status'], 'Assigned')
+        self.assertEqual(self.totals(), (1, 1))
+
     def test_engine_failure_rolls_back_publication_and_keeps_release_committed(self):
         key = self.join()
         self.waiting.review(key, 7, True)
@@ -360,6 +378,42 @@ class WaitingEquipmentTests(EquipmentFixture):
         self.waiting.review(key, 6, False, 'Borrowing purpose not approved')
         self.assertEqual(self.service.detail(1, entry['requestId'])['status'], 'Rejected')
 
+    def test_existing_custodian_authorization_is_not_replaced_with_a_new_role_policy(self):
+        # The existing account grant, not only the primary role label, defines
+        # custodian authority. Waiting lists must preserve that existing policy.
+        key = self.join(actor=6)
+        self.assertTrue(self.waiting.detail(key, 6)['canReview'])
+        self.waiting.review(key, 6, True)
+        self.assertEqual(self.waiting.detail(key, 6)['status'], 'Preapproved')
+
+    def test_notice_change_cannot_overtake_in_flight_equipment_assignment(self):
+        import threading
+        from concurrent.futures import TimeoutError
+        key = self.join()
+        self.waiting.review(key, 6, True)
+        with self.database.transaction() as session:
+            session.get(BorrowRequest, self.blocker).status = 'Cancelled'
+            for booking in self.service._reservations(session, self.blocker): booking.released = True
+        entered, release = threading.Event(), threading.Event()
+        execute = self.waiting.gateway.execute_equipment
+
+        def pause(snapshot):
+            entered.set()
+            if not release.wait(10): raise RuntimeError('Fixture synchronization timed out')
+            return execute(snapshot)
+
+        with mock.patch.object(self.waiting.gateway, 'execute_equipment', side_effect=pause), ThreadPoolExecutor(2) as workers:
+            processing = workers.submit(self.waiting.process, 'equipment', self.faculty)
+            self.assertTrue(entered.wait(10))
+            configuration = workers.submit(self.waiting.configure_notice, 6, 120)
+            try:
+                with self.assertRaises(TimeoutError): configuration.result(timeout=0.2)
+            finally:
+                release.set()
+            self.assertEqual(processing.result(timeout=15), [key])
+            configuration.result(timeout=15)
+        self.assertEqual(self.waiting.detail(key, 1)['status'], 'Assigned')
+
     def test_migration_keeps_single_queue_and_can_upgrade_from_previous_head(self):
         self.assertIn('waiting_list_entry', inspect(self.database.engine).get_table_names())
         with self.database.transaction(read_only=True) as session:
@@ -394,4 +448,3 @@ class WaitingEquipmentTests(EquipmentFixture):
             command.upgrade(Config(str(ROOT/'alembic.ini')), 'head')
             command.check(Config(str(ROOT/'alembic.ini')))
         self.assertEqual(self.service.detail(4, self.blocker)['status'], 'Approved')
-

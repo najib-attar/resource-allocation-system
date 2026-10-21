@@ -12,7 +12,7 @@ from .calendar_service import CalendarError
 from .equipment_access import custodian_faculties
 from .equipment_service import EquipmentService
 from .notification_service import event_history
-from .persistence.models import (BorrowRequest, EquipmentEvent, EquipmentType, OrganizationUnit, RoomEvent,
+from .persistence.models import (ApplicationState, BorrowRequest, EquipmentEvent, EquipmentType, OrganizationUnit, RoomEvent,
     RoomInvitation, StudentRoomRequest, User, WaitingListEntry, WAITING_ACTIVE)
 from .persistence.repository import state_row
 from .room_calendar import room_snapshot, valid_approvers
@@ -76,11 +76,17 @@ class WaitingListService:
             state = state_row(session, True)
             self.rooms._faculty(session, faculty)
         elif kind == 'equipment':
+            state = self._notice_lock(session)
             self.equipment._faculty(session, faculty, True)
-            state = state_row(session)
         else:
             raise WaitingListError('Choose room or equipment waiting lists.')
         return state
+
+    def _notice_lock(self, session):
+        # Policy changes must not overtake an in-flight equipment confirmation.
+        # Always acquire state before identity/faculty locks, matching room order.
+        return session.scalar(select(ApplicationState).where(ApplicationState.id == 1)
+            .with_for_update(read=True).execution_options(populate_existing=True)) or state_row(session)
 
     def _kind(self, entry):
         return 'room' if entry.room_request_id is not None else 'equipment'
@@ -159,7 +165,8 @@ class WaitingListService:
         payload = {'kind': 'equipment', 'faculty': faculty, 'items': items, 'start': start, 'due': due, 'purpose': purpose, 'notes': notes}
         fingerprint = digest(payload)
         with self.database.transaction() as session:
-            # Match the ordinary equipment submission's identity -> faculty lock order.
+            self._notice_lock(session)
+            # Keep identity -> faculty ordering after the shared policy lock.
             session.scalar(select(User).where(User.id == actor).with_for_update())
             self.equipment._user(session, actor, student=True)
             self._lock(session, 'equipment', faculty)
@@ -230,7 +237,7 @@ class WaitingListService:
             kind, faculty = self._kind(entry), entry.faculty_id
             state = self._lock(session, kind, faculty)
             session.refresh(entry)
-            if self._reviewer(session, kind, faculty) != actor or actor == entry.owner_id:
+            if self._reviewer(session, kind, faculty) != actor or (kind == 'room' and actor == entry.owner_id):
                 raise PermissionError('Only the current owning-faculty approver or custodian may review this queue.')
             if entry.status != 'Pending Review':
                 raise WaitingListError('This entry is no longer awaiting review. Refresh its status.')
@@ -407,7 +414,7 @@ class WaitingListService:
         if kind == 'equipment':
             for line in requirements:
                 line['name'] = session.get(EquipmentType, line['typeId']).name
-        reviewer = actor == self._reviewer(session, kind, entry.faculty_id) and actor != entry.owner_id
+        reviewer = actor == self._reviewer(session, kind, entry.faculty_id) and (kind != 'room' or actor != entry.owner_id)
         return {'id': entry.id, 'kind': kind, 'ownerId': entry.owner_id, 'owner': session.get(User, entry.owner_id).name,
                 'faculty': session.get(OrganizationUnit, entry.faculty_id).name, 'facultyId': entry.faculty_id,
                 'status': entry.status, 'explanation': entry.explanation, 'purpose': parent.purpose,
