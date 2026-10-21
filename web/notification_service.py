@@ -1,13 +1,13 @@
 """Private event inbox; no scheduling rules or parsing of lifecycle messages."""
 
 from datetime import datetime, timezone
-from sqlalchemy import func, literal, or_, select, union_all, update
+from sqlalchemy import case, func, literal, or_, select, union_all, update
 from sqlalchemy.orm import aliased
 from .equipment_access import custodian_faculties
 
 from .persistence.models import (Appointment, AppointmentEvent, AppointmentInvitation,
     AppointmentProfessor, Notification, RoomEvent, RoomInvitation, StudentRoomRequest, User,
-    BorrowRequest, EquipmentCustodian, EquipmentEvent)
+    BorrowRequest, EquipmentCustodian, EquipmentEvent, WaitingListEntry)
 
 
 def publish_event(session, event, *, recipient_ids=None, notify_actor=False):
@@ -83,15 +83,22 @@ def _visible(actor):
     rooms = select(Notification.id, Notification.read_at, RoomEvent.created_at, RoomEvent.message,
         StudentRoomRequest.purpose.label('subject'), StudentRoomRequest.id.label('subject_id'),
         literal('room').label('kind'), RoomEvent.actor_id, Notification.recipient_id,
-        StudentRoomRequest.status.label('current_status')).join(RoomEvent, RoomEvent.id == Notification.room_event_id).join(
-        StudentRoomRequest, StudentRoomRequest.id == RoomEvent.request_id).where(Notification.recipient_id == actor, room_scope)
+        case((WaitingListEntry.status.in_(['Pending Review', 'Preapproved']),
+            literal('Waiting list: ') + WaitingListEntry.status),
+            else_=StudentRoomRequest.status).label('current_status')).join(RoomEvent, RoomEvent.id == Notification.room_event_id).join(
+        StudentRoomRequest, StudentRoomRequest.id == RoomEvent.request_id).outerjoin(
+        WaitingListEntry, WaitingListEntry.room_request_id == StudentRoomRequest.id).where(Notification.recipient_id == actor, room_scope)
     authorized_faculties = custodian_faculties(actor)
     equipment_scope = or_(BorrowRequest.borrower_id == actor, BorrowRequest.faculty_id.in_(authorized_faculties))
     equipment = select(Notification.id, Notification.read_at, EquipmentEvent.created_at, EquipmentEvent.message,
         BorrowRequest.purpose.label('subject'), BorrowRequest.id.label('subject_id'), literal('equipment').label('kind'),
-        EquipmentEvent.actor_id, Notification.recipient_id, BorrowRequest.status.label('current_status')).join(
+        EquipmentEvent.actor_id, Notification.recipient_id,
+        case((WaitingListEntry.status.in_(['Pending Review', 'Preapproved']),
+            literal('Waiting list: ') + WaitingListEntry.status),
+            else_=BorrowRequest.status).label('current_status')).join(
         EquipmentEvent, EquipmentEvent.id == Notification.equipment_event_id).join(
-        BorrowRequest, BorrowRequest.id == EquipmentEvent.request_id).where(Notification.recipient_id == actor, equipment_scope)
+        BorrowRequest, BorrowRequest.id == EquipmentEvent.request_id).outerjoin(
+        WaitingListEntry, WaitingListEntry.borrow_request_id == BorrowRequest.id).where(Notification.recipient_id == actor, equipment_scope)
     return union_all(appointments, rooms, equipment).subquery()
 
 

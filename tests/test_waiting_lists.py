@@ -3,6 +3,7 @@
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 import multiprocessing
+import re
 import uuid
 from unittest import mock
 
@@ -264,6 +265,74 @@ class WaitingRoomTests(RoomFixture):
             self.assertEqual(student.post(url+'/cancel').status_code, 400)
         self.assertEqual(web_app.app.test_client().get('/waiting-lists/').status_code, 302)
 
+    def test_real_sign_in_and_sign_out_preserve_waiting_review_notification_status(self):
+        from web import app as web_app
+        self.configure_web()
+        client = web_app.app.test_client()
+
+        def csrf(response):
+            match = re.search(r'name="csrf_token" value="([^"]+)"', response.get_data(as_text=True))
+            self.assertIsNotNone(match)
+            return match.group(1)
+
+        def login(actor):
+            token = csrf(client.get('/login'))
+            response = client.post('/login', data={'csrf_token': token,
+                'username': 'room-fixture-' + str(actor), 'password': 'Fictional-isolated-password'})
+            self.assertEqual(response.status_code, 302)
+            self.assertNotIn('/login', response.location)
+
+        login(1)
+        page = client.get('/rooms/new')
+        self.assertIn(b'Fictional Arts Faculty', page.data)
+        values = {'csrf_token': csrf(page), 'category': 'study', 'count': '5',
+            'purpose': 'Real sign-in waiting-list check', 'start': '2030-01-07T10:00',
+            'duration': '60', 'waitingFaculty': str(self.other_faculty),
+            'policyVersion': POLICY_VERSION, 'submission_key': uuid.uuid4().hex}
+        result = client.post('/rooms/candidates', data=values)
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.json['candidates'], [])
+        self.assertEqual(client.get('/waiting-lists/policy').status_code, 200)
+        values.update(action='wait', acceptWaiting='yes')
+        joined = client.post('/rooms/new', data=values)
+        self.assertEqual(joined.status_code, 302)
+        path = joined.location
+        page = client.get(path)
+        self.assertIn(b'Pending Review', page.data)
+        self.assertEqual(client.post('/logout', data={'csrf_token': csrf(page)}).status_code, 302)
+        self.assertEqual(client.get(path).status_code, 302)
+
+        login(7)
+        self.assertIn(values['purpose'].encode(), client.get('/waiting-lists/').data)
+        self.assertIn('Joined waiting list', client.get('/notifications/feed').json['html'])
+        page = client.get(path)
+        reviewed = client.post(path + '/review', data={'csrf_token': csrf(page),
+            'decision': 'approve', 'reason': 'Faculty review completed'})
+        self.assertEqual(reviewed.status_code, 302)
+        page = client.get(path)
+        self.assertIn(b'Preapproved', page.data)
+        self.assertNotIn(b'<h2>Pending Review</h2>', page.data)
+        client.post('/logout', data={'csrf_token': csrf(page)})
+
+        login(1)
+        self.assertIn(b'Eligible position 1', client.get(path).data)
+        feed = client.get('/notifications/feed').json['html']
+        self.assertIn('Current status: Waiting list: Preapproved', feed)
+        self.assertNotIn('Current status: Pending Faculty Approval', feed)
+        self.assertEqual(self.totals(), (0, 0))
+        with self.database.transaction(read_only=True) as session:
+            entry = session.scalar(select(WaitingListEntry))
+            parent = entry.room_request_id
+            self.assertEqual((entry.status, entry.approved_by), ('Preapproved', 7))
+            self.assertGreaterEqual(session.scalar(select(func.count()).select_from(RoomEvent)
+                .where(RoomEvent.request_id == entry.room_request_id)), 2)
+        self.assertIn(b'<h2>Waiting list: Preapproved</h2>', client.get('/rooms/' + str(parent)).data)
+        self.open_room()
+        feed = client.get('/notifications/feed').json['html']
+        self.assertIn('Current status: Confirmed', feed)
+        self.assertNotIn('Current status: Waiting list:', feed)
+        self.assertEqual(self.totals(), (1, 1))
+
     def test_room_competing_processes_assign_only_once(self):
         first, second = self.join(), self.join(actor=4)
         self.waiting.review(first, 7, True)
@@ -386,6 +455,27 @@ class WaitingEquipmentTests(EquipmentFixture):
         self.waiting.review(key, 6, True)
         self.assertEqual(self.waiting.detail(key, 6)['status'], 'Preapproved')
 
+    def test_other_faculty_custodian_is_denied_and_replacement_requires_new_review(self):
+        from web.account_service import AccountService
+        from web.persistence.models import OrganizationUnit, Role, User
+        with self.database.transaction() as session:
+            staff_role = session.scalar(select(Role.id).where(Role.name == 'Staff'))
+            session.add_all(User(id=uid, source_order=uid, name='Fictional custodian '+str(uid), primary_role_id=staff_role) for uid in (7,8))
+            other = OrganizationUnit(name='Fictional other equipment faculty', unit_type='Faculty')
+            session.add(other); session.flush(); other_faculty = other.id
+        for uid in (7,8): AccountService(self.database).provision(uid, 'other-custodian-'+str(uid), 'Fictional-isolated-password')
+        self.service.assign_custodian(6, other_faculty, 8)
+        key = self.join()
+        self.waiting.review(key, 6, True)
+        with self.assertRaises(PermissionError): self.waiting.review(key, 8, False, 'Wrong faculty')
+        with self.assertRaises(PermissionError): self.waiting.detail(key, 8)
+        self.service.assign_custodian(6, self.faculty, 7)
+        self.assertEqual(self.waiting.detail(key, 1)['status'], 'Pending Review')
+        with self.assertRaises(PermissionError): self.waiting.review(key, 6, True)
+        self.waiting.review(key, 7, True)
+        self.service.cancel(4, self.blocker)
+        self.assertEqual(self.waiting.detail(key, 1)['status'], 'Assigned')
+
     def test_notice_change_cannot_overtake_in_flight_equipment_assignment(self):
         import threading
         from concurrent.futures import TimeoutError
@@ -437,6 +527,14 @@ class WaitingEquipmentTests(EquipmentFixture):
             self.assertEqual(normal.status_code, 200)
             self.assertNotIn(b'Approve and reserve</button>', normal.data)
             self.assertIn(b'View waiting-list review', normal.data)
+            self.assertIn(b'Waiting list: Preapproved', normal.data)
+            feed = student.get('/notifications/feed').json['html']
+            self.assertIn('Current status: Waiting list: Preapproved', feed)
+            self.assertNotIn('Current status: Pending Approval', feed)
+            self.service.cancel(4, self.blocker)
+            feed = student.get('/notifications/feed').json['html']
+            self.assertIn('Current status: Approved', feed)
+            self.assertNotIn('Current status: Waiting list:', feed)
 
     def test_additive_migration_downgrade_and_reupgrade_preserve_existing_loans(self):
         import os

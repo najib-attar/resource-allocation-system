@@ -5,7 +5,7 @@
 {% block content %}
 {% set waiting_active = waiting and waiting.status in ['Pending Review','Preapproved'] %}
 {% include 'components/_waiting_status.html' %}
-<section class="panel"><a href="{{ url_for('equipment.index') }}">Back to equipment</a><h2>{{ item.purpose }}</h2><span class="status-badge">{{ item.status }}</span>
+<section class="panel"><a href="{{ url_for('equipment.index') }}">Back to equipment</a><h2>{{ item.purpose }}</h2><span class="status-badge">{{ 'Waiting list: ' ~ waiting.status if waiting_active else item.status }}</span>
 {% if item.overdue %}<p class="equipment-warning" role="alert">Overdue equipment remains borrowed. Contact the custodian to arrange physical return. Future reservations may be affected.</p>{% endif %}
 <p>{{ item.borrower|person_name }} &middot; {{ item.faculty }}</p><p>Pickup {{ item.start|university_time }} &middot; Due {{ item.due|university_time }}</p><p>{{ item.notes }}</p>
 <ul>{% for line in item['items'] %}<li>{{ line.quantity }} &times; {{ line.name }}{% if line.specifications %} &middot; {{ line.specifications }}{% endif %}</li>{% endfor %}</ul>
