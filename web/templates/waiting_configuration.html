@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block title %}Waiting-list Configuration{% endblock %}
+{% block page_heading %}Automatic-assignment notice{% endblock %}
+{% block content %}<section class="panel"><h2>Explicit university configuration</h2><p>No default notice is invented. Automatic assignment remains disabled until this minimum is configured. Existing entries retain any larger minimum already recorded.</p>
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label>Minimum advance notice (minutes)<input type="number" name="noticeMinutes" min="1" max="2147483647" value="{{ policy.noticeMinutes or '' }}" required></label><button>Save minimum notice</button></form><p><a href="{{ url_for('waiting.policy') }}">Current policy {{ policy.version }}</a></p></section>{% endblock %}

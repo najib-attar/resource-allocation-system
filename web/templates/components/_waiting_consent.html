@@ -1,0 +1,5 @@
+<input type="hidden" name="policyVersion" value="{{ waiting_policy.version }}">
+<p>Automatic assignment preserves your original dates, quantities and mandatory requirements. No second acceptance is required after responsible staff pre-approval.</p>
+<p>{% if waiting_policy.noticeMinutes %}Current minimum advance notice: <strong>{{ waiting_policy.noticeMinutes }} minutes</strong>.{% else %}<strong>Automatic assignment is disabled until administration configures minimum advance notice.</strong>{% endif %}</p>
+<p><a href="{{ url_for('waiting.policy') }}" target="_blank" rel="noopener">Read the waiting-list policy ({{ waiting_policy.version }}, opens a new tab)</a></p>
+<label class="check-label"><input type="checkbox" name="acceptWaiting" value="yes">I have read and explicitly accept this policy, automatic assignment and in-app notifications.</label>

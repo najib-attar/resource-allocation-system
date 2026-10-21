@@ -163,12 +163,14 @@ class AllocationRun(Base):
 
 class ApplicationState(Base):
     __tablename__ = "application_state"
-    __table_args__ = (CheckConstraint("id = 1 AND input_revision >= 0"), CheckConstraint(allowed("strategy", STRATEGIES)))
+    __table_args__ = (CheckConstraint("id = 1 AND input_revision >= 0"), CheckConstraint(allowed("strategy", STRATEGIES)),
+                      CheckConstraint("waiting_notice_minutes > 0", name="ck_waiting_notice"))
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     input_revision: Mapped[int] = mapped_column(BigInteger, default=0)
     strategy: Mapped[str] = mapped_column(String(50), default="greedy")
     active_run_id: Mapped[int | None] = mapped_column(ForeignKey("allocation_run.id"))
     calendar_revision: Mapped[int] = mapped_column(BigInteger, server_default="0")
+    waiting_notice_minutes: Mapped[int | None] = mapped_column(Integer)
 
 
 class RequestDecision(Base):
@@ -617,3 +619,39 @@ class EquipmentEvent(Base):
     actor_id: Mapped[int] = mapped_column(ForeignKey('university_user.id'), index=True)
     message: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+WAITING_ACTIVE = ('Pending Review', 'Preapproved')
+WAITING_STATES = (*WAITING_ACTIVE, 'Assigned', 'Rejected', 'Cancelled', 'Expired', 'Ineligible')
+
+
+class WaitingListEntry(Base):
+    """Queue metadata only; the linked room/borrowing request owns requirements."""
+    __tablename__ = 'waiting_list_entry'
+    __table_args__ = (
+        CheckConstraint('num_nonnulls(room_request_id, borrow_request_id) = 1', name='ck_waiting_parent'),
+        CheckConstraint(allowed('status', WAITING_STATES), name='ck_waiting_status'),
+        CheckConstraint("submission_key ~ '^[0-9a-f]{32}$' AND fingerprint ~ '^[0-9a-f]{64}$' AND queue_key ~ '^[0-9a-f]{64}$'", name='ck_waiting_keys'),
+        CheckConstraint("length(policy_version) > 0 AND (notice_minutes IS NULL OR notice_minutes > 0)", name='ck_waiting_consent'),
+        CheckConstraint("status NOT IN ('Preapproved','Assigned') OR (approved_by IS NOT NULL AND approved_at IS NOT NULL)", name='ck_waiting_approval'),
+        UniqueConstraint('owner_id', 'submission_key'),
+        Index('ix_waiting_faculty_status_id', 'faculty_id', 'status', 'id'),
+        Index('ix_waiting_queue_status_id', 'queue_key', 'status', 'id'),
+    )
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    room_request_id: Mapped[int | None] = mapped_column(ForeignKey('student_room_request.id'), unique=True)
+    borrow_request_id: Mapped[int | None] = mapped_column(ForeignKey('borrow_request.id'), unique=True)
+    owner_id: Mapped[int] = mapped_column(ForeignKey('university_user.id'), index=True)
+    faculty_id: Mapped[int] = mapped_column(ForeignKey('organization_unit.id'))
+    submission_key: Mapped[str] = mapped_column(String(32))
+    fingerprint: Mapped[str] = mapped_column(String(64))
+    queue_key: Mapped[str] = mapped_column(String(64))
+    policy_version: Mapped[str] = mapped_column(String(100))
+    accepted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.clock_timestamp())
+    notice_minutes: Mapped[int | None] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20), default='Pending Review')
+    approved_by: Mapped[int | None] = mapped_column(ForeignKey('login_account.user_id'), index=True)
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    top_three_notified: Mapped[bool] = mapped_column(Boolean, default=False)
+    first_notified: Mapped[bool] = mapped_column(Boolean, default=False)
+    explanation: Mapped[str] = mapped_column(Text, default='Awaiting responsible staff review; no resource is reserved.')

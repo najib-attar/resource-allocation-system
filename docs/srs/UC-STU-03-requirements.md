@@ -41,3 +41,7 @@ This current addendum complements the [approved use case](../use-cases/UC-STU-03
 
 See [architecture](../architecture/equipment-borrowing-design.md),
 [user walkthrough](../equipment-borrowing-guide.md), and [protocol](../engine-protocol.md).
+
+Unavailable eligible requests may opt into [UC-STU-05](UC-STU-05-requirements.md)
+with explicit consent and custodian pre-approval. Its automatic reservation still
+requires the normal physical handover and verified return workflows.

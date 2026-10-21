@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block title %}Waiting Request{% endblock %}
+{% block page_heading %}{{ item.purpose }}{% endblock %}
+{% block content %}<section class="panel"><p class="eyebrow">{{ item.kind|title }} &middot; {{ item.faculty }}</p><h2>{{ item.status }}</h2>
+<p>{{ item.owner|person_name }} &middot; {{ item.start|university_time }} to {{ item.end|university_time }}</p>
+<p role="status">{{ item.explanation }}</p>
+{% if item.position %}<p><strong>{{ item.positionLabel }} position {{ item.position }}</strong> for the same requirements, faculty and interval. Other compatible queues may compete; this is not a reservation guarantee.</p>{% endif %}
+{% if item.kind == 'room' %}<p>{{ item.requirements.count }} attendees &middot; {{ item.requirements.category }} &middot; {{ item.requirements.duration }} minutes &middot; facilities {{ item.requirements.features|join(', ') or 'None' }}</p><p>{{ item.requirements.description }}</p>{% else %}<ul>{% for line in item.requirements %}<li>{{ line.name }} &times; {{ line.quantity }} &middot; {{ line.specifications }}</li>{% endfor %}</ul>{% endif %}
+<p>Explicit consent: {{ item.policyVersion }}, {{ item.acceptedAt|university_time }}. Recorded minimum notice: {{ item.noticeMinutes ~ ' minutes' if item.noticeMinutes else 'awaiting configuration' }}.</p>
+{% if item.canReview and item.status == 'Pending Review' %}<form method="post" action="{{ url_for('waiting.review',entry_id=item.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><label>Decision explanation<textarea name="reason" maxlength="2000"></textarea></label><div class="equipment-actions"><button name="decision" value="approve">Pre-approve automatic assignment</button><button name="decision" value="reject" class="button-secondary">Reject waiting request</button></div><p>Pre-approval authorizes only this complete request under your current faculty/custodian responsibility; it reserves nothing.</p></form>{% endif %}
+{% if item.status in ['Pending Review','Preapproved'] %}<form method="post" action="{{ url_for('waiting.cancel',entry_id=item.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="button-secondary">Cancel waiting request without penalty</button></form>{% endif %}
+{% if item.status == 'Assigned' %}<p><a class="button-primary" href="{{ url_for('rooms.detail' if item.kind == 'room' else 'equipment.detail',request_id=item.requestId) }}">Open confirmed reservation</a></p>{% endif %}
+<p><a href="{{ url_for('waiting.index') }}">Back to waiting lists</a> &middot; <a href="{{ url_for('waiting.policy') }}">Waiting-list policy</a></p></section>
+{% include 'components/_activity_history.html' %}{% endblock %}

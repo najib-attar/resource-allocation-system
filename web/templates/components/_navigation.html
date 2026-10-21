@@ -1,6 +1,6 @@
 {% from 'components/ui.html' import icon %}
 {% macro nav_link(endpoint, label, symbol='calendar', group='') -%}
-{% set active = request.endpoint == endpoint or (group and request.endpoint and request.endpoint.startswith(group) and request.endpoint not in ['appointments.calendar', 'appointments.availability', 'appointments.bindings', 'rooms.configuration', 'equipment.custodians', 'calendar.publications']) %}
+{% set active = request.endpoint == endpoint or (group and request.endpoint and request.endpoint.startswith(group) and request.endpoint not in ['appointments.calendar', 'appointments.availability', 'appointments.bindings', 'rooms.configuration', 'equipment.custodians', 'calendar.publications', 'waiting.configuration']) %}
 <a class="app-nav-link" href="{{ url_for(endpoint) }}"{% if active %} aria-current="page"{% endif %}>{{ icon(symbol, 19) }}<span>{{ label }}</span>{% if active %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}</a>
 {%- endmacro %}
 {% if g.principal %}
@@ -11,11 +11,12 @@
     {{ nav_link('appointments.index', 'Appointments', 'meeting', 'appointments.') }}
     {{ nav_link('rooms.index', 'Room Requests', 'room', 'rooms.') }}
     {{ nav_link('equipment.index', 'Equipment', 'equipment', 'equipment.') }}
+    {{ nav_link('waiting.index', 'Waiting Lists', 'clock', 'waiting.') }}
     <p class="app-nav-label">My planning</p>
     {{ nav_link('appointments.calendar', 'My Schedule', 'clock') }}
     {% if g.principal.role == 'Instructor' %}{{ nav_link('appointments.availability', 'Office Hours', 'calendar') }}{% endif %}
     {% if g.principal.administrator %}
-    <details class="app-admin-navigation"{% if request.endpoint in ['index','add_request','requests','allocation_summary','schedules','users','spaces','raw_data','appointments.bindings','rooms.configuration','calendar.publications','equipment.custodians'] %} open{% endif %}>
+    <details class="app-admin-navigation"{% if request.endpoint in ['index','add_request','requests','allocation_summary','schedules','users','spaces','raw_data','appointments.bindings','rooms.configuration','calendar.publications','equipment.custodians','waiting.configuration'] %} open{% endif %}>
         <summary>{{ icon('settings', 19) }}<span>Administration</span>{{ icon('chevron', 14) }}</summary>
         <div class="app-admin-links">
             {{ nav_link('index', 'Dashboard', 'home') }}{{ nav_link('add_request', 'Add Request', 'plus') }}
@@ -25,6 +26,7 @@
             {{ nav_link('appointments.bindings', 'Calendar Setup', 'settings') }}{{ nav_link('rooms.configuration', 'Room Policies', 'settings') }}
             {{ nav_link('calendar.publications', 'Academic Publication', 'book') }}
             {{ nav_link('equipment.custodians', 'Equipment Custodians', 'users') }}
+            {{ nav_link('waiting.configuration', 'Waiting-list Policy', 'settings') }}
         </div>
     </details>
     {% endif %}

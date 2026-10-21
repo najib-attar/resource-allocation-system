@@ -21,4 +21,13 @@ def execute_allocation(repository, gateway, logger=None):
             if logger:
                 logger.error("Could not record failed run %s (%s). Previous results were not replaced.", run_id, type(record_error).__name__)
         raise
+    # Academic publication can release room occupancy. It has already committed;
+    # a queue-engine failure must not misreport that successful publication as failed.
+    from .waiting_list_service import WaitingListService
+    from .calendar_service import CalendarError
+    import logging
+    try:
+        WaitingListService(repository.database, gateway).refresh_all('room')
+    except (CalendarError, EngineIntegrationError, SQLAlchemyError, DatabaseBusy):
+        (logger or logging.getLogger(__name__)).exception('Academic results were published, but waiting-list reevaluation needs a retry.')
     return result

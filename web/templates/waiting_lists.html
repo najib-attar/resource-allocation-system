@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block title %}Resource Waiting Lists{% endblock %}
+{% block page_heading %}Resource waiting lists{% endblock %}
+{% block content %}<section class="panel"><h2>Requests waiting for compatible availability</h2>
+<p>Pre-approval does not reserve a resource. Positions are contextual, not guarantees. <a href="{{ url_for('waiting.policy') }}">Read the policy</a>.</p>
+{% if not policy.noticeMinutes %}<p role="status">Automatic assignment is disabled: administration must configure minimum advance notice.</p>{% endif %}
+<div class="equipment-actions">{% if g.principal.role == 'Student' %}<a class="button-primary" href="{{ url_for('rooms.new') }}">Find a room</a><a class="button-secondary" href="{{ url_for('equipment.catalog') }}">Find equipment</a>{% endif %}<form method="post" action="{{ url_for('waiting.refresh') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="button-secondary">Recheck my authorized queues</button></form></div></section>
+<section class="panel"><div class="table-wrap"><table><thead><tr><th>Request</th><th>Faculty</th><th>Interval</th><th>Review status</th><th>Position</th></tr></thead><tbody>
+{% for item in items %}<tr><td><a href="{{ url_for('waiting.detail',entry_id=item.id) }}">{{ item.purpose }}</a><br>{{ item.kind|title }}{% if item.canReview %} &middot; {{ item.owner|person_name }}{% endif %}</td><td>{{ item.faculty }}</td><td>{{ item.start|university_time }}<br>{{ item.end|university_time }}</td><td><span class="status-badge">{{ item.status }}</span></td><td>{{ item.positionLabel ~ ' #' ~ item.position if item.position else ('Assignment paused' if item.status == 'Preapproved' else 'Not active') }}</td></tr>
+{% else %}<tr><td colspan="5">No waiting requests are visible to your account. Unavailable eligible requests can join from the room or equipment form.</td></tr>{% endfor %}
+</tbody></table></div></section>{% endblock %}

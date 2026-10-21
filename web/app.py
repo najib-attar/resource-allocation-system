@@ -163,9 +163,14 @@ app.register_blueprint(create_equipment_blueprint(lambda: get_repository().datab
 from web.university_calendar_routes import create_calendar_blueprint
 app.register_blueprint(create_calendar_blueprint(lambda: get_repository().database))
 
+from web.waiting_list_routes import create_waiting_blueprint
+app.register_blueprint(create_waiting_blueprint(lambda: get_repository().database,
+    lambda: EngineGateway(PROJECT_ROOT, app.config['BACKEND_TIMEOUT'], app.logger),
+    lambda: app.config['ROOM_SELECTION_STRATEGY']))
+
 @app.before_request
 def pin_database_view():
-    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "rooms.", "notifications.", "equipment.", "calendar.")):
+    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "rooms.", "notifications.", "equipment.", "calendar.", "waiting.")):
         current_results()
 
 

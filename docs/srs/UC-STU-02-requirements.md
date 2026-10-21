@@ -32,3 +32,7 @@ and the original SRS without rewriting historical reports.
 
 See [architecture](../architecture/student-room-design.md), [database](../architecture/database-design.md)
 and [engine contract](../engine-protocol.md).
+
+Unavailable eligible requests may explicitly opt into the separate
+[UC-STU-05 waiting-list extension](UC-STU-05-requirements.md). It adds consent and
+faculty-scoped pre-approval, without replacing normal available-room submission.

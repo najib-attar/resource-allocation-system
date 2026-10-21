@@ -6,6 +6,7 @@ import uuid
 from flask import Blueprint, g, jsonify, redirect, render_template, request, url_for
 from .calendar_service import CalendarError, local_instant, university_zone
 from .equipment_service import EquipmentError, EquipmentService
+from .waiting_list_service import WaitingListService
 
 
 def create_equipment_blueprint(database_provider, gateway_provider):
@@ -13,6 +14,9 @@ def create_equipment_blueprint(database_provider, gateway_provider):
 
     def service():
         return EquipmentService(database_provider(), gateway_provider())
+
+    def waiting():
+        return WaitingListService(database_provider(), gateway_provider())
 
     def actor():
         return g.principal.user_id
@@ -67,15 +71,21 @@ def create_equipment_blueprint(database_provider, gateway_provider):
             elif source.get('action') == 'submit':
                 key = service().submit(actor(), faculty, items, start, due, source.get('purpose', ''), source.get('notes', ''), source.get('submission_key'))
                 return redirect(url_for('equipment.detail', request_id=key))
+            elif source.get('action') == 'wait':
+                key = waiting().join_equipment(actor(), faculty, items, start, due, source.get('purpose', ''), source.get('notes', ''),
+                    source.get('policyVersion'), source.get('acceptWaiting') == 'yes', source.get('submission_key'))
+                return redirect(url_for('waiting.detail', entry_id=key))
             else:
                 raise EquipmentError('Choose check availability or submit.')
         return render_template('equipment_catalog.html', items=rows, directory=service().directory(actor()),
+            waiting_policy=waiting().policy(),
             start=start_text, due=due_text, zone=university_zone().key, result=result,
             submission_key=source.get('submission_key') or uuid.uuid4().hex)
 
     @blueprint.get('/<int:request_id>')
     def detail(request_id):
-        return render_template('equipment_detail.html', item=service().detail(actor(), request_id))
+        return render_template('equipment_detail.html', item=service().detail(actor(), request_id),
+                               waiting=waiting().for_parent('equipment', request_id, actor()))
 
     @blueprint.post('/<int:request_id>/<action>')
     def transition(request_id, action):

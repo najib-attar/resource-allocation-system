@@ -167,6 +167,14 @@ erDiagram
         integer primary_role_id FK
         integer primary_unit_id FK "nullable"
     }
+    waiting_list_entry {
+        bigint id PK "identity"
+        bigint room_request_id FK,UK "nullable"
+        integer borrow_request_id FK,UK "nullable"
+        integer owner_id FK
+        integer faculty_id FK
+        integer approved_by FK "nullable"
+    }
     resource ||--o{ allocation : resource_id
     request_decision ||--o{ allocation : run_id_request_id
     allocation_run o|--o| application_state : active_run_id
@@ -231,3 +239,8 @@ erDiagram
     resource ||--o{ student_room_request : resource_id
     role ||--o{ university_user : primary_role_id
     organization_unit o|--o{ university_user : primary_unit_id
+    login_account o|--o{ waiting_list_entry : approved_by
+    borrow_request o|--o| waiting_list_entry : borrow_request_id
+    organization_unit ||--o{ waiting_list_entry : faculty_id
+    university_user ||--o{ waiting_list_entry : owner_id
+    student_room_request o|--o| waiting_list_entry : room_request_id

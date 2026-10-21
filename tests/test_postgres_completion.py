@@ -137,6 +137,8 @@ class PostgresCompletionTests(PostgresTestCase):
                          ('equipment_type', 'equipment_custodian', 'borrow_request')})
         expected.update({table + '_shape': (True, True) for table in
                          ('borrow_request', 'borrow_item', 'equipment_reservation')})
+        expected.update({table + '_waiting_shape': (True, True) for table in
+                         ('waiting_list_entry', 'student_room_request', 'borrow_request')})
         self.assertEqual({row[0]: (row[1], row[2]) for row in rows}, expected)
 
     def test_concurrent_child_deletions_cannot_leave_empty_recurring_request(self):

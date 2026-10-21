@@ -11,6 +11,7 @@ from .persistence.models import (FacultyRoomApprover, LoginAccount, Organization
 from .persistence.repository import state_row
 from .room_calendar import academic_room_intervals, assert_room_publication, room_snapshot, valid_approvers
 from .notification_service import event_history, publish_event
+from .waiting_list_state import close_waiting, guard_waiting, refresh_after_commit
 
 
 class RoomRequestError(CalendarError):
@@ -142,6 +143,7 @@ class RoomRequestService:
             faculty, approver = self._selected(session, snapshot, room_id)
             if request_id is not None:
                 record = self._visible(session, request_id, actor)
+                guard_waiting(session, room=request_id)
                 if actor != record.organizer_id or record.revision != revision or record.status not in {'Pending Faculty Approval','Needs Revision','Rejected'}:
                     raise RoomRequestError('Only the organizer can revise this pending request. Cancel confirmed events and submit a new request.')
                 record.revision += 1
@@ -150,17 +152,26 @@ class RoomRequestService:
             else:
                 record = StudentRoomRequest(organizer_id=actor)
                 session.add(record)
-            record.resource_id, record.faculty_id, record.approver_id = room_id, faculty, approver
-            record.category, record.purpose = values['category'], values['purpose'].strip()
-            record.description, record.club_affiliation = values.get('description',''), values.get('club','')
-            record.attendee_count, record.required_features = values['count'], values['features']
-            record.preferred_faculty_id, record.preferred_building = values.get('faculty'), values.get('building','')
-            record.start_at, record.end_at, record.duration_minutes = values['start'], values['end'], values['duration']
+            self._store(session, record, values, invitees, room_id, faculty, approver)
             record.status, record.explanation = 'Pending Faculty Approval', result['candidates'][0]['reason']
-            session.flush()
-            session.add_all(RoomInvitation(request_id=record.id,user_id=pid,revision=record.revision) for pid in invitees)
             self._event(session,record,actor,'Submitted material revision for the room-owning faculty approval; no reservation. Professor invitations are optional.')
             return record.id
+
+    def _store(self, session, record, values, invitees, room_id, faculty, approver):
+        record.resource_id, record.faculty_id, record.approver_id = room_id, faculty, approver
+        record.category, record.purpose = values['category'], values['purpose'].strip()
+        record.description, record.club_affiliation = values.get('description',''), values.get('club','')
+        record.attendee_count, record.required_features = values['count'], values['features']
+        record.preferred_faculty_id, record.preferred_building = values.get('faculty'), values.get('building','')
+        record.start_at, record.end_at, record.duration_minutes = values['start'], values['end'], values['duration']
+        session.flush()
+        session.add_all(RoomInvitation(request_id=record.id,user_id=pid,revision=record.revision) for pid in invitees)
+
+    def _confirm(self, session, record, actor, state):
+        record.status, record.approved_by, record.approved_revision = 'Confirmed', actor, record.revision
+        session.add(RoomReservation(request_id=record.id,resource_id=record.resource_id,start_at=record.start_at,end_at=record.end_at))
+        session.add(RoomOrganizerCommitment(request_id=record.id,user_id=record.organizer_id,start_at=record.start_at,end_at=record.end_at))
+        state.calendar_revision += 1
 
     def _visible(self, session, request_id, actor):
         permitted = or_(StudentRoomRequest.organizer_id == actor, StudentRoomRequest.approver_id == actor,
@@ -220,6 +231,7 @@ class RoomRequestService:
             with self.database.transaction() as session:
                 state = state_row(session,True)
                 record = self._visible(session,request_id,actor)
+                guard_waiting(session, room=request_id)
                 if record.revision != revision or record.status != 'Pending Faculty Approval':
                     raise RoomRequestError('This request revision is not awaiting approval. Refresh its status.')
                 if valid_approvers(session).get(record.faculty_id) != actor or record.approver_id != actor:
@@ -234,10 +246,7 @@ class RoomRequestService:
                         record.explanation = 'Selected room/time no longer available. Choose a fresh candidate and obtain a new faculty approval.'
                     else:
                         self._selected(session,snapshot,record.resource_id)
-                        record.status, record.approved_by, record.approved_revision = 'Confirmed',actor,revision
-                        session.add(RoomReservation(request_id=record.id,resource_id=record.resource_id,start_at=record.start_at,end_at=record.end_at))
-                        session.add(RoomOrganizerCommitment(request_id=record.id,user_id=record.organizer_id,start_at=record.start_at,end_at=record.end_at))
-                        state.calendar_revision += 1
+                        self._confirm(session, record, actor, state)
                 self._event(session,record,actor,'Faculty decision on revision '+str(revision)+': '+record.status+'. '+record.explanation)
                 return record.status
         except IntegrityError as error:
@@ -255,10 +264,12 @@ class RoomRequestService:
             if record.revision != revision or record.status == 'Cancelled':
                 raise RoomRequestError('The request changed or is already cancelled.')
             record.status = 'Cancelled'
+            close_waiting(session, actor, room=request_id)
             session.execute(delete(RoomReservation).where(RoomReservation.request_id == record.id))
             session.execute(delete(RoomOrganizerCommitment).where(RoomOrganizerCommitment.request_id == record.id))
             state.calendar_revision += 1
             self._event(session,record,actor,'Cancelled; room and organizer reservations released. History retained.')
+            refresh_after_commit(session, self.database, self.gateway, 'room', record.faculty_id, self.strategy)
 
     def respond(self, request_id, actor, revision, accept):
         if type(accept) is not bool:
@@ -322,6 +333,7 @@ class RoomRequestService:
             else:
                 row.user_id = approver
             state.calendar_revision += 1
+            refresh_after_commit(session, self.database, self.gateway, 'room', faculty, self.strategy)
 
     def configure_room(self, actor, room_id, faculty, enabled, categories, restricted=False, allowed_users=()):
         if type(enabled) is not bool or type(restricted) is not bool or not isinstance(categories,(list,tuple)) or not categories or any(not isinstance(c,str) or c not in ROOM_CATEGORIES for c in categories) or len(set(categories)) != len(categories):
@@ -347,6 +359,7 @@ class RoomRequestService:
             session.execute(delete(RoomAccess).where(RoomAccess.resource_id == room_id))
             session.add_all(RoomAccess(resource_id=room_id,user_id=key) for key in allowed_users)
             state.calendar_revision += 1
+            refresh_after_commit(session, self.database, self.gateway, 'room', faculty, self.strategy)
 
     def close_room(self, actor, room_id, start, end, reason=''):
         start,end = aware(start),aware(end)
@@ -374,6 +387,9 @@ class RoomRequestService:
                 raise RoomRequestError('Closure not found.')
             session.delete(row)
             state.calendar_revision += 1
+            policy = session.get(RoomPolicy, row.resource_id)
+            if policy:
+                refresh_after_commit(session, self.database, self.gateway, 'room', policy.faculty_id, self.strategy)
 
     def availability(self, actor, room_id, day):
         zone=university_zone()

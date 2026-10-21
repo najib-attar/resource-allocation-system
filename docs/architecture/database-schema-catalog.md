@@ -1,6 +1,6 @@
 # Physical schema catalog
 
-Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 47 application tables.
+Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 48 application tables.
 
 All foreign keys use PostgreSQL **NO ACTION**: no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
 ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.
@@ -100,11 +100,13 @@ Singleton strategy, input revision and currently published run.
 | strategy | varchar(50) | - | no | ORM: greedy |
 | active_run_id | bigint | FK -> allocation_run.id | yes | - |
 | calendar_revision | bigint | - | no | 0 |
+| waiting_notice_minutes | integer | - | yes | - |
 
 - Primary key: `id`.
 - Foreign key: `(active_run_id) -> allocation_run (id)`; NO ACTION.
 - Check: `id = 1 AND input_revision >= 0`.
 - Check: `strategy IN ('greedy','priority','multi_room_exam_greedy','multi_room_exam_best_fit','shared_room_exam_best_fit')`.
+- Check: `waiting_notice_minutes > 0`.
 
 ## appointment
 
@@ -995,6 +997,49 @@ Ordered many-to-many assigned role labels.
 - Check: `ordinal > 0`.
 - Unique: `user_id, ordinal`.
 - Index: `ix_user_role_role_id (role_id)`.
+
+## waiting_list_entry
+
+Shared consent, responsible-staff preapproval, contextual FCFS identity and notification milestones; requirements and reservations remain in the original room/borrowing records.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| room_request_id | bigint | FK -> student_room_request.id | yes | - |
+| borrow_request_id | integer | FK -> borrow_request.id | yes | - |
+| owner_id | integer | FK -> university_user.id | no | - |
+| faculty_id | integer | FK -> organization_unit.id | no | - |
+| submission_key | varchar(32) | - | no | - |
+| fingerprint | varchar(64) | - | no | - |
+| queue_key | varchar(64) | - | no | - |
+| policy_version | varchar(100) | - | no | - |
+| accepted_at | timestamp with time zone | - | no | clock_timestamp() |
+| notice_minutes | integer | - | yes | - |
+| status | varchar(20) | - | no | ORM: Pending Review |
+| approved_by | integer | FK -> login_account.user_id | yes | - |
+| approved_at | timestamp with time zone | - | yes | - |
+| top_three_notified | boolean | - | no | ORM: False |
+| first_notified | boolean | - | no | ORM: False |
+| explanation | text | - | no | ORM: Awaiting responsible staff review; no resource is reserved. |
+
+- Primary key: `id`.
+- Foreign key: `(approved_by) -> login_account (user_id)`; NO ACTION.
+- Foreign key: `(borrow_request_id) -> borrow_request (id)`; NO ACTION.
+- Foreign key: `(faculty_id) -> organization_unit (id)`; NO ACTION.
+- Foreign key: `(owner_id) -> university_user (id)`; NO ACTION.
+- Foreign key: `(room_request_id) -> student_room_request (id)`; NO ACTION.
+- Check: `length(policy_version) > 0 AND (notice_minutes IS NULL OR notice_minutes > 0)`.
+- Check: `num_nonnulls(room_request_id, borrow_request_id) = 1`.
+- Check: `status IN ('Pending Review','Preapproved','Assigned','Rejected','Cancelled','Expired','Ineligible')`.
+- Check: `status NOT IN ('Preapproved','Assigned') OR (approved_by IS NOT NULL AND approved_at IS NOT NULL)`.
+- Check: `submission_key ~ '^[0-9a-f]{32}$' AND fingerprint ~ '^[0-9a-f]{64}$' AND queue_key ~ '^[0-9a-f]{64}$'`.
+- Unique: `borrow_request_id`.
+- Unique: `owner_id, submission_key`.
+- Unique: `room_request_id`.
+- Index: `ix_waiting_faculty_status_id (faculty_id, status, id)`.
+- Index: `ix_waiting_list_entry_approved_by (approved_by)`.
+- Index: `ix_waiting_list_entry_owner_id (owner_id)`.
+- Index: `ix_waiting_queue_status_id (queue_key, status, id)`.
 
 ## Confirmed appointment overlap protection
 
