@@ -42,6 +42,7 @@ erDiagram
         varchar_50 strategy
         bigint active_run_id FK "nullable"
         bigint calendar_revision
+        integer waiting_notice_minutes "nullable"
     }
     appointment {
         bigint id PK "identity"
@@ -405,6 +406,25 @@ erDiagram
         integer role_id PK,FK
         integer ordinal
     }
+    waiting_list_entry {
+        bigint id PK "identity"
+        bigint room_request_id FK,UK "nullable"
+        integer borrow_request_id FK,UK "nullable"
+        integer owner_id FK
+        integer faculty_id FK
+        varchar_32 submission_key
+        varchar_64 fingerprint
+        varchar_64 queue_key
+        varchar_100 policy_version
+        timestamptz accepted_at
+        integer notice_minutes "nullable"
+        varchar_20 status
+        integer approved_by FK "nullable"
+        timestamptz approved_at "nullable"
+        boolean top_three_notified
+        boolean first_notified
+        text explanation
+    }
     alembic_version {
         varchar_32 version_num PK
     }
@@ -492,3 +512,8 @@ erDiagram
     organization_unit o|--o{ university_user : primary_unit_id
     role ||--o{ user_role : role_id
     university_user ||--o{ user_role : user_id
+    login_account o|--o{ waiting_list_entry : approved_by
+    borrow_request o|--o| waiting_list_entry : borrow_request_id
+    organization_unit ||--o{ waiting_list_entry : faculty_id
+    university_user ||--o{ waiting_list_entry : owner_id
+    student_room_request o|--o| waiting_list_entry : room_request_id

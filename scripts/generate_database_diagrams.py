@@ -12,6 +12,7 @@ from web.persistence.models import Base
 
 
 PURPOSES = {
+    "waiting_list_entry": "Shared consent, responsible-staff preapproval, contextual FCFS identity and notification milestones; requirements and reservations remain in the original room/borrowing records.",
     "role": "Primary engine roles and preserved assigned-role labels; not authentication permissions.",
     "organization_unit": "Named university units with optional known type and parent.",
     "university_user": "University identity and profile; primary role and optional primary unit.",
@@ -66,6 +67,7 @@ MAIN_TABLES |= {"login_account", "academic_period", "legacy_calendar_binding", "
                 "appointment_invitation", "appointment_commitment", "professor_availability", "calendar_block"}
 MAIN_TABLES |= {"room_policy", "faculty_room_approver", "student_room_request", "room_reservation", "room_invitation", "room_organizer_commitment"}
 MAIN_TABLES.add("notification")
+MAIN_TABLES.add("waiting_list_entry")
 MAIN_TABLES |= {"equipment_category", "equipment_type", "equipment_unit", "equipment_custodian", "borrow_request", "borrow_item", "equipment_reservation", "borrow_extension", "equipment_event"}
 
 
@@ -158,6 +160,9 @@ def artifacts():
         raise RuntimeError("Update table purpose inventory before generating diagrams.")
     return {"database-er-physical.mmd": er_source(tables, True),
             "database-er-high-level.mmd": er_source([item for item in tables if item.name in MAIN_TABLES], False),
+            "waiting-list-er.mmd": er_source([item for item in tables if item.name in {
+                'waiting_list_entry', 'student_room_request', 'borrow_request', 'university_user',
+                'login_account', 'organization_unit'}], True),
             "equipment-er.mmd": er_source([item for item in tables if item.name.startswith(('equipment_', 'borrow_'))
                                           or item.name in {'organization_unit', 'university_user', 'login_account', 'notification'}], False),
             "database-schema-catalog.md": catalog(tables)}
