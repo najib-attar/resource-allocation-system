@@ -1,5 +1,19 @@
 # PostgreSQL application persistence and dated calendars
 
+## Resource feedback extension (0048a)
+
+The current schema contains **50 application tables** plus `alembic_version`.
+`resource_feedback` links exactly one actual room-use record or handed-over
+equipment reservation to its reporter and original owning faculty. `feedback_event`
+stores private revisioned actor/time history. Existing notifications gain a fourth
+exclusive event source; booking audiences do not receive another participant's
+report. Source checks, immutable-association triggers, retry/event uniqueness,
+short row locks and transactional publication protect integrity and privacy.
+Student group membership reuses explicit `room_invitation` records; no enrollment
+or equipment-participant relationship is inferred. See
+[feedback architecture](resource-feedback-design.md),
+[focused ER diagram](feedback-er.svg) and [Mermaid source](feedback-er.mmd).
+
 ## Boundary and authority
 
 PostgreSQL replaces operational CSV inputs, config.txt, and the published local
@@ -22,10 +36,10 @@ persistence.
 ![High-level ER diagram](database-er-high-level.svg)
 
 - [High-level Mermaid source](database-er-high-level.mmd): principal entities, using only actual foreign-key relationships.
-- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 48 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
+- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 50 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
 - [Physical schema catalog](database-schema-catalog.md): every column's type/nullability/default, composite keys, unique/check constraints, indexes and deletion policy.
 
-`alembic_version` is the forty-ninth physical table, used only by Alembic, not an
+`alembic_version` is the fifty-first physical table, used only by Alembic, not an
 application entity. Application sources/catalog are generated from the models;
 the existing Alembic revision marker is explicitly documented too. Use
 `python scripts/generate_database_diagrams.py`; `--check` detects drift in tests/CI.
