@@ -1370,3 +1370,5 @@ tr:nth-child(even) td {
 .equipment-card dd { margin: 0; }
 .equipment-warning { color: #8c2f1d; font-weight: 650; }
 .equipment-management-grid .panel { margin: 0; }
+/* Private report prose preserves submitted line breaks without wide overflow. */
+.feedback-text { white-space: pre-wrap; overflow-wrap: anywhere; }

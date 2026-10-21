@@ -55,6 +55,14 @@ class RoomRequestService:
             raise RoomRequestError('Select an explicitly configured faculty.')
         return unit
 
+    def _room_manager(self, session, actor, room_id):
+        user = self._user(session, actor)
+        account = session.get(LoginAccount, actor)
+        administrator = bool(account and account.enabled and (account.administrator or session.get(Role,user.primary_role_id).name == 'Administrator'))
+        policy = session.get(RoomPolicy, room_id)
+        if not administrator and (not policy or valid_approvers(session).get(policy.faculty_id) != actor):
+            raise PermissionError('Only university administration or the current owning-faculty room manager can change closures.')
+
     def _validate(self, session, actor, values, invitees):
         self._user(session, actor, 'Student')
         if not isinstance(values, dict):
@@ -69,8 +77,13 @@ class RoomRequestService:
             raise RoomRequestError('Select distinct supported facilities.')
         if not isinstance(invitees, list) or len(invitees) > 100 or any(type(x) is not int or x <= 0 for x in invitees) or len(set(invitees)) != len(invitees):
             raise RoomRequestError('Select distinct professor invitees (at most 100).')
-        if count < len(invitees) + 1:
-            raise RoomRequestError('Total attendees must include the organizer and every invited professor.')
+        participants = values.get('participantIds', [])
+        if not isinstance(participants, list) or len(participants) > 100 or any(type(x) is not int or x <= 0 or x == actor for x in participants) or len(set(participants)) != len(participants):
+            raise RoomRequestError('Select distinct registered students, excluding the organizer (at most 100).')
+        for participant in participants:
+            self._user(session, participant, 'Student')
+        if count < len(invitees) + len(participants) + 1:
+            raise RoomRequestError('Total attendees must include the organizer, registered students and invited professors.')
         for key, limit in (('purpose', 2000), ('description', 4000), ('club', 200), ('building', 200)):
             value = values.get(key, '')
             if not isinstance(value, str) or len(value) > limit or (key == 'purpose' and not value.strip()):
@@ -166,6 +179,7 @@ class RoomRequestService:
         record.start_at, record.end_at, record.duration_minutes = values['start'], values['end'], values['duration']
         session.flush()
         session.add_all(RoomInvitation(request_id=record.id,user_id=pid,revision=record.revision) for pid in invitees)
+        session.add_all(RoomInvitation(request_id=record.id,user_id=pid,revision=record.revision,status='Accepted') for pid in values.get('participantIds', []))
 
     def _confirm(self, session, record, actor, state):
         record.status, record.approved_by, record.approved_revision = 'Confirmed', actor, record.revision
@@ -186,7 +200,9 @@ class RoomRequestService:
             self._user(session, actor)
             row = self._visible(session,request_id,actor)
             invitees = list(session.scalars(select(RoomInvitation).where(RoomInvitation.request_id == row.id).order_by(RoomInvitation.user_id)))
-            names = {u.id:u.name for u in session.scalars(select(User).where(User.id.in_({row.organizer_id,row.approver_id,*[i.user_id for i in invitees]})))}
+            people = {u.id:u for u in session.scalars(select(User).where(User.id.in_({row.organizer_id,row.approver_id,*[i.user_id for i in invitees]})))}
+            names = {key: person.name for key, person in people.items()}
+            student_role = session.scalar(select(Role.id).where(Role.name == 'Student'))
             room, faculty = session.get(Resource,row.resource_id), session.get(OrganizationUnit,row.faculty_id)
             can_approve = row.approver_id == actor and valid_approvers(session).get(row.faculty_id) == actor
             return {'id':row.id,'organizerId':row.organizer_id,'organizerName':names[row.organizer_id],
@@ -197,7 +213,9 @@ class RoomRequestService:
                 'duration':row.duration_minutes,'preferredFaculty':row.preferred_faculty_id,'preferredBuilding':row.preferred_building,
                 'revision':row.revision,'status':row.status,'explanation':row.explanation,
                 'canApprove':can_approve, 'canAudit':can_approve,
-                'invitations':[{'id':i.user_id,'name':names[i.user_id],'status':i.status} for i in invitees],
+                'canFeedback':row.status == 'Confirmed' and row.start_at <= datetime.now(timezone.utc) and (row.organizer_id == actor or any(i.user_id == actor and i.status == 'Accepted' for i in invitees)),
+                'invitations':[{'id':i.user_id,'name':names[i.user_id],'status':i.status} for i in invitees if people[i.user_id].primary_role_id != student_role],
+                'participants':[{'id':i.user_id,'name':names[i.user_id]} for i in invitees if people[i.user_id].primary_role_id == student_role],
                 'history':event_history(session,RoomEvent,row.id,actor,audit=can_approve)}
 
     def list_for(self, actor):
@@ -211,7 +229,8 @@ class RoomRequestService:
     def _values(self, row):
         return {'start':row['start'],'duration':row['duration'],'count':row['count'],'category':row['category'],
                 'features':row['features'],'purpose':row['purpose'],'description':row['description'],'club':row['club'],
-                'faculty':row['preferredFaculty'],'building':row['preferredBuilding']}
+                'faculty':row['preferredFaculty'],'building':row['preferredBuilding'],
+                'participantIds':[p['id'] for p in row.get('participants', [])]}
 
     def decide(self, request_id, actor, revision, approve, reason=''):
         if type(approve) is not bool:
@@ -304,17 +323,33 @@ class RoomRequestService:
     def directory(self, actor, configuration=False):
         with self.database.transaction(read_only=True) as session:
             self._user(session,actor)
+            administrator = False
             if configuration:
-                self._admin(session,actor)
+                try:
+                    self._admin(session,actor)
+                    administrator = True
+                except PermissionError:
+                    if actor not in valid_approvers(session).values():
+                        raise
             faculties = [{'id':u.id,'name':u.name} for u in session.scalars(select(OrganizationUnit).where(OrganizationUnit.unit_type == 'Faculty').order_by(OrganizationUnit.name))]
             professors = [{'id':u.id,'name':u.name} for u in session.scalars(select(User).join(Role,Role.id == User.primary_role_id).where(Role.name == 'Instructor',User.status == 'active').order_by(User.name,User.id))]
             result = {'faculties':faculties,'professors':professors,'buildings':sorted(set(session.scalars(select(Resource.building))))}
+            result['students'] = [{'id':u.id,'name':u.name} for u in session.scalars(select(User).join(Role,Role.id == User.primary_role_id).where(Role.name == 'Student',User.status == 'active',User.id != actor).order_by(User.name,User.id))]
             if configuration:
+                result['canConfigure'] = administrator
                 result['rooms'] = [{'id':r.id,'name':r.name,'type':r.type,'capacity':r.capacity} for r in session.scalars(select(Resource).order_by(Resource.source_order))]
                 result['policies'] = [{'room':r.resource_id,'faculty':r.faculty_id,'enabled':r.enabled,'restricted':r.restricted,'categories':r.categories} for r in session.scalars(select(RoomPolicy))]
                 result['approvers'] = [{'faculty':r.faculty_id,'user':r.user_id} for r in session.scalars(select(FacultyRoomApprover))]
                 result['accounts'] = [{'id':u.id,'name':u.name} for u in session.scalars(select(User).join(LoginAccount,LoginAccount.user_id == User.id).join(Role,Role.id == User.primary_role_id).where(LoginAccount.enabled == True,User.status == 'active',Role.name != 'Student',or_(Role.name.in_(['Staff','Administrator']),LoginAccount.administrator == True)).order_by(User.name))]
                 result['closures'] = [{'id':r.id,'room':r.resource_id,'start':r.start_at,'end':r.end_at,'reason':r.reason} for r in session.scalars(select(RoomClosure).order_by(RoomClosure.start_at))]
+                if not administrator:
+                    managed = {faculty for faculty, person in valid_approvers(session).items() if person == actor}
+                    result['policies'] = [p for p in result['policies'] if p['faculty'] in managed]
+                    room_ids = {p['room'] for p in result['policies']}
+                    result['rooms'] = [r for r in result['rooms'] if r['id'] in room_ids]
+                    result['closures'] = [r for r in result['closures'] if r['room'] in room_ids]
+                    result['accounts'] = []
+                    result['approvers'] = [r for r in result['approvers'] if r['faculty'] in managed]
             return result
 
     def configure_approver(self, actor, faculty, approver):
@@ -368,7 +403,7 @@ class RoomRequestService:
             raise RoomRequestError('Enter a valid dated closure and bounded reason.')
         with self.database.transaction() as session:
             state = state_row(session,True)
-            self._admin(session,actor)
+            self._room_manager(session,actor,room_id)
             if session.get(Resource,room_id) is None:
                 raise RoomRequestError('Select an existing room.')
             if session.scalar(select(RoomReservation.request_id).where(RoomReservation.resource_id == room_id,RoomReservation.start_at < end,RoomReservation.end_at > start).limit(1)) is not None:
@@ -377,14 +412,18 @@ class RoomRequestService:
             session.flush()
             assert_room_publication(session,state.active_run_id)
             state.calendar_revision += 1
+            from .feedback_state import record_resource_action
+            record_resource_action(session, 'room', room_id, actor, 'Dated closure added: '+start.isoformat()+' to '+end.isoformat()+'. '+reason)
 
     def reopen_room(self, actor, closure_id):
         with self.database.transaction() as session:
             state = state_row(session,True)
-            self._admin(session,actor)
             row = session.get(RoomClosure,closure_id)
             if row is None:
                 raise RoomRequestError('Closure not found.')
+            self._room_manager(session,actor,row.resource_id)
+            from .feedback_state import record_resource_action
+            record_resource_action(session, 'room', row.resource_id, actor, 'Dated closure removed: '+row.start_at.isoformat()+' to '+row.end_at.isoformat()+'. '+row.reason)
             session.delete(row)
             state.calendar_revision += 1
             policy = session.get(RoomPolicy, row.resource_id)

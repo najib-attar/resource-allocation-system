@@ -2,7 +2,7 @@
 {% for item in inbox['items'] %}
     <li class="notification-item{% if not item.read_at %} is-unread{% endif %}">
         <a href="{{ item.url }}" data-notification-id="{{ item.id }}">
-            <span class="notification-kind">{{ {'appointment': 'Appointment update', 'room': 'Room request update', 'equipment': 'Equipment update'}[item.kind] }}{% if not item.read_at %}<span class="unread-dot" aria-label="Unread"></span>{% endif %}</span>
+            <span class="notification-kind">{{ {'appointment': 'Appointment update', 'room': 'Room request update', 'equipment': 'Equipment update', 'feedback':'Private resource report'}[item.kind] }}{% if not item.read_at %}<span class="unread-dot" aria-label="Unread"></span>{% endif %}</span>
             <strong>{{ item.subject }}</strong>
             <span class="status-badge">Current status: {{ item.current_status }}</span>
             <span>{{ item.message }}</span>

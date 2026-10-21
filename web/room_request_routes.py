@@ -43,7 +43,8 @@ def create_room_blueprint(database_provider, gateway_provider, strategy_provider
                 'count':integer(request.form.get('count')),'duration':integer(request.form.get('duration')),
                 'start':local_instant(request.form.get('start')),'features':request.form.getlist('features'),
                 'faculty':integer(request.form['faculty']) if request.form.get('faculty') else None,
-                'building':request.form.get('building','')}
+                'building':request.form.get('building',''),
+                'participantIds':[integer(x) for x in request.form.getlist('participantIds')]}
 
     @blueprint.errorhandler(PermissionError)
     def unauthorized(error):

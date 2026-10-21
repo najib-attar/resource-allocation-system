@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block title %}Resource Feedback{% endblock %}
+{% block page_heading %}Report an issue or give feedback{% endblock %}
+{% block content %}<section class="panel"><p class="eyebrow">{{ context.title }} &middot; Private and optional</p>
+<p>Linked to your actual use record. Only you and responsible staff can read it. Skipping never affects your booking, return or future requests.</p>
+<p class="equipment-warning" role="note">Urgent safety problem? Stop using unsafe equipment or facilities and contact university staff immediately. This inbox is not an emergency service. Reporting does not automatically cancel bookings or block a resource.</p>
+<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="submission_key" value="{{ submission_key }}">
+<label>Affected resource<select name="resourceId" required>{% for resource in context.resources %}<option value="{{ resource.id }}">{{ resource.name }} &mdash; {{ 'Use completed / return verified' if resource.completed else 'Active use: problems only' }}</option>{% endfor %}</select></label>
+<label>Category<select name="category" required><option value="problem">Report a problem</option><option value="improvement">Suggest an improvement (after use)</option><option value="general">General feedback (after use)</option></select></label>
+<label>Description<textarea name="description" rows="5" maxlength="4000" required placeholder="Describe the issue and affected facility or accessory."></textarea></label>
+<label class="check-label"><input type="checkbox" name="urgent" value="yes">This problem involves an urgent safety concern</label>
+<button class="button-primary">Submit private report</button> <a class="button-secondary" href="{{ url_for('rooms.detail',request_id=context.bookingId) if context.kind == 'room' else url_for('equipment.detail',request_id=context.bookingId) }}">Skip / Back to booking</a>
+</form></section>{% endblock %}

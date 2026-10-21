@@ -97,7 +97,7 @@ form.querySelectorAll("input:not([type=hidden]):not([type=search]),select,textar
 }));
 document.getElementById("room-professor-search").addEventListener("input", event => {
     const query = event.target.value.trim().toLocaleLowerCase();
-    form.querySelectorAll(".picker-option").forEach(option => { option.hidden = !option.textContent.toLocaleLowerCase().includes(query); });
+    event.target.closest(".participant-picker").querySelectorAll(".picker-option").forEach(option => { option.hidden = !option.textContent.toLocaleLowerCase().includes(query); });
 });
 refresh.addEventListener("click", load);
 form.addEventListener("submit", event => {

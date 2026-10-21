@@ -4,15 +4,16 @@ from datetime import datetime, timezone
 from sqlalchemy import case, func, literal, or_, select, union_all, update
 from sqlalchemy.orm import aliased
 from .equipment_access import custodian_faculties
+from .feedback_access import visible_scope
 
 from .persistence.models import (Appointment, AppointmentEvent, AppointmentInvitation,
     AppointmentProfessor, Notification, RoomEvent, RoomInvitation, StudentRoomRequest, User,
-    BorrowRequest, EquipmentCustodian, EquipmentEvent, WaitingListEntry)
+    BorrowRequest, EquipmentCustodian, EquipmentEvent, WaitingListEntry, FeedbackEvent, ResourceFeedback)
 
 
 def publish_event(session, event, *, recipient_ids=None, notify_actor=False):
     """Persist history and its recipient notifications in the caller's transaction."""
-    if not isinstance(event, (AppointmentEvent, RoomEvent, EquipmentEvent)):
+    if not isinstance(event, (AppointmentEvent, RoomEvent, EquipmentEvent, FeedbackEvent)):
         raise TypeError('Unsupported notification event.')
     session.add(event)
     session.flush()
@@ -27,13 +28,19 @@ def publish_event(session, event, *, recipient_ids=None, notify_actor=False):
         people = {parent.organizer_id, parent.approver_id}
         people.update(session.scalars(select(RoomInvitation.user_id).where(RoomInvitation.request_id == parent.id)))
         source = {'room_event_id': event.id}
-    else:
+    elif isinstance(event, EquipmentEvent):
         parent = session.get(BorrowRequest, event.request_id)
         people = {parent.borrower_id}
         assignment = session.get(EquipmentCustodian, parent.faculty_id)
         if assignment:
             people.add(assignment.user_id)
         source = {'equipment_event_id': event.id}
+    else:
+        # Reports have a private audience, never all members of the booking.
+        if recipient_ids is None:
+            raise ValueError('Feedback notifications require explicit authorized recipients.')
+        people = set()
+        source = {'feedback_event_id': event.id}
     if recipient_ids is not None:
         people = set(recipient_ids)
     session.add_all(Notification(recipient_id=person, **source) for person in people if notify_actor or person != event.actor_id)
@@ -45,6 +52,7 @@ def event_history(session, model, parent_id, actor, *, audit=False):
         AppointmentEvent: (AppointmentEvent.appointment_id, Notification.appointment_event_id),
         RoomEvent: (RoomEvent.request_id, Notification.room_event_id),
         EquipmentEvent: (EquipmentEvent.request_id, Notification.equipment_event_id),
+        FeedbackEvent: (FeedbackEvent.report_id, Notification.feedback_event_id),
     }[model]
     query = select(model).where(parent == parent_id)
     if not audit:
@@ -99,7 +107,13 @@ def _visible(actor):
         EquipmentEvent, EquipmentEvent.id == Notification.equipment_event_id).join(
         BorrowRequest, BorrowRequest.id == EquipmentEvent.request_id).outerjoin(
         WaitingListEntry, WaitingListEntry.borrow_request_id == BorrowRequest.id).where(Notification.recipient_id == actor, equipment_scope)
-    return union_all(appointments, rooms, equipment).subquery()
+    feedback = select(Notification.id, Notification.read_at, FeedbackEvent.created_at,
+        literal('A private resource report has an update. Open it to review.').label('message'),
+        literal('Resource feedback').label('subject'), ResourceFeedback.id.label('subject_id'),
+        literal('feedback').label('kind'), FeedbackEvent.actor_id, Notification.recipient_id,
+        ResourceFeedback.status.label('current_status')).join(FeedbackEvent, FeedbackEvent.id == Notification.feedback_event_id).join(
+        ResourceFeedback, ResourceFeedback.id == FeedbackEvent.report_id).where(Notification.recipient_id == actor, visible_scope(actor))
+    return union_all(appointments, rooms, equipment, feedback).subquery()
 
 
 class NotificationService:
