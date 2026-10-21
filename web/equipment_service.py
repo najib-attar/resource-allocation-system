@@ -495,7 +495,7 @@ class EquipmentService:
             unit.condition, unit.notes = condition, notes
             self._event(session, actor, equipment.faculty_id, 'Inventory condition: '+condition+'. '+notes, unit_id=unit_id)
             from .feedback_state import record_resource_action
-            record_resource_action(session, 'equipment', unit_id, actor, 'Inventory condition set to '+condition+'. '+notes)
+            record_resource_action(session, 'equipment', unit_id, actor, 'Inventory condition set to '+condition+'.')
             refresh_after_commit(session, self.database, self.gateway, 'equipment', equipment.faculty_id)
 
     def inventory(self, actor, faculty):

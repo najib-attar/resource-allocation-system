@@ -1372,3 +1372,4 @@ tr:nth-child(even) td {
 .equipment-management-grid .panel { margin: 0; }
 /* Private report prose preserves submitted line breaks without wide overflow. */
 .feedback-text { white-space: pre-wrap; overflow-wrap: anywhere; }
+.feedback-content { overflow-wrap: anywhere; min-width: 0; }

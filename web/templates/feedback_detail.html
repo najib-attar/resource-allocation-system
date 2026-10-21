@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}Private Resource Report{% endblock %}
 {% block page_heading %}{{ item.resource }}{% endblock %}
-{% block content %}<section class="panel"><a href="{{ url_for('feedback.index') }}">Back to feedback</a><p class="eyebrow">{{ item.kind }} &middot; {{ item.category|capitalize }} &middot; {{ item.priority|capitalize }} priority</p>
+{% block content %}<div class="feedback-content"><section class="panel"><a href="{{ url_for('feedback.index') }}">Back to feedback</a><p class="eyebrow">{{ item.kind }} &middot; {{ item.category|capitalize }} &middot; {{ item.priority|capitalize }} priority</p>
 <h2>{{ item.status }}</h2><p>Reporter: {{ item.reporter|person_name }} &middot; Responsible staff: {{ item.staff|person_name }}</p>
 <p>Submitted {{ item.created|university_time(seconds=true) }} &middot; Updated {{ item.updated|university_time(seconds=true) }}</p>
 <h3>Original report</h3><p class="feedback-text">{{ item.description }}</p>{% if item.response %}<h3>Latest staff response</h3><p class="feedback-text">{{ item.response }}</p>{% endif %}
@@ -13,4 +13,4 @@
 <div class="appointment-grid"><label>Status<select name="status">{% for value in states if (item.status == 'Submitted' and value == 'Under Review') or (item.status == 'Under Review' and value in ['Under Review','Resolved','Closed']) or (item.status in ['Resolved','Closed'] and value == 'Under Review') %}<option>{{ value }}</option>{% endfor %}</select></label><label>Priority<select name="priority">{% for value in priorities %}<option{% if value == item.priority %} selected{% endif %}>{{ value }}</option>{% endfor %}</select></label></div>
 <label>Response / resolution / reason for reopening<textarea name="response" rows="4" maxlength="4000" required></textarea></label><button class="button-primary">Save review and notify reporter</button></form></section>{% endif %}
 {% if item.isReporter and item.status in ['Submitted','Under Review'] %}<section class="panel"><h2>Add clarification (optional)</h2><form method="post" action="{{ url_for('feedback.update',report_id=item.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="revision" value="{{ item.revision }}"><input type="hidden" name="action_key" value="{{ action_key }}"><input type="hidden" name="action" value="reply"><label>Additional information<textarea name="response" rows="3" maxlength="4000" required></textarea></label><button class="button-secondary">Send clarification to staff</button></form></section>{% endif %}
-{% include 'components/_activity_history.html' %}{% endblock %}
+{% include 'components/_activity_history.html' %}</div>{% endblock %}

@@ -30,7 +30,8 @@ class FeedbackService:
         self.clock = clock or (lambda: datetime.now(timezone.utc))
 
     def _identity(self, session, actor, lock=False):
-        user = session.get(User, actor, with_for_update=lock) if type(actor) is int and actor > 0 else None
+        # Serialize submissions without blocking foreign-key KEY SHARE references.
+        user = session.get(User, actor, with_for_update={'key_share':True} if lock else None) if type(actor) is int and actor > 0 else None
         account = session.get(LoginAccount, actor) if user else None
         if user is None or user.status.casefold() != 'active' or account is None or not account.enabled:
             raise PermissionError('An active authenticated university identity is required.')
@@ -98,13 +99,17 @@ class FeedbackService:
             raise FeedbackError('Choose an actually used resource.')
         payload = fingerprint([kind,booking_id,resource_id,category,description,urgent])
         with self.database.transaction() as session:
-            self._identity(session, actor, lock=True)
-            existing = session.scalar(select(ResourceFeedback).where(ResourceFeedback.reporter_id == actor, ResourceFeedback.submission_key == key))
-            if existing:
-                if existing.fingerprint != payload:
-                    raise FeedbackError('This submission identity was used for different feedback. Refresh the form.')
-                return existing.id
+            self._identity(session, actor)
+            existing = self._saved_submission(session, actor, key, payload)
+            if existing is not None:
+                return existing
+            # Booking writes lock their parent before taking user foreign-key locks.
+            # Match that order, then recheck retries after serializing the reporter.
             context = self._context(session, kind, booking_id, actor, lock=True)
+            self._identity(session, actor, lock=True)
+            existing = self._saved_submission(session, actor, key, payload)
+            if existing is not None:
+                return existing
             resource = next((r for r in context['resources'] if r['id'] == resource_id), None)
             if resource is None:
                 raise PermissionError('The selected resource does not belong to your actual usage record.')
@@ -120,6 +125,12 @@ class FeedbackService:
             session.add(report); session.flush()
             self._event(session, report, actor, 'Submitted '+category+' report'+(' (urgent safety concern)' if urgent else '')+'. '+description, key, payload, staff)
             return report.id
+
+    def _saved_submission(self, session, actor, key, payload):
+        report = session.scalar(select(ResourceFeedback).where(ResourceFeedback.reporter_id == actor, ResourceFeedback.submission_key == key))
+        if report and report.fingerprint != payload:
+            raise FeedbackError('This submission identity was used for different feedback. Refresh the form.')
+        return report.id if report else None
 
     def _event(self, session, report, actor, message, key, payload, recipient):
         publish_event(session, FeedbackEvent(report_id=report.id, actor_id=actor, revision=report.revision,

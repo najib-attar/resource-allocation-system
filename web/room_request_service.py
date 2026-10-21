@@ -188,21 +188,27 @@ class RoomRequestService:
         state.calendar_revision += 1
 
     def _visible(self, session, request_id, actor):
+        managed = [faculty for faculty, person in valid_approvers(session).items() if person == actor]
         permitted = or_(StudentRoomRequest.organizer_id == actor, StudentRoomRequest.approver_id == actor,
+            StudentRoomRequest.faculty_id.in_(managed),
             StudentRoomRequest.id.in_(select(RoomInvitation.request_id).where(RoomInvitation.user_id == actor)))
         record = session.scalar(select(StudentRoomRequest).where(StudentRoomRequest.id == request_id, permitted))
         if record is None:
             raise PermissionError('This room request is unavailable or private to its organizer, assigned approver and invitees.')
         return record
 
+    def _member_ids(self, session, request_id):
+        rows = session.execute(select(RoomInvitation.user_id, Role.name).join(User,User.id == RoomInvitation.user_id)
+            .join(Role,Role.id == User.primary_role_id).where(RoomInvitation.request_id == request_id).order_by(RoomInvitation.user_id)).all()
+        return ([key for key,role in rows if role != 'Student'], [key for key,role in rows if role == 'Student'])
+
     def detail(self, request_id, actor):
         with self.database.transaction(read_only=True) as session:
             self._user(session, actor)
             row = self._visible(session,request_id,actor)
             invitees = list(session.scalars(select(RoomInvitation).where(RoomInvitation.request_id == row.id).order_by(RoomInvitation.user_id)))
-            people = {u.id:u for u in session.scalars(select(User).where(User.id.in_({row.organizer_id,row.approver_id,*[i.user_id for i in invitees]})))}
-            names = {key: person.name for key, person in people.items()}
-            student_role = session.scalar(select(Role.id).where(Role.name == 'Student'))
+            names = {u.id:u.name for u in session.scalars(select(User).where(User.id.in_({row.organizer_id,row.approver_id,*[i.user_id for i in invitees]})))}
+            students = set(self._member_ids(session,row.id)[1])
             room, faculty = session.get(Resource,row.resource_id), session.get(OrganizationUnit,row.faculty_id)
             can_approve = row.approver_id == actor and valid_approvers(session).get(row.faculty_id) == actor
             return {'id':row.id,'organizerId':row.organizer_id,'organizerName':names[row.organizer_id],
@@ -214,14 +220,16 @@ class RoomRequestService:
                 'revision':row.revision,'status':row.status,'explanation':row.explanation,
                 'canApprove':can_approve, 'canAudit':can_approve,
                 'canFeedback':row.status == 'Confirmed' and row.start_at <= datetime.now(timezone.utc) and (row.organizer_id == actor or any(i.user_id == actor and i.status == 'Accepted' for i in invitees)),
-                'invitations':[{'id':i.user_id,'name':names[i.user_id],'status':i.status} for i in invitees if people[i.user_id].primary_role_id != student_role],
-                'participants':[{'id':i.user_id,'name':names[i.user_id]} for i in invitees if people[i.user_id].primary_role_id == student_role],
+                'invitations':[{'id':i.user_id,'name':names[i.user_id],'status':i.status} for i in invitees if i.user_id not in students],
+                'participants':[{'id':i.user_id,'name':names[i.user_id]} for i in invitees if i.user_id in students],
                 'history':event_history(session,RoomEvent,row.id,actor,audit=can_approve)}
 
     def list_for(self, actor):
         with self.database.transaction(read_only=True) as session:
             self._user(session,actor)
+            managed = [faculty for faculty, person in valid_approvers(session).items() if person == actor]
             query = select(StudentRoomRequest.id).where(or_(StudentRoomRequest.organizer_id == actor,
+                StudentRoomRequest.faculty_id.in_(managed),
                 StudentRoomRequest.approver_id == actor, StudentRoomRequest.id.in_(select(RoomInvitation.request_id).where(RoomInvitation.user_id == actor))))
             keys = list(session.scalars(query.order_by(StudentRoomRequest.start_at,StudentRoomRequest.id)))
         return [self.detail(key,actor) for key in keys]
@@ -413,7 +421,7 @@ class RoomRequestService:
             assert_room_publication(session,state.active_run_id)
             state.calendar_revision += 1
             from .feedback_state import record_resource_action
-            record_resource_action(session, 'room', room_id, actor, 'Dated closure added: '+start.isoformat()+' to '+end.isoformat()+'. '+reason)
+            record_resource_action(session, 'room', room_id, actor, 'Dated closure added: '+start.isoformat()+' to '+end.isoformat()+'.')
 
     def reopen_room(self, actor, closure_id):
         with self.database.transaction() as session:
@@ -423,7 +431,7 @@ class RoomRequestService:
                 raise RoomRequestError('Closure not found.')
             self._room_manager(session,actor,row.resource_id)
             from .feedback_state import record_resource_action
-            record_resource_action(session, 'room', row.resource_id, actor, 'Dated closure removed: '+row.start_at.isoformat()+' to '+row.end_at.isoformat()+'. '+row.reason)
+            record_resource_action(session, 'room', row.resource_id, actor, 'Dated closure removed: '+row.start_at.isoformat()+' to '+row.end_at.isoformat()+'.')
             session.delete(row)
             state.calendar_revision += 1
             policy = session.get(RoomPolicy, row.resource_id)

@@ -9,6 +9,7 @@ from .persistence.models import EquipmentReservation, FeedbackEvent, ResourceFee
 
 
 def record_resource_action(session, kind, resource_id, actor, message):
+    # Callers supply public availability facts, never private maintenance notes.
     query = select(ResourceFeedback).where(ResourceFeedback.status.in_(['Submitted','Under Review']), managed_scope(actor))
     if kind == 'room':
         query = query.where(ResourceFeedback.room_resource_id == resource_id)

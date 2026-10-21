@@ -161,6 +161,33 @@ class FeedbackRoomTests(RoomFixture):
                 if worker.is_alive():worker.terminate();worker.join()
             output.close();output.join_thread()
 
+    def test_booking_mutation_and_feedback_do_not_invert_parent_user_locks(self):
+        from threading import Event
+        from web.persistence.models import FacultyRoomApprover, StudentRoomRequest
+        with self.database.transaction() as session:session.get(LoginAccount,2).administrator=True
+        booking=self.request_room(invitees=(2,))
+        self.rooms.respond(booking,2,1,True);self.rooms.decide(booking,7,1,True)
+        identity=self.feedback._identity
+        for source in ('booking','authority'):
+            with self.subTest(source=source):
+                parent_locked=Event();identity_seen=Event()
+                def observed(session,actor,lock=False):
+                    identity(session,actor,lock)
+                    if source=='booking' or lock:identity_seen.set()
+                def booking_write():
+                    with self.database.transaction() as session:
+                        query=select(StudentRoomRequest).where(StudentRoomRequest.id==booking) if source=='booking' else select(FacultyRoomApprover).where(FacultyRoomApprover.faculty_id==self.other_faculty)
+                        session.scalar(query.with_for_update());parent_locked.set()
+                        self.assertTrue(identity_seen.wait(10))
+                        # Booking events and authority changes need user FK locks.
+                        session.scalar(select(User.id).where(User.id==2).with_for_update(read=True,key_share=True))
+                with mock.patch.object(self.feedback,'_identity',side_effect=observed),ThreadPoolExecutor(2) as workers:
+                    mutation=workers.submit(booking_write)
+                    self.assertTrue(parent_locked.wait(10))
+                    submitted=workers.submit(self.report,booking,2)
+                    mutation.result(timeout=15);key=submitted.result(timeout=15)
+                self.assertEqual(self.feedback.detail(key,2)['status'],'Submitted')
+
     def test_room_manager_closure_scope_and_resource_history_are_preserved(self):
         key=self.report()
         directory=self.rooms.directory(7,configuration=True)
@@ -175,6 +202,17 @@ class FeedbackRoomTests(RoomFixture):
         self.assertEqual((detail['status'],detail['revision']),('Submitted',3))
         self.assertEqual(sum('Authorized resource action' in h['message'] for h in detail['history']),2)
         self.assertEqual(self.totals(),(1,1))
+
+    def test_maintenance_notes_are_not_rebroadcast_between_group_reporters(self):
+        booking=self.confirmed(participants=(4,))
+        first,second=self.report(booking),self.report(booking,actor=4)
+        private='PRIVATE_STAFF_NOTE_NOT_FOR_OTHER_REPORTERS'
+        self.rooms.close_room(7,302,START+timedelta(hours=1),START+timedelta(hours=2),private)
+        self.assertIn(private,self.rooms.directory(7,configuration=True)['closures'][0]['reason'])
+        for key,actor in ((first,1),(second,4)):
+            history=self.feedback.detail(key,actor)['history']
+            self.assertIn('Dated closure added',history[-1]['message'])
+            self.assertNotIn(private,history[-1]['message'])
 
     def test_staff_response_notification_failure_rolls_back_update(self):
         key=self.report()
@@ -215,6 +253,10 @@ class FeedbackRoomTests(RoomFixture):
         with self.assertRaises(PermissionError):self.feedback.detail(key,7)
         self.assertEqual([r for r in NotificationService(self.database).inbox(7)['items'] if r['kind']=='feedback'],[])
         self.assertEqual(len(self.feedback.list_for(6,'managed')),1)
+        parent=self.feedback.detail(key,6)['bookingId']
+        self.assertEqual(self.rooms.detail(parent,6)['id'],parent)
+        self.configure_web()
+        self.assertEqual(authorized_client(web_app.app,6).get('/rooms/'+str(parent)).status_code,200)
         self.review(key,actor=6)
         with self.database.transaction(read_only=True) as session:self.assertEqual(session.get(ResourceFeedback,key).assigned_to_id,6)
 
@@ -242,6 +284,13 @@ class FeedbackRoomTests(RoomFixture):
             report=session.get(ResourceFeedback,key)
             session.add(ResourceFeedback(room_request_id=report.room_request_id,room_resource_id=302,room_revision=1,
                 reporter_id=4,faculty_id=self.other_faculty,assigned_to_id=7,category='problem',description='Fabricated',submission_key=uuid.uuid4().hex,fingerprint='a'*64))
+
+    def test_database_attendee_count_includes_explicit_group_members(self):
+        from web.persistence.models import StudentRoomRequest
+        booking=self.confirmed(participants=(4,))
+        with self.assertRaises(IntegrityError),self.database.transaction() as session:
+            session.get(StudentRoomRequest,booking).attendee_count=1
+        self.assertEqual(self.rooms.detail(booking,1)['count'],5)
 
     def test_flask_form_csrf_privacy_escaping_and_notifications(self):
         booking=self.confirmed();self.configure_web()
@@ -360,6 +409,7 @@ class FeedbackEquipmentTests(EquipmentFixture):
             self.assertEqual(staff.get(created.location).status_code,200)
             self.service.set_condition(6,self.units[0],'damaged','Verified custodian inspection')
             self.assertIn('Authorized resource action',self.feedback.detail(key,1)['history'][-1]['message'])
+            self.assertNotIn('Verified custodian inspection',self.feedback.detail(key,1)['history'][-1]['message'])
             self.assertEqual(student.get(created.location).headers['Cache-Control'],'private, no-store')
 
     def test_failed_condition_notification_rolls_back_inventory_and_report_history(self):

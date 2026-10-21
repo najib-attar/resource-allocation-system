@@ -16,7 +16,13 @@ def participant_rule(forward):
     source, target = (old, new) if forward else (new, old)
     if source not in definition:
         raise RuntimeError('Unexpected room integrity function; review migration before proceeding.')
-    op.execute(definition.replace(source, target))
+    definition = definition.replace(source, target)
+    marker = 'IF NOT FOUND THEN RETURN; END IF;'
+    checked = marker + "\n        IF r.attendee_count < 1 + (SELECT count(*) FROM room_invitation WHERE request_id=k) THEN\n            RAISE EXCEPTION 'Declared attendees must include all registered participants' USING ERRCODE='23514';\n        END IF;"
+    definition = definition.replace(marker, checked) if forward else definition.replace(checked, marker)
+    op.execute(definition)
+    if forward:
+        op.execute('SELECT ras_room_shape(id) FROM student_room_request')
 
 
 def upgrade():
