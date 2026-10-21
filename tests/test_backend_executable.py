@@ -184,7 +184,8 @@ class BackendExecutionTests(BackendFixture, TestCase):
         path = self.make_backend()
         def execution(command, **kwargs):
             return subprocess.CompletedProcess(command, 0, json.dumps(fake_result(json.loads(kwargs["input"]))), "")
-        with mock.patch("web.engine_gateway.subprocess.run", side_effect=execution) as run:
+        with mock.patch("web.engine_gateway.subprocess.run", side_effect=execution) as run, \
+                mock.patch('web.waiting_list_service.WaitingListService.refresh_all') as refresh:
             with self.assertLogs(self.web_app.app.logger, level="INFO") as logs:
                 result = self.web_app.run_backend_allocation()
         self.assertEqual(result["status"], "success")
@@ -193,6 +194,7 @@ class BackendExecutionTests(BackendFixture, TestCase):
         self.assertIn("protocolVersion", json.loads(run.call_args.kwargs["input"]))
         self.assertEqual(list((self.root / "data" / ".runtime").glob("run-*")), [])
         self.repository.publish_run.assert_called_once()
+        refresh.assert_called_once_with('room')
         self.assertFalse(run.call_args.kwargs.get("shell", False))
         self.assertTrue(any("source=" in entry and "compiler=" in entry for entry in logs.output))
 
