@@ -1,6 +1,6 @@
 # Physical schema catalog
 
-Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 52 application tables.
+Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 53 application tables.
 
 All foreign keys use PostgreSQL **NO ACTION**: no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
 ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.
@@ -16,6 +16,7 @@ Explicit named calendar validity and timezone; no inferred legacy dates.
 | start_date | date | - | no | - |
 | end_date | date | - | no | - |
 | timezone | varchar(100) | - | no | - |
+| is_semester | boolean | - | no | false |
 
 - Primary key: `id`.
 - Check: `start_date <= end_date`.
@@ -101,6 +102,8 @@ Singleton strategy, input revision and currently published run.
 | active_run_id | bigint | FK -> allocation_run.id | yes | - |
 | calendar_revision | bigint | - | no | 0 |
 | waiting_notice_minutes | integer | - | yes | - |
+| recurring_limits | jsonb | - | no | '{}'::jsonb |
+| reservation_priorities | jsonb | - | no | '[]'::jsonb |
 
 - Primary key: `id`.
 - Foreign key: `(active_run_id) -> allocation_run (id)`; NO ACTION.
@@ -256,6 +259,7 @@ Student borrowing interval, purpose, lifecycle and idempotent submission identit
 
 | Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
 |---|---|---|---|---|
+| priority | integer | - | no | 0 |
 | id | integer | PK | no | identity |
 | borrower_id | integer | FK -> university_user.id | no | - |
 | faculty_id | integer | FK -> organization_unit.id | no | - |
@@ -741,12 +745,44 @@ Ordered real dated series interval, cancellation/completion state and exact link
 | end_at | timestamp with time zone | - | no | - |
 | period | tstzrange | - | no | computed: tstzrange(start_at, end_at, '[)') |
 | status | varchar(12) | - | no | ORM: Proposed |
+| explanation | text | - | no | '' |
+| decided_by | integer | FK -> login_account.user_id | yes | - |
+| decided_at | timestamp with time zone | - | yes | - |
 
 - Primary key: `id`.
+- Foreign key: `(decided_by) -> login_account (user_id)`; NO ACTION.
 - Foreign key: `(series_id) -> reservation_series (id)`; NO ACTION.
-- Check: `ordinal BETWEEN 1 AND 366 AND start_at < end_at AND status IN ('Proposed','Reserved','Completed','Cancelled')`.
+- Check: `ordinal BETWEEN 1 AND 366 AND start_at < end_at AND status IN ('Proposed','Unavailable','Rejected','Reserved','Completed','Cancelled')`.
 - Unique: `series_id, ordinal`.
+- Index: `ix_reservation_occurrence_decided_by (decided_by)`.
 - Index: `ix_reservation_occurrence_series_id (series_id)`.
+
+## reservation_priority_override
+
+Immutable shared room/equipment priority override with responsible actor, server time, original/selected priority and mandatory reason.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| room_request_id | bigint | FK -> student_room_request.id | yes | - |
+| borrow_request_id | integer | FK -> borrow_request.id | yes | - |
+| actor_id | integer | FK -> login_account.user_id | no | - |
+| original_priority | integer | - | no | - |
+| selected_priority | integer | - | no | - |
+| reason | text | - | no | - |
+| created_at | timestamp with time zone | - | no | clock_timestamp() |
+| transaction_id | bigint | - | no | txid_current() |
+
+- Primary key: `id`.
+- Foreign key: `(actor_id) -> login_account (user_id)`; NO ACTION.
+- Foreign key: `(borrow_request_id) -> borrow_request (id)`; NO ACTION.
+- Foreign key: `(room_request_id) -> student_room_request (id)`; NO ACTION.
+- Check: `length(btrim(reason)) BETWEEN 1 AND 2000`.
+- Check: `num_nonnulls(room_request_id, borrow_request_id) = 1`.
+- Check: `original_priority >= 0 AND selected_priority >= 0 AND original_priority <> selected_priority`.
+- Index: `ix_reservation_priority_override_actor_id (actor_id)`.
+- Index: `ix_reservation_priority_override_borrow_request_id (borrow_request_id)`.
+- Index: `ix_reservation_priority_override_room_request_id (room_request_id)`.
 
 ## reservation_series
 
@@ -757,6 +793,8 @@ Shared immutable bounded weekly proposal linked to one existing room or borrowin
 | id | bigint | PK | no | identity |
 | room_request_id | bigint | FK -> student_room_request.id | yes | - |
 | borrow_request_id | integer | FK -> borrow_request.id | yes | - |
+| period_id | integer | FK -> academic_period.id | yes | - |
+| approval_mode | varchar(10) | - | no | all |
 | start_date | date | - | no | - |
 | end_date | date | - | no | - |
 | start_minutes | integer | - | no | - |
@@ -769,7 +807,9 @@ Shared immutable bounded weekly proposal linked to one existing room or borrowin
 
 - Primary key: `id`.
 - Foreign key: `(borrow_request_id) -> borrow_request (id)`; NO ACTION.
+- Foreign key: `(period_id) -> academic_period (id)`; NO ACTION.
 - Foreign key: `(room_request_id) -> student_room_request (id)`; NO ACTION.
+- Check: `approval_mode IN ('all','partial')`.
 - Check: `jsonb_typeof(weekdays) = 'array' AND jsonb_array_length(weekdays) BETWEEN 1 AND 7 AND '[1,2,3,4,5,6,7]'::jsonb @> weekdays`.
 - Check: `num_nonnulls(room_request_id, borrow_request_id) = 1`.
 - Check: `start_date <= end_date AND end_date-start_date <= 730 AND start_minutes BETWEEN 0 AND 1439 AND duration_minutes BETWEEN 1 AND 525600`.
@@ -777,6 +817,7 @@ Shared immutable bounded weekly proposal linked to one existing room or borrowin
 - Unique: `borrow_request_id`.
 - Unique: `room_request_id`.
 - Unique: `submission_key`.
+- Index: `ix_reservation_series_period_id (period_id)`.
 
 ## resource
 
@@ -1033,6 +1074,7 @@ Student needs, selected verified room, faculty approval, dated interval and revi
 |---|---|---|---|---|
 | id | bigint | PK | no | identity |
 | organizer_id | integer | FK -> university_user.id | no | - |
+| priority | integer | - | no | 0 |
 | resource_id | integer | FK -> resource.id | no | - |
 | faculty_id | integer | FK -> organization_unit.id | no | - |
 | approver_id | integer | FK -> login_account.user_id | no | - |

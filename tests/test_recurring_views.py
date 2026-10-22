@@ -9,8 +9,8 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
 from auth_fixtures import authorized_client
-from test_room_requests import RoomFixture, START
-from test_equipment import EquipmentFixture
+from test_room_requests import START
+from recurring_fixtures import RoomFixture,EquipmentFixture
 from test_recurring_workflows import pattern
 from runtime_file_guard import forbid_runtime_files
 from web import app as web_app
@@ -32,7 +32,7 @@ class RecurringRoomViewsTests(RoomFixture):
     def test_flask_preview_submission_review_and_scoped_cancellation(self):
         client=self.configure_web()
         data=dict(category='study',purpose='Weekly project',count='5',duration='60',roomId='302',
-            reservationMode='weekly',recurrenceStart='2030-01-07',recurrenceEnd='2030-01-14',
+            reservationMode='weekly',academicPeriod=str(self.semester),recurrenceStart='2030-01-07',recurrenceEnd='2030-01-14',
             recurrenceDays='1',recurrenceTime='10:00',submission_key=uuid.uuid4().hex)
         with forbid_runtime_files():
             self.assertEqual(client.get('/rooms/new').status_code,200)
@@ -109,7 +109,7 @@ class RecurringEquipmentViewsTests(EquipmentFixture):
     def test_flask_preview_complete_approval_and_one_occurrence_cancel(self):
         client=self.configure_web()
         data=dict(start='2030-01-07T10:00',due='2030-01-07T12:00',faculty=str(self.faculty),purpose='Weekly boards',
-            reservationMode='weekly',recurrenceStart='2030-01-07',recurrenceEnd='2030-01-14',recurrenceDays='1',
+            reservationMode='weekly',academicPeriod=str(self.semester),recurrenceStart='2030-01-07',recurrenceEnd='2030-01-14',recurrenceDays='1',
             recurrenceTime='10:00',submission_key=uuid.uuid4().hex,action='recommend')
         data['qty_'+str(self.type_id)]='2'
         with forbid_runtime_files():

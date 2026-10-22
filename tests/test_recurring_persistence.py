@@ -9,7 +9,8 @@ from sqlalchemy import func, select
 from sqlalchemy.exc import IntegrityError
 
 from postgres_fixtures import ROOT
-from test_room_requests import RoomFixture, START
+from test_room_requests import START
+from recurring_fixtures import RoomFixture
 from web.calendar_service import university_zone
 from web.persistence.models import Base, ReservationOccurrence, ReservationSeries, RoomReservation, StudentRoomRequest
 from web.recurrence import expand_recurrence
@@ -23,7 +24,7 @@ class RecurringPersistenceTests(RoomFixture):
             'endDate':(local.date()+timedelta(days=7)).isoformat(),'weekdays':[local.isoweekday()],
             'startTime':local.strftime('%H:%M')},60)
         with self.database.transaction() as session:
-            row=ReservationSeries(room_request_id=key,start_date=expanded['startDate'],end_date=expanded['endDate'],
+            row=ReservationSeries(room_request_id=key,period_id=self.semester,start_date=expanded['startDate'],end_date=expanded['endDate'],
                 start_minutes=expanded['startMinutes'],duration_minutes=60,weekdays=expanded['weekdays'],
                 timezone=expanded['timezone'],submission_key=uuid.uuid4().hex,fingerprint='a'*64)
             session.add(row);session.flush()
@@ -76,6 +77,6 @@ class RecurringPersistenceTests(RoomFixture):
             command.downgrade(configuration,'0048a')
             command.upgrade(configuration,'head')
             command.check(configuration)
-        self.assertEqual(len(Base.metadata.tables),52)
+        self.assertEqual(len(Base.metadata.tables),53)
         self.assertEqual(self.rooms.detail(key,1)['status'],'Confirmed')
         self.assertEqual(self.totals(),(1,1))

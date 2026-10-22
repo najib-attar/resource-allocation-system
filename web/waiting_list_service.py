@@ -18,6 +18,8 @@ from .persistence.repository import state_row
 from .room_calendar import room_snapshot, valid_approvers
 from .room_request_service import RoomRequestService
 from .waiting_list_state import queue_event, refresh_after_commit
+from .persistence.models import AcademicPeriod, ReservationPriorityOverride
+from .reservation_policy import policy_directory
 
 
 POLICY_VERSION = 'waiting-lists-v1'
@@ -41,7 +43,84 @@ class WaitingListService:
 
     def policy(self):
         with self.database.transaction(read_only=True) as session:
-            return {'version': POLICY_VERSION, 'noticeMinutes': state_row(session).waiting_notice_minutes}
+            return {'version': POLICY_VERSION, 'noticeMinutes': state_row(session).waiting_notice_minutes,**policy_directory(session)}
+
+    def configure_reservations(self, actor, limits, priorities):
+        if not isinstance(limits,dict) or set(limits)-{'room','equipment'} or not isinstance(priorities,list):
+            raise WaitingListError('Choose explicit room/equipment limits and priority levels.')
+        for values in limits.values():
+            if not isinstance(values,dict) or set(values)-{'maxWeeklyMinutes','maxActiveSeries'} or any(
+                    type(v) is not int or not 1<=v<=2147483647 for v in values.values()):
+                raise WaitingListError('Configured quotas must be positive integers; leave a limit unset for no quota.')
+        if len(priorities)>100 or any(type(v) is not int or not 0<v<=1000000 for v in priorities) or len(set(priorities))!=len(priorities):
+            raise WaitingListError('Configure distinct positive priority levels. Standard priority is zero; larger levels go first.')
+        with self.database.transaction() as session:
+            self.rooms._admin(session,actor)
+            state=state_row(session,True)
+            state.recurring_limits,state.reservation_priorities=limits,sorted(priorities)
+            state.calendar_revision+=1
+
+    def configure_semester(self, actor, name, start, end):
+        from .calendar_service import university_zone
+        if not isinstance(name,str) or not 1<=len(name.strip())<=200 or start>end:
+            raise WaitingListError('Enter a named semester with explicit start and end dates.')
+        with self.database.transaction() as session:
+            self.rooms._admin(session,actor)
+            state_row(session,True)
+            existing=session.scalar(select(AcademicPeriod).where(AcademicPeriod.name==name.strip()))
+            if existing:
+                if (existing.start_date,existing.end_date,existing.timezone)!=(start,end,university_zone().key):
+                    raise WaitingListError('This academic period has different dates. Existing dates are not overwritten.')
+                existing.is_semester=True
+            else:session.add(AcademicPeriod(name=name.strip(),start_date=start,end_date=end,timezone=university_zone().key,is_semester=True))
+
+    def bind_series_semester(self, actor, kind, key, period_id):
+        from .recurring_records import occurrences_for,series_for
+        from .reservation_policy import semester
+        with self.database.transaction() as session:
+            self.rooms._admin(session,actor)
+            state=state_row(session,True)
+            parent=session.get(StudentRoomRequest if kind=='room' else BorrowRequest,key) if kind in {'room','equipment'} else None
+            series=series_for(session,parent) if parent else None
+            if series is None or series.period_id is not None:
+                raise WaitingListError('Only an existing series without a semester may be explicitly bound once.')
+            rows=occurrences_for(session,series)
+            semester(session,{'timezone':series.timezone,'intervals':[(r.start_at,r.end_at) for r in rows]},
+                {'periodId':period_id,'approvalMode':series.approval_mode})
+            series.period_id=period_id
+            state.calendar_revision+=1
+            message='Explicitly bound existing recurring series to academic semester '+str(period_id)+'. Calendar dates unchanged.'
+            if kind=='room':self.rooms._event(session,parent,actor,message)
+            else:self.equipment._event(session,actor,parent.faculty_id,message,key)
+
+    def override_priority(self, kind, key, actor, priority, reason):
+        if type(priority) is not int or not isinstance(reason,str) or not 1<=len(reason.strip())<=2000:
+            raise WaitingListError('A configured priority and mandatory justification are required.')
+        with self.database.transaction() as session:
+            if kind=='room':
+                parent=self.rooms._visible(session,key,actor)
+            elif kind=='equipment':
+                parent=self.equipment._request(session,actor,key)
+            else:raise WaitingListError('Choose room or equipment.')
+            state=self._lock(session,kind,parent.faculty_id)
+            session.refresh(parent)
+            if self._reviewer(session,kind,parent.faculty_id)!=actor:
+                raise PermissionError('Only the current responsible faculty approver or custodian can override priority.')
+            if priority not in [0,*state.reservation_priorities] or priority==parent.priority:
+                raise WaitingListError('Choose a different explicitly configured priority.')
+            from .recurring_records import occurrences_for,series_for
+            remaining=[o for o in occurrences_for(session,series_for(session,parent)) if o.status in {'Proposed','Unavailable'} and o.start_at>self.clock()]
+            if not remaining and (parent.start_at<=self.clock() or parent.status in {'Cancelled','Rejected','Returned','Confirmed','Approved','Borrowed','Partially Returned'}):
+                raise WaitingListError('Priority may change only for a future unconfirmed request.')
+            old=parent.priority
+            audit=ReservationPriorityOverride(actor_id=actor,original_priority=old,selected_priority=priority,reason=reason.strip(),
+                room_request_id=key if kind=='room' else None,borrow_request_id=key if kind=='equipment' else None)
+            session.add(audit);session.flush()
+            parent.priority=priority
+            message=f'Priority override {old} -> {priority}. Reason: {reason.strip()}'
+            if kind=='room':self.rooms._event(session,parent,actor,message)
+            else:self.equipment._event(session,actor,parent.faculty_id,message,key)
+            self._positions(session,self._active(session,kind,parent.faculty_id))
 
     def configure_notice(self, actor, minutes):
         if type(minutes) is not int or not 1 <= minutes <= 2147483647:
@@ -190,8 +269,9 @@ class WaitingListService:
 
     def _active(self, session, kind, faculty):
         column = WaitingListEntry.room_request_id if kind == 'room' else WaitingListEntry.borrow_request_id
-        return list(session.scalars(select(WaitingListEntry).where(WaitingListEntry.faculty_id == faculty,
+        entries=list(session.scalars(select(WaitingListEntry).where(WaitingListEntry.faculty_id == faculty,
             column.is_not(None), WaitingListEntry.status.in_(WAITING_ACTIVE)).order_by(WaitingListEntry.id)))
+        return sorted(entries,key=lambda e:(-self._parent(session,e).priority,e.accepted_at,e.id))
 
     def _ranks(self, session, entries):
         estimates, eligible, result = {}, {}, {}
@@ -283,17 +363,22 @@ class WaitingListService:
             self._positions(session, self._active(session, kind, faculty))
             refresh_after_commit(session, self.database, self.gateway, kind, faculty, self.rooms.strategy, self.clock)
 
-    def process(self, kind, faculty):
+    def process(self, kind, faculty, contender_id=None):
         """Internal processing has no caller authority: stored pre-approval is revalidated."""
         with self.database.transaction() as session:
             state = self._lock(session, kind, faculty)
-            return self._process_locked(session, kind, faculty, state)
+            contender=session.get(StudentRoomRequest if kind=='room' else BorrowRequest,contender_id) if contender_id is not None else None
+            return self._process_locked(session, kind, faculty, state, contender)
 
-    def _process_locked(self, session, kind, faculty, state):
+    def _process_locked(self, session, kind, faculty, state, contender=None):
         entries = self._active(session, kind, faculty)
         assigned = []
         for entry in entries:
             parent = self._parent(session, entry)
+            # Existing pre-approved queues are already eligible. A pending series
+            # cannot overtake peers merely because it was drafted earlier.
+            if contender is not None and parent.priority<contender.priority:
+                continue
             reviewer = self._reviewer(session, kind, faculty)
             if parent.start_at <= self.clock():
                 self._close(session, entry, reviewer or entry.approved_by or entry.owner_id, 'Expired', 'Automatic policy expiry: the requested start passed without assignment. No reservation or penalty was created.')
@@ -426,6 +511,7 @@ class WaitingListService:
         return {'id': entry.id, 'kind': kind, 'ownerId': entry.owner_id, 'owner': session.get(User, entry.owner_id).name,
                 'faculty': session.get(OrganizationUnit, entry.faculty_id).name, 'facultyId': entry.faculty_id,
                 'status': entry.status, 'explanation': entry.explanation, 'purpose': parent.purpose,
+                'priority':parent.priority,'priorities':state_row(session).reservation_priorities,
                 'start': parent.start_at, 'end': parent.end_at if kind == 'room' else parent.due_at,
                 'requirements': requirements, 'requestId': parent.id, 'position': position,
                 'positionLabel': 'Eligible' if eligible else 'Estimated', 'acceptedAt': entry.accepted_at,

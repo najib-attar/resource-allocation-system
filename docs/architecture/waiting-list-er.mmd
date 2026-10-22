@@ -2,6 +2,7 @@
 erDiagram
     direction LR
     borrow_request {
+        integer priority
         integer id PK "identity"
         integer borrower_id FK
         integer faculty_id FK
@@ -30,9 +31,21 @@ erDiagram
         varchar_100 unit_type "nullable"
         integer parent_id FK "nullable"
     }
+    reservation_priority_override {
+        bigint id PK "identity"
+        bigint room_request_id FK "nullable"
+        integer borrow_request_id FK "nullable"
+        integer actor_id FK
+        integer original_priority
+        integer selected_priority
+        text reason
+        timestamptz created_at
+        bigint transaction_id
+    }
     student_room_request {
         bigint id PK "identity"
         integer organizer_id FK
+        integer priority
         integer resource_id FK
         integer faculty_id FK
         integer approver_id FK
@@ -97,6 +110,9 @@ erDiagram
     organization_unit ||--o{ borrow_request : faculty_id
     university_user ||--o| login_account : user_id
     organization_unit o|--o{ organization_unit : parent_id
+    login_account ||--o{ reservation_priority_override : actor_id
+    borrow_request o|--o{ reservation_priority_override : borrow_request_id
+    student_room_request o|--o{ reservation_priority_override : room_request_id
     login_account o|--o{ student_room_request : approved_by
     login_account ||--o{ student_room_request : approver_id
     organization_unit ||--o{ student_room_request : faculty_id

@@ -1,6 +1,7 @@
 """Shared waiting-list views; reservation decisions stay in existing services."""
 
 from flask import Blueprint, g, redirect, render_template, request, url_for
+from datetime import date
 
 from .calendar_service import CalendarError
 from .waiting_list_service import WaitingListError, WaitingListService
@@ -52,11 +53,36 @@ def create_waiting_blueprint(database_provider, gateway_provider, strategy_provi
         service().refresh_for(g.principal.user_id)
         return redirect(url_for('waiting.index'))
 
+    @blueprint.post('/priority/<kind>/<int:request_id>')
+    def priority(kind,request_id):
+        try:level=int(request.form.get('priority',''))
+        except ValueError as error:raise WaitingListError('Choose a configured priority.') from error
+        service().override_priority(kind,request_id,g.principal.user_id,level,request.form.get('reason',''))
+        return redirect(url_for('rooms.detail' if kind=='room' else 'equipment.detail',request_id=request_id))
+
     @blueprint.route('/configuration', methods=['GET', 'POST'])
     def configuration():
         current = service()
         policy = current.management(g.principal.user_id)
         if request.method == 'POST':
+            action=request.form.get('action','notice')
+            if action=='semester':
+                try:start,end=date.fromisoformat(request.form.get('start','')),date.fromisoformat(request.form.get('end',''))
+                except ValueError as error:raise WaitingListError('Enter explicit semester dates.') from error
+                current.configure_semester(g.principal.user_id,request.form.get('name',''),start,end)
+                return redirect(url_for('waiting.configuration'))
+            if action=='bind-series':
+                try:key,period=int(request.form.get('requestId','')),int(request.form.get('periodId',''))
+                except ValueError as error:raise WaitingListError('Enter an existing request and configured semester.') from error
+                current.bind_series_semester(g.principal.user_id,request.form.get('kind'),key,period)
+                return redirect(url_for('waiting.configuration'))
+            if action=='reservation-policy':
+                try:
+                    limits={kind:{key:int(request.form[kind+'_'+key]) for key in ('maxWeeklyMinutes','maxActiveSeries') if request.form.get(kind+'_'+key)} for kind in ('room','equipment')}
+                    priorities=[int(v.strip()) for v in request.form.get('priorities','').split(',') if v.strip()]
+                except ValueError as error:raise WaitingListError('Enter positive integer quotas and comma-separated priority levels.') from error
+                current.configure_reservations(g.principal.user_id,limits,priorities)
+                return redirect(url_for('waiting.configuration'))
             try:
                 minutes = int(request.form.get('noticeMinutes', ''))
             except (ValueError, TypeError) as error:

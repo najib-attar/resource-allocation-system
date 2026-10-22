@@ -124,7 +124,8 @@ def create_room_blueprint(database_provider, gateway_provider, strategy_provider
         value=request.form.get('decision')
         if value not in {'approve','reject'}:
             raise RoomRequestError('Choose approve or reject.')
-        service().decide(request_id,actor(),integer(request.form.get('revision')),value == 'approve',request.form.get('reason',''))
+        selected=[integer(k) for k in request.form.getlist('occurrenceIds')] if request.form.get('selectedDates') else None
+        service().decide(request_id,actor(),integer(request.form.get('revision')),value == 'approve',request.form.get('reason',''),selected)
         return redirect(url_for('rooms.detail',request_id=request_id))
 
     @blueprint.post('/<int:request_id>/cancel')

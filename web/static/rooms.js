@@ -60,7 +60,9 @@ async function load() {
                 preview.append(li);
             });
             alternatives.append(preview);
-            if (!result.feasible) message.textContent += ' The same room must be available on every date. No partial approval or independent waiting-list enrollment.';
+            if (!result.feasible) message.textContent += form.elements.approvalMode.value === 'partial'
+                ? ' Partial approval is allowed: only selected feasible dates can be confirmed. Review each date.'
+                : ' Every required date must be available before the entire series can be confirmed.';
         }
         result.candidates.forEach((value, index) => {
             const button = document.createElement("button");

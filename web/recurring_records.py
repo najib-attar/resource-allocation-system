@@ -8,6 +8,7 @@ from zoneinfo import ZoneInfo
 from sqlalchemy import select
 from .calendar_service import CalendarError
 from .persistence.models import BorrowRequest, ReservationOccurrence, ReservationSeries, StudentRoomRequest
+from .reservation_policy import occurrence_summary
 
 
 def series_for(session, parent):
@@ -43,15 +44,20 @@ def retry_series(session, actor, kind, key, fingerprint):
     return parent.id
 
 
-def store_series(session, parent, expanded, key, fingerprint):
+def store_series(session, parent, expanded, key, fingerprint, outcomes=None):
     record=ReservationSeries(room_request_id=parent.id if isinstance(parent,StudentRoomRequest) else None,
         borrow_request_id=parent.id if isinstance(parent,BorrowRequest) else None,
         start_date=expanded['startDate'],end_date=expanded['endDate'],start_minutes=expanded['startMinutes'],
         duration_minutes=expanded['durationMinutes'],weekdays=expanded['weekdays'],timezone=expanded['timezone'],
         submission_key=key,fingerprint=fingerprint)
+    record.period_id=expanded['periodId']
+    record.approval_mode=expanded['approvalMode']
     session.add(record);session.flush()
-    session.add_all(ReservationOccurrence(series_id=record.id,ordinal=i,start_at=a,end_at=b)
-                    for i,(a,b) in enumerate(expanded['intervals'],1))
+    if outcomes is not None and len(outcomes)!=len(expanded['intervals']):raise CalendarError('Occurrence preview does not match the submitted series.')
+    session.add_all(ReservationOccurrence(series_id=record.id,ordinal=i,start_at=a,end_at=b,
+        status='Unavailable' if outcomes and not outcomes[i-1]['feasible'] else 'Proposed',
+        explanation='Unavailable in the submitted preview; staff must recheck.' if outcomes and not outcomes[i-1]['feasible'] else '')
+        for i,(a,b) in enumerate(expanded['intervals'],1))
     session.flush()
     return record
 
@@ -59,12 +65,16 @@ def store_series(session, parent, expanded, key, fingerprint):
 def series_view(session, parent):
     record=series_for(session,parent)
     if record is None:return None
-    return {'id':record.id,'startDate':record.start_date,'endDate':record.end_date,
+    rows=occurrences_for(session,record)
+    return {'id':record.id,'periodId':record.period_id,'approvalMode':record.approval_mode,'summary':occurrence_summary(rows),
+        'startDate':record.start_date,'endDate':record.end_date,
         'startTime':f'{record.start_minutes//60:02d}:{record.start_minutes%60:02d}',
         'weekdays':record.weekdays,'timezone':record.timezone,'duration':record.duration_minutes,
         'occurrences':[{'id':r.id,'ordinal':r.ordinal,'start':r.start_at,'end':r.end_at,'status':r.status,
-                        'canCancel':r.start_at>datetime.now(timezone.utc) and r.status in {'Proposed','Reserved'}}
-                       for r in occurrences_for(session,record)]}
+                        'explanation':r.explanation,'decidedBy':r.decided_by,'decidedAt':r.decided_at,
+                        'canReview':r.start_at>datetime.now(timezone.utc) and r.status in {'Proposed','Unavailable'},
+                        'canCancel':r.start_at>datetime.now(timezone.utc) and r.status in {'Proposed','Unavailable','Reserved'}}
+                       for r in rows]}
 
 
 def overlapping_series(kind,start,end):

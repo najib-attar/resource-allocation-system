@@ -136,11 +136,19 @@ erDiagram
     reservation_occurrence {
         bigint id PK "identity"
         bigint series_id FK
+        integer decided_by FK "nullable"
+    }
+    reservation_priority_override {
+        bigint id PK "identity"
+        bigint room_request_id FK "nullable"
+        integer borrow_request_id FK "nullable"
+        integer actor_id FK
     }
     reservation_series {
         bigint id PK "identity"
         bigint room_request_id FK,UK "nullable"
         integer borrow_request_id FK,UK "nullable"
+        integer period_id FK "nullable"
     }
     resource {
         integer id PK "identity"
@@ -255,8 +263,13 @@ erDiagram
     allocation_run ||--o{ request_decision : run_id
     resource_request ||--o{ request_history : request_id
     allocation_run o|--o{ request_history : run_id
+    login_account o|--o{ reservation_occurrence : decided_by
     reservation_series ||--o{ reservation_occurrence : series_id
+    login_account ||--o{ reservation_priority_override : actor_id
+    borrow_request o|--o{ reservation_priority_override : borrow_request_id
+    student_room_request o|--o{ reservation_priority_override : room_request_id
     borrow_request o|--o| reservation_series : borrow_request_id
+    academic_period o|--o{ reservation_series : period_id
     student_room_request o|--o| reservation_series : room_request_id
     login_account ||--o{ resource_feedback : assigned_to_id
     equipment_reservation o|--o{ resource_feedback : equipment_reservation_id

@@ -394,6 +394,13 @@ the exact selection and commits under PostgreSQL revision/overlap protection.
 
 ## Dated recurring operations v1 (Iteration 49)
 
+Semester bounds, student whole/partial approval consent, quotas and audited queue
+priority are Flask/PostgreSQL workflow concerns. They do not change the engine
+contract: aggregate `feasible` still means every requested interval is feasible.
+In partial mode the application uses the structured per-occurrence C++ result and
+reserves only authorized selected feasible dates. It does not reinterpret a false
+aggregate as a whole-series approval or reduce equipment quantities.
+
 The original allocation, appointment, room and equipment operations are unchanged.
 `--room-series-json` uses `operation: studentRoomSeries`; `--equipment-series-json`
 uses `operation: equipmentSeries`. Both retain protocolVersion 1, correlation,

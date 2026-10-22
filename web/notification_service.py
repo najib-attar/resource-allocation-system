@@ -5,6 +5,8 @@ from sqlalchemy import case, func, literal, or_, select, union_all, update
 from sqlalchemy.orm import aliased
 from .equipment_access import custodian_faculties
 from .feedback_access import visible_scope
+from .recurring_records import dated_occurrences
+from .reservation_policy import occurrence_summary
 
 from .persistence.models import (Appointment, AppointmentEvent, AppointmentInvitation,
     AppointmentProfessor, Notification, RoomEvent, RoomInvitation, StudentRoomRequest, User,
@@ -137,7 +139,12 @@ class NotificationService:
             rows = session.execute(select(visible, sender.name.label('sender_name'), recipient.name.label('recipient_name'))
                 .join(sender, sender.id == visible.c.actor_id).join(recipient, recipient.id == visible.c.recipient_id)
                 .order_by(visible.c.created_at.desc(), visible.c.id.desc()).limit(limit)).mappings()
-            return {'items': [dict(row) for row in rows], 'unreadCount': unread, 'throughId': through}
+            items=[dict(row) for row in rows]
+            for kind in ('room','equipment'):
+                series=dated_occurrences(session,kind,{r['subject_id'] for r in items if r['kind']==kind})
+                for row in items:
+                    if row['kind']==kind and row['subject_id'] in series:row['current_status']=occurrence_summary(series[row['subject_id']])
+            return {'items': items, 'unreadCount': unread, 'throughId': through}
 
     def mark_read(self, actor, notification_id=None, through_id=None):
         if (notification_id is None) == (through_id is None):

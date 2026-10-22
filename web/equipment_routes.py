@@ -77,7 +77,7 @@ def create_equipment_blueprint(database_provider, gateway_provider):
                 except BadSignature:pass
             if action == 'recommend' or (action=='submit' and recurring and not reviewed):
                 result = service().recommend(actor(), faculty, items, start, due,recurring)
-                if recurring and result['feasible']:preview_token=signer.dumps(digest)
+                if recurring and (result['feasible'] or (recurring['approvalMode']=='partial' and any(p['feasible'] for p in result['occurrences']))):preview_token=signer.dumps(digest)
                 for period in result['alternativePeriods']:
                     period['startAt'] = datetime.fromtimestamp(period['start'], timezone.utc)
                     period['endAt'] = datetime.fromtimestamp(period['end'], timezone.utc)
@@ -109,10 +109,14 @@ def create_equipment_blueprint(database_provider, gateway_provider):
     def transition(request_id, action):
         current = service()
         occurrence=integer(request.form['occurrenceId']) if request.form.get('occurrenceId') else None
+        selected=[integer(k) for k in request.form.getlist('occurrenceIds')] if request.form.get('selectedDates') else None
         if action == 'approve':
-            current.decide(actor(), request_id, True, request.form.get('reason', ''))
+            current.decide(actor(), request_id, True, request.form.get('reason', ''),selected)
         elif action == 'reject':
-            current.decide(actor(), request_id, False, request.form.get('reason', ''))
+            current.decide(actor(), request_id, False, request.form.get('reason', ''),selected)
+        elif action == 'decision':
+            if request.form.get('decision') not in {'approve','reject'}:raise EquipmentError('Choose approve or reject.')
+            current.decide(actor(),request_id,request.form['decision']=='approve',request.form.get('reason',''),selected)
         elif action == 'cancel':
             current.cancel(actor(), request_id)
         elif action == 'cancel-occurrence':

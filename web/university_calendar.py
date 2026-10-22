@@ -183,7 +183,8 @@ class UniversityCalendarService:
                 own = row.organizer_id == actor
                 periods=series.get(row.id,[None])
                 for occurrence in periods:
-                    status='Cancelled' if occurrence and occurrence.status=='Cancelled' else row.status
+                    status=({'Reserved':'Confirmed','Completed':'Completed','Cancelled':'Cancelled','Rejected':'Rejected',
+                             'Unavailable':'Needs Revision','Proposed':'Pending Faculty Approval'}[occurrence.status] if occurrence else row.status)
                     suffix=':occurrence:'+str(occurrence.id) if occurrence else ''
                     add('room:'+str(row.id)+suffix, 'room', row.purpose,
                         occurrence.start_at if occurrence else row.start_at,occurrence.end_at if occurrence else row.end_at,status,
@@ -270,7 +271,8 @@ class UniversityCalendarService:
                 a=occurrence.start_at if occurrence else row.start_at
                 b=max((r.due_at for r in own),default=occurrence.end_at if occurrence else row.due_at)
                 status=('Cancelled' if occurrence.status=='Cancelled' else 'Returned' if occurrence.status=='Completed'
-                    else 'Borrowed' if held else 'Approved' if occurrence.status=='Reserved' else row.status) if occurrence else row.status
+                    else 'Borrowed' if held else 'Approved' if occurrence.status=='Reserved' else 'Rejected' if occurrence.status=='Rejected'
+                    else 'Pending Approval') if occurrence else row.status
                 suffix=':occurrence:'+str(occurrence.id) if occurrence else ''
                 target=path+('#occurrence-'+str(occurrence.id) if occurrence else '')
                 add('pickup:'+str(row.id)+suffix,'equipment','Scheduled pickup: '+row.purpose,a,None,status,target,note=note,

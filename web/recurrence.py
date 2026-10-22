@@ -61,8 +61,12 @@ def recurrence_fields(form):
         return None
     if mode != 'weekly':
         raise CalendarError('Choose a one-time/continuous or weekly recurring reservation.')
+    try:period=int(form.get('academicPeriod',''))
+    except (ValueError,TypeError) as error:
+        raise CalendarError('Select an explicitly configured academic semester before requesting recurrence.') from error
     try:
-        return {'startDate': form.get('recurrenceStart'), 'endDate': form.get('recurrenceEnd'),
+        return {'periodId': period, 'approvalMode': form.get('approvalMode', 'all'),
+                'startDate': form.get('recurrenceStart'), 'endDate': form.get('recurrenceEnd'),
                 'startTime': form.get('recurrenceTime'), 'weekdays': [int(v) for v in form.getlist('recurrenceDays')]}
     except (ValueError, TypeError) as error:
         raise CalendarError('Choose valid recurrence weekdays.') from error

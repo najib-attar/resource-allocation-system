@@ -74,8 +74,19 @@ class WeeklyRecurrenceTests(TestCase):
 
     def test_browser_mode_and_fields_are_bounded_and_do_not_choose_timezone(self):
         self.assertIsNone(recurrence_fields(MultiDict()))
-        form=MultiDict([('reservationMode','weekly'),('recurrenceDays','1'),('recurrenceDays','4'),
+        form=MultiDict([('reservationMode','weekly'),('academicPeriod','1'),('recurrenceDays','1'),('recurrenceDays','4'),
             ('recurrenceStart','2030-01-07'),('recurrenceEnd','2030-01-31'),('recurrenceTime','10:00'),('timezone','UTC')])
         self.assertEqual(recurrence_fields(form)['weekdays'],[1,4])
         self.assertNotIn('timezone',recurrence_fields(form))
         with self.assertRaises(CalendarError):recurrence_fields(MultiDict({'reservationMode':'forever'}))
+
+    def test_weekly_quota_splits_elapsed_time_at_the_university_week_boundary(self):
+        from web.calendar_service import local_instant
+        from web.reservation_policy import weekly_minutes
+        start=local_instant('2030-01-06T23:00',ZoneInfo('Europe/Istanbul'))
+        totals=weekly_minutes([(start,start+timedelta(hours=2))],ZoneInfo('Europe/Istanbul'))
+        self.assertEqual(sorted(totals.values()),[60,60])
+
+    def test_missing_browser_semester_has_a_configuration_explanation(self):
+        with self.assertRaisesRegex(CalendarError,'semester'):
+            recurrence_fields(MultiDict({'reservationMode':'weekly'}))

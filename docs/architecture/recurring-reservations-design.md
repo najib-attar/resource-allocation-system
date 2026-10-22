@@ -33,16 +33,18 @@
    Durations are elapsed minutes, matching existing dated workflows. Technical
    execution bounds are 366 occurrences and a two-year start-date range, not an
    invented university lending entitlement; per-type borrowing limits still apply.
-2. A shared series record stores its rule and links exactly one existing room or
+2. A shared series record stores its rule, explicit semester and student approval
+   mode, and links exactly one existing room or
    borrowing request. Dated occurrence records retain stable identities, ordering
    and cancellation/completion state; request details, members and requested items
    are not copied for each date. Existing reservations gain optional occurrence
    links and preserve their exclusion constraints.
 3. Compatible, separately identified engine operations compose existing C++ room
    ranking and equipment matching over dated intervals. A room must work for the
-   entire series before candidate truncation. Equipment units may differ between
+   entire series before candidate truncation in all-required mode; partial mode
+   presents per-date C++ outcomes for the selected consistent room. Equipment units may differ between
    non-overlapping occurrences; an unreturned unit is never assumed available.
-4. Extend current services and transactions for complete-series approval and scoped
+4. Extend current services and transactions for student-consented whole or selected-date approval and scoped
    future cancellation. Keep actor permissions and events in those services. Process
    eligible existing queues using the same coordinator/locks before consuming stock
    or room availability. A series cannot join a single-interval waiting list; a
@@ -65,7 +67,7 @@ Existing room / equipment forms + shared weekly selector
     -> existing RoomRequestService / EquipmentService
         -> PostgreSQL input snapshot -> EngineGateway
         -> C++ rankSeries / repeated existing equipment match
-        -> one complete approval transaction + existing reservations/events
+        -> whole-series or selected-date approval transaction + existing reservations/events
     -> read-only personal / unified calendar occurrence projections
 ```
 
@@ -73,23 +75,30 @@ Existing room / equipment forms + shared weekly selector
 |---|---|
 | `web/recurrence.py` | Bounded weekly expansion, explicit DST rejection, half-open dated periods; no resource matching. |
 | `web/recurring_records.py` | Shared identity/retry, rule/occurrence persistence and batched display projection; not a booking service. |
-| Existing room service | Whole-series same-room validation, faculty approval, organizer commitments and future cancellation. |
-| Existing equipment service | Whole-series quantity reservation, occurrence-specific collection/extensions, partial verified returns and aggregate loan state. |
+| Existing room service | Same-room validation per date, whole/selected-date faculty approval, organizer commitments and future cancellation. |
+| Existing equipment service | Exact quantity reservation per approved date, occurrence-specific collection/extensions, partial verified returns and aggregate loan state. |
 | Existing C++ services | Room eligibility/ranking intersection and per-period equipment matching, without database access or changed legacy strategies. |
 | Existing events/inbox | Actor/time history, current authorized audiences and deduplicated receipts. |
 
-`0049a` adds only two application tables. The parent request retains its original
+`0049a` adds two shared application tables. `0049b` adds one immutable shared
+priority audit table and extends existing records for semester binding, approval
+consent and per-date decisions. The parent request retains its original
 first interval for one-time compatibility; series-aware views use occurrences,
 not that interval as a shortcut for future dates. Optional occurrence FKs reuse
 existing physical reservations. Database aggregate checks reject incomplete
-expansion/confirmation and mismatched reservations, while immutable dates preserve
+expansion, consent-specific confirmation and mismatched reservations, while immutable dates preserve
 history. A unit may have only one outstanding physical handover. An extension must
 reference its own borrowing series, never another parent's occurrence.
 
 Room confirmation preserves the existing calendar revision/serialization boundary.
 Equipment uses the existing policy-share/faculty lock order. Both call the current
 waiting-list coordinator before approval so existing eligible queues are processed
-without duplicating their allocation rules. Bounded database contention is a clear
+without duplicating their allocation rules. Explicit configured priority levels
+sort eligible waiting requests, followed by FCFS consent timestamp and identity.
+Existing pre-approved queues precede equal-priority pending series; an earlier
+draft is not a pre-approval. Only an authorized, reasoned higher-priority override
+can overtake lower-priority waiting entries, never confirmed reservations.
+Bounded database contention is a clear
 busy/retry outcome, not permission to confirm a partial proposal. Rollback preserves
 the preceding state. No series-specific queue policy or scheduling worker is added.
 
@@ -102,6 +111,38 @@ Recurring rule/timezone fields are immutable. PostgreSQL timezone-name validatio
 therefore runs once on insertion, not for every deferred aggregate check: repeated
 timezone catalog enumeration was measurably expensive on Windows. Every occurrence
 and reservation still receives its integrity checks.
+
+## Semester, approval and audit policy
+
+- New series select one explicitly designated `AcademicPeriod` semester. Every
+  start/pickup and end/return must fit its timezone-aware bounds. Existing legacy
+  periods are not guessed to be semesters. Administration may designate exact
+  existing bounds or create an explicitly dated semester. Referenced dates cannot
+  be silently changed. Pre-migration series retain their dates and can be bound
+  explicitly once before further approval.
+- Student mode `all` requires every remaining date to be feasible before any is
+  reserved in that approval. Mode `partial` permits staff to select dates; each
+  retains Proposed, Unavailable, Rejected, Reserved, Completed or Cancelled state,
+  explanation and responsible decision actor/time. Only Reserved dates hold
+  resources. No smaller equipment quantity or altered requirement is substituted.
+- Parent summaries are derived from occurrences, including Partially Confirmed;
+  they are not a second editable status. Existing physical-loan parent state
+  continues to track possession and returns. Calendars and notifications use
+  occurrence-specific outcomes instead of treating an approved parent as proof
+  every date is confirmed.
+- Administration may configure per-student/service maximum active series and
+  weekly elapsed reservation minutes (60 minutes = one hour). Calendar-week
+  intersections use the university timezone. Blank means no configured quota,
+  never a hardcoded university entitlement. Creation locks policy then student
+  before checking usage; pending dates count until rejected/cancelled. Completed
+  use still counts in its calendar week. Active-series caps include overdue
+  physical possession. Extensions recheck semester bounds and configured quotas
+  under the same policy/student/faculty lock order.
+- Responsible faculty staff/custodians may select only configured priority levels
+  with a mandatory reason. `reservation_priority_override` records request, actor,
+  server timestamp, original/selected priority and transaction identity. Database
+  guards reject unaudited priority changes and audit mutation. Existing events
+  provide the private staff/student history and notifications.
 
 ## Operational limits
 

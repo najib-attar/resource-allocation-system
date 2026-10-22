@@ -143,6 +143,8 @@ class PostgresCompletionTests(PostgresTestCase):
         expected.update({name:(False,False) for name in ('waiting_series_association','extension_series_association')})
         expected.update({table+'_shape':(True,True) for table in ('reservation_series','reservation_occurrence')})
         expected.update({table+'_lock':(False,False) for table in ('reservation_series','reservation_occurrence')})
+        expected.update({name:(False,False) for name in ('semester_reserved_dates','recurring_policy_guard','occurrence_policy_guard',
+            'room_priority_guard','equipment_priority_guard','priority_audit_immutable','extension_semester_guard')})
         self.assertEqual({row[0]: (row[1], row[2]) for row in rows}, expected)
 
     def test_concurrent_child_deletions_cannot_leave_empty_recurring_request(self):

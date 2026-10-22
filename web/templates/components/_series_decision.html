@@ -1,0 +1,7 @@
+{% if authorized and item.recurrence.occurrences|selectattr('canReview')|list %}
+<section class="panel"><h2>Review recurring dates</h2><p>{{ item.recurrence.summary }} &middot; {{ 'All dates required: approve the complete feasible series or none.' if item.recurrence.approvalMode == 'all' else 'Partial approval permitted: select exact dates. Unselected dates remain unapproved.' }}</p>
+<form method="post" action="{{ url_for('rooms.decision',request_id=item.id) if kind == 'room' else url_for('equipment.transition',request_id=item.id,action='decision') }}">
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">{% if kind == 'room' %}<input type="hidden" name="revision" value="{{ item.revision }}">{% endif %}
+{% if item.recurrence.approvalMode == 'partial' %}<input type="hidden" name="selectedDates" value="1"><fieldset><legend>Dates to decide</legend>{% for occurrence in item.recurrence.occurrences if occurrence.canReview %}<label class="check-label"><input type="checkbox" name="occurrenceIds" value="{{ occurrence.id }}">{{ occurrence.start|university_time }} to {{ occurrence.end|university_time }} &middot; {{ occurrence.status }}</label>{% endfor %}</fieldset>{% endif %}
+<label>Decision explanation<textarea name="reason" maxlength="2000"></textarea></label><button name="decision" value="approve">Recheck and approve selected dates</button><button class="button-secondary" name="decision" value="reject">Reject selected dates</button></form></section>
+{% endif %}

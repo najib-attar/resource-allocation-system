@@ -6,8 +6,8 @@ from unittest import mock
 
 from sqlalchemy import func, select
 
-from test_room_requests import RoomFixture, START
-from test_equipment import EquipmentFixture
+from test_room_requests import START
+from recurring_fixtures import RoomFixture,EquipmentFixture
 from web.calendar_service import CalendarError, university_zone
 from web.equipment_service import EquipmentError
 from web.persistence.database import DatabaseBusy
@@ -20,7 +20,7 @@ from web.persistence.models import ReservationSeries, RoomReservation, StudentRo
 
 def pattern(end_days=7,days=None):
     local=START.astimezone(university_zone())
-    return {'startDate':local.date().isoformat(),'endDate':(local.date()+timedelta(days=end_days)).isoformat(),
+    return {'periodId':1,'approvalMode':'all','startDate':local.date().isoformat(),'endDate':(local.date()+timedelta(days=end_days)).isoformat(),
             'weekdays':days or [local.isoweekday()],'startTime':local.strftime('%H:%M')}
 
 

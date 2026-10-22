@@ -171,6 +171,8 @@ class ApplicationState(Base):
     active_run_id: Mapped[int | None] = mapped_column(ForeignKey("allocation_run.id"))
     calendar_revision: Mapped[int] = mapped_column(BigInteger, server_default="0")
     waiting_notice_minutes: Mapped[int | None] = mapped_column(Integer)
+    recurring_limits: Mapped[dict] = mapped_column(JSONB, server_default="'{}'::jsonb")
+    reservation_priorities: Mapped[list] = mapped_column(JSONB, server_default="'[]'::jsonb")
 
 
 class RequestDecision(Base):
@@ -267,6 +269,7 @@ class AcademicPeriod(Base):
     start_date: Mapped[date] = mapped_column(Date)
     end_date: Mapped[date] = mapped_column(Date)
     timezone: Mapped[str] = mapped_column(String(100))
+    is_semester: Mapped[bool] = mapped_column(Boolean, server_default='false')
 
 
 class LegacyCalendarBinding(Base):
@@ -413,6 +416,7 @@ class StudentRoomRequest(Base):
                       Index("ix_student_room_organizer_start", "organizer_id", "start_at"), Index("ix_student_room_approver_status", "approver_id", "status"))
     id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
     organizer_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"))
+    priority: Mapped[int] = mapped_column(Integer, server_default='0')
     resource_id: Mapped[int] = mapped_column(ForeignKey("resource.id"), index=True)
     faculty_id: Mapped[int] = mapped_column(ForeignKey("organization_unit.id"), index=True)
     approver_id: Mapped[int] = mapped_column(ForeignKey("login_account.user_id"))
@@ -540,6 +544,7 @@ class EquipmentUnit(Base):
 
 class BorrowRequest(Base):
     __tablename__ = 'borrow_request'
+    priority: Mapped[int] = mapped_column(Integer, server_default='0')
     __table_args__ = (UniqueConstraint('id', 'faculty_id'), UniqueConstraint('borrower_id', 'submission_key'),
                       CheckConstraint(allowed('status', BORROW_STATES)), CheckConstraint('start_at < due_at'),
                       CheckConstraint("submission_key ~ '^[0-9a-f]{32}$' AND submission_fingerprint ~ '^[0-9a-f]{64}$'"),
@@ -728,10 +733,13 @@ class ReservationSeries(Base):
         CheckConstraint("start_date <= end_date AND end_date-start_date <= 730 AND start_minutes BETWEEN 0 AND 1439 AND duration_minutes BETWEEN 1 AND 525600"),
         CheckConstraint("jsonb_typeof(weekdays) = 'array' AND jsonb_array_length(weekdays) BETWEEN 1 AND 7 AND '[1,2,3,4,5,6,7]'::jsonb @> weekdays"),
         CheckConstraint("submission_key ~ '^[0-9a-f]{32}$' AND fingerprint ~ '^[0-9a-f]{64}$'"),
+        CheckConstraint("approval_mode IN ('all','partial')", name='ck_series_approval_mode'),
     )
     id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
     room_request_id: Mapped[int | None] = mapped_column(ForeignKey('student_room_request.id'), unique=True)
     borrow_request_id: Mapped[int | None] = mapped_column(ForeignKey('borrow_request.id'), unique=True)
+    period_id: Mapped[int | None] = mapped_column(ForeignKey('academic_period.id'), index=True)
+    approval_mode: Mapped[str] = mapped_column(String(10), server_default='all')
     start_date: Mapped[date] = mapped_column(Date)
     end_date: Mapped[date] = mapped_column(Date)
     start_minutes: Mapped[int] = mapped_column(Integer)
@@ -747,7 +755,7 @@ class ReservationOccurrence(Base):
     __tablename__ = 'reservation_occurrence'
     __table_args__ = (
         UniqueConstraint('series_id', 'ordinal'),
-        CheckConstraint("ordinal BETWEEN 1 AND 366 AND start_at < end_at AND status IN ('Proposed','Reserved','Completed','Cancelled')"),
+        CheckConstraint("ordinal BETWEEN 1 AND 366 AND start_at < end_at AND status IN ('Proposed','Unavailable','Rejected','Reserved','Completed','Cancelled')"),
         ExcludeConstraint(('series_id', '='), ('period', '&&'), using='gist', name='ex_series_self_overlap'),
     )
     id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
@@ -757,3 +765,25 @@ class ReservationOccurrence(Base):
     end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     period: Mapped[object] = mapped_column(TSTZRANGE, Computed("tstzrange(start_at, end_at, '[)')", persisted=True))
     status: Mapped[str] = mapped_column(String(12), default='Proposed')
+    explanation: Mapped[str] = mapped_column(Text, server_default="''")
+    decided_by: Mapped[int | None] = mapped_column(ForeignKey('login_account.user_id'), index=True)
+    decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class ReservationPriorityOverride(Base):
+    """One immutable audit record for either existing resource-request workflow."""
+    __tablename__ = 'reservation_priority_override'
+    __table_args__ = (
+        CheckConstraint('num_nonnulls(room_request_id, borrow_request_id) = 1'),
+        CheckConstraint('original_priority >= 0 AND selected_priority >= 0 AND original_priority <> selected_priority'),
+        CheckConstraint('length(btrim(reason)) BETWEEN 1 AND 2000'),
+    )
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    room_request_id: Mapped[int | None] = mapped_column(ForeignKey('student_room_request.id'), index=True)
+    borrow_request_id: Mapped[int | None] = mapped_column(ForeignKey('borrow_request.id'), index=True)
+    actor_id: Mapped[int] = mapped_column(ForeignKey('login_account.user_id'), index=True)
+    original_priority: Mapped[int] = mapped_column(Integer)
+    selected_priority: Mapped[int] = mapped_column(Integer)
+    reason: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.clock_timestamp())
+    transaction_id: Mapped[int] = mapped_column(BigInteger, server_default=func.txid_current())

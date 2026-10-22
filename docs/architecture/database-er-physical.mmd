@@ -7,6 +7,7 @@ erDiagram
         date start_date
         date end_date
         varchar_100 timezone
+        boolean is_semester
     }
     allocation {
         bigint id PK "identity"
@@ -43,6 +44,8 @@ erDiagram
         bigint active_run_id FK "nullable"
         bigint calendar_revision
         integer waiting_notice_minutes "nullable"
+        jsonb recurring_limits
+        jsonb reservation_priorities
     }
     appointment {
         bigint id PK "identity"
@@ -100,6 +103,7 @@ erDiagram
         jsonb specifications
     }
     borrow_request {
+        integer priority
         integer id PK "identity"
         integer borrower_id FK
         integer faculty_id FK
@@ -298,11 +302,27 @@ erDiagram
         timestamptz end_at
         tstzrange period
         varchar_12 status
+        text explanation
+        integer decided_by FK "nullable"
+        timestamptz decided_at "nullable"
+    }
+    reservation_priority_override {
+        bigint id PK "identity"
+        bigint room_request_id FK "nullable"
+        integer borrow_request_id FK "nullable"
+        integer actor_id FK
+        integer original_priority
+        integer selected_priority
+        text reason
+        timestamptz created_at
+        bigint transaction_id
     }
     reservation_series {
         bigint id PK "identity"
         bigint room_request_id FK,UK "nullable"
         integer borrow_request_id FK,UK "nullable"
+        integer period_id FK "nullable"
+        varchar_10 approval_mode
         date start_date
         date end_date
         integer start_minutes
@@ -417,6 +437,7 @@ erDiagram
     student_room_request {
         bigint id PK "identity"
         integer organizer_id FK
+        integer priority
         integer resource_id FK
         integer faculty_id FK
         integer approver_id FK
@@ -549,8 +570,13 @@ erDiagram
     resource_request ||--o{ request_participant : request_id
     university_user ||--o{ request_participant : user_id
     resource_request ||--|{ request_slot : request_id
+    login_account o|--o{ reservation_occurrence : decided_by
     reservation_series ||--o{ reservation_occurrence : series_id
+    login_account ||--o{ reservation_priority_override : actor_id
+    borrow_request o|--o{ reservation_priority_override : borrow_request_id
+    student_room_request o|--o{ reservation_priority_override : room_request_id
     borrow_request o|--o| reservation_series : borrow_request_id
+    academic_period o|--o{ reservation_series : period_id
     student_room_request o|--o| reservation_series : room_request_id
     login_account ||--o{ resource_feedback : assigned_to_id
     equipment_reservation o|--o{ resource_feedback : equipment_reservation_id
