@@ -47,9 +47,16 @@ faculty-scoped pre-approval, without replacing normal available-room submission.
 
 Students may select weekly weekdays, explicit inclusive start/end dates and a
 local start/duration, previewing every actual dated occurrence. One eligible room
-must satisfy the whole series; conflicting dates are explained without silent
-room substitution. The selected owning faculty reviews all dates and confirms
-the remaining proposal atomically or none. Optional professors remain non-vetoing.
+is preferred consistently; conflicting dates are explained without silent room
+substitution. Students select all occurrences required or partial approval allowed.
+The owning faculty reviews exact dates: all-required confirmation is atomic;
+partial mode permits selected feasible dates, with persistent unapproved,
+unavailable, rejected and cancelled outcomes. Only confirmed dates reserve rooms.
+An explicitly designated semester must contain every interval; missing configuration
+blocks recurrence, not one-time bookings. Configured quotas have no invented defaults.
+Existing eligible waiting requests retain priority/FCFS ordering. Responsible staff
+may override configured priority only with immutable actor/time/old/new/reason audit;
+eligibility, safety and confirmed reservations are never overridden. Optional professors remain non-vetoing.
 Organizer/current approver may cancel one future occurrence or remaining future
 dates, preserving past uses. Material changes require a fresh approval. Calendar
 entries come from actual occurrences, not guessed academic dates. Single-period

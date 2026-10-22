@@ -441,11 +441,15 @@ Flask does not check participant availability and does not compute suggestions. 
 
 Room and equipment forms support bounded weekly reservations with multiple
 weekdays, explicit dates and a full occurrence preview. One faculty/custodian
-decision confirms the complete feasible proposal, never a silent subset.
+decision follows the student's all-required or partial-approval consent. Selected
+feasible dates reserve resources; pending/unavailable/rejected dates remain visible.
+One explicitly configured semester must contain the full series. Administration
+configures optional quotas and permitted priority levels; responsible staff overrides
+require an immutable reasoned audit. Existing eligible queues retain priority/FCFS.
 Rooms stay consistent across dates; equipment has separate physical handovers
 and verified returns. Cancel a future date or remaining future dates while
 retaining past history. Equipment deadlines are reminders, never assumed returns.
-Upgrade to Alembic `0049a` and rebuild the verified backend before using the new
+Upgrade to Alembic `0049b` and rebuild the verified backend before using the new
 forms. See [recurrence design](docs/architecture/recurring-reservations-design.md)
 and [operations](docs/database-operations.md#recurring-room-and-equipment-reservations).
 The [Iteration 49 report](docs/iteration-reports/Iteration_49.pdf) summarizes

@@ -55,7 +55,15 @@ requires the normal physical handover and verified return workflows.
 
 Continuous borrowing remains one loan. Separate weekly pickup/return periods use
 one bounded series with explicit weekdays/date bounds and a complete dated preview.
-Custodians approve exact quantities on every active occurrence atomically or none.
+Students consent to all occurrences required or partial approval allowed. Custodians
+reserve full quantities on every required date atomically in all mode, or on
+explicitly selected feasible dates in partial mode. Unapproved, unavailable and
+rejected dates hold no stock and remain visible with decision history. One explicit
+semester must contain all pickups and returns; missing configuration blocks series,
+not continuous one-time loans. Administrative quotas are explicit, with no invented
+university defaults. Existing eligible waiting queues retain configured priorities
+and FCFS among equals; authorized overrides require immutable actor/time/original/
+selected/reason audit and cannot override safety, possession or confirmed bookings.
 Each date keeps specific reserved asset IDs and independent handover/verified
 return facts; eligible units may differ across dates. Outstanding possession,
 damage and conflicting reservations block handover even after a planned due date.

@@ -451,18 +451,22 @@ isolated PostgreSQL schemas, never the operational demonstration database.
 ## Recurring room and equipment reservations
 
 Back up the configured database, then run `python -m alembic upgrade head`
-(revision `0049a`) and `python scripts/build_backend.py` before serving recurring
+(revision `0049b`) and `python scripts/build_backend.py` before serving recurring
 forms. The migration is additive except for extending the two room commitment
 primary keys with their existing start_at values; existing data is retained.
 Never reset an application database to enable this feature. A downgrade refuses
 to discard an existing recurring series.
 
 In **Find a room** or **Find equipment**, choose **Weekly recurring periods**,
-explicit first/last start dates, weekdays, local start time and duration. For
+an explicitly configured academic semester, approval mode (all dates required or
+partial approval allowed), first/last start dates, weekdays, local start time and duration. For
 equipment the pickup/return fields define each occurrence's elapsed duration;
 ordinary multi-day borrowing remains a single continuous loan. Review the full
 dated preview before submission. Faculty/custodian details show every occurrence
-before one complete decision; no partial series/quantity is silently approved.
+before any decision. All-required mode confirms all feasible dates atomically or
+none. Partial mode lets staff explicitly select dates; unselected, unavailable,
+rejected and cancelled dates remain visible without reservations. Quantities and
+mandatory requirements are never reduced silently.
 
 Room approval reserves one consistent room across all active dates. Equipment
 approval reserves exact units for each pickup; staff must choose the individual
@@ -479,4 +483,24 @@ equipment dates remain reminders, not participant-busy intervals.
 Current single-period waiting-list policies do not authorize series enrollment.
 Unavailable series show per-date conflicts and require a revised complete proposal;
 they are never split into independent queues. Existing eligible queues are
-processed with their normal coordinator before a competing series is approved.
+processed with their normal coordinator before an equal/lower-priority series is
+approved. Existing confirmed reservations never move. Under **Administration >
+Waiting-list Policy**, configure explicit semesters, per-student/service weekly
+minutes (60 = one hour), active-series caps and additional priority levels. Blank
+caps mean no configured quota. All dates, including equipment returns, must fit
+one designated semester. Existing academic periods are not automatically semesters.
+Completed use counts toward its original calendar week; an overdue physical loan
+still counts as active. Custodian-approved recurring extensions recheck semester
+and quota limits as well as the existing inventory conflict rules.
+An existing period can be designated using its exact configured name/dates.
+
+Responsible faculty staff/custodians can override a future request's priority only
+to a permitted level and with a mandatory reason. The immutable database audit
+records the actor, timestamp and original/selected priorities. Equal-priority
+eligible queues remain FCFS. Pending series do not reserve resources, even after
+a priority change; already issued confirmations are never recalled.
+
+Previously created series without a semester stay intact but cannot be approved
+until administration uses the explicit series-binding form on the policy page.
+Binding validates every original date and never rewrites the calendar. Backups
+remain required before migrations; no reset or automatic semester inference occurs.
