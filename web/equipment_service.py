@@ -671,9 +671,9 @@ class EquipmentService:
                 continue
             with self.database.transaction() as session:
                 row = self._request(session, actor, item['id'], True)
-                if not any(b.handed_at and b.returned_at is None and b.due_at < datetime.now(timezone.utc)
-                           for b in self._reservations(session, row.id)):
-                    continue
-                message = 'Overdue equipment: due '+row.due_at.isoformat()+'. Physical return is required; affected reservations need custodian attention.'
-                if not session.scalar(select(EquipmentEvent.id).where(EquipmentEvent.request_id == row.id, EquipmentEvent.message == message)):
-                    self._event(session, actor, row.faculty_id, message, row.id)
+                dues=sorted({b.due_at for b in self._reservations(session,row.id)
+                    if b.handed_at is not None and b.returned_at is None and b.due_at<datetime.now(timezone.utc)})
+                for due in dues:
+                    message = 'Overdue equipment: due '+due.isoformat()+'. Physical return is required; affected reservations need custodian attention.'
+                    if not session.scalar(select(EquipmentEvent.id).where(EquipmentEvent.request_id == row.id, EquipmentEvent.message == message)):
+                        self._event(session, actor, row.faculty_id, message, row.id)

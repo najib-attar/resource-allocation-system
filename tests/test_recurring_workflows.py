@@ -192,13 +192,22 @@ class RecurringEquipmentWorkflowTests(EquipmentFixture):
     def test_each_pickup_and_verified_return_is_independent(self):
         key=self.series();self.service.decide(6,key,True)
         item=self.service.detail(1,key);first,second=item['recurrence']['occurrences']
-        self.at(START+timedelta(minutes=10))
+        clock=self.at(START+timedelta(minutes=10))
         self.service.handover(6,key,'Usable at pickup',first['id'])
+        clock.now.return_value=START+timedelta(hours=3)
+        self.service.refresh_overdue_alerts(1);self.service.refresh_overdue_alerts(1)
         self.service.return_units(6,key,first['unitIds'],'usable','Physically returned')
         item=self.service.detail(1,key)
         self.assertEqual(item['status'],'Approved')
         self.assertEqual(item['recurrence']['occurrences'][0]['status'],'Completed')
         self.assertEqual(item['recurrence']['occurrences'][1]['status'],'Reserved')
+        clock.now.return_value=START+timedelta(days=7,minutes=10)
+        self.service.handover(6,key,'Usable at next pickup',second['id'])
+        clock.now.return_value=START+timedelta(days=7,hours=3)
+        self.service.refresh_overdue_alerts(1);self.service.refresh_overdue_alerts(1)
+        messages=[e['message'] for e in self.service.detail(1,key)['history'] if e['message'].startswith('Overdue equipment:')]
+        self.assertEqual(len(messages),2)
+        self.assertTrue(any(second['end'].isoformat() in m for m in messages))
 
     def test_unreturned_previous_occurrence_blocks_same_units_at_later_pickup(self):
         key=self.series(quantity=2);self.service.decide(6,key,True)
