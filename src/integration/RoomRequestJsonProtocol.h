@@ -3,6 +3,6 @@
 #include <iosfwd>
 class RoomRequestJsonProtocol {
 public:
-    static int run(std::istream& input, std::ostream& output, std::ostream& diagnostics);
+    static int run(std::istream& input, std::ostream& output, std::ostream& diagnostics, bool series = false);
 };
 #endif

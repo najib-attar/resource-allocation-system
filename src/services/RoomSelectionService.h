@@ -48,5 +48,6 @@ public:
     static std::string organizerReason(const RoomSelectionInput& input, DatedInterval slot);
     static std::string roomReason(const RoomSelectionInput& input, const StudentRoomOption& room, DatedInterval slot);
     static std::vector<StudentRoomCandidate> rank(const RoomSelectionInput& input, DatedInterval slot);
+    static std::vector<StudentRoomCandidate> rankSeries(const RoomSelectionInput& input, const std::vector<DatedInterval>& slots);
 };
 #endif

@@ -101,3 +101,49 @@ TEST_CASE("Equipment malformed JSON returns one explicit protocol error") {
     CHECK_EQ(EquipmentJsonProtocol::run(in,out,err),2);
     CHECK_EQ(nlohmann::json::parse(out.str())["status"].get<std::string>(),"error");CHECK(!err.str().empty());
 }
+
+namespace {
+nlohmann::json equipmentSeries() {
+    auto in=document();in["operation"]="equipmentSeries";
+    in["occurrences"]={in["proposed"],{{"start",1800604800},{"end",1800691200}}};return in;
+}
+nlohmann::json executeEquipmentSeries(nlohmann::json value,int expected=0) {
+    std::istringstream in(value.dump());std::ostringstream out,err;
+    CHECK_EQ(EquipmentJsonProtocol::run(in,out,err,true),expected);return nlohmann::json::parse(out.str());
+}
+}
+TEST_CASE("Equipment series may reserve the same unit in separate non overlapping periods") {
+    auto out=executeEquipmentSeries(equipmentSeries());CHECK(out["feasible"].get<bool>());
+    CHECK_EQ(out["occurrences"].size(),std::size_t(2));
+    CHECK_EQ(out["occurrences"][0]["items"][0]["unitIds"][0].get<int>(),1);
+    CHECK_EQ(out["occurrences"][1]["items"][0]["unitIds"][0].get<int>(),1);
+}
+TEST_CASE("One unavailable equipment occurrence makes the complete proposal infeasible") {
+    auto in=equipmentSeries();in["units"][0]["reservations"]={in["occurrences"][1]};
+    auto out=executeEquipmentSeries(in);CHECK(!out["feasible"].get<bool>());
+    CHECK(out["occurrences"][0]["feasible"].get<bool>());CHECK(!out["occurrences"][1]["feasible"].get<bool>());
+    CHECK(out["items"].empty());
+}
+TEST_CASE("Equipment series may choose different eligible physical units per period") {
+    auto in=equipmentSeries();auto unit=in["units"][0];unit["id"]=2;unit["reservations"]={in["occurrences"][1]};
+    in["units"][0]["reservations"]={in["occurrences"][0]};in["units"].push_back(unit);
+    auto out=executeEquipmentSeries(in);CHECK(out["feasible"].get<bool>());
+    CHECK_EQ(out["occurrences"][0]["items"][0]["unitIds"][0].get<int>(),2);
+    CHECK_EQ(out["occurrences"][1]["items"][0]["unitIds"][0].get<int>(),1);
+}
+TEST_CASE("Overdue unreturned equipment is unavailable in every later series occurrence") {
+    auto in=equipmentSeries();in["units"][0]["held"]=true;
+    auto out=executeEquipmentSeries(in);CHECK(!out["feasible"].get<bool>());
+    CHECK(out["occurrences"][0]["items"][0]["unitIds"].empty());
+    CHECK(out["occurrences"][1]["items"][0]["unitIds"].empty());
+}
+TEST_CASE("Equipment series never silently reduces quantity") {
+    auto in=equipmentSeries();in["items"][0]["quantity"]=2;
+    auto out=executeEquipmentSeries(in);CHECK(!out["feasible"].get<bool>());
+    for(const auto& row:out["occurrences"])CHECK(row["items"][0]["unitIds"].empty());
+}
+TEST_CASE("Equipment series validates complete sorted periods and distinct operation") {
+    auto in=equipmentSeries();in["occurrences"]=nlohmann::json::array();executeEquipmentSeries(in,2);
+    in=equipmentSeries();in["occurrences"][1]=in["proposed"];executeEquipmentSeries(in,2);
+    in=equipmentSeries();in["operation"]="equipment";executeEquipmentSeries(in,2);
+}

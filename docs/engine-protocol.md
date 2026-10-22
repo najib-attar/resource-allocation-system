@@ -391,3 +391,56 @@ collections, room references, capacity arithmetic, duration/horizon and feasibil
 consistency, then adds display names. Private purposes/participants are not sent
 to the engine. Feasibility is not a reservation: faculty confirmation rechecks
 the exact selection and commits under PostgreSQL revision/overlap protection.
+
+## Dated recurring operations v1 (Iteration 49)
+
+The original allocation, appointment, room and equipment operations are unchanged.
+`--room-series-json` uses `operation: studentRoomSeries`; `--equipment-series-json`
+uses `operation: equipmentSeries`. Both retain protocolVersion 1, correlation,
+verified executable/build manifest, UTF-8, stdin/stdout-only execution, diagnostics
+on stderr, exit 0 for a valid decision (including infeasibility) and exit 2 for
+invalid input. They do not access PostgreSQL, CSV or shared configuration.
+
+Start with the corresponding single-period input. Add `occurrences`, a complete
+ordered list of 1-366 `{start,end}` minute-aligned UTC intervals. The first interval
+must equal `proposed`; all have equal elapsed duration and cannot overlap. Room
+inputs also require `startMinutes` (0-1439 university-local minutes) and a horizon
+covering the complete series. The bounded date range is at most two years; room
+search padding is limited to 732 days. Equipment type maximum loan duration is
+checked independently for each interval. Python expands explicit date bounds and
+weekdays in the configured timezone; C++ evaluates the actual dated intervals,
+not repeated undated weekday values.
+
+Room output retains candidates, alternatives, explanations and reasonCode, with
+engineVersion `student-rooms-series-1`. Candidates use **the same room on every
+date**, intersecting complete ranked sets before the top-20 display limit.
+`occurrences` contains start/end, feasible, reasonCode, candidates, alternatives
+and explanations per date. `NO_CONSISTENT_ROOM` in explanations distinguishes an
+empty common room set. Optional alternative proposals shift the entire pattern
+by a reported `offsetMinutes` within two hours; no silent date or room change is
+made. Flask filters out shifts inconsistent with the local weekly pattern across
+timezone transitions. Selection is revalidated before saving and confirmation.
+
+Equipment output uses engineVersion `equipment-series-1` and per-occurrence
+`{start,end,feasible,items,alternativePeriods:[]}`. Each item has the existing type,
+available quantity, selected unit IDs, reason and compatible alternatives. Top-level
+`items` and `alternativePeriods` are empty to avoid an ambiguous single-period
+assignment. Top-level feasible is true only when every period can fulfill every
+requested quantity. Different dated periods may use different physical units;
+currently held units remain unavailable regardless of their planned return date.
+
+Example recurring extension to a room input:
+
+```json
+{"operation":"studentRoomSeries","startMinutes":600,
+ "occurrences":[{"start":1893999600,"end":1894003200},
+                {"start":1894604400,"end":1894608000}]}
+```
+
+This is an extension fragment, not a standalone input: supply all ordinary room
+fields, matching proposed/horizon, protocolVersion and runId. The response is a
+proposal only. Existing faculty/custodian services approve and persist all
+remaining proposed occurrences in one PostgreSQL transaction or none. Gateway
+validation checks correlation, types, exact occurrence count/order/dates, child
+decisions and aggregate feasibility; malformed or partial stdout is an integration
+error, never a partial reservation.
