@@ -1,6 +1,7 @@
 """Student/faculty lifecycle and policy transactions; C++ owns room decisions."""
 
 from datetime import datetime, timedelta, timezone, time
+from zoneinfo import ZoneInfo
 from sqlalchemy import delete, or_, select
 from sqlalchemy.exc import IntegrityError
 
@@ -12,6 +13,8 @@ from .persistence.repository import state_row
 from .room_calendar import academic_room_intervals, assert_room_publication, room_snapshot, valid_approvers
 from .notification_service import event_history, publish_event
 from .waiting_list_state import close_waiting, guard_waiting, refresh_after_commit
+from .recurrence import expand_recurrence, recurrence_preview
+from .recurring_records import describe_series, occurrences_for, retry_series, series_for, series_view, store_series, submission_fingerprint
 
 
 class RoomRequestError(CalendarError):
@@ -28,6 +31,7 @@ ROOM_REASONS = {
     'ROOM_BUSY': 'The room is allocated, reserved or closed during this interval.',
     'ORGANIZER_BUSY': 'The organizer has another commitment during this interval.',
     'NO_ELIGIBLE_ROOM': 'No eligible room is available for these requirements and time.',
+    'NO_CONSISTENT_ROOM': 'Individual dates have rooms, but no one room can satisfy the complete series. Change the recurring time or requirements.',
 }
 
 
@@ -36,6 +40,13 @@ class RoomRequestService:
         if strategy not in {'best_fit', 'greedy'}:
             raise RoomRequestError('Configure a supported single-room selection strategy.')
         self.database, self.gateway, self.strategy = database, gateway, strategy
+
+    def _recurring_values(self, values):
+        if not isinstance(values,dict):raise RoomRequestError('Invalid room requirements.')
+        if values.get('recurrence') is None:return values
+        expanded=expand_recurrence(values['recurrence'],values.get('duration'),zone=ZoneInfo(values['_storedTimezone']) if values.get('_storedTimezone') else None)
+        a,b=expanded['intervals'][0]
+        return {**values,'expanded':expanded,'start':a,'end':b}
 
     def _user(self, session, actor, role=None):
         user = session.get(User, actor) if type(actor) is int and actor > 0 else None
@@ -64,6 +75,7 @@ class RoomRequestService:
             raise PermissionError('Only university administration or the current owning-faculty room manager can change closures.')
 
     def _validate(self, session, actor, values, invitees):
+        values=self._recurring_values(values)
         self._user(session, actor, 'Student')
         if not isinstance(values, dict):
             raise RoomRequestError('Invalid room requirements.')
@@ -101,25 +113,53 @@ class RoomRequestService:
     def _evaluate(self, actor, values, invitees, selected=None, exclude=None, alternatives=False):
         with self.database.transaction(read_only=True) as session:
             values = self._validate(session, actor, values, invitees)
+            expanded=values.get('expanded')
+            if expanded and exclude is not None:
+                parent=session.get(StudentRoomRequest,exclude)
+                stored=occurrences_for(session,series_for(session,parent)) if parent else []
+                if stored:
+                    periods=[(r.start_at,r.end_at) for r in stored if r.status!='Cancelled']
+                    if not periods:raise RoomRequestError('This series has no remaining requested occurrences.')
+                    values={**values,'start':periods[0][0],'end':periods[0][1],
+                            'expanded':{**expanded,'intervals':periods}}
+                    expanded=values['expanded']
             horizon_end = min(values['end'] + timedelta(days=7), datetime(2100,1,1,tzinfo=timezone.utc)) if alternatives else values['end']
-            snapshot, revision = room_snapshot(session, actor, 'Student', values, (values['start'], horizon_end),
+            lower=values['start']
+            if expanded:
+                lower=max(lower-timedelta(hours=2),datetime(1970,1,1,tzinfo=timezone.utc))
+                horizon_end=min(expanded['intervals'][-1][1]+timedelta(hours=2),datetime(2100,1,1,tzinfo=timezone.utc))
+            snapshot, revision = room_snapshot(session, actor, 'Student', values, (lower, horizon_end),
                 self.strategy, selected, 'validate' if selected is not None else 'recommend', exclude)
-        result, _ = self.gateway.execute_room(snapshot)
+            if expanded:snapshot.update(operation='studentRoomSeries',occurrences=recurrence_preview(expanded),startMinutes=expanded['startMinutes'])
+        result, _ = self.gateway.execute_room_series(snapshot) if expanded else self.gateway.execute_room(snapshot)
         return result, revision, snapshot, values
 
     def recommend(self, actor, values, invitees):
+        values=self._recurring_values(values)
         if not isinstance(values, dict):
             raise RoomRequestError('Invalid room requirements.')
         if aware(values.get('start')) <= datetime.now(timezone.utc):
             raise RoomRequestError('Select a future dated interval.')
-        result, revision, snapshot, _ = self._evaluate(actor, values, invitees, alternatives=True)
+        result, revision, snapshot, values = self._evaluate(actor, values, invitees, alternatives=True)
         by_room = {row['id']: row for row in snapshot['rooms']}
+        if values.get('expanded'):
+            expanded=values['expanded'];zone=ZoneInfo(expanded['timezone'])
+            result['alternatives']=[row for row in result['alternatives'] if all(
+                (a+timedelta(minutes=row['offsetMinutes'])).astimezone(zone).date()==a.astimezone(zone).date() and
+                (a+timedelta(minutes=row['offsetMinutes'])).astimezone(zone).hour*60+
+                (a+timedelta(minutes=row['offsetMinutes'])).astimezone(zone).minute==expanded['startMinutes']+row['offsetMinutes']
+                for a,_ in expanded['intervals'])]
         with self.database.transaction(read_only=True) as session:
             faculties = {row.id: row.name for row in session.scalars(select(OrganizationUnit))}
         for key in ('candidates', 'alternatives'):
             for row in result[key]:
                 source = by_room[row['roomId']]
                 row.update(name=source['name'], type=source['type'], building=source['building'], facultyName=faculties.get(row['facultyId'], ''))
+        if values.get('expanded'):
+            for row in result['candidates']:row['reason']+=' Same room for all '+str(len(snapshot['occurrences']))+' displayed occurrences.'
+            for row in result['occurrences']:
+                row['messages']=[ROOM_REASONS.get(code,code) for code in row['explanations']]
+            result['recurrence']=True
         return {**result, 'calendarRevision': revision, 'strategy': self.strategy,
                 'messages': [ROOM_REASONS.get(key, key) for key in result['explanations']]}
 
@@ -140,7 +180,16 @@ class RoomRequestService:
     def _event(self, session, record, actor, message):
         publish_event(session, RoomEvent(request_id=record.id, actor_id=actor, revision=record.revision, message=message))
 
-    def submit(self, actor, values, invitees, room_id, request_id=None, revision=None):
+    def submit(self, actor, values, invitees, room_id, request_id=None, revision=None, submission_key=None):
+        values=self._recurring_values(values)
+        fingerprint=None
+        if values.get('expanded'):
+            with self.database.transaction(read_only=True) as session:values=self._validate(session,actor,values,invitees)
+            fingerprint=submission_fingerprint([actor,values,sorted(invitees),room_id])
+            with self.database.transaction(read_only=True) as session:
+                self._user(session,actor,'Student')
+                existing=retry_series(session,actor,'room',submission_key,fingerprint)
+                if existing is not None:return existing
         if not isinstance(values, dict):
             raise RoomRequestError('Invalid room requirements.')
         if type(room_id) is not int or room_id <= 0:
@@ -153,9 +202,13 @@ class RoomRequestService:
         with self.database.transaction() as session:
             self._same_calendar(state_row(session, True), calendar_revision)
             self._validate(session, actor, values, invitees)
+            if fingerprint:
+                existing=retry_series(session,actor,'room',submission_key,fingerprint)
+                if existing is not None:return existing
             faculty, approver = self._selected(session, snapshot, room_id)
             if request_id is not None:
                 record = self._visible(session, request_id, actor)
+                if series_for(session,record):raise RoomRequestError('A series calendar is historical. Cancel the affected future occurrences and submit a fresh proposal for approval.')
                 guard_waiting(session, room=request_id)
                 if actor != record.organizer_id or record.revision != revision or record.status not in {'Pending Faculty Approval','Needs Revision','Rejected'}:
                     raise RoomRequestError('Only the organizer can revise this pending request. Cancel confirmed events and submit a new request.')
@@ -166,8 +219,10 @@ class RoomRequestService:
                 record = StudentRoomRequest(organizer_id=actor)
                 session.add(record)
             self._store(session, record, values, invitees, room_id, faculty, approver)
+            if fingerprint:store_series(session,record,values['expanded'],submission_key,fingerprint)
             record.status, record.explanation = 'Pending Faculty Approval', result['candidates'][0]['reason']
-            self._event(session,record,actor,'Submitted material revision for the room-owning faculty approval; no reservation. Professor invitations are optional.')
+            self._event(session,record,actor,'Submitted material revision for the room-owning faculty approval; no reservation. Professor invitations are optional.'+
+                (' Complete recurring dates: '+describe_series(values['expanded']) if fingerprint else ''))
             return record.id
 
     def _store(self, session, record, values, invitees, room_id, faculty, approver):
@@ -183,8 +238,12 @@ class RoomRequestService:
 
     def _confirm(self, session, record, actor, state):
         record.status, record.approved_by, record.approved_revision = 'Confirmed', actor, record.revision
-        session.add(RoomReservation(request_id=record.id,resource_id=record.resource_id,start_at=record.start_at,end_at=record.end_at))
-        session.add(RoomOrganizerCommitment(request_id=record.id,user_id=record.organizer_id,start_at=record.start_at,end_at=record.end_at))
+        occurrences=occurrences_for(session,series_for(session,record))
+        periods=[(r,r.start_at,r.end_at) for r in occurrences if r.status!='Cancelled'] if occurrences else [(None,record.start_at,record.end_at)]
+        for occurrence,start,end in periods:
+            if occurrence:occurrence.status='Reserved'
+            session.add(RoomReservation(request_id=record.id,resource_id=record.resource_id,start_at=start,end_at=end,occurrence_id=occurrence.id if occurrence else None))
+            session.add(RoomOrganizerCommitment(request_id=record.id,user_id=record.organizer_id,start_at=start,end_at=end,occurrence_id=occurrence.id if occurrence else None))
         state.calendar_revision += 1
 
     def _visible(self, session, request_id, actor):
@@ -211,6 +270,8 @@ class RoomRequestService:
             students = set(self._member_ids(session,row.id)[1])
             room, faculty = session.get(Resource,row.resource_id), session.get(OrganizationUnit,row.faculty_id)
             can_approve = row.approver_id == actor and valid_approvers(session).get(row.faculty_id) == actor
+            recurring=series_view(session,row)
+            used=any(r['status']=='Reserved' and r['start']<=datetime.now(timezone.utc) for r in recurring['occurrences']) if recurring else row.start_at<=datetime.now(timezone.utc)
             return {'id':row.id,'organizerId':row.organizer_id,'organizerName':names[row.organizer_id],
                 'approverId':row.approver_id,'approverName':names[row.approver_id], 'facultyId':row.faculty_id,'facultyName':faculty.name,
                 'roomId':room.id,'roomName':room.name,'roomType':room.type,'building':room.building,'capacity':room.capacity,
@@ -218,8 +279,9 @@ class RoomRequestService:
                 'count':row.attendee_count,'features':row.required_features,'start':row.start_at,'end':row.end_at,
                 'duration':row.duration_minutes,'preferredFaculty':row.preferred_faculty_id,'preferredBuilding':row.preferred_building,
                 'revision':row.revision,'status':row.status,'explanation':row.explanation,
+                'recurrence':recurring,
                 'canApprove':can_approve, 'canAudit':can_approve,
-                'canFeedback':row.status == 'Confirmed' and row.start_at <= datetime.now(timezone.utc) and (row.organizer_id == actor or any(i.user_id == actor and i.status == 'Accepted' for i in invitees)),
+                'canFeedback':row.status == 'Confirmed' and used and (row.organizer_id == actor or any(i.user_id == actor and i.status == 'Accepted' for i in invitees)),
                 'invitations':[{'id':i.user_id,'name':names[i.user_id],'status':i.status} for i in invitees if i.user_id not in students],
                 'participants':[{'id':i.user_id,'name':names[i.user_id]} for i in invitees if i.user_id in students],
                 'history':event_history(session,RoomEvent,row.id,actor,audit=can_approve)}
@@ -238,7 +300,9 @@ class RoomRequestService:
         return {'start':row['start'],'duration':row['duration'],'count':row['count'],'category':row['category'],
                 'features':row['features'],'purpose':row['purpose'],'description':row['description'],'club':row['club'],
                 'faculty':row['preferredFaculty'],'building':row['preferredBuilding'],
-                'participantIds':[p['id'] for p in row.get('participants', [])]}
+                'participantIds':[p['id'] for p in row.get('participants', [])],
+                **({'_storedTimezone':row['recurrence']['timezone'],'recurrence':{'startDate':row['recurrence']['startDate'].isoformat(),'endDate':row['recurrence']['endDate'].isoformat(),
+                    'weekdays':row['recurrence']['weekdays'],'startTime':row['recurrence']['startTime']}} if row.get('recurrence') else {})}
 
     def decide(self, request_id, actor, revision, approve, reason=''):
         if type(approve) is not bool:
@@ -248,8 +312,12 @@ class RoomRequestService:
             raise RoomRequestError('This request revision changed. Refresh before deciding.')
         if not current['canApprove'] or actor == current['organizerId']:
             raise PermissionError('Only the currently designated room-faculty approver can decide.')
+        if approve and current.get('recurrence'):
+            from .waiting_list_service import WaitingListService
+            WaitingListService(self.database,self.gateway,self.strategy).process('room',current['facultyId'])
         result = snapshot = calendar_revision = None
-        if approve and current['start'] > datetime.now(timezone.utc):
+        approval_start=min((r['start'] for r in current['recurrence']['occurrences'] if r['status']=='Proposed'),default=current['start']) if current.get('recurrence') else current['start']
+        if approve and approval_start > datetime.now(timezone.utc):
             result, calendar_revision, snapshot, _ = self._evaluate(current['organizerId'],self._values(current),
                 [i['id'] for i in current['invitations']],current['roomId'],request_id)
         if not approve and (not isinstance(reason,str) or not reason.strip() or len(reason)>2000):
@@ -266,6 +334,9 @@ class RoomRequestService:
                 if not approve:
                     record.status, record.explanation = 'Rejected', reason.strip()
                 else:
+                    if current.get('recurrence'):
+                        from .waiting_list_service import WaitingListService
+                        WaitingListService(self.database,self.gateway,self.strategy)._process_locked(session,'room',record.faculty_id,state)
                     if result is not None:
                         self._same_calendar(state,calendar_revision)
                     if result is None or not result['feasible']:
@@ -282,6 +353,8 @@ class RoomRequestService:
             raise
 
     def cancel(self, request_id, actor, revision):
+        current=self.detail(request_id,actor)
+        if current.get('recurrence'):return self.cancel_occurrence(request_id,actor,revision)
         with self.database.transaction() as session:
             state = state_row(session,True)
             self._user(session,actor)
@@ -298,6 +371,36 @@ class RoomRequestService:
             self._event(session,record,actor,'Cancelled; room and organizer reservations released. History retained.')
             refresh_after_commit(session, self.database, self.gateway, 'room', record.faculty_id, self.strategy)
 
+    def cancel_occurrence(self, request_id, actor, revision, occurrence_id=None):
+        with self.database.transaction() as session:
+            state=state_row(session,True)
+            record=self._visible(session,request_id,actor)
+            self._user(session,actor)
+            if actor!=record.organizer_id and (actor!=record.approver_id or valid_approvers(session).get(record.faculty_id)!=actor):
+                raise PermissionError('Only the organizer or current assigned faculty approver may cancel.')
+            if type(revision) is not int or record.revision!=revision:raise RoomRequestError('Refresh the current series revision.')
+            if occurrence_id is not None and (type(occurrence_id) is not int or occurrence_id<=0):raise RoomRequestError('Choose a valid series occurrence.')
+            series=series_for(session,record)
+            if not series:raise RoomRequestError('Choose a recurring reservation.')
+            rows=occurrences_for(session,series)
+            chosen=[r for r in rows if occurrence_id is None or r.id==occurrence_id]
+            if not chosen:raise RoomRequestError('This occurrence does not belong to the series.')
+            now=datetime.now(timezone.utc)
+            changed=[]
+            for row in chosen:
+                if row.status=='Cancelled':continue
+                if row.start_at<=now:
+                    if occurrence_id is not None:raise RoomRequestError('Only a future occurrence may be cancelled; past and active uses remain historical.')
+                    continue
+                row.status='Cancelled';changed.append(row.ordinal)
+                session.execute(delete(RoomReservation).where(RoomReservation.occurrence_id==row.id))
+                session.execute(delete(RoomOrganizerCommitment).where(RoomOrganizerCommitment.occurrence_id==row.id))
+            if not changed:return
+            if all(r.status=='Cancelled' for r in rows):record.status='Cancelled'
+            state.calendar_revision+=1
+            self._event(session,record,actor,'Cancelled future series occurrences '+str(changed)+'. Past uses and history retained.')
+            refresh_after_commit(session,self.database,self.gateway,'room',record.faculty_id,self.strategy)
+
     def respond(self, request_id, actor, revision, accept):
         if type(accept) is not bool:
             raise RoomRequestError('Choose accept or decline.')
@@ -310,8 +413,15 @@ class RoomRequestService:
                 self._user(session,actor,'Instructor')
                 values = self._values(current)
                 values['end'] = current['end']
-                snapshot,calendar_revision = room_snapshot(session,actor,'Instructor',values,(current['start'],current['end']),self.strategy,action='attendance')
-            result,_ = self.gateway.execute_room(snapshot)
+                recurring=current.get('recurrence')
+                periods=[r for r in recurring['occurrences'] if r['status']!='Cancelled'] if recurring else []
+                if recurring and not periods:raise RoomRequestError('This series has no remaining invitation dates.')
+                if periods:values.update(start=periods[0]['start'],end=periods[0]['end'])
+                end=periods[-1]['end'] if periods else current['end']
+                snapshot,calendar_revision = room_snapshot(session,actor,'Instructor',values,(values['start'],end),self.strategy,action='attendance')
+                if recurring:snapshot.update(operation='studentRoomSeries',startMinutes=int(recurring['startTime'][:2])*60+int(recurring['startTime'][3:]),
+                    occurrences=[{'start':epoch(p['start']),'end':epoch(p['end'])} for p in periods])
+            result,_ = self.gateway.execute_room_series(snapshot) if recurring else self.gateway.execute_room(snapshot)
             if not result['feasible']:
                 raise RoomRequestError('Your calendar is busy or unresolved. Invitation acceptance cannot override an existing commitment.')
         with self.database.transaction() as session:
@@ -323,7 +433,8 @@ class RoomRequestService:
             invitation = session.get(RoomInvitation,(record.id,actor))
             if not invitation or record.revision != revision or record.status not in {'Pending Faculty Approval','Confirmed'}:
                 raise RoomRequestError('This current invitation is not available for a response.')
-            if accept and record.end_at <= datetime.now(timezone.utc):
+            last_end=max((r.end_at for r in occurrences_for(session,series_for(session,record)) if r.status!='Cancelled'),default=record.end_at)
+            if accept and last_end <= datetime.now(timezone.utc):
                 raise RoomRequestError('A past invitation cannot be accepted.')
             invitation.status = 'Accepted' if accept else 'Declined'
             self._event(session,record,actor,'Professor invitation '+invitation.status.lower()+'. Optional attendance does not veto or change room approval.')

@@ -140,6 +140,7 @@ class PostgresCompletionTests(PostgresTestCase):
         expected.update({table + '_waiting_shape': (True, True) for table in
                          ('waiting_list_entry', 'student_room_request', 'borrow_request')})
         expected['resource_feedback_shape'] = (False, False)
+        expected.update({name:(False,False) for name in ('waiting_series_association','extension_series_association')})
         expected.update({table+'_shape':(True,True) for table in ('reservation_series','reservation_occurrence')})
         expected.update({table+'_lock':(False,False) for table in ('reservation_series','reservation_occurrence')})
         self.assertEqual({row[0]: (row[1], row[2]) for row in rows}, expected)

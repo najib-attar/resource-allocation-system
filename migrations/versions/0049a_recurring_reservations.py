@@ -55,9 +55,8 @@ DECLARE s reservation_series%ROWTYPE; r student_room_request%ROWTYPE; b borrow_r
 BEGIN
   SELECT * INTO s FROM reservation_series WHERE id=k;
   IF NOT FOUND THEN RETURN; END IF;
-  IF NOT EXISTS(SELECT 1 FROM pg_timezone_names WHERE name=s.timezone)
-    OR jsonb_array_length(s.weekdays)<>(SELECT count(DISTINCT value) FROM jsonb_array_elements(s.weekdays)) THEN
-    RAISE EXCEPTION 'Invalid recurrence timezone or weekdays' USING ERRCODE='23514';
+  IF EXISTS(SELECT 1 FROM waiting_list_entry w WHERE w.room_request_id=s.room_request_id OR w.borrow_request_id=s.borrow_request_id) THEN
+    RAISE EXCEPTION 'A series cannot use single-interval waiting-list semantics' USING ERRCODE='23514';
   END IF;
   SELECT count(*) INTO expected FROM generate_series(s.start_date::timestamp,s.end_date::timestamp,interval '1 day') d
     WHERE s.weekdays @> to_jsonb(extract(isodow FROM d)::integer);
@@ -72,6 +71,10 @@ BEGIN
   END IF;
   IF s.room_request_id IS NOT NULL THEN
     SELECT * INTO r FROM student_room_request WHERE id=s.room_request_id;
+    IF NOT EXISTS(SELECT 1 FROM reservation_occurrence o WHERE o.series_id=k AND o.ordinal=1
+        AND o.start_at=r.start_at AND o.end_at=r.end_at AND r.duration_minutes=s.duration_minutes) THEN
+      RAISE EXCEPTION 'Room proposal must retain its original first occurrence' USING ERRCODE='23514';
+    END IF;
     IF r.status<>'Confirmed' THEN
       PERFORM ras_room_single_shape(r.id);
       IF EXISTS(SELECT 1 FROM reservation_occurrence WHERE series_id=k AND status NOT IN ('Proposed','Cancelled')) THEN
@@ -163,6 +166,10 @@ BEGIN
      END IF;
    END IF;
    s:=NEW;
+   IF TG_OP='INSERT' AND (NOT EXISTS(SELECT 1 FROM pg_timezone_names WHERE name=s.timezone)
+      OR jsonb_array_length(s.weekdays)<>(SELECT count(DISTINCT value) FROM jsonb_array_elements(s.weekdays))) THEN
+     RAISE EXCEPTION 'Invalid recurrence timezone or weekdays' USING ERRCODE='23514';
+   END IF;
  ELSE
    IF TG_OP<>'INSERT' THEN
      IF TG_OP='DELETE' OR ROW(NEW.series_id,NEW.ordinal,NEW.start_at,NEW.end_at) IS DISTINCT FROM ROW(OLD.series_id,OLD.ordinal,OLD.start_at,OLD.end_at) THEN
@@ -179,12 +186,35 @@ CREATE TRIGGER reservation_series_lock BEFORE INSERT OR UPDATE OR DELETE ON rese
 CREATE TRIGGER reservation_occurrence_lock BEFORE INSERT OR UPDATE OR DELETE ON reservation_occurrence FOR EACH ROW EXECUTE FUNCTION ras_series_lock();
 CREATE CONSTRAINT TRIGGER reservation_series_shape AFTER INSERT OR UPDATE OR DELETE ON reservation_series DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION ras_series_changed();
 CREATE CONSTRAINT TRIGGER reservation_occurrence_shape AFTER INSERT OR UPDATE OR DELETE ON reservation_occurrence DEFERRABLE INITIALLY DEFERRED FOR EACH ROW EXECUTE FUNCTION ras_series_changed();
+CREATE FUNCTION ras_occurrence_association() RETURNS trigger LANGUAGE plpgsql AS $$
+DECLARE k bigint;
+BEGIN
+ IF TG_TABLE_NAME='waiting_list_entry' THEN
+   IF NEW.room_request_id IS NOT NULL THEN
+     UPDATE student_room_request SET revision=revision WHERE id=NEW.room_request_id;
+   ELSE UPDATE borrow_request SET status=status WHERE id=NEW.borrow_request_id; END IF;
+   IF EXISTS(SELECT 1 FROM reservation_series s WHERE s.room_request_id=NEW.room_request_id OR s.borrow_request_id=NEW.borrow_request_id) THEN
+     RAISE EXCEPTION 'Single-interval waiting lists cannot contain a recurring series' USING ERRCODE='23514';
+   END IF;
+ ELSE
+   UPDATE borrow_request SET status=status WHERE id=NEW.request_id;
+   SELECT id INTO k FROM reservation_series WHERE borrow_request_id=NEW.request_id;
+   IF (k IS NULL AND NEW.occurrence_id IS NOT NULL) OR (k IS NOT NULL AND NOT EXISTS(
+       SELECT 1 FROM reservation_occurrence o WHERE o.id=NEW.occurrence_id AND o.series_id=k)) THEN
+     RAISE EXCEPTION 'Extension occurrence must belong to its borrowing series' USING ERRCODE='23514';
+   END IF;
+ END IF;
+ RETURN NEW;
+END; $$;
+CREATE TRIGGER waiting_series_association BEFORE INSERT OR UPDATE ON waiting_list_entry FOR EACH ROW EXECUTE FUNCTION ras_occurrence_association();
+CREATE TRIGGER extension_series_association BEFORE INSERT OR UPDATE ON borrow_extension FOR EACH ROW EXECUTE FUNCTION ras_occurrence_association();
 """
 
 
 def downgrade():
     if op.get_bind().scalar(sa.text('SELECT EXISTS(SELECT 1 FROM reservation_series)')):
         raise RuntimeError('Downgrade would discard recurring history. Export and review it explicitly first.')
+    op.execute('DROP TRIGGER waiting_series_association ON waiting_list_entry; DROP TRIGGER extension_series_association ON borrow_extension; DROP FUNCTION ras_occurrence_association()')
     for table in ('reservation_occurrence','reservation_series'):
         op.execute(f'DROP TRIGGER {table}_shape ON {table}; DROP TRIGGER {table}_lock ON {table}')
     op.execute('DROP FUNCTION ras_series_changed(); DROP FUNCTION ras_series_lock(); DROP FUNCTION ras_series_shape(bigint)')

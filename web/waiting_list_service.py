@@ -127,6 +127,8 @@ class WaitingListService:
         return entry
 
     def join_room(self, actor, values, invitees, faculty, version, accepted, key):
+        if isinstance(values,dict) and values.get('recurrence'):
+            raise WaitingListError('Recurring series need a reviewed series queue policy. Revise unavailable dates; individual occurrences are not enrolled separately.')
         self._consent(version, accepted, key)
         with self.database.transaction() as session:
             self._lock(session, 'room', faculty)
