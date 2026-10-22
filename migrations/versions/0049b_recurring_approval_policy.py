@@ -129,7 +129,7 @@ CREATE TRIGGER semester_reserved_dates BEFORE UPDATE ON academic_period FOR EACH
 
 
 def downgrade():
-    if op.get_bind().scalar(sa.text("SELECT EXISTS(SELECT 1 FROM reservation_series) OR EXISTS(SELECT 1 FROM reservation_priority_override) OR EXISTS(SELECT 1 FROM application_state WHERE recurring_limits<>'{}'::jsonb OR reservation_priorities<>'[]'::jsonb)")):
+    if op.get_bind().scalar(sa.text("SELECT EXISTS(SELECT 1 FROM reservation_series) OR EXISTS(SELECT 1 FROM reservation_priority_override) OR EXISTS(SELECT 1 FROM academic_period WHERE is_semester) OR EXISTS(SELECT 1 FROM application_state WHERE recurring_limits<>'{}'::jsonb OR reservation_priorities<>'[]'::jsonb)")):
         raise RuntimeError('Downgrade would discard recurring policy or audit history. Export and review it explicitly first.')
     op.execute('DROP TRIGGER semester_reserved_dates ON academic_period; DROP FUNCTION ras_semester_immutable()')
     op.execute('DROP TRIGGER room_priority_guard ON student_room_request; DROP TRIGGER equipment_priority_guard ON borrow_request; DROP FUNCTION ras_priority_guard()')

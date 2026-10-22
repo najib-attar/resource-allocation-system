@@ -12,7 +12,7 @@ from postgres_fixtures import ROOT
 from test_room_requests import START
 from recurring_fixtures import RoomFixture
 from web.calendar_service import university_zone
-from web.persistence.models import Base, ReservationOccurrence, ReservationSeries, RoomReservation, StudentRoomRequest
+from web.persistence.models import AcademicPeriod, Base, ReservationOccurrence, ReservationSeries, RoomReservation, StudentRoomRequest
 from web.recurrence import expand_recurrence
 
 
@@ -71,6 +71,11 @@ class RecurringPersistenceTests(RoomFixture):
 
     def test_migration_drift_and_empty_downgrade_preserve_one_time_records(self):
         key=self.request_room();self.rooms.decide(key,7,1,True)
+        with mock.patch.dict(os.environ,{'DATABASE_URL':self.url}),self.assertRaisesRegex(RuntimeError,'policy'):
+            command.downgrade(Config(str(ROOT/'alembic.ini')),'0048a')
+        # Explicitly withdraw this unused fixture designation, preserving its
+        # calendar dates; only then is the schema free of recurring policy data.
+        with self.database.transaction() as session:session.get(AcademicPeriod,self.semester).is_semester=False
         with mock.patch.dict(os.environ,{'DATABASE_URL':self.url}):
             configuration=Config(str(ROOT/'alembic.ini'))
             command.check(configuration)
