@@ -264,3 +264,9 @@ class RecurringEquipmentPolicyTests(EquipmentFixture):
         item=self.service.detail(1,key)
         self.assertEqual([o['status'] for o in item['recurrence']['occurrences']],['Proposed','Unavailable'])
         self.assertFalse(item['units'])
+        from web.persistence.models import BorrowRequest
+        with self.database.transaction(read_only=True) as session:identity=session.get(BorrowRequest,key).submission_key
+        for change in ({'approvalMode':'all'},{'periodId':999999}):
+            with self.subTest(change=change),self.assertRaisesRegex(CalendarError,'identity'):
+                self.service.submit(1,self.faculty,[{'typeId':self.type_id,'quantity':2}],START,START+timedelta(hours=2),
+                    'Separate weekly physical loans','',identity,{**pattern(),'approvalMode':'partial',**change})

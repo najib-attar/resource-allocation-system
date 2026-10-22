@@ -193,7 +193,8 @@ class EquipmentService:
         if not isinstance(submission_key, str) or not re.fullmatch('[0-9a-f]{32}', submission_key):
             raise EquipmentError('Refresh the borrowing form to obtain a valid submission identity.')
         payload = {'faculty': faculty, 'items': items, 'start': start.isoformat(), 'due': due.isoformat(), 'purpose': purpose, 'notes': notes}
-        if expanded:payload['recurrence']={'periods':recurrence_preview(expanded),'timezone':expanded['timezone']}
+        if expanded:payload['recurrence']={'periods':recurrence_preview(expanded),'timezone':expanded['timezone'],
+            'periodId':recurrence.get('periodId'),'approvalMode':recurrence.get('approvalMode','all')}
         fingerprint = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
         with self.database.transaction() as session:
             # Also serializes retries sent to different faculties for the same student.
