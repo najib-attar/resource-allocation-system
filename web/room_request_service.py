@@ -144,7 +144,8 @@ class RoomRequestService:
         by_room = {row['id']: row for row in snapshot['rooms']}
         if values.get('expanded'):
             expanded=values['expanded'];zone=ZoneInfo(expanded['timezone'])
-            result['alternatives']=[row for row in result['alternatives'] if all(
+            result['alternatives']=[row for row in result['alternatives'] if
+                datetime.fromtimestamp(row['start'],timezone.utc)>datetime.now(timezone.utc) and all(
                 (a+timedelta(minutes=row['offsetMinutes'])).astimezone(zone).date()==a.astimezone(zone).date() and
                 (a+timedelta(minutes=row['offsetMinutes'])).astimezone(zone).hour*60+
                 (a+timedelta(minutes=row['offsetMinutes'])).astimezone(zone).minute==expanded['startMinutes']+row['offsetMinutes']

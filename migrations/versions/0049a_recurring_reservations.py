@@ -28,7 +28,7 @@ def upgrade():
         sa.Column('series_id',sa.BigInteger(),sa.ForeignKey('reservation_series.id'),nullable=False),
         sa.Column('ordinal',sa.Integer(),nullable=False),sa.Column('start_at',sa.DateTime(timezone=True),nullable=False),
         sa.Column('end_at',sa.DateTime(timezone=True),nullable=False),sa.Column('status',sa.String(12),nullable=False),
-        sa.Column('period',TSTZRANGE(),sa.Computed("tstzrange(start_at, end_at, '[)')",persisted=True)),
+        sa.Column('period',TSTZRANGE(),sa.Computed("tstzrange(start_at, end_at, '[)')",persisted=True),nullable=False),
         sa.UniqueConstraint('series_id','ordinal'),
         sa.CheckConstraint("ordinal BETWEEN 1 AND 366 AND start_at < end_at AND status IN ('Proposed','Reserved','Completed','Cancelled')"),
         ExcludeConstraint(('series_id','='),('period','&&'),using='gist',name='ex_series_self_overlap'))

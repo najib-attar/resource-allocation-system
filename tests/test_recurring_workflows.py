@@ -1,5 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
-from datetime import timedelta
+from datetime import datetime,timedelta
 import uuid
 import multiprocessing
 from unittest import mock
@@ -61,6 +61,15 @@ class RecurringRoomWorkflowTests(RoomFixture):
         with self.assertRaises(CalendarError):self.series()
         result=self.rooms.recommend(1,self.values(recurrence=pattern()),[])
         self.assertTrue(all(c['roomId']!=302 for c in result['candidates']))
+
+    def test_shifted_pattern_recommendations_never_start_in_the_past(self):
+        for room in (301,302,303):self.rooms.close_room(6,room,START,START+timedelta(hours=1),'Fixture conflict')
+        now=START-timedelta(minutes=5)
+        with mock.patch('web.room_request_service.datetime',wraps=datetime) as clock:
+            clock.now.return_value=now
+            result=self.rooms.recommend(1,self.values(recurrence=pattern()),[])
+        self.assertTrue(result['alternatives'])
+        self.assertTrue(all(row['start']>now.timestamp() for row in result['alternatives']))
 
     def test_cancel_one_then_future_series_retains_occurrence_history(self):
         key=self.series();self.rooms.decide(key,7,1,True)
