@@ -114,3 +114,54 @@ TEST_CASE("Room protocol rejects malformed numeric policy and strategy values") 
     in=original; in["rooms"][0]["type"]="Unknown"; execute(in,2);
     in=original; in["requiredFeatures"]={"invented"}; execute(in,2);
 }
+
+namespace {
+nlohmann::json roomSeries() {
+    auto in=document();in["operation"]="studentRoomSeries";in["startMinutes"]=600;
+    in["horizon"]={{"start",1799966400},{"end",1800777600}};
+    in["occurrences"]={in["proposed"],{{"start",1800604800},{"end",1800608400}}};
+    return in;
+}
+nlohmann::json executeRoomSeries(nlohmann::json value,int expected=0) {
+    std::istringstream in(value.dump());std::ostringstream out,err;
+    CHECK_EQ(RoomRequestJsonProtocol::run(in,out,err,true),expected);
+    return nlohmann::json::parse(out.str());
+}
+}
+TEST_CASE("Dated room series keep one common room in existing deterministic rank order") {
+    auto in=fixture();auto values=RoomSelectionService::rankSeries(in,{in.proposed,{1800604800,1800608400}});
+    CHECK_EQ(values.size(),std::size_t(3));CHECK_EQ(values.front().roomId,102);
+}
+TEST_CASE("One conflicting room date excludes that room from the complete series") {
+    auto in=fixture();in.rooms[1].busy={{1800604800,1800608400}};
+    auto values=RoomSelectionService::rankSeries(in,{in.proposed,{1800604800,1800608400}});
+    CHECK_EQ(values.size(),std::size_t(2));CHECK_EQ(values.front().roomId,103);
+}
+TEST_CASE("Alternating available rooms cannot silently substitute across a series") {
+    auto in=fixture();in.rooms.resize(2);in.rooms[0].busy={in.proposed};in.rooms[1].busy={{1800604800,1800608400}};
+    CHECK(RoomSelectionService::rankSeries(in,{in.proposed,{1800604800,1800608400}}).empty());
+}
+TEST_CASE("Room series intersection precedes the twenty candidate presentation limit") {
+    auto in=roomSeries();auto example=in["rooms"][0];in["rooms"]=nlohmann::json::array();
+    for(int i=0;i<25;++i){auto r=example;r["id"]=100+i;if(i<24)r["busy"]={in["occurrences"][1]};in["rooms"].push_back(r);}
+    auto out=executeRoomSeries(in);CHECK(out["feasible"].get<bool>());
+    CHECK_EQ(out["candidates"].size(),std::size_t(1));CHECK_EQ(out["candidates"][0]["roomId"].get<int>(),124);
+    CHECK_EQ(out["occurrences"].size(),std::size_t(2));
+}
+TEST_CASE("Room series protocol reports dated conflicts and feasible whole pattern time alternatives") {
+    auto in=roomSeries();in["rooms"][0]["busy"]={in["occurrences"][1]};
+    auto out=executeRoomSeries(in);CHECK(!out["feasible"].get<bool>());
+    CHECK(out["occurrences"][0]["feasible"].get<bool>());CHECK(!out["occurrences"][1]["feasible"].get<bool>());
+    CHECK(!out["alternatives"].empty());CHECK(out["alternatives"][0].contains("offsetMinutes"));
+}
+TEST_CASE("Optional professor acceptance validates every dated room occurrence") {
+    auto in=roomSeries();in["action"]="attendance";in["organizerRole"]="Instructor";in["organizerBusy"]={in["occurrences"][1]};
+    auto out=executeRoomSeries(in);CHECK(!out["feasible"].get<bool>());CHECK_EQ(out["reasonCode"].get<std::string>(),"ORGANIZER_BUSY");
+}
+TEST_CASE("Room series protocol rejects empty overlapping and mismatched occurrences") {
+    auto missing=roomSeries();missing.erase("startMinutes");executeRoomSeries(missing,2);
+    auto in=roomSeries();in["occurrences"]=nlohmann::json::array();executeRoomSeries(in,2);
+    in=roomSeries();in["occurrences"][1]=in["proposed"];executeRoomSeries(in,2);
+    in=roomSeries();in["occurrences"][1]["end"]=1800608460;executeRoomSeries(in,2);
+    in=roomSeries();in["operation"]="studentRoom";executeRoomSeries(in,2);
+}

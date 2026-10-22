@@ -12,6 +12,10 @@ from .calendar_service import CalendarError, aware, epoch
 from .notification_service import event_history, publish_event
 from .equipment_access import custodian_faculties, valid_custodians
 from .waiting_list_state import close_waiting, guard_waiting, refresh_after_commit
+from .recurrence import expand_recurrence, recurrence_preview
+from .recurring_records import describe_series, occurrences_for, series_for, series_view, store_series
+from .reservation_policy import check_limits, policy_directory, semester
+from .persistence.repository import state_row
 from .persistence.models import (BorrowExtension, BorrowItem, BorrowRequest, EquipmentCategory,
     EquipmentCustodian, EquipmentEvent, EquipmentReservation, EquipmentType, EquipmentUnit,
     EQUIPMENT_CONDITIONS, LoginAccount, OrganizationUnit, Role, User)
@@ -107,13 +111,15 @@ class EquipmentService:
             raise EquipmentError('Choose a future borrowing interval of at most 365 days with return after pickup.')
         return start, due
 
-    def _snapshot(self, session, actor, faculty, items, start, due, exclude=None, only_units=None):
+    def _snapshot(self, session, actor, faculty, items, start, due, exclude=None, only_units=None, exclude_occurrence=None):
         user, _, _ = self._user(session, actor, student=True)
         types = list(session.scalars(select(EquipmentType).where(EquipmentType.faculty_id == faculty).order_by(EquipmentType.id)))
         units = list(session.scalars(select(EquipmentUnit).where(EquipmentUnit.type_id.in_([t.id for t in types])).order_by(EquipmentUnit.id)))
         query = select(EquipmentReservation).join(BorrowItem, BorrowItem.id == EquipmentReservation.item_id).where(
             BorrowItem.faculty_id == faculty, EquipmentReservation.released.is_(False))
-        if exclude is not None:
+        if exclude_occurrence is not None:
+            query=query.where(or_(EquipmentReservation.occurrence_id.is_(None),EquipmentReservation.occurrence_id!=exclude_occurrence))
+        elif exclude is not None:
             query = query.where(BorrowItem.request_id != exclude)
         bookings = {}
         for row in session.scalars(query):
@@ -128,29 +134,48 @@ class EquipmentService:
                        'reservations': [{'start': epoch(b.start_at), 'end': epoch(b.due_at)} for b in bookings.get(u.id, [])]}
                       for u in units if only_units is None or u.id in only_units]}
 
-    def _match(self, session, actor, faculty, items, start, due, exclude=None, only_units=None):
-        snapshot = self._snapshot(session, actor, faculty, items, start, due, exclude, only_units)
+    def _match(self, session, actor, faculty, items, start, due, exclude=None, only_units=None, periods=None, exclude_occurrence=None):
+        snapshot = self._snapshot(session, actor, faculty, items, start, due, exclude, only_units,exclude_occurrence)
         known = {t['id'] for t in snapshot['types']}
         if any(i['typeId'] not in known for i in items):
             raise EquipmentError('Every requested item must belong to the same selected faculty.')
-        result, _ = self.gateway.execute_equipment(snapshot)
+        if periods:
+            snapshot.update(operation='equipmentSeries',occurrences=[{'start':epoch(a),'end':epoch(b)} for a,b in periods])
+        result, _ = self.gateway.execute_equipment_series(snapshot) if periods else self.gateway.execute_equipment(snapshot)
         return result
 
     def _require_match(self, result):
+        if 'occurrences' in result:
+            failed=[r for r in result['occurrences'] if not r['feasible']]
+            if failed:
+                details=['At '+datetime.fromtimestamp(r['start'],timezone.utc).isoformat()+': '+
+                    ' '.join(MATCH_MESSAGES[i['reasonCode']] for i in r['items'] if i['reasonCode']!='AVAILABLE') for r in failed]
+                raise EquipmentError('The complete recurring request is unavailable. No partial reservation is allowed. '+' '.join(details))
+            return
         if not result['feasible']:
             reasons = sorted({row['reasonCode'] for row in result['items'] if row['reasonCode'] != 'AVAILABLE'})
             raise EquipmentError('Equipment cannot fulfill the complete request. ' + ' '.join(MATCH_MESSAGES[key] for key in reasons)
                                  + ' Refresh availability or amend the request.')
 
-    def recommend(self, actor, faculty, items, start, due):
+    def _recurring_periods(self,start,due,recurrence):
+        if recurrence is None:return None
+        a,b=self._period(start,due,future=False)
+        return expand_recurrence(recurrence,int((b-a).total_seconds()/60))
+
+    def recommend(self, actor, faculty, items, start, due, recurrence=None):
+        expanded=self._recurring_periods(start,due,recurrence)
+        if expanded:start,due=expanded['intervals'][0]
         items, (start, due) = self._items(items), self._period(start, due)
         with self.database.transaction(read_only=True) as session:
             self._faculty(session, faculty)
-            result = self._match(session, actor, faculty, items, start, due)
+            if expanded:expanded=semester(session,expanded,recurrence)
+            result = self._match(session, actor, faculty, items, start, due,periods=expanded['intervals'] if expanded else None)
             # Physical identifiers stay private until this student's reservation is approved.
-            for row in result['items']:
-                row.pop('unitIds')
-                row['explanation'] = MATCH_MESSAGES[row['reasonCode']]
+            groups=result['occurrences'] if expanded else [result]
+            for group in groups:
+                for row in group['items']:
+                    row.pop('unitIds')
+                    row['explanation'] = MATCH_MESSAGES[row['reasonCode']]
             return result
 
     def _event(self, session, actor, faculty, message, request_id=None, unit_id=None):
@@ -160,15 +185,22 @@ class EquipmentService:
         else:
             publish_event(session, event)
 
-    def submit(self, actor, faculty, items, start, due, purpose, notes, submission_key):
-        items, (start, due) = self._items(items), self._period(start, due)
+    def submit(self, actor, faculty, items, start, due, purpose, notes, submission_key, recurrence=None):
+        expanded=self._recurring_periods(start,due,recurrence)
+        if expanded:start,due=expanded['intervals'][0]
+        items, (start, due) = self._items(items), self._period(start, due,future=expanded is None)
         purpose, notes = self._text(purpose, 'purpose'), self._text(notes, 'notes', 4000, False)
         if not isinstance(submission_key, str) or not re.fullmatch('[0-9a-f]{32}', submission_key):
             raise EquipmentError('Refresh the borrowing form to obtain a valid submission identity.')
         payload = {'faculty': faculty, 'items': items, 'start': start.isoformat(), 'due': due.isoformat(), 'purpose': purpose, 'notes': notes}
+        if expanded:payload['recurrence']={'periods':recurrence_preview(expanded),'timezone':expanded['timezone'],
+            'periodId':recurrence.get('periodId'),'approvalMode':recurrence.get('approvalMode','all')}
         fingerprint = hashlib.sha256(json.dumps(payload, sort_keys=True, ensure_ascii=False).encode()).hexdigest()
         with self.database.transaction() as session:
             # Also serializes retries sent to different faculties for the same student.
+            if expanded:
+                from .waiting_list_service import WaitingListService
+                WaitingListService(self.database,self.gateway)._notice_lock(session)
             session.scalar(select(User).where(User.id == actor).with_for_update())
             self._user(session, actor, student=True)
             existing = session.scalar(select(BorrowRequest).where(BorrowRequest.borrower_id == actor, BorrowRequest.submission_key == submission_key))
@@ -176,10 +208,18 @@ class EquipmentService:
                 if existing.submission_fingerprint != fingerprint:
                     raise EquipmentError('This submission identity was already used for different requirements.')
                 return existing.id
+            if start<=datetime.now(timezone.utc):raise EquipmentError('Every new recurring occurrence must start in the future.')
+            if expanded:
+                expanded=semester(session,expanded,recurrence)
+                check_limits(session,actor,'equipment',expanded)
             self._faculty(session, faculty, True)
-            self._require_match(self._match(session, actor, faculty, items, start, due))
+            match=self._match(session, actor, faculty, items, start, due,periods=expanded['intervals'] if expanded else None)
+            if not (expanded and expanded['approvalMode']=='partial' and any(p['feasible'] for p in match['occurrences'])):
+                self._require_match(match)
             row = self._store(session, actor, faculty, items, start, due, purpose, notes, submission_key, fingerprint)
-            self._event(session, actor, faculty, 'Submitted for custodian approval; pending requests reserve no units.', row.id)
+            if expanded:store_series(session,row,expanded,submission_key,fingerprint,match['occurrences'])
+            self._event(session, actor, faculty, 'Submitted for custodian approval; pending requests reserve no units.'+
+                (' Separate recurring pickup/return dates: '+describe_series(expanded) if expanded else ''), row.id)
             return row.id
 
     def _store(self, session, actor, faculty, items, start, due, purpose, notes, submission_key, fingerprint):
@@ -192,11 +232,13 @@ class EquipmentService:
         session.flush()
         return row
 
-    def _reserve(self, session, row, result):
+    def _reserve(self, session, row, result, occurrence=None):
         by_type = {i.type_id: i for i in self._lines(session, row.id)}
         for item in result['items']:
             session.add_all(EquipmentReservation(item_id=by_type[item['typeId']].id, type_id=item['typeId'], unit_id=uid,
-                start_at=row.start_at, due_at=row.due_at) for uid in item['unitIds'])
+                start_at=occurrence.start_at if occurrence else row.start_at,due_at=occurrence.end_at if occurrence else row.due_at,
+                occurrence_id=occurrence.id if occurrence else None) for uid in item['unitIds'])
+        if occurrence:occurrence.status='Reserved'
         row.status = 'Approved'
 
     def _request(self, session, actor, key, lock=False):
@@ -217,14 +259,46 @@ class EquipmentService:
     def _needs(self, lines):
         return [{'typeId': i.type_id, 'quantity': i.quantity, 'specifications': i.specifications} for i in lines]
 
-    def _reservations(self, session, key):
-        return list(session.scalars(select(EquipmentReservation).join(BorrowItem, BorrowItem.id == EquipmentReservation.item_id)
-                                   .where(BorrowItem.request_id == key).order_by(EquipmentReservation.id)))
+    def _reservations(self, session, key, occurrence_id=None):
+        query=select(EquipmentReservation).join(BorrowItem,BorrowItem.id==EquipmentReservation.item_id).where(BorrowItem.request_id==key)
+        if occurrence_id is not None:query=query.where(EquipmentReservation.occurrence_id==occurrence_id)
+        return list(session.scalars(query.order_by(EquipmentReservation.id)))
 
-    def decide(self, actor, key, approve, reason=''):
+    def _series_status(self,session,row):
+        occurrences=occurrences_for(session,series_for(session,row))
+        bookings=self._reservations(session,row.id)
+        for occurrence in occurrences:
+            own=[b for b in bookings if b.occurrence_id==occurrence.id]
+            if occurrence.status=='Reserved' and own and all(b.returned_at is not None for b in own):occurrence.status='Completed'
+        outstanding=[b for b in bookings if b.handed_at is not None and b.returned_at is None]
+        partial=any(o.status=='Reserved' and any(b.returned_at is not None for b in bookings if b.occurrence_id==o.id) for o in occurrences)
+        if outstanding:row.status='Partially Returned' if partial else 'Borrowed'
+        elif any(o.status=='Reserved' for o in occurrences):row.status='Approved'
+        elif any(o.status in {'Proposed','Unavailable'} for o in occurrences):
+            row.status='Returned' if any(o.status=='Completed' for o in occurrences) else 'Pending Approval'
+        else:row.status='Returned' if any(o.status=='Completed' for o in occurrences) else 'Rejected' if any(o.status=='Rejected' for o in occurrences) else 'Cancelled'
+
+    def _occurrence(self,session,row,key):
+        series=series_for(session,row)
+        if series is None:
+            if key is not None:raise EquipmentError('This is a continuous one-time loan, not a recurring occurrence.')
+            return None
+        if type(key) is not int or key<=0:raise EquipmentError('Select the individual recurring pickup/return occurrence.')
+        found=next((o for o in occurrences_for(session,series) if o.id==key),None)
+        if found is None:raise EquipmentError('That occurrence does not belong to this loan series.')
+        return found
+
+    def decide(self, actor, key, approve, reason='', occurrence_ids=None):
         if type(approve) is not bool:
             raise EquipmentError('Select approve or reject.')
         reason = self._text(reason, 'decision reason', required=False)
+        with self.database.transaction(read_only=True) as session:
+            current=self._request(session,actor,key)
+            self._staff(session,actor,current.faculty_id)
+            recurring=series_for(session,current) is not None
+            faculty=current.faculty_id
+        if recurring:
+            return self._decide_series(actor,key,approve,reason,occurrence_ids,faculty)
         with self.database.transaction() as session:
             row = self._request(session, actor, key, True)
             self._staff(session, actor, row.faculty_id)
@@ -235,13 +309,55 @@ class EquipmentService:
                 if row.due_at <= datetime.now(timezone.utc):
                     raise EquipmentError('The borrowing interval has expired. Reject and request a new proposal.')
                 lines = self._lines(session, key)
-                result = self._match(session, row.borrower_id, row.faculty_id, self._needs(lines), row.start_at, row.due_at)
+                result = self._match(session, row.borrower_id, row.faculty_id, self._needs(lines),row.start_at,row.due_at)
                 self._require_match(result)
                 self._reserve(session, row, result)
             row.status = 'Approved' if approve else 'Rejected'
             self._event(session, actor, row.faculty_id, row.status + '. ' + reason, key)
 
+    def _decide_series(self,actor,key,approve,reason,selection,faculty):
+        from .waiting_list_service import WaitingListService
+        waiting=WaitingListService(self.database,self.gateway)
+        if approve:waiting.process('equipment',faculty,key)
+        with self.database.transaction() as session:
+            state=waiting._lock(session,'equipment',faculty)
+            row=self._request(session,actor,key,True)
+            self._staff(session,actor,faculty)
+            series=series_for(session,row)
+            if series.period_id is None:raise EquipmentError('Bind this legacy series to an explicit semester before approval.')
+            rows=occurrences_for(session,series)
+            pending=[o for o in rows if o.status in {'Proposed','Unavailable'}]
+            if selection is not None and (not isinstance(selection,list) or len(set(selection))!=len(selection)
+                    or any(type(k) is not int or k not in {o.id for o in rows} for k in selection)):
+                raise EquipmentError('Choose distinct occurrence identities belonging to this request.')
+            selected=[o for o in pending if selection is None or o.id in selection]
+            if not selected:raise EquipmentError('Choose at least one future date still awaiting review.')
+            if series.approval_mode=='all' and len(selected)!=len(pending):raise EquipmentError('The student requires the complete series; dates cannot be approved separately.')
+            if any(o.start_at<=datetime.now(timezone.utc) for o in selected):raise EquipmentError('Past occurrence decisions cannot be changed.')
+            if approve:
+                expanded=semester(session,{'timezone':series.timezone,'intervals':[(o.start_at,o.end_at) for o in rows if o.status not in {'Cancelled','Rejected'}]},
+                    {'periodId':series.period_id,'approvalMode':series.approval_mode})
+                check_limits(session,row.borrower_id,'equipment',expanded,exclude=row.id)
+                waiting._process_locked(session,'equipment',faculty,state,row)
+                periods=[(o.start_at,o.end_at) for o in selected]
+                result=self._match(session,row.borrower_id,faculty,self._needs(self._lines(session,key)),*periods[0],periods=periods)
+                if series.approval_mode=='all':self._require_match(result)
+                for occurrence,match in zip(selected,result['occurrences']):
+                    if match['feasible']:
+                        self._reserve(session,row,match,occurrence)
+                        occurrence.explanation='Custodian approved and reserved the complete quantity for this occurrence.'
+                    else:
+                        occurrence.status='Unavailable'
+                        occurrence.explanation='Full eligible quantity is unavailable. No units reserved for this occurrence.'
+            else:
+                for occurrence in selected:occurrence.status,occurrence.explanation='Rejected',reason
+            for occurrence in selected:occurrence.decided_by,occurrence.decided_at=actor,datetime.now(timezone.utc)
+            self._series_status(session,row)
+            self._event(session,actor,faculty,'Recurring decision: '+', '.join(str(o.ordinal)+' '+o.status for o in selected)+'. '+reason,key)
+
     def cancel(self, actor, key):
+        current=self.detail(actor,key)
+        if current.get('recurrence'):return self.cancel_occurrence(actor,key)
         with self.database.transaction() as session:
             row = self._request(session, actor, key, True)
             if row.status not in {'Pending Approval', 'Approved'}:
@@ -255,24 +371,54 @@ class EquipmentService:
             self._event(session, actor, row.faculty_id, 'Cancelled before collection; reservations released.', key)
             refresh_after_commit(session, self.database, self.gateway, 'equipment', row.faculty_id)
 
-    def handover(self, actor, key, condition):
+    def cancel_occurrence(self,actor,key,occurrence_id=None):
+        if occurrence_id is not None and (type(occurrence_id) is not int or occurrence_id<=0):
+            raise EquipmentError('Choose a valid recurring occurrence.')
+        with self.database.transaction() as session:
+            row=self._request(session,actor,key,True)
+            series=series_for(session,row)
+            if not series:raise EquipmentError('Choose a recurring equipment request.')
+            occurrences=occurrences_for(session,series)
+            selected=[o for o in occurrences if occurrence_id is None or o.id==occurrence_id]
+            if not selected:raise EquipmentError('This occurrence does not belong to your series.')
+            changed=[];now=datetime.now(timezone.utc)
+            for o in selected:
+                if o.status in {'Cancelled','Rejected','Completed'}:continue
+                if o.start_at<=now or o.status=='Completed':
+                    if occurrence_id is not None:raise EquipmentError('Past or current physical uses cannot be cancelled. Verify returns instead.')
+                    continue
+                bookings=self._reservations(session,key,o.id)
+                if any(b.handed_at is not None for b in bookings):raise EquipmentError('Collected units require physical return.')
+                for booking in bookings:booking.released=True
+                o.status='Cancelled';changed.append(o.ordinal)
+            if not changed:return
+            self._series_status(session,row)
+            self._event(session,actor,row.faculty_id,'Cancelled future recurring occurrences '+str(changed)+'. Physical loans and past history retained.',key)
+            refresh_after_commit(session,self.database,self.gateway,'equipment',row.faculty_id)
+
+    def handover(self, actor, key, condition, occurrence_id=None):
         condition = self._text(condition, 'handover inspection')
         with self.database.transaction() as session:
             row = self._request(session, actor, key, True)
             self._staff(session, actor, row.faculty_id)
+            occurrence=self._occurrence(session,row,occurrence_id)
             now = datetime.now(timezone.utc)
-            if row.status != 'Approved' or not row.start_at <= now < row.due_at:
+            a,b=(occurrence.start_at,occurrence.end_at) if occurrence else (row.start_at,row.due_at)
+            if (occurrence and occurrence.status!='Reserved') or (not occurrence and row.status!='Approved') or not a<=now<b:
                 raise EquipmentError('Handover requires an approved reservation within its pickup/return interval.')
-            reservations = self._reservations(session, key)
+            reservations = self._reservations(session, key,occurrence_id)
+            if any(r.handed_at is not None for r in reservations):raise EquipmentError('This occurrence was already handed over; verify its physical return instead.')
             result = self._match(session, row.borrower_id, row.faculty_id, self._needs(self._lines(session, key)),
-                                 row.start_at, row.due_at, key, {b.unit_id for b in reservations})
+                                 a,b,key,{b.unit_id for b in reservations},exclude_occurrence=occurrence_id)
             self._require_match(result)
             for booking in reservations:
                 booking.handed_at, booking.handed_by, booking.handover_condition = now, actor, condition
-            row.status = 'Borrowed'
+            if occurrence:self._series_status(session,row)
+            else:row.status = 'Borrowed'
             self._event(session, actor, row.faculty_id,
                         'Physical handover verified. Due date at collection: '
-                        +row.due_at.astimezone(timezone.utc).isoformat()+'. '+condition, key)
+                        +b.astimezone(timezone.utc).isoformat()+'. '+condition+
+                        (' Occurrence '+str(occurrence.ordinal)+'.' if occurrence else ''), key)
 
     def intend_return(self, actor, key):
         with self.database.transaction() as session:
@@ -306,10 +452,11 @@ class EquipmentService:
                     booking.returned_at, booking.received_by, booking.released = datetime.now(timezone.utc), actor, True
                 self._event(session, actor, row.faculty_id, 'Custodian inspection: '+condition+'. '+notes, key, uid)
             returned = sum(b.returned_at is not None for b in bookings)
-            row.status = 'Returned' if returned == len(bookings) else 'Partially Returned' if returned else 'Borrowed'
+            if series_for(session,row):self._series_status(session,row)
+            else:row.status = 'Returned' if returned == len(bookings) else 'Partially Returned' if returned else 'Borrowed'
             refresh_after_commit(session, self.database, self.gateway, 'equipment', row.faculty_id)
 
-    def request_extension(self, actor, key, due, reason):
+    def request_extension(self, actor, key, due, reason, occurrence_id=None):
         due = aware(due)
         epoch(due)
         reason = self._text(reason, 'extension reason')
@@ -317,11 +464,15 @@ class EquipmentService:
             row = self._request(session, actor, key, True)
             if row.borrower_id != actor:
                 raise PermissionError('Only the borrower can request an extension.')
-            if row.status not in {'Borrowed', 'Partially Returned'} or due <= max(row.due_at, datetime.now(timezone.utc)) or due-row.start_at>timedelta(days=365):
+            occurrence=self._occurrence(session,row,occurrence_id)
+            outstanding=[b for b in self._reservations(session,key,occurrence_id) if b.handed_at is not None and b.returned_at is None]
+            a=occurrence.start_at if occurrence else row.start_at
+            current_due=max((b.due_at for b in outstanding),default=row.due_at)
+            if not outstanding or row.status not in {'Borrowed', 'Partially Returned'} or due <= max(current_due, datetime.now(timezone.utc)) or due-a>timedelta(days=365):
                 raise EquipmentError('Extensions require an active loan and a later future due date within one year of pickup.')
             if session.scalar(select(BorrowExtension.id).where(BorrowExtension.request_id == key, BorrowExtension.status == 'Pending')):
                 raise EquipmentError('An extension request is already awaiting a decision.')
-            extension = BorrowExtension(request_id=key, due_at=due, reason=reason)
+            extension = BorrowExtension(request_id=key, due_at=due, reason=reason,occurrence_id=occurrence_id)
             session.add(extension)
             session.flush()
             self._event(session, actor, row.faculty_id, 'Extension requested until '+due.isoformat()+'. '+reason, key)
@@ -333,38 +484,55 @@ class EquipmentService:
         if type(extension_id) is not int or extension_id <= 0:
             raise EquipmentError('Choose a valid extension request.')
         with self.database.transaction() as session:
+            from .waiting_list_service import WaitingListService
+            WaitingListService(self.database,self.gateway)._notice_lock(session)
+            original=self._request(session,actor,key)
+            session.scalar(select(User).where(User.id==original.borrower_id).with_for_update())
             row = self._request(session, actor, key, True)
             self._staff(session, actor, row.faculty_id)
             extension = session.get(BorrowExtension, extension_id)
             if not extension or extension.request_id != key or extension.status != 'Pending' or row.status not in {'Borrowed', 'Partially Returned'}:
                 raise EquipmentError('This extension is no longer awaiting a decision on an active loan.')
-            previous_due = row.due_at
+            occurrence=self._occurrence(session,row,extension.occurrence_id)
+            own=self._reservations(session,key,extension.occurrence_id)
+            previous_due=max((b.due_at for b in own if b.returned_at is None),default=row.due_at)
             if approve:
-                if extension.due_at <= max(row.due_at, datetime.now(timezone.utc)):
+                if extension.due_at <= max(previous_due, datetime.now(timezone.utc)):
                     raise EquipmentError('The proposed extension has expired or is no longer later than the current due date.')
-                outstanding = [b for b in self._reservations(session, key) if b.returned_at is None]
+                outstanding = [b for b in own if b.handed_at is not None and b.returned_at is None]
+                if not outstanding:raise EquipmentError('The selected physical loan has already been returned.')
+                if occurrence:
+                    series=series_for(session,row)
+                    periods=[(o.start_at,extension.due_at if o.id==occurrence.id else
+                        max((b.due_at for b in self._reservations(session,key,o.id)),default=o.end_at))
+                        for o in occurrences_for(session,series) if o.status not in {'Rejected','Cancelled'}]
+                    expanded=semester(session,{'timezone':series.timezone,'intervals':periods},
+                        {'periodId':series.period_id,'approvalMode':series.approval_mode})
+                    check_limits(session,row.borrower_id,'equipment',expanded,exclude=key)
                 needs = self._needs(self._lines(session, key))
                 for item in needs:
                     item['quantity'] = sum(b.type_id == item['typeId'] for b in outstanding)
                 needs = [i for i in needs if i['quantity']]
                 self._require_match(self._match(session, row.borrower_id, row.faculty_id, needs,
-                    row.start_at, extension.due_at, key, {b.unit_id for b in outstanding}))
+                    occurrence.start_at if occurrence else row.start_at, extension.due_at, key, {b.unit_id for b in outstanding},
+                    exclude_occurrence=extension.occurrence_id))
                 for booking in outstanding:
                     booking.due_at = extension.due_at
-                row.due_at = extension.due_at
+                if not occurrence:row.due_at = extension.due_at
             extension.status, extension.decided_by = ('Approved' if approve else 'Rejected'), actor
             self._event(session, actor, row.faculty_id,
                         'Extension '+str(extension.id)+' '+extension.status+'. Previous due: '
                         +previous_due.astimezone(timezone.utc).isoformat()
                         +'; proposed due: '+extension.due_at.astimezone(timezone.utc).isoformat()
-                        +'; current due: '+row.due_at.astimezone(timezone.utc).isoformat()+'.', key)
+                        +'; current due: '+(extension.due_at if approve else previous_due).astimezone(timezone.utc).isoformat()+
+                        ('; occurrence '+str(occurrence.ordinal) if occurrence else '')+'.', key)
 
     def directory(self, actor):
         with self.database.transaction(read_only=True) as session:
             _, account, role = self._user(session, actor)
             return {'faculties': [{'id': f.id, 'name': f.name, 'custodianId': self._custodian(session, f.id)} for f in session.scalars(
                         select(OrganizationUnit).where(OrganizationUnit.unit_type == 'Faculty').order_by(OrganizationUnit.name))],
-                    'isAdmin': account.administrator or role == 'Administrator'}
+                    'isAdmin': account.administrator or role == 'Administrator',**policy_directory(session)}
 
     def catalog(self, actor, start, due):
         start, due = self._period(start, due)
@@ -394,17 +562,32 @@ class EquipmentService:
             row = self._request(session, actor, key)
             custodian = self._custodian(session, row.faculty_id)
             bookings = self._reservations(session, key)
+            recurring=series_view(session,row)
+            if recurring:
+                for occurrence in recurring['occurrences']:
+                    own=[b for b in bookings if b.occurrence_id==occurrence['id']]
+                    outstanding=[b for b in own if b.handed_at is not None and b.returned_at is None]
+                    occurrence['due']=max((b.due_at for b in own),default=occurrence['end'])
+                    occurrence['loanStatus']=('Partially Returned' if outstanding and any(b.returned_at is not None for b in own)
+                        else 'Borrowed' if outstanding else 'Returned' if occurrence['status']=='Completed'
+                        else 'Pending Approval' if occurrence['status'] in {'Proposed','Unavailable'} else 'Rejected' if occurrence['status']=='Rejected'
+                        else 'Approved' if occurrence['status']=='Reserved' else 'Cancelled')
+                    occurrence['overdue']=any(b.due_at<datetime.now(timezone.utc) for b in outstanding)
+                    occurrence['unitIds']=[b.unit_id for b in own]
+                    occurrence['canHandover']=occurrence['status']=='Reserved' and not any(b.handed_at for b in own) and occurrence['start']<=datetime.now(timezone.utc)<occurrence['due']
             return {'id': row.id, 'borrowerId': row.borrower_id, 'borrower': session.get(User, row.borrower_id).name,
                 'faculty': session.get(OrganizationUnit, row.faculty_id).name, 'facultyId': row.faculty_id,
                 'isCustodian': custodian == actor, 'canAudit': custodian == actor,
                 'isBorrower': row.borrower_id == actor, 'status': row.status,
+                'recurrence':recurring,'priority':row.priority,'priorities':state_row(session).reservation_priorities,
                 'purpose': row.purpose, 'notes': row.notes, 'start': row.start_at, 'due': row.due_at,
                 'overdue': any(b.handed_at is not None and b.returned_at is None and b.due_at < datetime.now(timezone.utc) for b in bookings),
                 'items': [{'name': session.get(EquipmentType, i.type_id).name, 'quantity': i.quantity, 'specifications': i.specifications} for i in self._lines(session, key)],
                 'units': [{'id': b.unit_id, 'asset': session.get(EquipmentUnit, b.unit_id).asset_tag,
                     'condition': session.get(EquipmentUnit, b.unit_id).condition, 'handed': b.handed_at, 'returned': b.returned_at,
-                    'handoverCondition': b.handover_condition, 'returnCondition': b.return_condition, 'released': b.released} for b in bookings],
-                'extensions': [{'id': e.id, 'due': e.due_at, 'reason': e.reason, 'status': e.status} for e in session.scalars(
+                    'handoverCondition': b.handover_condition, 'returnCondition': b.return_condition, 'released': b.released,
+                    'occurrenceId':b.occurrence_id,'start':b.start_at,'due':b.due_at} for b in bookings],
+                'extensions': [{'id': e.id, 'due': e.due_at, 'reason': e.reason, 'status': e.status,'occurrenceId':e.occurrence_id} for e in session.scalars(
                     select(BorrowExtension).where(BorrowExtension.request_id == key).order_by(BorrowExtension.id))],
                 'history': event_history(session, EquipmentEvent, key, actor, audit=custodian == actor)}
 
@@ -541,9 +724,9 @@ class EquipmentService:
                 continue
             with self.database.transaction() as session:
                 row = self._request(session, actor, item['id'], True)
-                if not any(b.handed_at and b.returned_at is None and b.due_at < datetime.now(timezone.utc)
-                           for b in self._reservations(session, row.id)):
-                    continue
-                message = 'Overdue equipment: due '+row.due_at.isoformat()+'. Physical return is required; affected reservations need custodian attention.'
-                if not session.scalar(select(EquipmentEvent.id).where(EquipmentEvent.request_id == row.id, EquipmentEvent.message == message)):
-                    self._event(session, actor, row.faculty_id, message, row.id)
+                dues=sorted({b.due_at for b in self._reservations(session,row.id)
+                    if b.handed_at is not None and b.returned_at is None and b.due_at<datetime.now(timezone.utc)})
+                for due in dues:
+                    message = 'Overdue equipment: due '+due.isoformat()+'. Physical return is required; affected reservations need custodian attention.'
+                    if not session.scalar(select(EquipmentEvent.id).where(EquipmentEvent.request_id == row.id, EquipmentEvent.message == message)):
+                        self._event(session, actor, row.faculty_id, message, row.id)

@@ -16,7 +16,7 @@
         <p>{{ item.faculty }}{% if item.isCustodian %} &middot; {{ item.borrower|person_name }}{% endif %}</p>
         <p>Pickup {{ item.start|university_time }} &middot; Due {{ item.due|university_time }}</p>
         <p>{% for line in item['items'] %}{{ line.quantity }} &times; {{ line.name }}{% if not loop.last %}; {% endif %}{% endfor %}</p></div>
-        <div><span class="status-badge">{{ item.status }}</span>{% if item.overdue %}<p class="equipment-warning" role="status">Overdue: physical return required</p>{% endif %}</div></article>
+        <div><span class="status-badge">{{ item.recurrence.summary if item.recurrence else item.status }}</span>{% if item.overdue %}<p class="equipment-warning" role="status">Overdue: physical return required</p>{% endif %}</div></article>
     {% else %}<p>No borrowing requests yet.</p>{% endfor %}</div>
 </section>
 {% endblock %}

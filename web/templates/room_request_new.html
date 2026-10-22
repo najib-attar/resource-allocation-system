@@ -12,6 +12,7 @@
 <label>Description <textarea name="description" maxlength="4000">{{ item.description if item else '' }}</textarea></label>
 <label>Declared club affiliation (optional) <input name="club" maxlength="200" value="{{ item.club if item else '' }}"><small>This is a declaration, not verified membership. The faculty reviews club-branded activities.</small></label>
 <div class="appointment-grid"><label>Date and start time <input name="start" type="datetime-local" value="{{ item.start|university_time|replace(' ','T') if item else today+'T10:00' }}" min="1970-01-01T00:00" max="2099-12-31T23:59" required></label><label>Duration (minutes) <input name="duration" type="number" min="1" max="1440" value="{{ item.duration if item else 60 }}" required></label></div>
+{% if not item %}{% include 'components/_recurrence_fields.html' %}{% endif %}
 <fieldset><legend>Required facilities</legend>{% for feature,label in [('projector','Projector'),('whiteboard','Whiteboard'),('computers','Computers')] %}<label class="check-label"><input type="checkbox" name="features" value="{{ feature }}"{% if item and feature in item.features %} checked{% endif %}>{{ label }}</label>{% endfor %}</fieldset>
 <div class="appointment-grid"><label>Faculty preference (optional) <select name="faculty"><option value="">No preference</option>{% for faculty in directory.faculties %}<option value="{{ faculty.id }}"{% if item and item.preferredFaculty == faculty.id %} selected{% endif %}>{{ faculty.name }}</option>{% endfor %}</select></label>
 <label>Building preference (optional) <select name="building"><option value="">No preference</option>{% for building in directory.buildings if building %}<option{% if item and item.preferredBuilding == building %} selected{% endif %}>{{ building }}</option>{% endfor %}</select></label></div>
@@ -25,5 +26,5 @@
 <label>Owning faculty for waiting-list review<select name="waitingFaculty"><option value="">Choose one owning faculty</option>{% for faculty in directory.faculties %}<option value="{{ faculty.id }}">{{ faculty.name }}</option>{% endfor %}</select></label>
 <p>Only compatible rooms owned by this faculty can be assigned under its pre-approval. Requirements and time remain unchanged.</p>
 {% include 'components/_waiting_consent.html' %}<button name="action" value="wait" class="button-secondary">Join waiting list</button></fieldset>{% endif %}
-</form></section><script src="{{ url_for('static',filename='rooms.js') }}" defer></script>
+</form></section><script src="{{ url_for('static',filename='recurrence.js') }}" defer></script><script src="{{ url_for('static',filename='rooms.js') }}" defer></script>
 {% endblock %}

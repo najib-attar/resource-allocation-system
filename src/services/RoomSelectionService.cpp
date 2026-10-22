@@ -1,6 +1,7 @@
 #include "RoomSelectionService.h"
 #include <algorithm>
 #include <tuple>
+#include <set>
 
 namespace {
 bool overlaps(DatedInterval a, DatedInterval b) { return a.start < b.end && b.start < a.end; }
@@ -50,5 +51,18 @@ std::vector<StudentRoomCandidate> RoomSelectionService::rank(const RoomSelection
         return std::tie(a.preferencePenalty, a.spareSeats, a.extraFacilities, a.roomId)
              < std::tie(b.preferencePenalty, b.spareSeats, b.extraFacilities, b.roomId);
     });
+    return result;
+}
+
+std::vector<StudentRoomCandidate> RoomSelectionService::rankSeries(const RoomSelectionInput& input, const std::vector<DatedInterval>& slots) {
+    if (slots.empty()) return {};
+    auto result = rank(input, slots.front());
+    for (std::size_t i = 1; i < slots.size() && !result.empty(); ++i) {
+        std::set<int> eligible;
+        for (const auto& row : rank(input, slots[i])) eligible.insert(row.roomId);
+        result.erase(std::remove_if(result.begin(), result.end(), [&](const auto& row) {
+            return !eligible.count(row.roomId);
+        }), result.end());
+    }
     return result;
 }

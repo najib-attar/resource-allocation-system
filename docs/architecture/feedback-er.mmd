@@ -4,6 +4,7 @@ erDiagram
     equipment_reservation {
         integer id PK "identity"
         integer item_id FK
+        bigint occurrence_id FK "nullable"
         integer type_id FK
         integer unit_id FK
         integer handed_by FK "nullable"

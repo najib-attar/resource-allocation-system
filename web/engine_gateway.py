@@ -107,6 +107,12 @@ class EngineGateway:
     def execute_equipment(self, snapshot):
         return self._execute(snapshot, "--equipment-json", validate_equipment_result)
 
+    def execute_room_series(self, snapshot):
+        return self._execute(snapshot, "--room-series-json", validate_room_series_result)
+
+    def execute_equipment_series(self, snapshot):
+        return self._execute(snapshot, "--equipment-series-json", validate_equipment_series_result)
+
     def _execute(self, snapshot, mode, validator):
         backend = resolve_backend_executable(self.project_root, os.environ.get("RESOURCE_ALLOCATION_BACKEND"))
         if self.logger:
@@ -134,6 +140,46 @@ class EngineGateway:
         if result["status"] != "success":
             raise EngineIntegrationError(f"Backend reported error with zero exit code: {result['errors']}")
         return result, backend.metadata
+
+
+def _series_header(result, snapshot, operation):
+    if not (isinstance(result,dict) and result.get('operation')==operation and type(result.get('protocolVersion')) is int
+        and result['protocolVersion']==1 and result.get('runId')==snapshot['runId'] and result.get('status')=='success'
+        and isinstance(result.get('engineVersion'),str) and result['engineVersion'] and type(result.get('feasible')) is bool
+        and result.get('errors')==[] and isinstance(result.get('occurrences'),list)
+        and len(result['occurrences'])==len(snapshot['occurrences']) and 1<=len(result['occurrences'])<=366):
+        raise EngineIntegrationError('Invalid recurring reservation engine response.')
+
+
+def _series_children(result, snapshot, operation, validator):
+    for row,period in zip(result['occurrences'],snapshot['occurrences']):
+        if not isinstance(row,dict) or any(type(row.get(k)) is not int or row[k]!=period[k] for k in ('start','end')):
+            raise EngineIntegrationError('Engine occurrence dates do not match the complete requested series.')
+        child={**row,'protocolVersion':1,'operation':operation,'runId':snapshot['runId'],
+               'engineVersion':result['engineVersion'],'status':'success','errors':[]}
+        validator(child,{**snapshot,'proposed':period})
+
+
+def validate_room_series_result(result, snapshot):
+    _series_header(result,snapshot,'studentRoomSeries')
+    validate_room_result({**result,'operation':'studentRoom'},snapshot)
+    _series_children(result,snapshot,'studentRoom',validate_room_result)
+    all_feasible=all(row['feasible'] for row in result['occurrences'])
+    if (result['feasible'] and not all_feasible) or (snapshot['action']=='attendance' and result['feasible']!=all_feasible):
+        raise EngineIntegrationError('Room series feasibility disagrees with its dated occurrences.')
+    for row in result['alternatives']:
+        offset=row.get('offsetMinutes')
+        if type(offset) is not int or not 0<abs(offset)<=120 or row['start']!=snapshot['proposed']['start']+offset*60:
+            raise EngineIntegrationError('Invalid alternative recurring time.')
+    return result
+
+
+def validate_equipment_series_result(result, snapshot):
+    _series_header(result,snapshot,'equipmentSeries')
+    _series_children(result,snapshot,'equipment',validate_equipment_result)
+    if result.get('items')!=[] or result.get('alternativePeriods')!=[] or result['feasible']!=all(row['feasible'] for row in result['occurrences']):
+        raise EngineIntegrationError('Equipment series must report all occurrence decisions without an ambiguous single-period assignment.')
+    return result
 
 
 def validate_equipment_result(result, snapshot):

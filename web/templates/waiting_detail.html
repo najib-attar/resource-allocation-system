@@ -11,4 +11,5 @@
 {% if item.status in ['Pending Review','Preapproved'] %}<form method="post" action="{{ url_for('waiting.cancel',entry_id=item.id) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="button-secondary">Cancel waiting request without penalty</button></form>{% endif %}
 {% if item.status == 'Assigned' %}<p><a class="button-primary" href="{{ url_for('rooms.detail' if item.kind == 'room' else 'equipment.detail',request_id=item.requestId) }}">Open confirmed reservation</a></p>{% endif %}
 <p><a href="{{ url_for('waiting.index') }}">Back to waiting lists</a> &middot; <a href="{{ url_for('waiting.policy') }}">Waiting-list policy</a></p></section>
+{% with kind=item.kind,authorized=item.canReview,request_id=item.requestId %}{% include 'components/_priority_override.html' %}{% endwith %}
 {% include 'components/_activity_history.html' %}{% endblock %}

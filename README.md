@@ -5,8 +5,8 @@ for actual room participants and equipment borrowers. Optional reports, staff
 review/resolution/reopening, maintenance audit and notifications share one workflow.
 See the [use case](docs/use-cases/UC-STU-06-resource-feedback-issue-reporting.pdf),
 [requirements](docs/srs/UC-STU-06-requirements.md) and
-[architecture](docs/architecture/resource-feedback-design.md). Apply Alembic head
-`0048a` before running the updated web app; C++ and JSON execution are unchanged.
+[architecture](docs/architecture/resource-feedback-design.md). Introduced with
+Alembic `0048a`, this workflow preserves the existing C++ allocation behavior.
 The [Iteration 48 report](docs/iteration-reports/Iteration_48.pdf) summarizes the
 implementation, architecture and executed verification.
 
@@ -209,7 +209,7 @@ RequestTypeRule
 
 - `docs/srs/` : Software Requirements Specification
 - `docs/analysis/` : Initial domain analysis and domain model
-- `docs/iteration-reports/` : Iteration reports, including Iterations 33-47
+- `docs/iteration-reports/` : Iteration reports, including Iterations 33-49
 - `docs/design/class-diagrams/` : class diagram exports, including Iterations 33-40
 - `docs/testing/` : backend testing and verification reports
 - `docs/use-cases/` : user-facing feature requirements; not a list of implemented features
@@ -436,6 +436,24 @@ The current dashboard supports:
 - Raw Data page for database-backed technical tables (legacy CSV-style tab names retained)
 
 Flask does not check participant availability and does not compute suggestions. Those behaviors belong to the C++ backend.
+
+## Recurring Student Reservations
+
+Room and equipment forms support bounded weekly reservations with multiple
+weekdays, explicit dates and a full occurrence preview. One faculty/custodian
+decision follows the student's all-required or partial-approval consent. Selected
+feasible dates reserve resources; pending/unavailable/rejected dates remain visible.
+One explicitly configured semester must contain the full series. Administration
+configures optional quotas and permitted priority levels; responsible staff overrides
+require an immutable reasoned audit. Existing eligible queues retain priority/FCFS.
+Rooms stay consistent across dates; equipment has separate physical handovers
+and verified returns. Cancel a future date or remaining future dates while
+retaining past history. Equipment deadlines are reminders, never assumed returns.
+Upgrade to Alembic `0049b` and rebuild the verified backend before using the new
+forms. See [recurrence design](docs/architecture/recurring-reservations-design.md)
+and [operations](docs/database-operations.md#recurring-room-and-equipment-reservations).
+The [Iteration 49 report](docs/iteration-reports/Iteration_49.pdf) summarizes
+the architecture, database additions, verified tests and remaining limits.
 
 ## Demo Workflow
 

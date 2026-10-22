@@ -136,12 +136,16 @@ class NotificationUpgradeTests(RoomFixture):
         with mock.patch.dict(os.environ,{'DATABASE_URL':self.url}):
             command.downgrade(Config(str(ROOT/'alembic.ini')),'0043b')
         with self.database.transaction() as session:
-            row=StudentRoomRequest(organizer_id=1,resource_id=302,faculty_id=self.other_faculty,approver_id=7,
-                category='study',purpose='Existing private room request',attendee_count=5,required_features=[],
-                start_at=START,end_at=START+timedelta(hours=1),duration_minutes=60)
-            session.add(row); session.flush()
-            session.add(RoomInvitation(request_id=row.id,user_id=2,revision=1))
-            session.add(RoomEvent(request_id=row.id,actor_id=1,revision=1,message='Existing submitted event'))
+            # Reflect the historical schema: current ORM defaults may reference
+            # columns deliberately absent before this upgrade.
+            from sqlalchemy import MetaData,Table
+            legacy=Table('student_room_request',MetaData(),autoload_with=session.connection())
+            key=session.execute(legacy.insert().values(organizer_id=1,resource_id=302,faculty_id=self.other_faculty,approver_id=7,
+                category='study',purpose='Existing private room request',description='',club_affiliation='',preferred_building='',
+                attendee_count=5,required_features=[],start_at=START,end_at=START+timedelta(hours=1),duration_minutes=60,
+                revision=1,status='Pending Faculty Approval',explanation='')).inserted_primary_key[0]
+            session.add(RoomInvitation(request_id=key,user_id=2,revision=1))
+            session.add(RoomEvent(request_id=key,actor_id=1,revision=1,message='Existing submitted event'))
         with mock.patch.dict(os.environ,{'DATABASE_URL':self.url}):
             command.upgrade(Config(str(ROOT/'alembic.ini')),'head')
             command.upgrade(Config(str(ROOT/'alembic.ini')),'head')

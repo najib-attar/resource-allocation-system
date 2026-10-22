@@ -52,8 +52,8 @@ json candidate(const StudentRoomCandidate& value) {
 }
 }
 
-int RoomRequestJsonProtocol::run(std::istream& stream, std::ostream& out, std::ostream& diagnostics) {
-    json result{{"protocolVersion",1},{"operation","studentRoom"},{"engineVersion","student-rooms-1"},
+int RoomRequestJsonProtocol::run(std::istream& stream, std::ostream& out, std::ostream& diagnostics, bool series) {
+    json result{{"protocolVersion",1},{"operation",series ? "studentRoomSeries" : "studentRoom"},{"engineVersion",series ? "student-rooms-series-1" : "student-rooms-1"},
                 {"runId",""},{"status","error"},{"feasible",false},{"reasonCode","INVALID_INPUT"},
                 {"candidates",json::array()},{"alternatives",json::array()},{"explanations",json::array()},{"errors",json::array()}};
     try {
@@ -65,7 +65,7 @@ int RoomRequestJsonProtocol::run(std::istream& stream, std::ostream& out, std::o
         }
         auto input = json::parse(raw);
         integer(input.at("protocolVersion"),1,1);
-        if (input.at("operation") != "studentRoom") throw std::invalid_argument("Unsupported operation.");
+        if (input.at("operation") != (series ? "studentRoomSeries" : "studentRoom")) throw std::invalid_argument("Unsupported operation.");
         auto runId = label(input.at("runId"),100);
         if (runId.empty()) throw std::invalid_argument("Missing run identifier.");
         result["runId"] = runId;
@@ -88,7 +88,7 @@ int RoomRequestJsonProtocol::run(std::istream& stream, std::ostream& out, std::o
         data.proposed = interval(input.at("proposed"));
         data.horizon = interval(input.at("horizon"));
         auto duration = data.proposed.end-data.proposed.start;
-        if (duration > 86400 || data.horizon.end-data.horizon.start > 32*86400LL || data.proposed.start < data.horizon.start || data.proposed.end > data.horizon.end)
+        if (duration > 86400 || data.horizon.end-data.horizon.start > (series ? 732 : 32)*86400LL || data.proposed.start < data.horizon.start || data.proposed.end > data.horizon.end)
             throw std::invalid_argument("Invalid duration or search horizon.");
         const auto& rooms = input.at("rooms");
         if (!rooms.is_array() || rooms.size()>10000) throw std::invalid_argument("Invalid room collection.");
@@ -119,6 +119,58 @@ int RoomRequestJsonProtocol::run(std::istream& stream, std::ostream& out, std::o
             data.rooms.push_back(std::move(room));
         }
         result["status"] = "success";
+        if (series) {
+            int localStart=static_cast<int>(integer(input.at("startMinutes"),0,1439));
+            auto slots = intervals(input.at("occurrences"));
+            if (slots.empty() || slots.size() > 366 || slots.front().start != data.proposed.start || slots.front().end != data.proposed.end)
+                throw std::invalid_argument("A complete bounded series must begin with the proposed interval.");
+            for (std::size_t i=0;i<slots.size();++i)
+                if (slots[i].end-slots[i].start != duration || slots[i].start < data.horizon.start || slots[i].end > data.horizon.end || (i && slots[i-1].end > slots[i].start))
+                    throw std::invalid_argument("Occurrences must be sorted, non-overlapping and equal-duration within the horizon.");
+            int selected = action == "validate" ? static_cast<int>(integer(input.at("selectedRoomId"),1,2147483647)) : 0;
+            auto filter = [&](std::vector<StudentRoomCandidate>& values) {
+                if (selected) values.erase(std::remove_if(values.begin(),values.end(),[&](const auto& row){return row.roomId!=selected;}),values.end());
+            };
+            result["occurrences"]=json::array();
+            bool attendance=true;
+            std::set<std::string> allReasons;
+            for (auto slot : slots) {
+                auto ranked=RoomSelectionService::rank(data,slot);filter(ranked);
+                auto reason=RoomSelectionService::organizerReason(data,slot);
+                bool feasible=action=="attendance" ? reason=="AVAILABLE" : !ranked.empty();
+                attendance=attendance && feasible;
+                json row{{"start",slot.start},{"end",slot.end},{"feasible",feasible},
+                    {"reasonCode",feasible ? "AVAILABLE" : reason!="AVAILABLE" ? reason : "NO_ELIGIBLE_ROOM"},
+                    {"candidates",json::array()},{"alternatives",json::array()},{"explanations",json::array()}};
+                if(action!="attendance") for(const auto& value:ranked) if(row["candidates"].size()<20) row["candidates"].push_back(candidate(value));
+                std::set<std::string> reasons;
+                if(reason!="AVAILABLE")reasons.insert(reason);
+                for(const auto& room:data.rooms) if(!selected || room.space->getId()==selected) {
+                    auto value=RoomSelectionService::roomReason(data,room,slot);
+                    if(value!="AVAILABLE")reasons.insert(value);
+                }
+                row["explanations"]=reasons;allReasons.insert(reasons.begin(),reasons.end());
+                result["occurrences"].push_back(row);
+            }
+            auto common=RoomSelectionService::rankSeries(data,slots);filter(common);
+            result["feasible"]=action=="attendance" ? attendance : !common.empty();
+            result["reasonCode"]=result["feasible"].get<bool>() ? "AVAILABLE" : "NO_ELIGIBLE_ROOM";
+            if(action=="attendance" && !attendance) for(const auto& row:result["occurrences"])
+                if(!row["feasible"].get<bool>()){result["reasonCode"]=row["reasonCode"];break;}
+            if(action!="attendance")for(const auto& row:common)if(result["candidates"].size()<20)result["candidates"].push_back(candidate(row));
+            if(action!="attendance" && common.empty() && attendance)allReasons.insert("NO_CONSISTENT_ROOM");
+            result["explanations"]=allReasons;
+            if(action=="recommend" && common.empty()) {
+                for(int step=15;step<=120 && result["alternatives"].size()<5;step+=15)for(int offset:{-step,step}) {
+                    if(result["alternatives"].size()>=5 || localStart+offset<0 || localStart+offset+duration/60>1440)continue;
+                    auto changed=slots;for(auto& slot:changed){slot.start+=offset*60;slot.end+=offset*60;}
+                    if(changed.front().start<data.horizon.start || changed.back().end>data.horizon.end)continue;
+                    auto values=RoomSelectionService::rankSeries(data,changed);
+                    if(!values.empty()){auto value=candidate(values.front());value["offsetMinutes"]=offset;result["alternatives"].push_back(value);}
+                }
+            }
+            out<<result.dump()<<'\n';return 0;
+        }
         auto reason = RoomSelectionService::organizerReason(data,data.proposed);
         if (action == "attendance") {
             result["feasible"] = reason == "AVAILABLE";

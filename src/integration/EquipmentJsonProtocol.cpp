@@ -41,8 +41,8 @@ std::map<std::string,std::string> specs(const json& row) {
     return values;
 }
 }
-int EquipmentJsonProtocol::run(std::istream& input, std::ostream& output, std::ostream& diagnostics) {
-    json result{{"protocolVersion",1},{"operation","equipment"},{"engineVersion","equipment-1"},{"runId",""},
+int EquipmentJsonProtocol::run(std::istream& input, std::ostream& output, std::ostream& diagnostics, bool series) {
+    json result{{"protocolVersion",1},{"operation",series ? "equipmentSeries" : "equipment"},{"engineVersion",series ? "equipment-series-1" : "equipment-1"},{"runId",""},
         {"status","error"},{"feasible",false},{"items",json::array()},{"alternativePeriods",json::array()},{"errors",json::array()}};
     try {
         std::string raw;
@@ -50,7 +50,7 @@ int EquipmentJsonProtocol::run(std::istream& input, std::ostream& output, std::o
         while(input.get(c)) { if(raw.size()>=16*1024*1024) throw std::invalid_argument("Input exceeds 16 MiB."); raw+=c; }
         auto document=json::parse(raw);
         integer(document.at("protocolVersion"),1,1);
-        if(document.at("operation")!="equipment") throw std::invalid_argument("Unknown operation.");
+        if(document.at("operation")!=(series ? "equipmentSeries" : "equipment")) throw std::invalid_argument("Unknown operation.");
         auto run=text(document.at("runId"));
         if(run.empty()) throw std::invalid_argument("Missing run ID.");
         result["runId"]=run;
@@ -87,6 +87,29 @@ int EquipmentJsonProtocol::run(std::istream& input, std::ostream& output, std::o
             if(!conditions.count(unit.condition)) throw std::invalid_argument("Unknown unit condition.");
             for(const auto& period:collection(row.at("reservations"),1000)) unit.reservations.push_back(interval(period));
             data.units.push_back(unit);
+        }
+        if(series) {
+            const auto& periods=collection(document.at("occurrences"),366);
+            if(periods.empty())throw std::invalid_argument("At least one dated occurrence required.");
+            result["occurrences"]=json::array();result["feasible"]=true;
+            std::int64_t previous=0;
+            for(const auto& value:periods) {
+                auto period=interval(value);
+                if(period.start<previous || period.end-period.start!=data.proposed.end-data.proposed.start ||
+                   period.start-data.proposed.start>731*86400LL || (previous==0 && (period.start!=data.proposed.start || period.end!=data.proposed.end)))
+                    throw std::invalid_argument("Occurrences must be complete sorted non-overlapping equal-duration periods.");
+                previous=period.end;
+                auto matches=EquipmentMatchingService::match(data,period);
+                json row{{"start",period.start},{"end",period.end},{"feasible",true},{"items",json::array()},{"alternativePeriods",json::array()}};
+                for(const auto& match:matches) {
+                    if(match.reason!="AVAILABLE")row["feasible"]=false;
+                    row["items"].push_back({{"typeId",match.typeId},{"availableQuantity",match.availableQuantity},{"unitIds",match.unitIds},
+                        {"reasonCode",match.reason},{"alternativeTypeIds",match.alternativeTypeIds}});
+                }
+                if(!row["feasible"].get<bool>())result["feasible"]=false;
+                result["occurrences"].push_back(row);
+            }
+            result["status"]="success";output<<result.dump()<<'\n';return 0;
         }
         auto matches=EquipmentMatchingService::match(data,data.proposed);
         result["feasible"]=true;

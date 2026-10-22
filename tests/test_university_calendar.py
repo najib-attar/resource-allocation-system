@@ -327,6 +327,6 @@ class UnifiedCalendarTests(RoomFixture):
             row = session.scalar(select(ResourceRequest))
             self.assertFalse(row.calendar_public)
             self.assertIsNone(row.academic_instructor_id)
-            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), '0048a')
+            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), '0049b')
         with self.assertRaises(IntegrityError), self.database.transaction() as session:
             session.scalar(select(ResourceRequest)).academic_instructor_id = 999999

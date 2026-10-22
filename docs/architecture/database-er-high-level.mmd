@@ -36,6 +36,7 @@ erDiagram
     borrow_extension {
         integer id PK "identity"
         integer request_id FK
+        bigint occurrence_id FK "nullable"
         integer decided_by FK "nullable"
     }
     borrow_item {
@@ -74,6 +75,7 @@ erDiagram
     equipment_reservation {
         integer id PK "identity"
         integer item_id FK
+        bigint occurrence_id FK "nullable"
         integer type_id FK
         integer unit_id FK
         integer handed_by FK "nullable"
@@ -131,6 +133,23 @@ erDiagram
         integer request_id FK
         bigint run_id FK "nullable"
     }
+    reservation_occurrence {
+        bigint id PK "identity"
+        bigint series_id FK
+        integer decided_by FK "nullable"
+    }
+    reservation_priority_override {
+        bigint id PK "identity"
+        bigint room_request_id FK "nullable"
+        integer borrow_request_id FK "nullable"
+        integer actor_id FK
+    }
+    reservation_series {
+        bigint id PK "identity"
+        bigint room_request_id FK,UK "nullable"
+        integer borrow_request_id FK,UK "nullable"
+        integer period_id FK "nullable"
+    }
     resource {
         integer id PK "identity"
     }
@@ -159,6 +178,8 @@ erDiagram
     room_organizer_commitment {
         bigint request_id PK,FK
         integer user_id FK
+        timestamptz start_at PK
+        bigint occurrence_id FK,UK "nullable"
     }
     room_policy {
         integer resource_id PK,FK
@@ -167,6 +188,8 @@ erDiagram
     room_reservation {
         bigint request_id PK,FK
         integer resource_id FK
+        timestamptz start_at PK
+        bigint occurrence_id FK,UK "nullable"
     }
     student_room_request {
         bigint id PK "identity"
@@ -201,6 +224,7 @@ erDiagram
     appointment ||--o{ appointment_professor : appointment_id
     university_user ||--o{ appointment_professor : user_id
     login_account o|--o{ borrow_extension : decided_by
+    reservation_occurrence o|--o{ borrow_extension : occurrence_id
     borrow_request ||--o{ borrow_extension : request_id
     borrow_request ||--o{ borrow_item : request_id_faculty_id
     equipment_type ||--o{ borrow_item : type_id_faculty_id
@@ -216,6 +240,7 @@ erDiagram
     equipment_unit o|--o{ equipment_event : unit_id
     login_account o|--o{ equipment_reservation : handed_by
     borrow_item ||--o{ equipment_reservation : item_id_type_id
+    reservation_occurrence o|--o{ equipment_reservation : occurrence_id
     login_account o|--o{ equipment_reservation : received_by
     equipment_unit ||--o{ equipment_reservation : unit_id_type_id
     equipment_category ||--o{ equipment_type : category_id
@@ -238,6 +263,14 @@ erDiagram
     allocation_run ||--o{ request_decision : run_id
     resource_request ||--o{ request_history : request_id
     allocation_run o|--o{ request_history : run_id
+    login_account o|--o{ reservation_occurrence : decided_by
+    reservation_series ||--o{ reservation_occurrence : series_id
+    login_account ||--o{ reservation_priority_override : actor_id
+    borrow_request o|--o{ reservation_priority_override : borrow_request_id
+    student_room_request o|--o{ reservation_priority_override : room_request_id
+    borrow_request o|--o| reservation_series : borrow_request_id
+    academic_period o|--o{ reservation_series : period_id
+    student_room_request o|--o| reservation_series : room_request_id
     login_account ||--o{ resource_feedback : assigned_to_id
     equipment_reservation o|--o{ resource_feedback : equipment_reservation_id
     organization_unit ||--o{ resource_feedback : faculty_id
@@ -249,11 +282,13 @@ erDiagram
     resource ||--o{ resource_request : resource_id
     student_room_request ||--o{ room_invitation : request_id
     university_user ||--o{ room_invitation : user_id
-    student_room_request ||--o| room_organizer_commitment : request_id
+    reservation_occurrence o|--o| room_organizer_commitment : occurrence_id
+    student_room_request ||--o{ room_organizer_commitment : request_id
     university_user ||--o{ room_organizer_commitment : user_id
     organization_unit ||--o{ room_policy : faculty_id
     resource ||--o| room_policy : resource_id
-    student_room_request ||--o| room_reservation : request_id
+    reservation_occurrence o|--o| room_reservation : occurrence_id
+    student_room_request ||--o{ room_reservation : request_id
     resource ||--o{ room_reservation : resource_id
     login_account o|--o{ student_room_request : approved_by
     login_account ||--o{ student_room_request : approver_id

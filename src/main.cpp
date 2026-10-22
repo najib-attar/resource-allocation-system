@@ -16,6 +16,12 @@
 #include "integration/EquipmentJsonProtocol.h"
 
 int main(int argc, char* argv[]) {
+    if (argc == 2 && std::string(argv[1]) == "--equipment-series-json") {
+        return EquipmentJsonProtocol::run(std::cin, std::cout, std::cerr, true);
+    }
+    if (argc == 2 && std::string(argv[1]) == "--room-series-json") {
+        return RoomRequestJsonProtocol::run(std::cin, std::cout, std::cerr, true);
+    }
     if (argc == 2 && std::string(argv[1]) == "--equipment-json") {
         return EquipmentJsonProtocol::run(std::cin, std::cout, std::cerr);
     }
@@ -29,7 +35,7 @@ int main(int argc, char* argv[]) {
         return JsonEngineProtocol::run(std::cin, std::cout, std::cerr);
     }
     if (argc != 1) {
-        std::cerr << "Usage: allocation_system [--json | --appointments-json | --rooms-json | --equipment-json]\n";
+        std::cerr << "Usage: allocation_system [--json | --appointments-json | --rooms-json | --equipment-json | --room-series-json | --equipment-series-json]\n";
         return 2;
     }
     ResourceAllocationSession session;

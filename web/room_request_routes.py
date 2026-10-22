@@ -5,6 +5,7 @@ from flask import Blueprint, abort, g, jsonify, redirect, render_template, reque
 from .calendar_service import CalendarError, local_instant, university_zone
 from .room_request_service import RoomRequestService, RoomRequestError
 from .waiting_list_service import WaitingListService
+from .recurrence import recurrence_fields
 import uuid
 
 
@@ -38,10 +39,12 @@ def create_room_blueprint(database_provider, gateway_provider, strategy_provider
         return [integer(x) for x in request.form.getlist('professorIds')]
 
     def fields():
+        recurring=recurrence_fields(request.form)
         return {'category':request.form.get('category'),'purpose':request.form.get('purpose',''),
                 'description':request.form.get('description',''),'club':request.form.get('club',''),
                 'count':integer(request.form.get('count')),'duration':integer(request.form.get('duration')),
-                'start':local_instant(request.form.get('start')),'features':request.form.getlist('features'),
+                'start':local_instant(request.form.get('start')) if not recurring else None,
+                'recurrence':recurring,'features':request.form.getlist('features'),
                 'faculty':integer(request.form['faculty']) if request.form.get('faculty') else None,
                 'building':request.form.get('building',''),
                 'participantIds':[integer(x) for x in request.form.getlist('participantIds')]}
@@ -78,7 +81,7 @@ def create_room_blueprint(database_provider, gateway_provider, strategy_provider
                 key = waiting().join_room(actor(), fields(), invitees(), integer(request.form.get('waitingFaculty')),
                     request.form.get('policyVersion'), request.form.get('acceptWaiting') == 'yes', request.form.get('submission_key'))
                 return redirect(url_for('waiting.detail', entry_id=key))
-            key=service().submit(actor(),fields(),invitees(),integer(request.form.get('roomId')))
+            key=service().submit(actor(),fields(),invitees(),integer(request.form.get('roomId')),submission_key=request.form.get('submission_key'))
             return redirect(url_for('rooms.detail',request_id=key))
         return render_template('room_request_new.html',directory=service().directory(actor()),item=None,
                                waiting_policy=waiting().policy(), submission_key=uuid.uuid4().hex,
@@ -92,6 +95,9 @@ def create_room_blueprint(database_provider, gateway_provider, strategy_provider
             for row in result[group]:
                 row['localStart']=datetime.fromtimestamp(row['start'],timezone.utc).astimezone(university_zone()).strftime('%Y-%m-%dT%H:%M')
                 row['localEnd']=datetime.fromtimestamp(row['end'],timezone.utc).astimezone(university_zone()).strftime('%Y-%m-%dT%H:%M')
+        for row in result.get('occurrences',[]):
+            row['localStart']=datetime.fromtimestamp(row['start'],university_zone()).strftime('%Y-%m-%d %H:%M')
+            row['localEnd']=datetime.fromtimestamp(row['end'],university_zone()).strftime('%Y-%m-%d %H:%M')
         return jsonify(result)
 
     @blueprint.get('/<int:request_id>')
@@ -118,12 +124,18 @@ def create_room_blueprint(database_provider, gateway_provider, strategy_provider
         value=request.form.get('decision')
         if value not in {'approve','reject'}:
             raise RoomRequestError('Choose approve or reject.')
-        service().decide(request_id,actor(),integer(request.form.get('revision')),value == 'approve',request.form.get('reason',''))
+        selected=[integer(k) for k in request.form.getlist('occurrenceIds')] if request.form.get('selectedDates') else None
+        service().decide(request_id,actor(),integer(request.form.get('revision')),value == 'approve',request.form.get('reason',''),selected)
         return redirect(url_for('rooms.detail',request_id=request_id))
 
     @blueprint.post('/<int:request_id>/cancel')
     def cancel(request_id):
         service().cancel(request_id,actor(),integer(request.form.get('revision')))
+        return redirect(url_for('rooms.detail',request_id=request_id))
+
+    @blueprint.post('/<int:request_id>/occurrences/<int:occurrence_id>/cancel')
+    def cancel_occurrence(request_id,occurrence_id):
+        service().cancel_occurrence(request_id,actor(),integer(request.form.get('revision')),occurrence_id)
         return redirect(url_for('rooms.detail',request_id=request_id))
 
     @blueprint.post('/<int:request_id>/invitation')
