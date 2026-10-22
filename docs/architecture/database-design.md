@@ -1,8 +1,29 @@
 # PostgreSQL application persistence and dated calendars
 
+## Dated recurring reservations (0049a)
+
+The schema now has **52 application tables** plus Alembic. `reservation_series`
+links exactly one existing room or borrowing request, retaining its bounded weekly
+rule, original timezone and retry identity. `reservation_occurrence` stores the
+complete ordered dated expansion and lifecycle state. Existing request details,
+participants, requested items, staff assignments and event/notification systems
+are reused, not copied per date. See [recurrence design](recurring-reservations-design.md).
+
+Optional occurrence FKs extend room reservations, organizer commitments, equipment
+reservations and extensions. Room reservation/organizer keys now include start_at
+while keeping existing overlap exclusions. Deferred aggregate checks prohibit
+missing dates, partial initial confirmation, incorrect quantities and inconsistent
+physical-loan state. Occurrence dates/source identity are immutable; cancellation
+changes future state while retaining history. A partial unique unit index prevents
+two simultaneous outstanding physical handovers. Extensions must belong to the
+same borrowing series; single-period waiting entries cannot point to a series.
+
+The migration retains all original rows and identifiers. Downgrade refuses to
+discard recurring history; review/export is required rather than silent loss.
+
 ## Resource feedback extension (0048a)
 
-The current schema contains **50 application tables** plus `alembic_version`.
+This extension introduced tables 49 and 50.
 `resource_feedback` links exactly one actual room-use record or handed-over
 equipment reservation to its reporter and original owning faculty. `feedback_event`
 stores private revisioned actor/time history. Existing notifications gain a fourth
@@ -36,10 +57,10 @@ persistence.
 ![High-level ER diagram](database-er-high-level.svg)
 
 - [High-level Mermaid source](database-er-high-level.mmd): principal entities, using only actual foreign-key relationships.
-- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 50 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
+- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 52 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
 - [Physical schema catalog](database-schema-catalog.md): every column's type/nullability/default, composite keys, unique/check constraints, indexes and deletion policy.
 
-`alembic_version` is the fifty-first physical table, used only by Alembic, not an
+`alembic_version` is the fifty-third physical table, used only by Alembic, not an
 application entity. Application sources/catalog are generated from the models;
 the existing Alembic revision marker is explicitly documented too. Use
 `python scripts/generate_database_diagrams.py`; `--check` detects drift in tests/CI.

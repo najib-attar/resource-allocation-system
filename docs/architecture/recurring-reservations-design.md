@@ -57,5 +57,63 @@
    Finish with full regression, migration/drift and browser checks, then the
    academic iteration report. No new numbered student use case is introduced.
 
-This document records the reviewed integration design; implementation and actual
-verification evidence are recorded as the iteration is completed.
+## Implemented boundaries
+
+```text
+Existing room / equipment forms + shared weekly selector
+    -> recurrence.expand_recurrence (explicit dates and timezone)
+    -> existing RoomRequestService / EquipmentService
+        -> PostgreSQL input snapshot -> EngineGateway
+        -> C++ rankSeries / repeated existing equipment match
+        -> one complete approval transaction + existing reservations/events
+    -> read-only personal / unified calendar occurrence projections
+```
+
+| Component | Responsibility |
+|---|---|
+| `web/recurrence.py` | Bounded weekly expansion, explicit DST rejection, half-open dated periods; no resource matching. |
+| `web/recurring_records.py` | Shared identity/retry, rule/occurrence persistence and batched display projection; not a booking service. |
+| Existing room service | Whole-series same-room validation, faculty approval, organizer commitments and future cancellation. |
+| Existing equipment service | Whole-series quantity reservation, occurrence-specific collection/extensions, partial verified returns and aggregate loan state. |
+| Existing C++ services | Room eligibility/ranking intersection and per-period equipment matching, without database access or changed legacy strategies. |
+| Existing events/inbox | Actor/time history, current authorized audiences and deduplicated receipts. |
+
+`0049a` adds only two application tables. The parent request retains its original
+first interval for one-time compatibility; series-aware views use occurrences,
+not that interval as a shortcut for future dates. Optional occurrence FKs reuse
+existing physical reservations. Database aggregate checks reject incomplete
+expansion/confirmation and mismatched reservations, while immutable dates preserve
+history. A unit may have only one outstanding physical handover. An extension must
+reference its own borrowing series, never another parent's occurrence.
+
+Room confirmation preserves the existing calendar revision/serialization boundary.
+Equipment uses the existing policy-share/faculty lock order. Both call the current
+waiting-list coordinator before approval so existing eligible queues are processed
+without duplicating their allocation rules. Bounded database contention is a clear
+busy/retry outcome, not permission to confirm a partial proposal. Rollback preserves
+the preceding state. No series-specific queue policy or scheduling worker is added.
+
+The equipment form signs the exact preview payload using the application's
+existing signing dependency. An absent, stale or altered recurring preview is
+re-evaluated/displayed before submission. This is a review safeguard, not a hold;
+approval and handover still recheck authoritative inventory under transaction locks.
+
+Recurring rule/timezone fields are immutable. PostgreSQL timezone-name validation
+therefore runs once on insertion, not for every deferred aggregate check: repeated
+timezone catalog enumeration was measurably expensive on Windows. Every occurrence
+and reservation still receives its integrity checks.
+
+## Operational limits
+
+- Series waiting-list enrollment needs an explicit university series policy. Current
+  queues remain single-interval; there is no silent splitting or second queue engine.
+- Material changes use cancellation plus a fresh approved proposal. Past uses and
+  actual loan facts are not rewritten. There is no speculative revision scheduler.
+- Larger series still use bounded synchronous engine execution and existing locks;
+  a busy database/engine failure requires retry. There is no distributed job system.
+- Legacy academic commitments require explicit period/week bindings. Neither forms
+  nor calendar projections infer semester dates or pretend unresolved commitments
+  do not exist. Changing the configured display timezone does not rewrite stored dates.
+
+See [database design](database-design.md), [versioned protocol](../engine-protocol.md)
+and [operations](../database-operations.md#recurring-room-and-equipment-reservations).

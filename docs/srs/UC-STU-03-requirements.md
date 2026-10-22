@@ -50,3 +50,17 @@ See [architecture](../architecture/equipment-borrowing-design.md),
 Unavailable eligible requests may opt into [UC-STU-05](UC-STU-05-requirements.md)
 with explicit consent and custodian pre-approval. Its automatic reservation still
 requires the normal physical handover and verified return workflows.
+
+## Bounded recurring borrowing extension
+
+Continuous borrowing remains one loan. Separate weekly pickup/return periods use
+one bounded series with explicit weekdays/date bounds and a complete dated preview.
+Custodians approve exact quantities on every active occurrence atomically or none.
+Each date keeps specific reserved asset IDs and independent handover/verified
+return facts; eligible units may differ across dates. Outstanding possession,
+damage and conflicting reservations block handover even after a planned due date.
+Cancel one future pickup or remaining future pickups without releasing active
+loans or changing past returns. Extensions identify the collected occurrence and
+must not conflict with later reservations. Calendar pickups/due dates remain
+non-busy reminders. Unavailable series are explained, not split into single-period
+waiting queues. See [shared recurrence design](../architecture/recurring-reservations-design.md).

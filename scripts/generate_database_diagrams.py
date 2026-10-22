@@ -12,6 +12,8 @@ from web.persistence.models import Base
 
 
 PURPOSES = {
+    'reservation_series': 'Shared immutable bounded weekly proposal linked to one existing room or borrowing request; no duplicated requirements or approval system.',
+    'reservation_occurrence': 'Ordered real dated series interval, cancellation/completion state and exact links to existing reservations and physical loans.',
     'resource_feedback': 'Private optional room/equipment usage report, immutable reporter/booking association, current review state and retry identity.',
     'feedback_event': 'Private actor/time/status history, staff responses and idempotent actions; existing notification receipts are reused.',
     "waiting_list_entry": "Shared consent, responsible-staff preapproval, contextual FCFS identity and notification milestones; requirements and reservations remain in the original room/borrowing records.",
@@ -69,6 +71,7 @@ MAIN_TABLES |= {"login_account", "academic_period", "legacy_calendar_binding", "
                 "appointment_invitation", "appointment_commitment", "professor_availability", "calendar_block"}
 MAIN_TABLES |= {"room_policy", "faculty_room_approver", "student_room_request", "room_reservation", "room_invitation", "room_organizer_commitment"}
 MAIN_TABLES.add("notification")
+MAIN_TABLES |= {'reservation_series','reservation_occurrence'}
 MAIN_TABLES.add("waiting_list_entry")
 MAIN_TABLES |= {'resource_feedback', 'feedback_event'}
 MAIN_TABLES |= {"equipment_category", "equipment_type", "equipment_unit", "equipment_custodian", "borrow_request", "borrow_item", "equipment_reservation", "borrow_extension", "equipment_event"}
@@ -170,7 +173,8 @@ def artifacts():
                 'resource_feedback', 'feedback_event', 'notification', 'student_room_request',
                 'equipment_reservation', 'university_user', 'organization_unit'}], False),
             "equipment-er.mmd": er_source([item for item in tables if item.name.startswith(('equipment_', 'borrow_'))
-                                          or item.name in {'organization_unit', 'university_user', 'login_account', 'notification'}], False),
+                                          or item.name in {'organization_unit', 'university_user', 'login_account', 'notification',
+                                              'reservation_series','reservation_occurrence','student_room_request'}], False),
             "database-schema-catalog.md": catalog(tables)}
 
 

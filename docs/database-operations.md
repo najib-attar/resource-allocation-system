@@ -447,3 +447,36 @@ engine/database availability; never manually insert a fake confirmation.
 See [queue architecture, notice, privacy and limitations](architecture/waiting-lists-design.md)
 and [current requirements](srs/UC-STU-05-requirements.md). Live verification uses
 isolated PostgreSQL schemas, never the operational demonstration database.
+
+## Recurring room and equipment reservations
+
+Back up the configured database, then run `python -m alembic upgrade head`
+(revision `0049a`) and `python scripts/build_backend.py` before serving recurring
+forms. The migration is additive except for extending the two room commitment
+primary keys with their existing start_at values; existing data is retained.
+Never reset an application database to enable this feature. A downgrade refuses
+to discard an existing recurring series.
+
+In **Find a room** or **Find equipment**, choose **Weekly recurring periods**,
+explicit first/last start dates, weekdays, local start time and duration. For
+equipment the pickup/return fields define each occurrence's elapsed duration;
+ordinary multi-day borrowing remains a single continuous loan. Review the full
+dated preview before submission. Faculty/custodian details show every occurrence
+before one complete decision; no partial series/quantity is silently approved.
+
+Room approval reserves one consistent room across all active dates. Equipment
+approval reserves exact units for each pickup; staff must choose the individual
+occurrence for handover and inspect each actual return. A late return never frees
+an asset automatically, even if a later pickup is reserved. Extensions require
+an explicit collected occurrence and may not overlap future reservations.
+
+Cancel one future date from its row or cancel all remaining future dates from the
+series. Past room uses and physical loans remain historical; active borrowed units
+still require physical return. Material changes require a fresh proposal/approval,
+not editing historical dates. Calendars link to individual dated occurrences;
+equipment dates remain reminders, not participant-busy intervals.
+
+Current single-period waiting-list policies do not authorize series enrollment.
+Unavailable series show per-date conflicts and require a revised complete proposal;
+they are never split into independent queues. Existing eligible queues are
+processed with their normal coordinator before a competing series is approved.

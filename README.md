@@ -437,6 +437,18 @@ The current dashboard supports:
 
 Flask does not check participant availability and does not compute suggestions. Those behaviors belong to the C++ backend.
 
+## Recurring Student Reservations
+
+Room and equipment forms support bounded weekly reservations with multiple
+weekdays, explicit dates and a full occurrence preview. One faculty/custodian
+decision confirms the complete feasible proposal, never a silent subset.
+Rooms stay consistent across dates; equipment has separate physical handovers
+and verified returns. Cancel a future date or remaining future dates while
+retaining past history. Equipment deadlines are reminders, never assumed returns.
+Upgrade to Alembic `0049a` and rebuild the verified backend before using the new
+forms. See [recurrence design](docs/architecture/recurring-reservations-design.md)
+and [operations](docs/database-operations.md#recurring-room-and-equipment-reservations).
+
 ## Demo Workflow
 
 1. Compile the backend.

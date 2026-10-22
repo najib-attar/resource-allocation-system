@@ -1,6 +1,6 @@
 # Physical schema catalog
 
-Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 50 application tables.
+Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 52 application tables.
 
 All foreign keys use PostgreSQL **NO ACTION**: no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
 ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.
@@ -210,6 +210,7 @@ Explicit custodian decision on a proposed later due date for an active loan.
 |---|---|---|---|---|
 | id | integer | PK | no | identity |
 | request_id | integer | FK -> borrow_request.id | no | - |
+| occurrence_id | bigint | FK -> reservation_occurrence.id | yes | - |
 | due_at | timestamp with time zone | - | no | - |
 | status | varchar(20) | - | no | ORM: Pending |
 | reason | text | - | no | - |
@@ -218,9 +219,11 @@ Explicit custodian decision on a proposed later due date for an active loan.
 
 - Primary key: `id`.
 - Foreign key: `(decided_by) -> login_account (user_id)`; NO ACTION.
+- Foreign key: `(occurrence_id) -> reservation_occurrence (id)`; NO ACTION.
 - Foreign key: `(request_id) -> borrow_request (id)`; NO ACTION.
 - Check: `status IN ('Pending','Approved','Rejected')`.
 - Index: `ix_borrow_extension_decided_by (decided_by)`.
+- Index: `ix_borrow_extension_occurrence_id (occurrence_id)`.
 - Index: `ix_borrow_extension_request_id (request_id)`.
 - Index: `uq_pending_borrow_extension (request_id)`.
 
@@ -373,6 +376,7 @@ Specific reserved asset, excluded overlapping interval, physical handover and ve
 |---|---|---|---|---|
 | id | integer | PK | no | identity |
 | item_id | integer | FK -> borrow_item.id | no | - |
+| occurrence_id | bigint | FK -> reservation_occurrence.id | yes | - |
 | type_id | integer | FK -> borrow_item.type_id; FK -> equipment_unit.type_id | no | - |
 | unit_id | integer | FK -> equipment_unit.id | no | - |
 | start_at | timestamp with time zone | - | no | - |
@@ -389,6 +393,7 @@ Specific reserved asset, excluded overlapping interval, physical handover and ve
 - Primary key: `id`.
 - Foreign key: `(handed_by) -> login_account (user_id)`; NO ACTION.
 - Foreign key: `(item_id, type_id) -> borrow_item (id, type_id)`; NO ACTION.
+- Foreign key: `(occurrence_id) -> reservation_occurrence (id)`; NO ACTION.
 - Foreign key: `(received_by) -> login_account (user_id)`; NO ACTION.
 - Foreign key: `(unit_id, type_id) -> equipment_unit (id, type_id)`; NO ACTION.
 - Check: `NOT released OR handed_at IS NULL OR returned_at IS NOT NULL`.
@@ -398,9 +403,11 @@ Specific reserved asset, excluded overlapping interval, physical handover and ve
 - Check: `start_at < due_at`.
 - Index: `ix_equipment_reservation_handed_by (handed_by)`.
 - Index: `ix_equipment_reservation_item_type (item_id, type_id)`.
+- Index: `ix_equipment_reservation_occurrence_id (occurrence_id)`.
 - Index: `ix_equipment_reservation_received_by (received_by)`.
 - Index: `ix_equipment_reservation_type_id (type_id)`.
 - Index: `ix_equipment_reservation_unit_type (unit_id, type_id)`.
+- Index: `uq_equipment_outstanding_unit (unit_id)`.
 
 ## equipment_type
 
@@ -721,6 +728,56 @@ Ordered weekly occurrences; multiple rows represent recurrence.
 - Check: `ordinal > 0`.
 - Check: `start_minutes >= 0 AND start_minutes < end_minutes AND end_minutes <= 1440`.
 
+## reservation_occurrence
+
+Ordered real dated series interval, cancellation/completion state and exact links to existing reservations and physical loans.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| series_id | bigint | FK -> reservation_series.id | no | - |
+| ordinal | integer | - | no | - |
+| start_at | timestamp with time zone | - | no | - |
+| end_at | timestamp with time zone | - | no | - |
+| period | tstzrange | - | no | computed: tstzrange(start_at, end_at, '[)') |
+| status | varchar(12) | - | no | ORM: Proposed |
+
+- Primary key: `id`.
+- Foreign key: `(series_id) -> reservation_series (id)`; NO ACTION.
+- Check: `ordinal BETWEEN 1 AND 366 AND start_at < end_at AND status IN ('Proposed','Reserved','Completed','Cancelled')`.
+- Unique: `series_id, ordinal`.
+- Index: `ix_reservation_occurrence_series_id (series_id)`.
+
+## reservation_series
+
+Shared immutable bounded weekly proposal linked to one existing room or borrowing request; no duplicated requirements or approval system.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| room_request_id | bigint | FK -> student_room_request.id | yes | - |
+| borrow_request_id | integer | FK -> borrow_request.id | yes | - |
+| start_date | date | - | no | - |
+| end_date | date | - | no | - |
+| start_minutes | integer | - | no | - |
+| duration_minutes | integer | - | no | - |
+| weekdays | jsonb | - | no | - |
+| timezone | varchar(64) | - | no | - |
+| submission_key | varchar(32) | - | no | - |
+| fingerprint | varchar(64) | - | no | - |
+| created_at | timestamp with time zone | - | no | clock_timestamp() |
+
+- Primary key: `id`.
+- Foreign key: `(borrow_request_id) -> borrow_request (id)`; NO ACTION.
+- Foreign key: `(room_request_id) -> student_room_request (id)`; NO ACTION.
+- Check: `jsonb_typeof(weekdays) = 'array' AND jsonb_array_length(weekdays) BETWEEN 1 AND 7 AND '[1,2,3,4,5,6,7]'::jsonb @> weekdays`.
+- Check: `num_nonnulls(room_request_id, borrow_request_id) = 1`.
+- Check: `start_date <= end_date AND end_date-start_date <= 730 AND start_minutes BETWEEN 0 AND 1439 AND duration_minutes BETWEEN 1 AND 525600`.
+- Check: `submission_key ~ '^[0-9a-f]{32}$' AND fingerprint ~ '^[0-9a-f]{64}$'`.
+- Unique: `borrow_request_id`.
+- Unique: `room_request_id`.
+- Unique: `submission_key`.
+
 ## resource
 
 Typed classrooms, laboratories and meeting rooms with facilities and capacity.
@@ -916,14 +973,17 @@ Confirmed organizing-student interval with cross-appointment conflict protection
 |---|---|---|---|---|
 | request_id | bigint | PK; FK -> student_room_request.id | no | - |
 | user_id | integer | FK -> university_user.id | no | - |
-| start_at | timestamp with time zone | - | no | - |
+| start_at | timestamp with time zone | PK | no | - |
 | end_at | timestamp with time zone | - | no | - |
+| occurrence_id | bigint | FK -> reservation_occurrence.id | yes | - |
 | period | tstzrange | - | no | computed: tstzrange(start_at, end_at, '[)') |
 
-- Primary key: `request_id`.
+- Primary key: `request_id, start_at`.
+- Foreign key: `(occurrence_id) -> reservation_occurrence (id)`; NO ACTION.
 - Foreign key: `(request_id) -> student_room_request (id)`; NO ACTION.
 - Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
 - Check: `start_at < end_at`.
+- Unique: `occurrence_id`.
 - Index: `ix_room_organizer_commitment_user_id (user_id)`.
 
 ## room_policy
@@ -952,14 +1012,17 @@ Exact confirmed exclusive room interval; GiST overlap exclusion.
 |---|---|---|---|---|
 | request_id | bigint | PK; FK -> student_room_request.id | no | - |
 | resource_id | integer | FK -> resource.id | no | - |
-| start_at | timestamp with time zone | - | no | - |
+| start_at | timestamp with time zone | PK | no | - |
 | end_at | timestamp with time zone | - | no | - |
+| occurrence_id | bigint | FK -> reservation_occurrence.id | yes | - |
 | period | tstzrange | - | no | computed: tstzrange(start_at, end_at, '[)') |
 
-- Primary key: `request_id`.
+- Primary key: `request_id, start_at`.
+- Foreign key: `(occurrence_id) -> reservation_occurrence (id)`; NO ACTION.
 - Foreign key: `(request_id) -> student_room_request (id)`; NO ACTION.
 - Foreign key: `(resource_id) -> resource (id)`; NO ACTION.
 - Check: `start_at < end_at`.
+- Unique: `occurrence_id`.
 - Index: `ix_room_reservation_resource_id (resource_id)`.
 
 ## student_room_request

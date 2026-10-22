@@ -42,3 +42,16 @@ and [engine contract](../engine-protocol.md).
 Unavailable eligible requests may explicitly opt into the separate
 [UC-STU-05 waiting-list extension](UC-STU-05-requirements.md). It adds consent and
 faculty-scoped pre-approval, without replacing normal available-room submission.
+
+## Bounded recurring room extension
+
+Students may select weekly weekdays, explicit inclusive start/end dates and a
+local start/duration, previewing every actual dated occurrence. One eligible room
+must satisfy the whole series; conflicting dates are explained without silent
+room substitution. The selected owning faculty reviews all dates and confirms
+the remaining proposal atomically or none. Optional professors remain non-vetoing.
+Organizer/current approver may cancel one future occurrence or remaining future
+dates, preserving past uses. Material changes require a fresh approval. Calendar
+entries come from actual occurrences, not guessed academic dates. Single-period
+waiting-list consent does not create a series queue. See
+[shared recurrence architecture](../architecture/recurring-reservations-design.md).
