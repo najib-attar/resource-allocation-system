@@ -7,7 +7,7 @@ import re
 from sqlalchemy import and_, or_, select
 
 from .calendar_service import CalendarError, aware, legacy_intervals, local_instant, university_zone
-from .persistence.models import Appointment, AppointmentInvitation, AppointmentProfessor, CalendarBlock, User, StudentRoomRequest, RoomInvitation, Resource
+from .persistence.models import Appointment, AppointmentInvitation, AppointmentProfessor, CalendarBlock, User, StudentRoomRequest, RoomInvitation, Resource, RoomReservation
 from .persistence.repository import state_row
 
 
@@ -57,13 +57,14 @@ def read_schedule(session, actor, selection):
     events = [{"start": row.start_at.astimezone(zone), "end": row.end_at.astimezone(zone), "title": row.purpose,
                "kind": "Appointment" if row.organizer_id == actor or professor_id == actor else "Optional invitation",
                "appointmentId": row.id} for row, professor_id in session.execute(query)]
-    room_query = select(StudentRoomRequest, Resource.name).join(Resource,Resource.id == StudentRoomRequest.resource_id).outerjoin(
+    room_query = select(StudentRoomRequest, Resource.name,RoomReservation).join(Resource,Resource.id == StudentRoomRequest.resource_id).join(
+        RoomReservation,RoomReservation.request_id==StudentRoomRequest.id).outerjoin(
         RoomInvitation,and_(RoomInvitation.request_id == StudentRoomRequest.id,RoomInvitation.user_id == actor)).where(
-        StudentRoomRequest.status == 'Confirmed',StudentRoomRequest.start_at < end,StudentRoomRequest.end_at > start,
+        StudentRoomRequest.status == 'Confirmed',RoomReservation.start_at < end,RoomReservation.end_at > start,
         or_(StudentRoomRequest.organizer_id == actor,RoomInvitation.status == 'Accepted')).order_by(StudentRoomRequest.start_at,StudentRoomRequest.id)
-    events += [{'start':row.start_at.astimezone(zone),'end':row.end_at.astimezone(zone),'title':row.purpose+' - '+room_name,
+    events += [{'start':booking.start_at.astimezone(zone),'end':booking.end_at.astimezone(zone),'title':row.purpose+' - '+room_name,
                 'kind':'Room booking' if row.organizer_id == actor else 'Optional invitation','appointmentId':None,'roomRequestId':row.id}
-               for row,room_name in session.execute(room_query)]
+               for row,room_name,booking in session.execute(room_query)]
     blocks = list(session.scalars(select(CalendarBlock).where(CalendarBlock.user_id == actor).order_by(CalendarBlock.start_at, CalendarBlock.id)))
     events += [{"start": row.start_at.astimezone(zone), "end": row.end_at.astimezone(zone),
                 "title": row.reason or "Personal blocked time", "kind": "Personal block", "appointmentId": None}

@@ -3,10 +3,13 @@ from datetime import datetime, timedelta, timezone
 import json
 import uuid
 
-from flask import Blueprint, g, jsonify, redirect, render_template, request, url_for
+from flask import Blueprint, current_app, g, jsonify, redirect, render_template, request, url_for
+from itsdangerous import BadSignature,URLSafeSerializer
 from .calendar_service import CalendarError, local_instant, university_zone
 from .equipment_service import EquipmentError, EquipmentService
 from .waiting_list_service import WaitingListService
+from .recurrence import recurrence_fields
+from .recurring_records import submission_fingerprint
 
 
 def create_equipment_blueprint(database_provider, gateway_provider):
@@ -56,22 +59,36 @@ def create_equipment_blueprint(database_provider, gateway_provider):
         start_text = source.get('start', default_start.strftime('%Y-%m-%dT%H:%M'))
         due_text = source.get('due', (default_start+timedelta(days=3)).strftime('%Y-%m-%dT%H:%M'))
         start, due = local_instant(start_text), local_instant(due_text)
+        recurring=recurrence_fields(source)
         rows = service().catalog(actor(), start, due)
         result = None
+        preview_token=None
         if request.method == 'POST':
             items = [{'typeId': integer(key[4:]), 'quantity': integer(value),
                       'specifications': specifications(source.get('spec_'+key[4:], '{}'))}
                      for key, value in source.items() if key.startswith('qty_') and value not in {'', '0'}]
             faculty = integer(source.get('faculty'))
-            if source.get('action') == 'recommend':
-                result = service().recommend(actor(), faculty, items, start, due)
+            action=source.get('action')
+            signer=URLSafeSerializer(current_app.secret_key,salt='recurring-equipment-preview')
+            digest=submission_fingerprint({k:source.getlist(k) for k in source if k not in {'csrf_token','action','previewToken'}})
+            reviewed=False
+            if recurring and source.get('previewToken'):
+                try:reviewed=signer.loads(source['previewToken'])==digest
+                except BadSignature:pass
+            if action == 'recommend' or (action=='submit' and recurring and not reviewed):
+                result = service().recommend(actor(), faculty, items, start, due,recurring)
+                if recurring and result['feasible']:preview_token=signer.dumps(digest)
                 for period in result['alternativePeriods']:
                     period['startAt'] = datetime.fromtimestamp(period['start'], timezone.utc)
                     period['endAt'] = datetime.fromtimestamp(period['end'], timezone.utc)
-            elif source.get('action') == 'submit':
-                key = service().submit(actor(), faculty, items, start, due, source.get('purpose', ''), source.get('notes', ''), source.get('submission_key'))
+                for period in result.get('occurrences',[]):
+                    period['startAt']=datetime.fromtimestamp(period['start'],timezone.utc)
+                    period['endAt']=datetime.fromtimestamp(period['end'],timezone.utc)
+            elif action == 'submit':
+                key = service().submit(actor(), faculty, items, start, due, source.get('purpose', ''), source.get('notes', ''), source.get('submission_key'),recurring)
                 return redirect(url_for('equipment.detail', request_id=key))
             elif source.get('action') == 'wait':
+                if recurring:raise EquipmentError('A recurring series cannot join independent waiting lists. Review unavailable dates and revise the whole proposal.')
                 key = waiting().join_equipment(actor(), faculty, items, start, due, source.get('purpose', ''), source.get('notes', ''),
                     source.get('policyVersion'), source.get('acceptWaiting') == 'yes', source.get('submission_key'))
                 return redirect(url_for('waiting.detail', entry_id=key))
@@ -80,6 +97,7 @@ def create_equipment_blueprint(database_provider, gateway_provider):
         return render_template('equipment_catalog.html', items=rows, directory=service().directory(actor()),
             waiting_policy=waiting().policy(),
             start=start_text, due=due_text, zone=university_zone().key, result=result,
+            preview_token=preview_token,
             submission_key=source.get('submission_key') or uuid.uuid4().hex)
 
     @blueprint.get('/<int:request_id>')
@@ -90,21 +108,25 @@ def create_equipment_blueprint(database_provider, gateway_provider):
     @blueprint.post('/<int:request_id>/<action>')
     def transition(request_id, action):
         current = service()
+        occurrence=integer(request.form['occurrenceId']) if request.form.get('occurrenceId') else None
         if action == 'approve':
             current.decide(actor(), request_id, True, request.form.get('reason', ''))
         elif action == 'reject':
             current.decide(actor(), request_id, False, request.form.get('reason', ''))
         elif action == 'cancel':
             current.cancel(actor(), request_id)
+        elif action == 'cancel-occurrence':
+            if occurrence is None:raise EquipmentError('Choose a series occurrence.')
+            current.cancel_occurrence(actor(),request_id,occurrence)
         elif action == 'handover':
-            current.handover(actor(), request_id, request.form.get('condition', ''))
+            current.handover(actor(), request_id, request.form.get('condition', ''),occurrence)
         elif action == 'intend-return':
             current.intend_return(actor(), request_id)
         elif action == 'return':
             current.return_units(actor(), request_id, [integer(v) for v in request.form.getlist('unitIds')],
                 request.form.get('condition'), request.form.get('notes', ''))
         elif action == 'extension':
-            current.request_extension(actor(), request_id, local_instant(request.form.get('due')), request.form.get('reason', ''))
+            current.request_extension(actor(), request_id, local_instant(request.form.get('due')), request.form.get('reason', ''),occurrence)
         elif action in {'approve-extension', 'reject-extension'}:
             current.decide_extension(actor(), request_id, integer(request.form.get('extensionId')), action == 'approve-extension')
         else:

@@ -13,6 +13,7 @@ from .persistence.models import (AcademicPeriod, Allocation, Appointment, Appoin
     RequestParticipant, Resource, ResourceRequest, Role, RoomInvitation, StudentRoomRequest, User)
 from .persistence.repository import state_row
 from .room_calendar import valid_approvers
+from .recurring_records import dated_occurrences, overlapping_series
 
 
 CATEGORIES = {'academic': 'Academic / university', 'appointment': 'Appointments', 'room': 'Room activities',
@@ -172,16 +173,25 @@ class UniversityCalendarService:
             permitted = or_(StudentRoomRequest.organizer_id == actor, StudentRoomRequest.id.in_(invited_ids),
                 and_(StudentRoomRequest.approver_id == actor, StudentRoomRequest.faculty_id.in_(managed)))
             query = select(StudentRoomRequest, Resource).join(Resource, Resource.id == StudentRoomRequest.resource_id).where(
-                permitted, StudentRoomRequest.start_at < end, StudentRoomRequest.end_at > start)
+                permitted, or_(and_(StudentRoomRequest.start_at < end, StudentRoomRequest.end_at > start),
+                    StudentRoomRequest.id.in_(overlapping_series('room',start,end))))
+            room_rows=list(session.execute(query))
+            series=dated_occurrences(session,'room',[r.id for r,_ in room_rows])
             invitations = dict(session.execute(select(RoomInvitation.request_id, RoomInvitation.status)
                 .where(RoomInvitation.user_id == actor)).all())
-            for row, room in session.execute(query):
+            for row, room in room_rows:
                 own = row.organizer_id == actor
-                add('room:'+str(row.id), 'room', row.purpose, row.start_at, row.end_at, row.status,
-                    '/rooms/'+str(row.id), busy=own and row.status == 'Confirmed',
-                    location=room.name+' - '+room.building,
-                    note='Organizer booking.' if own else 'Assigned review or optional invitation; not a personal reservation.',
-                    state='rejected' if row.status != 'Cancelled' and not own and invitations.get(row.id) == 'Declined' else None)
+                periods=series.get(row.id,[None])
+                for occurrence in periods:
+                    status='Cancelled' if occurrence and occurrence.status=='Cancelled' else row.status
+                    suffix=':occurrence:'+str(occurrence.id) if occurrence else ''
+                    add('room:'+str(row.id)+suffix, 'room', row.purpose,
+                        occurrence.start_at if occurrence else row.start_at,occurrence.end_at if occurrence else row.end_at,status,
+                        '/rooms/'+str(row.id)+('#occurrence-'+str(occurrence.id) if occurrence else ''),busy=own and status=='Confirmed',
+                        location=room.name+' - '+room.building,
+                        note=('Series date '+str(occurrence.ordinal)+'. ' if occurrence else '')+
+                            ('Organizer booking.' if own else 'Assigned review or optional invitation; not a personal reservation.'),
+                        state='rejected' if status!='Cancelled' and not own and invitations.get(row.id)=='Declined' else None)
         if 'equipment' in categories:
             self._equipment(session, actor, start, end, scope, now, add)
         if 'personal' in categories:
@@ -240,7 +250,10 @@ class UniversityCalendarService:
         permitted = or_(BorrowRequest.borrower_id == actor, BorrowRequest.faculty_id.in_(
             custodian_faculties(actor))) if scope == 'relevant' else BorrowRequest.borrower_id == actor
         rows = list(session.scalars(select(BorrowRequest).where(permitted, or_(
-            and_(BorrowRequest.start_at < end, BorrowRequest.due_at >= start), BorrowRequest.id.in_(physical)))))
+            and_(BorrowRequest.start_at < end, BorrowRequest.due_at >= start), BorrowRequest.id.in_(physical),
+            BorrowRequest.id.in_(overlapping_series('equipment',start,end)),BorrowRequest.id.in_(select(BorrowItem.request_id).join(
+                EquipmentReservation,EquipmentReservation.item_id==BorrowItem.id).where(EquipmentReservation.due_at>=start,EquipmentReservation.start_at<end))))))
+        series=dated_occurrences(session,'equipment',[r.id for r in rows])
         bookings = {}
         for request_id, booking, asset in session.execute(select(BorrowItem.request_id, EquipmentReservation, EquipmentUnit.asset_tag)
                 .join(EquipmentReservation, EquipmentReservation.item_id == BorrowItem.id)
@@ -250,13 +263,20 @@ class UniversityCalendarService:
             path = '/equipment/'+str(row.id)
             values = bookings.get(row.id, [])
             outstanding = [b for b, _ in values if b.handed_at is not None and b.returned_at is None]
-            overdue = bool(outstanding and row.due_at < now)
             note = 'Equipment reminder only; never participant-busy time. '+str(len(outstanding))+' units physically outstanding.'
-            state = 'completed' if row.status in {'Borrowed', 'Partially Returned', 'Returned'} else None
-            add('pickup:'+str(row.id), 'equipment', 'Scheduled pickup: '+row.purpose, row.start_at, None, row.status,
-                path, note=note, state=state)
-            add('due:'+str(row.id), 'equipment', 'Return due: '+row.purpose, row.due_at, None, row.status,
-                path, note=note, state='overdue' if overdue else None)
+            for occurrence in series.get(row.id,[None]):
+                own=[b for b,_ in values if not occurrence or b.occurrence_id==occurrence.id]
+                held=[b for b in own if b.handed_at is not None and b.returned_at is None]
+                a=occurrence.start_at if occurrence else row.start_at
+                b=max((r.due_at for r in own),default=occurrence.end_at if occurrence else row.due_at)
+                status=('Cancelled' if occurrence.status=='Cancelled' else 'Returned' if occurrence.status=='Completed'
+                    else 'Borrowed' if held else 'Approved' if occurrence.status=='Reserved' else row.status) if occurrence else row.status
+                suffix=':occurrence:'+str(occurrence.id) if occurrence else ''
+                target=path+('#occurrence-'+str(occurrence.id) if occurrence else '')
+                add('pickup:'+str(row.id)+suffix,'equipment','Scheduled pickup: '+row.purpose,a,None,status,target,note=note,
+                    state='completed' if any(r.handed_at for r in own) else None)
+                add('due:'+str(row.id)+suffix,'equipment','Return due: '+row.purpose,b,None,status,target,note=note,
+                    state='overdue' if any(r.due_at<now for r in held) else None)
             for booking, asset in values:
                 if booking.handed_at is not None:
                     add('handover:'+str(booking.id), 'equipment', 'Collected: '+asset, booking.handed_at, None,

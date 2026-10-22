@@ -50,7 +50,18 @@ async function load() {
         if (!response.ok) throw new Error(result.error || "Room evaluation failed.");
         message.textContent = result.candidates.length ? "Review the recommended room or choose another eligible candidate." : result.messages.join(" ") || "No eligible room was found.";
         const waiting = document.getElementById("room-waiting-option");
-        if (waiting) waiting.hidden = result.candidates.length > 0;
+        if (waiting) waiting.hidden = result.candidates.length > 0 || !!result.recurrence;
+        if (result.occurrences) {
+            const preview = document.createElement('ol');
+            preview.setAttribute('aria-label', 'All recurring dates');
+            result.occurrences.forEach(period => {
+                const li = document.createElement('li');
+                li.textContent = `${period.localStart} to ${period.localEnd}: ${period.feasible ? 'Eligible rooms found' : period.messages.join(' ') || period.reasonCode}.`;
+                preview.append(li);
+            });
+            alternatives.append(preview);
+            if (!result.feasible) message.textContent += ' The same room must be available on every date. No partial approval or independent waiting-list enrollment.';
+        }
         result.candidates.forEach((value, index) => {
             const button = document.createElement("button");
             button.type = "button";
@@ -76,7 +87,8 @@ async function load() {
                 button.type = "button";
                 button.textContent = `${value.localStart.replace("T", " ")} - ${value.localEnd.replace("T", " ")}: ${value.name}`;
                 button.addEventListener("click", () => {
-                    form.elements.start.value = value.localStart;
+                    if (result.recurrence) form.elements.recurrenceTime.value = value.localStart.slice(11,16);
+                    else form.elements.start.value = value.localStart;
                     load();
                 });
                 alternatives.append(button);

@@ -64,11 +64,14 @@ class FeedbackService:
             participant = session.get(RoomInvitation, (booking_id, actor))
             if booking is None or not (booking.organizer_id == actor or (participant and participant.revision == booking.revision and participant.status == 'Accepted')):
                 raise PermissionError('Only the organizer or an explicitly registered participating user can report on this booking.')
-            if booking.status != 'Confirmed' or self.clock() < booking.start_at:
+            from .recurring_records import series_for,occurrences_for
+            series=series_for(session,booking)
+            uses=[r for r in occurrences_for(session,series) if r.status=='Reserved' and r.start_at<=self.clock()] if series else []
+            if booking.status != 'Confirmed' or (not uses if series else self.clock() < booking.start_at):
                 raise FeedbackError('Reports require an active or completed confirmed room reservation, not a pending, future or cancelled request.')
             room = session.get(Resource, booking.resource_id)
             return {'kind':kind, 'bookingId':booking_id, 'facultyId':booking.faculty_id,
-                    'resources':[{'id':room.id, 'name':room.name, 'completed':self.clock() >= booking.end_at}],
+                    'resources':[{'id':room.id, 'name':room.name, 'completed':any(r.end_at<=self.clock() for r in uses) if series else self.clock() >= booking.end_at}],
                     'room':booking, 'title':'Room reservation'}
         if kind == 'equipment':
             booking = session.get(BorrowRequest, booking_id, with_for_update={'read':True} if lock else None)

@@ -6,6 +6,7 @@ from sqlalchemy import and_, func, or_, select
 
 from .calendar_service import aware, university_zone
 from .personal_schedule_service import read_schedule, select_calendar
+from .recurring_records import dated_occurrences
 from .persistence.models import Appointment, AppointmentInvitation, AppointmentProfessor, Role, User, StudentRoomRequest, Resource
 
 
@@ -66,11 +67,16 @@ class StudentDashboardService:
             schedule = read_schedule(session, actor, selection)
             room_rows = list(session.execute(select(StudentRoomRequest,Resource.name).join(Resource,Resource.id == StudentRoomRequest.resource_id).where(
                 StudentRoomRequest.organizer_id == actor,StudentRoomRequest.status.in_(['Pending Faculty Approval','Needs Revision','Confirmed']),
-                or_(StudentRoomRequest.status != 'Confirmed',StudentRoomRequest.end_at > now)).order_by(StudentRoomRequest.start_at,StudentRoomRequest.id)))
+                ).order_by(StudentRoomRequest.start_at,StudentRoomRequest.id)))
+            series=dated_occurrences(session,'room',[row.id for row,_ in room_rows])
+            upcoming_dates={row.id:next((r for r in series.get(row.id,[]) if r.status!='Cancelled' and r.end_at>now),None) for row,_ in room_rows}
+            room_rows=[(row,name) for row,name in room_rows if row.status!='Confirmed' or
+                (upcoming_dates[row.id] is not None if row.id in series else row.end_at>now)]
             room_counts = {'confirmed':sum(row.status == 'Confirmed' for row,_ in room_rows),
                            'pending':sum(row.status != 'Confirmed' for row,_ in room_rows)}
             room_cards = [{'id':row.id,'purpose':row.purpose,'status':row.status,'roomName':name,
-                           'start':row.start_at.astimezone(zone),'end':row.end_at.astimezone(zone)} for row,name in room_rows[:self.CARD_LIMIT]]
+                           'start':(upcoming_dates[row.id].start_at if upcoming_dates[row.id] else row.start_at).astimezone(zone),
+                           'end':(upcoming_dates[row.id].end_at if upcoming_dates[row.id] else row.end_at).astimezone(zone)} for row,name in room_rows[:self.CARD_LIMIT]]
             return {"profile": {"name": student.name, "studentNo": student.student_no,
                                 "program": student.program, "yearLevel": student.year_level},
                     "now": now.astimezone(zone), "zone": zone.key, "weekStart": schedule["weekStart"],
