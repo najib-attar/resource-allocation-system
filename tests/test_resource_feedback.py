@@ -318,7 +318,7 @@ class FeedbackRoomTests(RoomFixture):
             command.check(config)
             command.downgrade(config,'0047a')
             command.upgrade(config,'head')
-        with self.database.transaction(read_only=True) as session:self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')),'0048a')
+        with self.database.transaction(read_only=True) as session:self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')),'0049a')
 
 
 class FeedbackEquipmentTests(EquipmentFixture):

@@ -449,8 +449,9 @@ class RoomReservation(Base):
     __table_args__ = (CheckConstraint("start_at < end_at"), ExcludeConstraint(("resource_id", "="), ("period", "&&"), using="gist", name="ex_student_room_overlap"))
     request_id: Mapped[int] = mapped_column(ForeignKey("student_room_request.id"), primary_key=True)
     resource_id: Mapped[int] = mapped_column(ForeignKey("resource.id"), index=True)
-    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), primary_key=True)
     end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    occurrence_id: Mapped[int | None] = mapped_column(ForeignKey("reservation_occurrence.id"), unique=True)
     period: Mapped[object] = mapped_column(TSTZRANGE, Computed("tstzrange(start_at, end_at, '[)')", persisted=True))
 
 
@@ -459,8 +460,9 @@ class RoomOrganizerCommitment(Base):
     __table_args__ = (CheckConstraint("start_at < end_at"), ExcludeConstraint(("user_id", "="), ("period", "&&"), using="gist", name="ex_room_organizer_overlap"))
     request_id: Mapped[int] = mapped_column(ForeignKey("student_room_request.id"), primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), index=True)
-    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), primary_key=True)
     end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    occurrence_id: Mapped[int | None] = mapped_column(ForeignKey("reservation_occurrence.id"), unique=True)
     period: Mapped[object] = mapped_column(TSTZRANGE, Computed("tstzrange(start_at, end_at, '[)')", persisted=True))
 
 
@@ -582,9 +584,11 @@ class EquipmentReservation(Base):
                       CheckConstraint('NOT released OR handed_at IS NULL OR returned_at IS NOT NULL', name='ck_equipment_physical_release'),
                       Index('ix_equipment_reservation_item_type', 'item_id', 'type_id'),
                       Index('ix_equipment_reservation_unit_type', 'unit_id', 'type_id'),
+                      Index('uq_equipment_outstanding_unit', 'unit_id', unique=True, postgresql_where='handed_at IS NOT NULL AND returned_at IS NULL'),
                       ExcludeConstraint(('unit_id', '='), ('period', '&&'), where="NOT released", using='gist', name='ex_equipment_overlap'))
     id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
     item_id: Mapped[int] = mapped_column(Integer)
+    occurrence_id: Mapped[int | None] = mapped_column(ForeignKey('reservation_occurrence.id'), index=True)
     type_id: Mapped[int] = mapped_column(Integer, index=True)
     unit_id: Mapped[int] = mapped_column(Integer)
     start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
@@ -605,6 +609,7 @@ class BorrowExtension(Base):
                       Index('uq_pending_borrow_extension', 'request_id', unique=True, postgresql_where="status = 'Pending'"))
     id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
     request_id: Mapped[int] = mapped_column(ForeignKey('borrow_request.id'), index=True)
+    occurrence_id: Mapped[int | None] = mapped_column(ForeignKey('reservation_occurrence.id'), index=True)
     due_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     status: Mapped[str] = mapped_column(String(20), default='Pending')
     reason: Mapped[str] = mapped_column(Text)
@@ -714,3 +719,41 @@ class FeedbackEvent(Base):
     action_key: Mapped[str] = mapped_column(String(32))
     fingerprint: Mapped[str] = mapped_column(String(64))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.clock_timestamp())
+
+
+class ReservationSeries(Base):
+    __tablename__ = 'reservation_series'
+    __table_args__ = (
+        CheckConstraint('num_nonnulls(room_request_id, borrow_request_id) = 1'),
+        CheckConstraint("start_date <= end_date AND end_date-start_date <= 730 AND start_minutes BETWEEN 0 AND 1439 AND duration_minutes BETWEEN 1 AND 525600"),
+        CheckConstraint("jsonb_typeof(weekdays) = 'array' AND jsonb_array_length(weekdays) BETWEEN 1 AND 7 AND '[1,2,3,4,5,6,7]'::jsonb @> weekdays"),
+        CheckConstraint("submission_key ~ '^[0-9a-f]{32}$' AND fingerprint ~ '^[0-9a-f]{64}$'"),
+    )
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    room_request_id: Mapped[int | None] = mapped_column(ForeignKey('student_room_request.id'), unique=True)
+    borrow_request_id: Mapped[int | None] = mapped_column(ForeignKey('borrow_request.id'), unique=True)
+    start_date: Mapped[date] = mapped_column(Date)
+    end_date: Mapped[date] = mapped_column(Date)
+    start_minutes: Mapped[int] = mapped_column(Integer)
+    duration_minutes: Mapped[int] = mapped_column(Integer)
+    weekdays: Mapped[list] = mapped_column(JSONB)
+    timezone: Mapped[str] = mapped_column(String(64))
+    submission_key: Mapped[str] = mapped_column(String(32), unique=True)
+    fingerprint: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.clock_timestamp())
+
+
+class ReservationOccurrence(Base):
+    __tablename__ = 'reservation_occurrence'
+    __table_args__ = (
+        UniqueConstraint('series_id', 'ordinal'),
+        CheckConstraint("ordinal BETWEEN 1 AND 366 AND start_at < end_at AND status IN ('Proposed','Reserved','Completed','Cancelled')"),
+        ExcludeConstraint(('series_id', '='), ('period', '&&'), using='gist', name='ex_series_self_overlap'),
+    )
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    series_id: Mapped[int] = mapped_column(ForeignKey('reservation_series.id'), index=True)
+    ordinal: Mapped[int] = mapped_column(Integer)
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    period: Mapped[object] = mapped_column(TSTZRANGE, Computed("tstzrange(start_at, end_at, '[)')", persisted=True))
+    status: Mapped[str] = mapped_column(String(12), default='Proposed')
