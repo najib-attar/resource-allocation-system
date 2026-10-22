@@ -30,6 +30,9 @@
 1. One shared bounded weekly expansion helper produces sorted, non-overlapping
    actual intervals in the configured university timezone. Date bounds refer to
    occurrence start dates, inclusively. Preview includes every pickup/end instant.
+   Durations are elapsed minutes, matching existing dated workflows. Technical
+   execution bounds are 366 occurrences and a two-year start-date range, not an
+   invented university lending entitlement; per-type borrowing limits still apply.
 2. A shared series record stores its rule and links exactly one existing room or
    borrowing request. Dated occurrence records retain stable identities, ordering
    and cancellation/completion state; request details, members and requested items
