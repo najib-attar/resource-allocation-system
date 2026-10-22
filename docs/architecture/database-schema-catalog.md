@@ -1,6 +1,6 @@
 # Physical schema catalog
 
-Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 48 application tables.
+Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 50 application tables.
 
 All foreign keys use PostgreSQL **NO ACTION**: no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
 ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.
@@ -476,6 +476,33 @@ Current designated administrative account for a room-owning faculty.
 - Foreign key: `(user_id) -> login_account (user_id)`; NO ACTION.
 - Index: `ix_faculty_room_approver_user_id (user_id)`.
 
+## feedback_event
+
+Private actor/time/status history, staff responses and idempotent actions; existing notification receipts are reused.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| report_id | bigint | FK -> resource_feedback.id | no | - |
+| actor_id | integer | FK -> university_user.id | no | - |
+| revision | integer | - | no | - |
+| status | varchar(20) | - | no | - |
+| message | text | - | no | - |
+| action_key | varchar(32) | - | no | - |
+| fingerprint | varchar(64) | - | no | - |
+| created_at | timestamp with time zone | - | no | clock_timestamp() |
+
+- Primary key: `id`.
+- Foreign key: `(actor_id) -> university_user (id)`; NO ACTION.
+- Foreign key: `(report_id) -> resource_feedback (id)`; NO ACTION.
+- Check: `action_key ~ '^[0-9a-f]{32}$' AND fingerprint ~ '^[0-9a-f]{64}$'`.
+- Check: `revision > 0 AND length(btrim(message)) BETWEEN 1 AND 4500`.
+- Check: `status IN ('Submitted','Under Review','Resolved','Closed')`.
+- Unique: `report_id, action_key`.
+- Unique: `report_id, revision`.
+- Index: `ix_feedback_event_actor_id (actor_id)`.
+- Index: `ix_feedback_event_report_id (report_id)`.
+
 ## legacy_calendar_binding
 
 Explicit period/planning-week association for an undated busy slot or request.
@@ -549,7 +576,7 @@ Ranked structured time/resource alternatives returned by C++.
 
 ## notification
 
-Recipient-scoped event inbox and durable read state; exactly one appointment/room/equipment history event.
+Recipient-scoped event inbox and durable read state; exactly one appointment/room/equipment/private-feedback history event.
 
 | Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
 |---|---|---|---|---|
@@ -558,19 +585,23 @@ Recipient-scoped event inbox and durable read state; exactly one appointment/roo
 | appointment_event_id | bigint | FK -> appointment_event.id | yes | - |
 | room_event_id | bigint | FK -> room_event.id | yes | - |
 | equipment_event_id | bigint | FK -> equipment_event.id | yes | - |
+| feedback_event_id | bigint | FK -> feedback_event.id | yes | - |
 | read_at | timestamp with time zone | - | yes | - |
 
 - Primary key: `id`.
 - Foreign key: `(appointment_event_id) -> appointment_event (id)`; NO ACTION.
 - Foreign key: `(equipment_event_id) -> equipment_event (id)`; NO ACTION.
+- Foreign key: `(feedback_event_id) -> feedback_event (id)`; NO ACTION.
 - Foreign key: `(recipient_id) -> university_user (id)`; NO ACTION.
 - Foreign key: `(room_event_id) -> room_event (id)`; NO ACTION.
-- Check: `num_nonnulls(appointment_event_id, room_event_id, equipment_event_id) = 1`.
+- Check: `num_nonnulls(appointment_event_id, room_event_id, equipment_event_id, feedback_event_id) = 1`.
 - Unique: `recipient_id, appointment_event_id`.
 - Unique: `recipient_id, equipment_event_id`.
+- Unique: `recipient_id, feedback_event_id`.
 - Unique: `recipient_id, room_event_id`.
 - Index: `ix_notification_appointment_event_id (appointment_event_id)`.
 - Index: `ix_notification_equipment_event_id (equipment_event_id)`.
+- Index: `ix_notification_feedback_event_id (feedback_event_id)`.
 - Index: `ix_notification_recipient_read_id (recipient_id, read_at, id)`.
 - Index: `ix_notification_room_event_id (room_event_id)`.
 
@@ -712,6 +743,52 @@ Typed classrooms, laboratories and meeting rooms with facilities and capacity.
 - Check: `source_order > 0`.
 - Check: `type IN ('Classroom','Laboratory','MeetingRoom')`.
 - Unique: `source_order`.
+
+## resource_feedback
+
+Private optional room/equipment usage report, immutable reporter/booking association, current review state and retry identity.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| room_request_id | bigint | FK -> student_room_request.id | yes | - |
+| room_resource_id | integer | FK -> resource.id | yes | - |
+| room_revision | integer | - | yes | - |
+| equipment_reservation_id | integer | FK -> equipment_reservation.id | yes | - |
+| reporter_id | integer | FK -> university_user.id | no | - |
+| faculty_id | integer | FK -> organization_unit.id | no | - |
+| assigned_to_id | integer | FK -> login_account.user_id | no | - |
+| category | varchar(20) | - | no | - |
+| description | text | - | no | - |
+| status | varchar(20) | - | no | ORM: Submitted |
+| priority | varchar(10) | - | no | ORM: normal |
+| response | text | - | no | ORM:  |
+| revision | integer | - | no | ORM: 1 |
+| submission_key | varchar(32) | - | no | - |
+| fingerprint | varchar(64) | - | no | - |
+| created_at | timestamp with time zone | - | no | clock_timestamp() |
+| updated_at | timestamp with time zone | - | no | clock_timestamp() |
+
+- Primary key: `id`.
+- Foreign key: `(assigned_to_id) -> login_account (user_id)`; NO ACTION.
+- Foreign key: `(equipment_reservation_id) -> equipment_reservation (id)`; NO ACTION.
+- Foreign key: `(faculty_id) -> organization_unit (id)`; NO ACTION.
+- Foreign key: `(reporter_id) -> university_user (id)`; NO ACTION.
+- Foreign key: `(room_request_id) -> student_room_request (id)`; NO ACTION.
+- Foreign key: `(room_resource_id) -> resource (id)`; NO ACTION.
+- Check: `(room_request_id IS NOT NULL AND room_resource_id IS NOT NULL AND room_revision IS NOT NULL AND room_revision > 0 AND equipment_reservation_id IS NULL) OR (room_request_id IS NULL AND room_resource_id IS NULL AND room_revision IS NULL AND equipment_reservation_id IS NOT NULL)`.
+- Check: `category IN ('problem','improvement','general')`.
+- Check: `length(btrim(description)) BETWEEN 1 AND 4000 AND length(response) <= 4000 AND revision > 0`.
+- Check: `priority IN ('low','normal','high','urgent')`.
+- Check: `status IN ('Submitted','Under Review','Resolved','Closed')`.
+- Check: `submission_key ~ '^[0-9a-f]{32}$' AND fingerprint ~ '^[0-9a-f]{64}$'`.
+- Unique: `reporter_id, submission_key`.
+- Index: `ix_feedback_faculty_status (faculty_id, status, id)`.
+- Index: `ix_feedback_reporter_created (reporter_id, created_at, id)`.
+- Index: `ix_resource_feedback_assigned_to_id (assigned_to_id)`.
+- Index: `ix_resource_feedback_equipment_reservation_id (equipment_reservation_id)`.
+- Index: `ix_resource_feedback_room_request_id (room_request_id)`.
+- Index: `ix_resource_feedback_room_resource_id (room_resource_id)`.
 
 ## resource_request
 

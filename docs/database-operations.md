@@ -1,5 +1,36 @@
 # PostgreSQL setup and safe operations
 
+## Resource feedback upgrade (Iteration 48)
+
+Back up an existing database using the procedures below before applying migrations.
+With the intended `DATABASE_URL` configured, run `python -m alembic upgrade head`.
+Head is `0048a`: 50 application tables plus Alembic infrastructure. This additive
+migration preserves existing room, loan, calendar and waiting-list records. It
+does not seed reports, change inventory or modify engine configuration.
+
+`python -m alembic check` verifies schema/model consistency. A downgrade refuses
+to discard nonempty feedback or explicit student group registrations; export and
+review such data separately rather than forcing a destructive rollback.
+Tests own isolated schemas and verify empty downgrade/re-upgrade, integrity,
+retries, concurrent writers and transaction rollback.
+
+Open **Issues & Feedback** for own reports or the responsible-staff inbox. Create
+reports from an actual room booking or handed-over equipment loan; general
+feedback requires completed room use or verified per-unit return. Room organizers
+can explicitly register student participants. Reports remain private even between
+members of the same group.
+
+Urgent reports direct users to contact university staff; this is not an emergency
+service. Reports never block resources automatically. Faculty room managers use
+scoped closures, custodians use existing inventory condition/return controls, and
+administration retains ownership/policy authority. Confirmed conflicts require
+explicit authorized decisions, never silent cancellation. Maintenance and related
+open-report audit/notifications share one transaction.
+
+No new dependencies, C++ rebuild or JSON protocol migration is required when the
+existing authoritative engine build is valid. See
+[feedback architecture](architecture/resource-feedback-design.md).
+
 Iteration 41 makes PostgreSQL the normal web application's source of truth.
 The C++ engine still receives JSON protocol v1 and has no SQL dependency.
 See [database design](architecture/database-design.md) for the ER diagram and

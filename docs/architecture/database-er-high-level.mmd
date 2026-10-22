@@ -92,6 +92,11 @@ erDiagram
         integer faculty_id PK,FK
         integer user_id FK
     }
+    feedback_event {
+        bigint id PK "identity"
+        bigint report_id FK
+        integer actor_id FK
+    }
     legacy_calendar_binding {
         bigint id PK "identity"
         integer period_id FK
@@ -107,6 +112,7 @@ erDiagram
         bigint appointment_event_id FK "nullable"
         bigint room_event_id FK "nullable"
         bigint equipment_event_id FK "nullable"
+        bigint feedback_event_id FK "nullable"
     }
     organization_unit {
         integer id PK "identity"
@@ -127,6 +133,15 @@ erDiagram
     }
     resource {
         integer id PK "identity"
+    }
+    resource_feedback {
+        bigint id PK "identity"
+        bigint room_request_id FK "nullable"
+        integer room_resource_id FK "nullable"
+        integer equipment_reservation_id FK "nullable"
+        integer reporter_id FK
+        integer faculty_id FK
+        integer assigned_to_id FK
     }
     resource_request {
         integer id PK "identity"
@@ -208,11 +223,14 @@ erDiagram
     equipment_type ||--o{ equipment_unit : type_id
     organization_unit ||--o| faculty_room_approver : faculty_id
     login_account ||--o{ faculty_room_approver : user_id
+    university_user ||--o{ feedback_event : actor_id
+    resource_feedback ||--o{ feedback_event : report_id
     busy_slot o|--o{ legacy_calendar_binding : busy_slot_id
     academic_period ||--o{ legacy_calendar_binding : period_id
     resource_request o|--o{ legacy_calendar_binding : request_id
     university_user ||--o| login_account : user_id
     equipment_event o|--o{ notification : equipment_event_id
+    feedback_event o|--o{ notification : feedback_event_id
     university_user ||--o{ notification : recipient_id
     organization_unit o|--o{ organization_unit : parent_id
     university_user ||--o{ professor_availability : user_id
@@ -220,6 +238,12 @@ erDiagram
     allocation_run ||--o{ request_decision : run_id
     resource_request ||--o{ request_history : request_id
     allocation_run o|--o{ request_history : run_id
+    login_account ||--o{ resource_feedback : assigned_to_id
+    equipment_reservation o|--o{ resource_feedback : equipment_reservation_id
+    organization_unit ||--o{ resource_feedback : faculty_id
+    university_user ||--o{ resource_feedback : reporter_id
+    student_room_request o|--o{ resource_feedback : room_request_id
+    resource o|--o{ resource_feedback : room_resource_id
     university_user o|--o{ resource_request : academic_instructor_id
     university_user ||--o{ resource_request : requester_id
     resource ||--o{ resource_request : resource_id

@@ -12,6 +12,7 @@
     {{ nav_link('rooms.index', 'Room Requests', 'room', 'rooms.') }}
     {{ nav_link('equipment.index', 'Equipment', 'equipment', 'equipment.') }}
     {{ nav_link('waiting.index', 'Waiting Lists', 'clock', 'waiting.') }}
+    {{ nav_link('feedback.index', 'Issues & Feedback', 'book', 'feedback.') }}
     <p class="app-nav-label">My planning</p>
     {{ nav_link('appointments.calendar', 'My Schedule', 'clock') }}
     {% if g.principal.role == 'Instructor' %}{{ nav_link('appointments.availability', 'Office Hours', 'calendar') }}{% endif %}

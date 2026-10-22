@@ -73,6 +73,19 @@ class WaitingRoomTests(RoomFixture):
         self.assertEqual(self.totals(), (0, 0))
         with self.assertRaises(WaitingListError): self.join(key=key, count=7)
 
+    def test_registered_student_group_survives_review_and_automatic_assignment(self):
+        key=self.waiting.join_room(1,self.values(participantIds=[4]),[2],self.other_faculty,
+            POLICY_VERSION,True,uuid.uuid4().hex)
+        self.waiting.review(key,7,True)
+        self.assertEqual(self.waiting.detail(key,1)['status'],'Preapproved')
+        self.open_room()
+        entry=self.waiting.detail(key,1)
+        self.assertEqual(entry['status'],'Assigned')
+        booking=self.rooms.detail(entry['requestId'],1)
+        self.assertEqual([p['id'] for p in booking['participants']],[4])
+        self.assertEqual([p['id'] for p in booking['invitations']],[2])
+        self.assertEqual(self.totals(),(1,1))
+
     def test_only_current_owning_faculty_can_review_or_inspect(self):
         key = self.join()
         for actor in (4, 6, 2):
@@ -814,7 +827,7 @@ class WaitingEquipmentTests(EquipmentFixture):
     def test_migration_keeps_single_queue_and_can_upgrade_from_previous_head(self):
         self.assertIn('waiting_list_entry', inspect(self.database.engine).get_table_names())
         with self.database.transaction(read_only=True) as session:
-            self.assertEqual(session.scalar(text('select version_num from alembic_version')), '0047a')
+            self.assertEqual(session.scalar(text('select version_num from alembic_version')), '0048a')
 
     def test_equipment_flask_submission_and_staff_review_reuse_existing_forms(self):
         from web import app as web_app

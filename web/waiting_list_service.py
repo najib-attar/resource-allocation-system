@@ -13,7 +13,7 @@ from .equipment_access import custodian_faculties
 from .equipment_service import EquipmentService
 from .notification_service import event_history
 from .persistence.models import (ApplicationState, BorrowRequest, EquipmentEvent, EquipmentType, OrganizationUnit, RoomEvent,
-    RoomInvitation, StudentRoomRequest, User, WaitingListEntry, WAITING_ACTIVE)
+    StudentRoomRequest, User, WaitingListEntry, WAITING_ACTIVE)
 from .persistence.repository import state_row
 from .room_calendar import room_snapshot, valid_approvers
 from .room_request_service import RoomRequestService
@@ -311,8 +311,9 @@ class WaitingListService:
             try:
                 self.equipment._user(session, entry.owner_id, student=True)
                 if kind == 'room':
-                    invitees = list(session.scalars(select(RoomInvitation.user_id).where(RoomInvitation.request_id == parent.id)))
-                    values = self.rooms._validate(session, entry.owner_id, self._room_values(parent), invitees)
+                    invitees, students = self.rooms._member_ids(session,parent.id)
+                    values = self.rooms._validate(session, entry.owner_id,
+                        {**self._room_values(parent), 'participantIds':students}, invitees)
                     eligible = self._room_match(session, entry.owner_id, values, faculty, eligibility=True)['feasible']
                     match = self._room_match(session, entry.owner_id, values, faculty) if eligible else None
                 else:

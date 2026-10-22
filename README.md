@@ -1,5 +1,15 @@
 # Resource Allocation System (Iterative Prototype)
 
+Iteration 48 adds **private resource feedback and issue reporting** at `/feedback/`
+for actual room participants and equipment borrowers. Optional reports, staff
+review/resolution/reopening, maintenance audit and notifications share one workflow.
+See the [use case](docs/use-cases/UC-STU-06-resource-feedback-issue-reporting.pdf),
+[requirements](docs/srs/UC-STU-06-requirements.md) and
+[architecture](docs/architecture/resource-feedback-design.md). Apply Alembic head
+`0048a` before running the updated web app; C++ and JSON execution are unchanged.
+The [Iteration 48 report](docs/iteration-reports/Iteration_48.pdf) summarizes the
+implementation, architecture and executed verification.
+
 This repository contains an iterative C++ prototype for a university resource allocation system, with a Flask web dashboard for demonstration.
 
 The project focuses on gradually developing a flexible allocation system for resources such as classrooms, laboratories, meeting rooms, exams, and committee meetings. The implementation follows an iterative software design approach, where each iteration introduces one or more new concepts into the prototype.

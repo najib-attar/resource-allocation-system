@@ -478,10 +478,11 @@ class RoomEvent(Base):
 class Notification(Base):
     __tablename__ = "notification"
     __table_args__ = (
-        CheckConstraint("num_nonnulls(appointment_event_id, room_event_id, equipment_event_id) = 1", name="ck_notification_source"),
+        CheckConstraint("num_nonnulls(appointment_event_id, room_event_id, equipment_event_id, feedback_event_id) = 1", name="ck_notification_source"),
         UniqueConstraint("recipient_id", "appointment_event_id"),
         UniqueConstraint("recipient_id", "room_event_id"),
         UniqueConstraint("recipient_id", "equipment_event_id"),
+        UniqueConstraint("recipient_id", "feedback_event_id"),
         Index("ix_notification_recipient_read_id", "recipient_id", "read_at", "id"),
     )
     id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
@@ -489,6 +490,7 @@ class Notification(Base):
     appointment_event_id: Mapped[int | None] = mapped_column(ForeignKey("appointment_event.id"), index=True)
     room_event_id: Mapped[int | None] = mapped_column(ForeignKey("room_event.id"), index=True)
     equipment_event_id: Mapped[int | None] = mapped_column(ForeignKey("equipment_event.id"), index=True)
+    feedback_event_id: Mapped[int | None] = mapped_column(ForeignKey("feedback_event.id"), index=True)
     read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
@@ -655,3 +657,60 @@ class WaitingListEntry(Base):
     top_three_notified: Mapped[bool] = mapped_column(Boolean, default=False)
     first_notified: Mapped[bool] = mapped_column(Boolean, default=False)
     explanation: Mapped[str] = mapped_column(Text, default='Awaiting responsible staff review; no resource is reserved.')
+
+
+FEEDBACK_CATEGORIES = ('problem', 'improvement', 'general')
+FEEDBACK_STATES = ('Submitted', 'Under Review', 'Resolved', 'Closed')
+FEEDBACK_PRIORITIES = ('low', 'normal', 'high', 'urgent')
+
+
+class ResourceFeedback(Base):
+    __tablename__ = 'resource_feedback'
+    __table_args__ = (
+        CheckConstraint('(room_request_id IS NOT NULL AND room_resource_id IS NOT NULL AND room_revision IS NOT NULL AND room_revision > 0 AND equipment_reservation_id IS NULL) OR (room_request_id IS NULL AND room_resource_id IS NULL AND room_revision IS NULL AND equipment_reservation_id IS NOT NULL)', name='ck_feedback_usage'),
+        CheckConstraint(allowed('category', FEEDBACK_CATEGORIES)),
+        CheckConstraint(allowed('status', FEEDBACK_STATES)),
+        CheckConstraint(allowed('priority', FEEDBACK_PRIORITIES)),
+        CheckConstraint("length(btrim(description)) BETWEEN 1 AND 4000 AND length(response) <= 4000 AND revision > 0"),
+        CheckConstraint("submission_key ~ '^[0-9a-f]{32}$' AND fingerprint ~ '^[0-9a-f]{64}$'"),
+        UniqueConstraint('reporter_id', 'submission_key'),
+        Index('ix_feedback_faculty_status', 'faculty_id', 'status', 'id'),
+        Index('ix_feedback_reporter_created', 'reporter_id', 'created_at', 'id'),
+    )
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    room_request_id: Mapped[int | None] = mapped_column(ForeignKey('student_room_request.id'), index=True)
+    room_resource_id: Mapped[int | None] = mapped_column(ForeignKey('resource.id'), index=True)
+    room_revision: Mapped[int | None] = mapped_column(Integer)
+    equipment_reservation_id: Mapped[int | None] = mapped_column(ForeignKey('equipment_reservation.id'), index=True)
+    reporter_id: Mapped[int] = mapped_column(ForeignKey('university_user.id'))
+    faculty_id: Mapped[int] = mapped_column(ForeignKey('organization_unit.id'))
+    assigned_to_id: Mapped[int] = mapped_column(ForeignKey('login_account.user_id'), index=True)
+    category: Mapped[str] = mapped_column(String(20))
+    description: Mapped[str] = mapped_column(Text)
+    status: Mapped[str] = mapped_column(String(20), default='Submitted')
+    priority: Mapped[str] = mapped_column(String(10), default='normal')
+    response: Mapped[str] = mapped_column(Text, default='')
+    revision: Mapped[int] = mapped_column(Integer, default=1)
+    submission_key: Mapped[str] = mapped_column(String(32))
+    fingerprint: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.clock_timestamp())
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.clock_timestamp())
+
+
+class FeedbackEvent(Base):
+    __tablename__ = 'feedback_event'
+    __table_args__ = (
+        UniqueConstraint('report_id', 'action_key'), UniqueConstraint('report_id', 'revision'),
+        CheckConstraint("revision > 0 AND length(btrim(message)) BETWEEN 1 AND 4500"),
+        CheckConstraint(allowed('status', FEEDBACK_STATES)),
+        CheckConstraint("action_key ~ '^[0-9a-f]{32}$' AND fingerprint ~ '^[0-9a-f]{64}$'"),
+    )
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    report_id: Mapped[int] = mapped_column(ForeignKey('resource_feedback.id'), index=True)
+    actor_id: Mapped[int] = mapped_column(ForeignKey('university_user.id'), index=True)
+    revision: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20))
+    message: Mapped[str] = mapped_column(Text)
+    action_key: Mapped[str] = mapped_column(String(32))
+    fingerprint: Mapped[str] = mapped_column(String(64))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.clock_timestamp())

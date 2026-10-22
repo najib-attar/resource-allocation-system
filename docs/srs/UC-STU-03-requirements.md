@@ -1,5 +1,10 @@
 # UC-STU-03 - Equipment borrowing requirements
 
+UC-STU-06 adds optional private reports for actual handed-over assets and feedback
+after verified per-unit return. See [shared feedback requirements](UC-STU-06-requirements.md).
+Reporting never substitutes for custodian inspection, changes inventory by itself,
+or shares another borrower's details. The borrowing lifecycle below is unchanged.
+
 This current addendum complements the [approved use case](../use-cases/UC-STU-03-student-equipment-borrowing.pdf).
 
 - Equipment types describe specifications and faculty borrowing policy; physical

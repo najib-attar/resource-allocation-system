@@ -1,5 +1,11 @@
 # UC-STU-02 - Implemented student room requirements
 
+UC-STU-06 adds explicit student group registration using existing room
+participation records and optional private feedback after use (problem reports
+during active use). See [shared feedback requirements](UC-STU-06-requirements.md).
+Attendee counts alone do not establish membership. Approval/selection rules remain
+unchanged; individual participation does not reserve a personal calendar.
+
 This current addendum complements [the approved use case](../use-cases/UC-STU-02-student-room-allocation.pdf)
 and the original SRS without rewriting historical reports.
 
