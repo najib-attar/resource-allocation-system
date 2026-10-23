@@ -142,11 +142,16 @@ class EngineGateway:
         return result, backend.metadata
 
 
+def _valid_operation_header(result, snapshot, operation):
+    return (isinstance(result, dict) and type(result.get('protocolVersion')) is int
+            and result['protocolVersion'] == 1 and result.get('operation') == operation
+            and result.get('runId') == snapshot['runId'] and result.get('status') == 'success'
+            and isinstance(result.get('engineVersion'), str) and bool(result['engineVersion'])
+            and type(result.get('feasible')) is bool and result.get('errors') == [])
+
+
 def _series_header(result, snapshot, operation):
-    if not (isinstance(result,dict) and result.get('operation')==operation and type(result.get('protocolVersion')) is int
-        and result['protocolVersion']==1 and result.get('runId')==snapshot['runId'] and result.get('status')=='success'
-        and isinstance(result.get('engineVersion'),str) and result['engineVersion'] and type(result.get('feasible')) is bool
-        and result.get('errors')==[] and isinstance(result.get('occurrences'),list)
+    if not (_valid_operation_header(result, snapshot, operation) and isinstance(result.get('occurrences'),list)
         and len(result['occurrences'])==len(snapshot['occurrences']) and 1<=len(result['occurrences'])<=366):
         raise EngineIntegrationError('Invalid recurring reservation engine response.')
 
@@ -186,10 +191,7 @@ def validate_equipment_result(result, snapshot):
     def require(condition):
         if not condition:
             raise EngineIntegrationError('Invalid equipment engine response.')
-    require(isinstance(result, dict) and type(result.get('protocolVersion')) is int and result['protocolVersion'] == 1
-            and result.get('operation') == 'equipment' and result.get('runId') == snapshot['runId']
-            and result.get('status') == 'success' and isinstance(result.get('engineVersion'), str) and bool(result['engineVersion'])
-            and type(result.get('feasible')) is bool and result.get('errors') == [])
+    require(_valid_operation_header(result, snapshot, 'equipment'))
     needs = {item['typeId']: item for item in snapshot['items']}
     types = {item['id']: item for item in snapshot['types']}
     units = {item['id']: item for item in snapshot['units']}
@@ -223,11 +225,8 @@ def validate_room_result(result, snapshot):
             raise EngineIntegrationError('Invalid room-selection engine response.')
     def number(value, minimum=0):
         return type(value) is int and minimum <= value <= 2147483647
-    require(isinstance(result, dict) and type(result.get('protocolVersion')) is int and result['protocolVersion'] == 1
-            and result.get('operation') == 'studentRoom' and result.get('runId') == snapshot['runId']
-            and result.get('status') == 'success' and isinstance(result.get('engineVersion'), str) and result['engineVersion']
-            and type(result.get('feasible')) is bool and result.get('reasonCode') in
-            {'AVAILABLE', 'NO_ELIGIBLE_ROOM', 'ORGANIZER_BUSY', 'UNRESOLVED_CALENDAR'} and result.get('errors') == [])
+    require(_valid_operation_header(result, snapshot, 'studentRoom') and result.get('reasonCode') in
+            {'AVAILABLE', 'NO_ELIGIBLE_ROOM', 'ORGANIZER_BUSY', 'UNRESOLVED_CALENDAR'})
     rooms = {row['id']: row for row in snapshot['rooms']}
     for key in ('candidates', 'alternatives'):
         require(isinstance(result.get(key), list) and len(result[key]) <= (20 if key == 'candidates' else 5))
@@ -266,14 +265,10 @@ def validate_appointment_result(result, snapshot):
     def require(condition):
         if not condition:
             raise EngineIntegrationError("Invalid appointment engine response.")
-    require(isinstance(result, dict) and type(result.get("protocolVersion")) is int
-            and result["protocolVersion"] == 1 and result.get("operation") == "appointment"
-            and result.get("runId") == snapshot["runId"] and result.get("status") == "success"
-            and isinstance(result.get("engineVersion"), str) and bool(result["engineVersion"])
-            and type(result.get("feasible")) is bool and result.get("reasonCode") in {
+    require(_valid_operation_header(result, snapshot, 'appointment') and result.get("reasonCode") in {
                 "AVAILABLE", "NO_FEASIBLE_TIME", "UNRESOLVED_CALENDAR", "OUTSIDE_PUBLISHED_AVAILABILITY",
                 "REQUIRED_PARTICIPANT_BUSY", "ORGANIZER_BUSY", "INVALID_INTERVAL"}
-            and isinstance(result.get("recommendations"), list) and result.get("errors") == [])
+            and isinstance(result.get("recommendations"), list))
     require(result["feasible"] == (result["reasonCode"] == "AVAILABLE"))
     people = set(snapshot["invitedIds"])
     for item in result["recommendations"]:

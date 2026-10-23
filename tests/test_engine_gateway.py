@@ -12,7 +12,9 @@ from web.backend_executable import BackendExecutable, BackendExecutableError, re
 from csv_cli_fixtures import extract_meeting_suggestions
 from web.backend_result_adapter import BackendResultAdapter
 from web.engine_result_projection import input_tables, result_tables
-from web.engine_gateway import EngineGateway, EngineIntegrationError, validate_result
+from web.engine_gateway import (EngineGateway, EngineIntegrationError, validate_result,
+    validate_appointment_result, validate_equipment_result, validate_equipment_series_result,
+    validate_room_result, validate_room_series_result)
 from web.persistence.importer import CsvInputs
 
 
@@ -103,6 +105,51 @@ class GatewayTests(TestCase):
     def test_strategy_mismatch_is_rejected(self):
         self.result["strategy"] = "priority"
         with self.assertRaisesRegex(EngineIntegrationError, "strategy"): self.call()
+
+
+class OperationEnvelopeTests(TestCase):
+    def cases(self):
+        period = {'start': 1800000000, 'end': 1800001800}
+        common = {'runId': 'envelope-test', 'action': 'recommend', 'proposed': period,
+                  'horizon': period, 'occurrences': [period]}
+        equipment = common | {'items': [{'typeId': 1, 'quantity': 1}], 'types': [{'id': 1}], 'units': []}
+        room = common | {'rooms': [], 'attendeeCount': 1}
+        appointment = common | {'invitedIds': [], 'durationMinutes': 30}
+        header = {'protocolVersion': 1, 'runId': common['runId'], 'status': 'success',
+                  'engineVersion': 'test-engine', 'feasible': False, 'errors': []}
+        equipment_body = {'items': [{'typeId': 1, 'availableQuantity': 0, 'reasonCode': 'INSUFFICIENT_QUANTITY',
+                                     'unitIds': [], 'alternativeTypeIds': []}], 'alternativePeriods': []}
+        room_body = {'reasonCode': 'NO_ELIGIBLE_ROOM', 'candidates': [], 'alternatives': [], 'explanations': []}
+        return [
+            (validate_equipment_result, equipment, header | equipment_body | {'operation': 'equipment'}, 'Invalid equipment engine response.'),
+            (validate_room_result, room, header | room_body | {'operation': 'studentRoom'}, 'Invalid room-selection engine response.'),
+            (validate_appointment_result, appointment, header | {'operation': 'appointment', 'reasonCode': 'NO_FEASIBLE_TIME', 'recommendations': []}, 'Invalid appointment engine response.'),
+            (validate_equipment_series_result, equipment, header | {'operation': 'equipmentSeries', 'items': [], 'alternativePeriods': [],
+                'occurrences': [period | equipment_body | {'feasible': False}]}, 'Invalid recurring reservation engine response.'),
+            (validate_room_series_result, room, header | room_body | {'operation': 'studentRoomSeries',
+                'occurrences': [period | room_body | {'feasible': False}]}, 'Invalid recurring reservation engine response.'),
+        ]
+
+    def test_all_operation_envelopes_preserve_valid_results(self):
+        for validator, snapshot, result, _ in self.cases():
+            with self.subTest(operation=result['operation']):
+                self.assertIs(validator(result, snapshot), result)
+
+    def test_all_operation_envelopes_preserve_rejection_and_error_messages(self):
+        changes = [('protocolVersion', value) for value in (None, True, 1.0, '1', 2)] + [
+            ('operation', 'other'), ('runId', 'other'), ('status', 'error'), ('status', 'pending'),
+            ('engineVersion', ''), ('engineVersion', None), ('engineVersion', 1),
+            ('feasible', None), ('feasible', 0), ('feasible', 'false'), ('errors', None), ('errors', {}), ('errors', ['failure'])]
+        for validator, snapshot, result, message in self.cases():
+            malformed = [None, [], True, 'not an object']
+            malformed += [result | {key: value} for key, value in changes]
+            malformed += [{key: value for key, value in result.items() if key != omitted}
+                for omitted in ('protocolVersion', 'operation', 'runId', 'status', 'engineVersion', 'feasible', 'errors')]
+            for invalid in malformed:
+                with self.subTest(operation=result['operation'], invalid=invalid):
+                    with self.assertRaises(EngineIntegrationError) as error:
+                        validator(invalid, snapshot)
+                    self.assertEqual(str(error.exception), message)
 
 
 class JsonEngineIntegrationTests(TestCase):
