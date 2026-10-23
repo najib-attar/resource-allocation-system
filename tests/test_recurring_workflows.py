@@ -117,10 +117,17 @@ class RecurringRoomWorkflowTests(RoomFixture):
         keys=[self.series(actor=actor) for actor in (1,4)]
         context=multiprocessing.get_context('spawn');output=context.Queue()
         workers=[context.Process(target=approve_series_process,args=(self.url,key,output)) for key in keys]
-        for worker in workers:worker.start()
-        for worker in workers:worker.join(90);self.assertEqual(worker.exitcode,0)
-        results=[output.get(timeout=5) for worker in workers]
-        output.close();output.join_thread()
+        try:
+            for worker in workers:worker.start()
+            # Drain producers before joining; queue feeder threads must be able to finish.
+            results=[output.get(timeout=90) for worker in workers]
+            for worker in workers:worker.join(90);self.assertEqual(worker.exitcode,0)
+        finally:
+            for worker in workers:
+                if worker.pid is not None:
+                    if worker.is_alive():worker.terminate()
+                    worker.join(5)
+            output.close();output.join_thread()
         self.assertEqual(results.count('Confirmed'),1);self.assertEqual(self.totals(),(2,2))
 
     def test_existing_eligible_room_queue_is_not_bypassed(self):

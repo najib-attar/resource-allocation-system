@@ -57,29 +57,6 @@ body {
     text-transform: uppercase;
 }
 
-.nav-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.6rem;
-}
-
-.nav-links a {
-    color: var(--accent-dark);
-    text-decoration: none;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    padding: 0.55rem 0.9rem;
-    background: var(--card);
-    font-weight: 800;
-    font-size: 0.92rem;
-}
-
-.nav-links a:hover {
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
-}
-
 .page-shell {
     width: min(1180px, calc(100% - 2rem));
     margin: 2rem auto;
@@ -1086,10 +1063,6 @@ tr:nth-child(even) td {
         align-items: flex-start;
     }
 
-    .nav-links a {
-        padding: 0.5rem 0.7rem;
-    }
-
     .participant-option {
         grid-template-columns: 1fr;
     }
@@ -1142,7 +1115,7 @@ tr:nth-child(even) td {
 .panel fieldset { border: 1px solid var(--line); border-radius: 12px; padding: 1rem; margin: 1rem 0; }
 .panel legend { color: var(--accent-dark); font-weight: 800; }
 #appointment-form { display: block; }
-.panel button, .panel a.button, .nav-links button {
+.panel button, .panel a.button {
     appearance: none;
     font: inherit;
     font-weight: 800;
@@ -1155,56 +1128,18 @@ tr:nth-child(even) td {
     text-decoration: none;
 }
 .panel .button { background: var(--accent); color: white; border-color: var(--accent); }
-.panel button:hover, .nav-links button:hover { background: var(--accent-dark); color: white; }
+.panel button:hover { background: var(--accent-dark); color: white; }
 .panel button:disabled { cursor: wait; opacity: .65; }
 .panel input:focus-visible, .panel select:focus-visible, .panel textarea:focus-visible,
 .panel button:focus-visible { outline: 3px solid var(--highlight); outline-offset: 2px; }
 .panel [role="alert"] { background: var(--soft-amber); padding: 1rem; border-left: 4px solid var(--warning); }
 .appointment-choice { border-radius: 12px !important; width: 100%; }
-.nav-links { align-items: center; }
 
-/* The student portal keeps the existing palette and uses a private, agenda-first layout. */
-.nav-links a[aria-current="page"] { background: var(--accent-dark); color: white; }
-.student-home { display: grid; gap: 1.4rem; }
-.student-welcome { display: flex; justify-content: space-between; align-items: center; gap: 2rem; padding: .8rem 0; }
-.student-welcome h2 { color: var(--accent-dark); font-size: clamp(1.9rem, 3.6vw, 3.2rem); letter-spacing: -.045em; margin: .45rem 0 .8rem; max-width: 870px; overflow-wrap: anywhere; }
-.student-intro, .student-profile { color: var(--muted); line-height: 1.65; }
-.student-profile { font-size: .88rem; }
-.student-today { border-left: 2px solid var(--line); padding-left: 2rem; text-align: center; display: grid; gap: .25rem; flex: 0 0 auto; color: var(--accent-dark); }
-.student-today strong { font-size: 3.7rem; line-height: 1; letter-spacing: -.07em; }
-.student-today small { color: var(--muted); margin-top: .4rem; }
-.student-stat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
-.student-stat { color: var(--ink); text-decoration: none; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.84); padding: 1.25rem; display: grid; gap: .4rem; }
-.student-stat strong { color: var(--accent-dark); font-size: 2.2rem; line-height: 1; }
-.student-stat span { font-weight: 800; }
-.student-stat small { color: var(--muted); line-height: 1.5; }
-.student-stat:hover { border-color: var(--accent); background: white; }
-.student-main-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 1.4rem; }
-.student-home .panel { margin: 0; min-width: 0; }
-.student-next { padding: clamp(1.4rem, 3vw, 2rem); border-radius: 24px; color: white; background: radial-gradient(ellipse at top right, rgba(242,184,75,.25), transparent 65%), linear-gradient(130deg, var(--accent-dark), var(--accent)); min-width: 0; overflow-wrap: anywhere; }
-.student-next .eyebrow { color: #c4e2ec; }
-.student-next h2 { font-size: 1.15rem; font-weight: 700; margin: .7rem 0 1.4rem; }
-.student-next h3 { font-size: 1.65rem; margin: 1rem 0 .5rem; }
-.student-next p { line-height: 1.6; }
-.student-next .button-primary { background: white; color: var(--accent-dark); }
-.student-next .button-secondary { background: transparent; border: 1px solid #abd5df; color: white; }
-.student-next-date { display: flex; gap: .8rem; align-items: baseline; }
-.student-next-date strong { font-size: 3.3rem; line-height: 1; }
-.student-optional-note { border-left: 3px solid var(--highlight); padding-left: .8rem; }
+/* Card fragments still used by the current student portal. */
 .student-empty { padding: .6rem 0; }
-.student-services h2 { margin-top: .6rem; }
-.student-service-card { display: flex; gap: 1rem; align-items: center; padding: 1rem 0; text-decoration: none; color: var(--accent-dark); }
-.student-service-card + .student-service-card { border-top: 1px solid var(--line); }
-.student-service-card > span:nth-child(2) { flex: 1; min-width: 0; }
-.student-service-card strong, .student-service-card small { display: block; }
-.student-service-card small { margin-top: .4rem; color: var(--muted); line-height: 1.5; }
-.student-service-number { border: 1px solid var(--line); border-radius: 12px; padding: .7rem; font-size: .85rem; font-weight: 800; }
-.student-service-card:hover strong, .student-text-link:hover { text-decoration: underline; }
+.student-text-link:hover { text-decoration: underline; }
 .student-section-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
 .student-section-heading h2 { margin: .3rem 0; font-size: 1.35rem; }
-.student-request-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; align-items: start; }
-.student-request-grid .panel { padding: 1.3rem; }
-.student-section-count { background: var(--soft-blue); color: var(--accent-dark); border-radius: 999px; padding: .3rem .65rem; font-weight: 800; }
 .student-card-note, .student-empty-copy { color: var(--muted); line-height: 1.6; font-size: .85rem; }
 .student-empty-copy { margin: 1.5rem 0; }
 .student-appointment { border-top: 1px solid var(--line); padding: 1rem 0; overflow-wrap: anywhere; }
@@ -1212,25 +1147,9 @@ tr:nth-child(even) td {
 .student-appointment h3 a, .student-text-link { color: var(--accent-dark); text-decoration: none; }
 .student-appointment > p { font-size: .85rem; }
 .student-appointment-top { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
-.student-status { display: inline-block; border-radius: 999px; font-size: .72rem; padding: .25rem .5rem; font-weight: 800; }
-.student-status.is-confirmed { color: var(--success); background: var(--soft-green); }
-.student-status.is-pending { color: var(--warning); background: var(--soft-amber); }
 .student-expired { color: var(--danger); font-size: .72rem; }
 .student-text-link { font-size: .85rem; font-weight: 800; }
 .student-calendar-warning { border-left: 4px solid var(--warning); border-radius: 12px; padding: 1rem; background: var(--soft-amber); line-height: 1.7; }
-.student-home a:focus-visible, .student-home button:focus-visible { outline: 3px solid var(--highlight); outline-offset: 3px; }
-@media (max-width: 1000px) {
-    .student-request-grid { grid-template-columns: 1fr; }
-}
-@media (max-width: 720px) {
-    .student-welcome { align-items: flex-start; gap: 1rem; }
-    .student-today { padding-left: .8rem; }
-    .student-today strong { font-size: 2.8rem; }
-    .student-today span, .student-today small { font-size: .7rem; }
-    .student-stat-grid, .student-main-grid { grid-template-columns: 1fr; }
-    .student-stat { grid-template-columns: 1fr auto; align-items: center; }
-    .student-stat small { grid-column: 1 / -1; }
-}
 
 /* Shared hourly timetable and bounded, searchable participant selectors. */
 .personal-timetable { min-width: 0; }
@@ -1293,8 +1212,6 @@ tr:nth-child(even) td {
 .manual-time summary { cursor: pointer; color: var(--muted); font-size: .85rem; }
 .manual-time label { display: block; margin-top: 1rem; }
 @media (max-width: 720px) {
-    .student-welcome > div:first-child { min-width: 0; }
-    .student-profile { overflow-wrap: anywhere; }
     .participant-picker-grid { grid-template-columns: 1fr; }
     .timetable-toolbar form { width: 100%; flex-wrap: wrap; }
     .timetable-toolbar input { min-width: 0; flex: 1; }
@@ -1314,18 +1231,12 @@ tr:nth-child(even) td {
 .account-controls { display: flex; align-items: center; gap: 1rem; margin-left: auto; }
 .site-header > div:first-child { min-width: 0; flex: 1 1 320px; }
 .site-header h1 { overflow-wrap: anywhere; }
-.profile-identity { display: flex; align-items: center; gap: .7rem; min-width: 0; }
 .profile-avatar { width: 42px; height: 42px; flex: 0 0 42px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: .85rem; color: var(--accent-dark); background: linear-gradient(135deg, #d5e9ed, #f4e7c6); border: 2px solid white; box-shadow: 0 0 0 1px var(--line); }
 .profile-copy { display: flex; flex-direction: column; gap: .15rem; max-width: 260px; min-width: 0; }
 .profile-copy strong { overflow-wrap: anywhere; font-size: .95rem; }
 .profile-copy small { color: var(--muted); font-size: .78rem; }
 .sign-out-form { margin: 0; }
 .sign-out-form button, .notification-toggle, .notification-heading button { font: inherit; cursor: pointer; color: var(--accent-dark); background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: .6rem .85rem; }
-.shell-navigation { width: 100%; align-items: start; }
-.nav-links a[aria-current="page"] { color: white; border-color: var(--accent); background: var(--accent); }
-.administration-navigation { flex: 1 1 100%; }
-.administration-navigation summary { cursor: pointer; color: var(--muted); font-size: .88rem; padding: .5rem 0; font-weight: 700; }
-.administration-links { display: flex; flex-wrap: wrap; gap: .6rem; padding-top: .4rem; }
 .notification-control { position: relative; }
 .notification-toggle { width: 44px; height: 44px; padding: .6rem; display: grid; place-items: center; position: relative; }
 .notification-toggle svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
@@ -1354,7 +1265,6 @@ tr:nth-child(even) td {
 .account-controls button:focus-visible, .notification-item a:focus-visible, .administration-navigation summary:focus-visible { outline: 3px solid var(--highlight); outline-offset: 3px; }
 @media (max-width: 600px) {
     .account-controls { margin-left: 0; width: 100%; gap: .7rem; }
-    .profile-identity { flex: 1; }
     .profile-copy { max-width: 160px; }
     .notification-panel { position: fixed; top: 155px; left: 1rem; right: 1rem; width: auto; max-height: calc(100dvh - 175px); overflow-y: auto; }
     .notification-panel .notification-list { max-height: 45dvh; }

@@ -280,11 +280,11 @@ powershell -ExecutionPolicy Bypass -File tests\run_tests.ps1
 The latest verified result is:
 
 ```text
-Running 172 test(s)
-Result: 172 passed, 0 failed
+Running 185 test(s)
+Result: 185 passed, 0 failed
 ```
 
-The test runner compiles and runs the backend smoke executable, then compiles and runs the unit and integration tests.
+The test runner compiles and runs the backend smoke executable, then compiles and runs the unit and integration tests. Its executables are created in an owned temporary directory and removed on success or failure; existing build artifacts and data are not deleted.
 
 After installing `requirements.txt`, building the authoritative backend, and configuring an isolated `TEST_DATABASE_URL`, run `python -m unittest discover -s tests -p 'test_*.py' -v` for database integrity/concurrency, migrations, gateway, JSON/legacy parity and Flask smoke checks. Configure matching PostgreSQL backup tools as described in the [database guide](docs/database-operations.md) to run recovery tests. Without the URL/tools, relevant tests explicitly skip; such a run is not full verification. Linux CI provides a real PostgreSQL service.
 

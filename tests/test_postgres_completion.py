@@ -21,7 +21,7 @@ from web.persistence.demo import demo_snapshot
 from web.persistence.database import Database
 from web.persistence.importer import ImportValidationError, import_csv, populate_empty_database
 from web.persistence.models import AllocationRun, ApplicationState, ExamDetails, OrganizationUnit, RequestHistory, RequestParticipant, RequestSlot, ResourceRequest
-from web.persistence.repository import PersistenceError, Repository, validate_unit_hierarchy
+from web.persistence.repository import PersistenceError, Repository, snapshot_from_session, validate_unit_hierarchy
 
 
 def retry_save_process(url, start, output, key):
@@ -93,6 +93,14 @@ class PostgresCompletionTests(PostgresTestCase):
         with self.assertRaises(IntegrityError):
             with self.database.transaction() as session:
                 session.add(ExamDetails(request_id=1))
+
+    def test_snapshot_rejects_missing_exam_before_deferred_commit_validation(self):
+        exam_id = next(item['id'] for item in self.repository.snapshot()['requests'] if item['type'] == 'Exam')
+        with self.assertRaisesRegex(PersistenceError, 'inconsistent subtype records'):
+            with self.database.transaction() as session:
+                session.execute(delete(ExamDetails).where(ExamDetails.request_id == exam_id))
+                snapshot_from_session(session, 'greedy')
+        self.assertIn('exam', next(item for item in self.repository.snapshot()['requests'] if item['id'] == exam_id))
 
     def test_participants_cannot_be_attached_to_noncommittee_requests(self):
         with self.assertRaises(IntegrityError):

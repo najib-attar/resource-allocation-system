@@ -10,7 +10,7 @@ from test_room_requests import RoomFixture, START
 from web import app as web_app
 from web.notification_service import NotificationService
 from web.persistence.database import Database
-from web.persistence.models import Notification, RoomEvent, RoomInvitation, StudentRoomRequest
+from web.persistence.models import Notification, RoomEvent, RoomInvitation
 
 
 class NotificationTests(RoomFixture):

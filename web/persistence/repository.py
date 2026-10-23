@@ -130,9 +130,7 @@ def snapshot_from_session(session, strategy, run_id=None):
                    "requiredFeature": item.required_feature, "requiredBuilding": item.required_building,
                    "slots": slots[item.id]}
         if item.type == "Exam":
-            exam = exams.get(item.id)
-            if exam is None:
-                raise PersistenceError(f"Exam request {item.id} is missing its exam metadata.")
+            exam = exams[item.id]
             request["exam"] = {"courseCode": exam.course_code, "courseName": exam.course_name,
                                "examType": exam.exam_type, "canSplitAcrossRooms": exam.can_split}
         if item.type == "CommitteeMeeting":
