@@ -280,8 +280,8 @@ powershell -ExecutionPolicy Bypass -File tests\run_tests.ps1
 The latest verified result is:
 
 ```text
-Running 185 test(s)
-Result: 185 passed, 0 failed
+Running 187 test(s)
+Result: 187 passed, 0 failed
 ```
 
 The test runner compiles and runs the backend smoke executable, then compiles and runs the unit and integration tests. Its executables are created in an owned temporary directory and removed on success or failure; existing build artifacts and data are not deleted.
