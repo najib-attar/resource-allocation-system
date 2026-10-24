@@ -3,6 +3,7 @@
 #include "../src/models/ExamRequest.h"
 #include "../src/models/Instructor.h"
 #include "../src/services/AllocationService.h"
+#include "../src/utils/BestFitSelection.h"
 
 #include <memory>
 #include <limits>
@@ -209,4 +210,18 @@ TEST_CASE("Multi-room best-fit matches an exhaustive four-room subset oracle") {
 
 TEST_CASE("Shared-room best-fit matches an exhaustive four-room subset oracle") {
     verifyAgainstSubsetOracle(bestFitStrategies[1]);
+}
+
+TEST_CASE("Capacity selection handles empty infeasible and nonpositive demand") {
+    CHECK(best_fit::selectCapacityIndices({}, 1).empty());
+    CHECK(best_fit::selectCapacityIndices({10, 10, 20}, 41).empty());
+    CHECK(best_fit::selectCapacityIndices({10}, 0).empty());
+    CHECK(best_fit::selectCapacityIndices({10}, -1).empty());
+}
+
+TEST_CASE("Capacity selection retains distinct indices objective and stable ties") {
+    CHECK(best_fit::selectCapacityIndices({10, 10, 20}, 40) == (std::vector<std::size_t>{0, 1, 2}));
+    CHECK(best_fit::selectCapacityIndices({10, 15, 25}, 25) == (std::vector<std::size_t>{2}));
+    CHECK(best_fit::selectCapacityIndices({10, 20, 25}, 31) == (std::vector<std::size_t>{0, 2}));
+    CHECK(best_fit::selectCapacityIndices({20, 20, 20}, 40) == (std::vector<std::size_t>{0, 1}));
 }

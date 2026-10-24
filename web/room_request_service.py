@@ -388,7 +388,7 @@ class RoomRequestService:
         ids=[o['id'] for o in chosen]
         if approve:
             waiting.process('room',current['facultyId'],key)
-            result,revision,snapshot,_=self._evaluate(current['organizerId'],self._values(current),
+            result,revision,_,_=self._evaluate(current['organizerId'],self._values(current),
                 [i['id'] for i in current['invitations']],current['roomId'],key,occurrence_ids=ids)
         with self.database.transaction() as session:
             state=state_row(session,True)

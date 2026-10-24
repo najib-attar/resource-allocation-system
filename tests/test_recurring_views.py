@@ -5,7 +5,6 @@ import uuid
 import re
 from unittest import mock
 
-from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
 from auth_fixtures import authorized_client

@@ -1,18 +1,12 @@
 #include "MultiRoomExamBestFitStrategy.h"
 #include <algorithm>
-#include <limits>
-#include <utility>
 #include "../models/InvalidRequest.h"
+#include "../utils/BestFitSelection.h"
 
 namespace {
     struct CandidateRoom {
         const Space* space;
         int capacity;
-    };
-
-    struct BestFitState {
-        bool reachable = false;
-        int roomCount = std::numeric_limits<int>::max();
     };
 
     int nextAllocationId(const std::vector<Allocation>& allocations) {
@@ -96,69 +90,14 @@ namespace {
 
     std::vector<const Space*> selectBestFitRooms(const std::vector<CandidateRoom>& candidates,
                                                  int participantCount) {
-        int totalCapacity = 0;
+        std::vector<int> capacities;
         for (const CandidateRoom& candidate : candidates) {
-            totalCapacity += candidate.capacity;
+            capacities.push_back(candidate.capacity);
         }
-
-        if (participantCount <= 0 || totalCapacity < participantCount) {
-            return {};
-        }
-
-        std::vector<BestFitState> dp(totalCapacity + 1);
-        // Stage-indexed choices survive later updates to the one-dimensional scores.
-        std::vector<std::vector<bool>> takeRoom(
-            candidates.size(), std::vector<bool>(totalCapacity + 1, false));
-        dp[0].reachable = true;
-        dp[0].roomCount = 0;
-
-        for (size_t index = 0; index < candidates.size(); ++index) {
-            const int roomCapacity = candidates[index].capacity;
-
-            for (int capacity = totalCapacity - roomCapacity; capacity >= 0; --capacity) {
-                if (!dp[capacity].reachable) {
-                    continue;
-                }
-
-                const int nextCapacity = capacity + roomCapacity;
-                const int nextRoomCount = dp[capacity].roomCount + 1;
-
-                if (!dp[nextCapacity].reachable ||
-                    nextRoomCount < dp[nextCapacity].roomCount) {
-                    dp[nextCapacity].reachable = true;
-                    dp[nextCapacity].roomCount = nextRoomCount;
-                    takeRoom[index][nextCapacity] = true;
-                }
-            }
-        }
-
-        int bestCapacity = -1;
-        for (int capacity = participantCount; capacity <= totalCapacity; ++capacity) {
-            if (dp[capacity].reachable) {
-                bestCapacity = capacity;
-                break;
-            }
-        }
-
-        if (bestCapacity < 0) {
-            return {};
-        }
-
         std::vector<const Space*> selectedRooms;
-        int currentCapacity = bestCapacity;
-        for (size_t index = candidates.size(); index > 0 && currentCapacity > 0; --index) {
-            if (!takeRoom[index - 1][currentCapacity]) {
-                continue;
-            }
-
-            selectedRooms.push_back(candidates[index - 1].space);
-            currentCapacity -= candidates[index - 1].capacity;
+        for (std::size_t index : best_fit::selectCapacityIndices(capacities, participantCount)) {
+            selectedRooms.push_back(candidates[index].space);
         }
-        if (currentCapacity != 0) {
-            return {};
-        }
-
-        std::reverse(selectedRooms.begin(), selectedRooms.end());
         return selectedRooms;
     }
 }

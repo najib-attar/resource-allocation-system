@@ -1,17 +1,12 @@
 #include "SharedRoomExamBestFitStrategy.h"
 #include <algorithm>
-#include <limits>
 #include "../models/InvalidRequest.h"
+#include "../utils/BestFitSelection.h"
 
 namespace {
     struct CapacityChunk {
         const Space* space;
         int availableCapacity;
-    };
-
-    struct BestFitState {
-        bool reachable = false;
-        int roomCount = std::numeric_limits<int>::max();
     };
 
     int nextAllocationId(const std::vector<Allocation>& allocations) {
@@ -132,69 +127,14 @@ namespace {
 
     std::vector<CapacityChunk> selectBestFitChunks(const std::vector<CapacityChunk>& candidates,
                                                    int participantCount) {
-        int totalCapacity = 0;
+        std::vector<int> capacities;
         for (const CapacityChunk& candidate : candidates) {
-            totalCapacity += candidate.availableCapacity;
+            capacities.push_back(candidate.availableCapacity);
         }
-
-        if (participantCount <= 0 || totalCapacity < participantCount) {
-            return {};
-        }
-
-        std::vector<BestFitState> dp(totalCapacity + 1);
-        // Stage-indexed choices survive later updates to the one-dimensional scores.
-        std::vector<std::vector<bool>> takeRoom(
-            candidates.size(), std::vector<bool>(totalCapacity + 1, false));
-        dp[0].reachable = true;
-        dp[0].roomCount = 0;
-
-        for (size_t index = 0; index < candidates.size(); ++index) {
-            const int capacityChunk = candidates[index].availableCapacity;
-
-            for (int capacity = totalCapacity - capacityChunk; capacity >= 0; --capacity) {
-                if (!dp[capacity].reachable) {
-                    continue;
-                }
-
-                const int nextCapacity = capacity + capacityChunk;
-                const int nextRoomCount = dp[capacity].roomCount + 1;
-
-                if (!dp[nextCapacity].reachable ||
-                    nextRoomCount < dp[nextCapacity].roomCount) {
-                    dp[nextCapacity].reachable = true;
-                    dp[nextCapacity].roomCount = nextRoomCount;
-                    takeRoom[index][nextCapacity] = true;
-                }
-            }
-        }
-
-        int bestCapacity = -1;
-        for (int capacity = participantCount; capacity <= totalCapacity; ++capacity) {
-            if (dp[capacity].reachable) {
-                bestCapacity = capacity;
-                break;
-            }
-        }
-
-        if (bestCapacity < 0) {
-            return {};
-        }
-
         std::vector<CapacityChunk> selectedChunks;
-        int currentCapacity = bestCapacity;
-        for (size_t index = candidates.size(); index > 0 && currentCapacity > 0; --index) {
-            if (!takeRoom[index - 1][currentCapacity]) {
-                continue;
-            }
-
-            selectedChunks.push_back(candidates[index - 1]);
-            currentCapacity -= candidates[index - 1].availableCapacity;
+        for (std::size_t index : best_fit::selectCapacityIndices(capacities, participantCount)) {
+            selectedChunks.push_back(candidates[index]);
         }
-        if (currentCapacity != 0) {
-            return {};
-        }
-
-        std::reverse(selectedChunks.begin(), selectedChunks.end());
         return selectedChunks;
     }
 }
