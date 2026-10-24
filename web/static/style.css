@@ -1136,7 +1136,6 @@ tr:nth-child(even) td {
 .appointment-choice { border-radius: 12px !important; width: 100%; }
 
 /* Card fragments still used by the current student portal. */
-.student-empty { padding: .6rem 0; }
 .student-text-link:hover { text-decoration: underline; }
 .student-section-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
 .student-section-heading h2 { margin: .3rem 0; font-size: 1.35rem; }
@@ -1262,7 +1261,7 @@ tr:nth-child(even) td {
 .notification-inbox { max-width: 850px; margin-inline: auto; }
 .notification-inbox .notification-heading { margin-bottom: 1rem; }
 .notification-inbox .notification-heading p { font-size: .85rem; color: var(--muted); }
-.account-controls button:focus-visible, .notification-item a:focus-visible, .administration-navigation summary:focus-visible { outline: 3px solid var(--highlight); outline-offset: 3px; }
+.account-controls button:focus-visible, .notification-item a:focus-visible { outline: 3px solid var(--highlight); outline-offset: 3px; }
 @media (max-width: 600px) {
     .account-controls { margin-left: 0; width: 100%; gap: .7rem; }
     .profile-copy { max-width: 160px; }
