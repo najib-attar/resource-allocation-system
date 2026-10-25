@@ -2,7 +2,8 @@ from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime,timedelta
 import uuid
 import multiprocessing
-from unittest import mock
+from queue import Empty
+from unittest import TestCase, mock
 
 from sqlalchemy import func, select
 
@@ -117,10 +118,17 @@ class RecurringRoomWorkflowTests(RoomFixture):
         keys=[self.series(actor=actor) for actor in (1,4)]
         context=multiprocessing.get_context('spawn');output=context.Queue()
         workers=[context.Process(target=approve_series_process,args=(self.url,key,output)) for key in keys]
-        for worker in workers:worker.start()
-        for worker in workers:worker.join(90);self.assertEqual(worker.exitcode,0)
-        results=[output.get(timeout=5) for worker in workers]
-        output.close();output.join_thread()
+        try:
+            for worker in workers:worker.start()
+            # Drain producers before joining; queue feeder threads must be able to finish.
+            results=[output.get(timeout=90) for worker in workers]
+            for worker in workers:worker.join(90);self.assertEqual(worker.exitcode,0)
+        finally:
+            for worker in workers:
+                if worker.pid is not None:
+                    if worker.is_alive():worker.terminate()
+                    worker.join(5)
+            output.close();output.join_thread()
         self.assertEqual(results.count('Confirmed'),1);self.assertEqual(self.totals(),(2,2))
 
     def test_existing_eligible_room_queue_is_not_bypassed(self):
@@ -160,6 +168,43 @@ class RecurringRoomWorkflowTests(RoomFixture):
         execute_allocation(repo,self.rooms.gateway)
         self.assertEqual(self.rooms.decide(series,7,1,True),'Needs Revision')
         self.assertEqual(self.totals(),(0,0))
+
+
+class ProcessTestCleanupTests(TestCase):
+    """A failing concurrency assertion must not strand this test's child workers."""
+    def setUp(self):
+        self.case = RecurringRoomWorkflowTests('test_independent_processes_cannot_double_book_the_series')
+        self.case.url = 'unused-test-url'
+        self.case.series = mock.Mock(side_effect=[1, 2])
+        self.context = mock.Mock()
+        self.workers = [mock.Mock(pid=1), mock.Mock(pid=2)]
+        self.context.Process.side_effect = self.workers
+        for worker in self.workers:
+            worker.is_alive.return_value = True
+
+    def test_queue_timeout_releases_workers_and_queue_without_hiding_failure(self):
+        self.context.Queue.return_value.get.side_effect = Empty()
+        with mock.patch.object(multiprocessing, 'get_context', return_value=self.context), self.assertRaises(Empty):
+            self.case.test_independent_processes_cannot_double_book_the_series()
+        for worker in self.workers:
+            worker.start.assert_called_once()
+            worker.terminate.assert_called_once()
+            worker.join.assert_called_once_with(5)
+        self.context.Queue.return_value.close.assert_called_once()
+        self.context.Queue.return_value.join_thread.assert_called_once()
+
+    def test_partial_start_failure_cleans_only_started_workers(self):
+        self.workers[1].pid = None
+        self.workers[1].start.side_effect = RuntimeError('Fixture startup failure')
+        with mock.patch.object(multiprocessing, 'get_context', return_value=self.context), self.assertRaisesRegex(RuntimeError, 'startup failure'):
+            self.case.test_independent_processes_cannot_double_book_the_series()
+        self.workers[0].terminate.assert_called_once()
+        self.workers[0].join.assert_called_once_with(5)
+        self.workers[1].terminate.assert_not_called()
+        self.workers[1].join.assert_not_called()
+        self.context.Queue.return_value.get.assert_not_called()
+        self.context.Queue.return_value.close.assert_called_once()
+        self.context.Queue.return_value.join_thread.assert_called_once()
 
 
 class RecurringEquipmentWorkflowTests(EquipmentFixture):

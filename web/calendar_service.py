@@ -5,7 +5,7 @@ import os
 import uuid
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from sqlalchemy import select
+from sqlalchemy import or_, select
 
 from .persistence.models import (AcademicPeriod, Allocation, AppointmentCommitment, BusySlot,
                                  CalendarBlock, LegacyCalendarBinding, ProfessorAvailability,
@@ -91,12 +91,29 @@ def expand_weekly(day, start_minutes, end_minutes, valid_from, valid_until, zone
 def legacy_intervals(session, people, start, end, active_run_id=None, include_details=False):
     """Known identities only: requester/required committee members, not attendee counts."""
     people = set(people)
-    bindings = list(session.scalars(select(LegacyCalendarBinding)))
-    periods = {item.id: item for item in session.scalars(select(AcademicPeriod))}
+    if not people:
+        return [], []
+    busy = list(session.scalars(select(BusySlot).where(BusySlot.user_id.in_(people))))
+    allocations, participants = [], {}
+    if active_run_id is not None:
+        member_requests = select(RequestParticipant.request_id).where(RequestParticipant.user_id.in_(people))
+        allocations = list(session.execute(select(Allocation, ResourceRequest).join(
+            ResourceRequest, ResourceRequest.id == Allocation.request_id).where(
+                Allocation.run_id == active_run_id,
+                or_(ResourceRequest.requester_id.in_(people), ResourceRequest.id.in_(member_requests)))))
+    request_ids = {request.id for _, request in allocations}
+    if request_ids:
+        for request_id, user_id in session.execute(select(RequestParticipant.request_id, RequestParticipant.user_id).where(
+                RequestParticipant.request_id.in_(request_ids), RequestParticipant.user_id.in_(people))):
+            participants.setdefault(request_id, []).append(user_id)
     busy_bindings, request_bindings = {}, {}
-    for binding in bindings:
+    bindings = session.execute(select(LegacyCalendarBinding, AcademicPeriod).join(
+        AcademicPeriod, AcademicPeriod.id == LegacyCalendarBinding.period_id).where(or_(
+            LegacyCalendarBinding.busy_slot_id.in_([row.id for row in busy]),
+            LegacyCalendarBinding.request_id.in_(request_ids))))
+    for binding, period in bindings:
         target = busy_bindings if binding.busy_slot_id is not None else request_bindings
-        target.setdefault(binding.busy_slot_id if binding.busy_slot_id is not None else binding.request_id, []).append(binding)
+        target.setdefault(binding.busy_slot_id if binding.busy_slot_id is not None else binding.request_id, []).append((binding, period))
     output, unresolved = [], set()
 
     def project(ids, row, choices, title):
@@ -106,25 +123,18 @@ def legacy_intervals(session, people, start, end, active_run_id=None, include_de
         if not choices:
             unresolved.update(ids)
             return
-        for binding in choices:
-            period = periods[binding.period_id]
+        for binding, period in choices:
             intervals = expand_weekly(row.day, row.start_minutes, row.end_minutes,
                                       period.start_date, period.end_date, period.timezone, start, end,
                                       binding.excluded_dates, binding.week_start)
             output.extend({"userId": pid, "start": epoch(a), "end": epoch(b),
                            **({"title": title} if include_details else {})} for pid in ids for a, b in intervals)
 
-    for row in session.scalars(select(BusySlot).where(BusySlot.user_id.in_(people))):
+    for row in busy:
         project([row.user_id], row, busy_bindings.get(row.id, []), row.reason or "University commitment")
-    if active_run_id is not None:
-        requests = {row.id: row for row in session.scalars(select(ResourceRequest))}
-        participants = {}
-        for row in session.scalars(select(RequestParticipant)):
-            participants.setdefault(row.request_id, []).append(row.user_id)
-        for row in session.scalars(select(Allocation).where(Allocation.run_id == active_run_id)):
-            request = requests[row.request_id]
-            project([request.requester_id] + participants.get(request.id, []), row, request_bindings.get(request.id, []),
-                    request.title or request.purpose or "University commitment")
+    for row, request in allocations:
+        project([request.requester_id] + participants.get(request.id, []), row, request_bindings.get(request.id, []),
+                request.title or request.purpose or "University commitment")
     return output, sorted(unresolved)
 
 

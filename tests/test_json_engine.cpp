@@ -1,6 +1,7 @@
 #include "test_framework.h"
 #include "../src/integration/JsonEngineProtocol.h"
 #include <sstream>
+#include <limits>
 
 namespace {
 using Json = nlohmann::json;
@@ -162,4 +163,23 @@ TEST_CASE("JSON stream mode emits exactly one document and uses failure exit cod
     std::istringstream invalid("{broken"); std::ostringstream failed;
     CHECK_EQ(JsonEngineProtocol::run(invalid, failed, diagnostics), 2);
     CHECK(Json::parse(failed.str())["errors"][0]["code"] == "MALFORMED_JSON");
+}
+
+TEST_CASE("JSON best-fit resource limits fail explicitly without partial results") {
+    for (const auto* strategy : {"multi_room_exam_best_fit", "shared_room_exam_best_fit"}) {
+        for (int capacity : {10000000, std::numeric_limits<int>::max()}) {
+            auto snapshot = fixture("Exam");
+            snapshot["strategy"] = strategy;
+            snapshot["spaces"][0]["capacity"] = capacity;
+            std::istringstream input(snapshot.dump());
+            std::ostringstream output, diagnostics;
+            CHECK_EQ(JsonEngineProtocol::run(input, output, diagnostics), 3);
+            const auto result = Json::parse(output.str());
+            CHECK(result["status"] == "error");
+            CHECK(result["errors"][0]["code"] == "ENGINE_FAILURE");
+            CHECK(result["requestResults"].empty());
+            CHECK(result["allocations"].empty());
+            CHECK_CONTAINS(diagnostics.str(), "Best-fit");
+        }
+    }
 }

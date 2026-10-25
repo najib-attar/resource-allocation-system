@@ -214,6 +214,13 @@ supplement Alembic's model drift check. Cardinalities and the catalog reflect th
 Reads use bounded bulk queries rather than lazy ORM relationships: the 1,200-request
 demo snapshot is tested to use at most 15 SQL statements and return its connection.
 Publication batches allocation inserts rather than flushing once per allocation.
+Legacy participant-calendar projection loads only the requested users' busy slots,
+relevant active-run allocations and explicit committee membership. Academic periods
+are joined only through the selected records' bindings. The regression fixture
+loads three ORM rows with at most three SELECTs instead of eight rows/six SELECTs;
+this measures database work, not a production latency improvement. Bindings outside
+the requested horizon remain configured rather than being mistaken for unresolved
+dates. No inferred enrollment, duplicate calendar store or schema change is added.
 Normal sessions are short-lived and return connections to a pre-ping pool; readers
 use repeatable read. There is no database transaction held during C++ computation.
 

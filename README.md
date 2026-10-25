@@ -1,5 +1,13 @@
 # Resource Allocation System (Iterative Prototype)
 
+The latest feature baseline is **Iteration 49**: bounded recurring room and
+equipment reservations with explicit semesters, occurrence previews, partial or
+all-required approval and audited priority controls. **Iteration 50** preserves
+those workflows while consolidating duplicated helpers, scoping calendar reads,
+removing verified obsolete styles and hardening test cleanup and best-fit resource
+limits. See [recurring reservations](#recurring-student-reservations) and
+[verification](#testing-and-verification).
+
 Iteration 48 adds **private resource feedback and issue reporting** at `/feedback/`
 for actual room participants and equipment borrowers. Optional reports, staff
 review/resolution/reopening, maintenance audit and notifications share one workflow.
@@ -280,18 +288,21 @@ powershell -ExecutionPolicy Bypass -File tests\run_tests.ps1
 The latest verified result is:
 
 ```text
-Running 172 test(s)
-Result: 172 passed, 0 failed
+Running 192 test(s)
+Result: 192 passed, 0 failed
 ```
 
-The test runner compiles and runs the backend smoke executable, then compiles and runs the unit and integration tests.
+The test runner compiles and runs the backend smoke executable, then compiles and runs the unit and integration tests. Its executables are created in an owned temporary directory and removed on success or failure; existing build artifacts and data are not deleted.
 
 After installing `requirements.txt`, building the authoritative backend, and configuring an isolated `TEST_DATABASE_URL`, run `python -m unittest discover -s tests -p 'test_*.py' -v` for database integrity/concurrency, migrations, gateway, JSON/legacy parity and Flask smoke checks. Configure matching PostgreSQL backup tools as described in the [database guide](docs/database-operations.md) to run recovery tests. Without the URL/tools, relevant tests explicitly skip; such a run is not full verification. Linux CI provides a real PostgreSQL service.
 
-Iteration 45 local verification: 314 Python tests run, 313 passed and one expected
-Windows skip (POSIX executable permissions); 21 calendar cases are included in that
-total. All 172 C++ tests passed. Additional role-specific Flask, isolated CLI and
-desktop/mobile browser checks passed; see the iteration report for details.
+Iteration 50 local verification: 493 Python tests run, 492 passed and one expected
+Windows skip (POSIX executable permissions). All 192 C++ tests and both isolated
+CLI smokes passed. Desktop/mobile checks cover 52 authenticated role-specific
+page views. The serial test runner still exercises actual concurrent actors and
+worker processes; database tests require the isolated PostgreSQL setup above.
+See the [Iteration 50 report](docs/iteration-reports/Iteration_50.pdf) for the
+maintenance decisions, measured calendar loading and complete local verification.
 
 ## Iterative Development Summary
 

@@ -12,7 +12,9 @@ from web.backend_executable import BackendExecutable, BackendExecutableError, re
 from csv_cli_fixtures import extract_meeting_suggestions
 from web.backend_result_adapter import BackendResultAdapter
 from web.engine_result_projection import input_tables, result_tables
-from web.engine_gateway import EngineGateway, EngineIntegrationError, validate_result
+from web.engine_gateway import (EngineGateway, EngineIntegrationError, validate_result,
+    validate_appointment_result, validate_equipment_result, validate_equipment_series_result,
+    validate_room_result, validate_room_series_result)
 from web.persistence.importer import CsvInputs
 
 
@@ -105,6 +107,51 @@ class GatewayTests(TestCase):
         with self.assertRaisesRegex(EngineIntegrationError, "strategy"): self.call()
 
 
+class OperationEnvelopeTests(TestCase):
+    def cases(self):
+        period = {'start': 1800000000, 'end': 1800001800}
+        common = {'runId': 'envelope-test', 'action': 'recommend', 'proposed': period,
+                  'horizon': period, 'occurrences': [period]}
+        equipment = common | {'items': [{'typeId': 1, 'quantity': 1}], 'types': [{'id': 1}], 'units': []}
+        room = common | {'rooms': [], 'attendeeCount': 1}
+        appointment = common | {'invitedIds': [], 'durationMinutes': 30}
+        header = {'protocolVersion': 1, 'runId': common['runId'], 'status': 'success',
+                  'engineVersion': 'test-engine', 'feasible': False, 'errors': []}
+        equipment_body = {'items': [{'typeId': 1, 'availableQuantity': 0, 'reasonCode': 'INSUFFICIENT_QUANTITY',
+                                     'unitIds': [], 'alternativeTypeIds': []}], 'alternativePeriods': []}
+        room_body = {'reasonCode': 'NO_ELIGIBLE_ROOM', 'candidates': [], 'alternatives': [], 'explanations': []}
+        return [
+            (validate_equipment_result, equipment, header | equipment_body | {'operation': 'equipment'}, 'Invalid equipment engine response.'),
+            (validate_room_result, room, header | room_body | {'operation': 'studentRoom'}, 'Invalid room-selection engine response.'),
+            (validate_appointment_result, appointment, header | {'operation': 'appointment', 'reasonCode': 'NO_FEASIBLE_TIME', 'recommendations': []}, 'Invalid appointment engine response.'),
+            (validate_equipment_series_result, equipment, header | {'operation': 'equipmentSeries', 'items': [], 'alternativePeriods': [],
+                'occurrences': [period | equipment_body | {'feasible': False}]}, 'Invalid recurring reservation engine response.'),
+            (validate_room_series_result, room, header | room_body | {'operation': 'studentRoomSeries',
+                'occurrences': [period | room_body | {'feasible': False}]}, 'Invalid recurring reservation engine response.'),
+        ]
+
+    def test_all_operation_envelopes_preserve_valid_results(self):
+        for validator, snapshot, result, _ in self.cases():
+            with self.subTest(operation=result['operation']):
+                self.assertIs(validator(result, snapshot), result)
+
+    def test_all_operation_envelopes_preserve_rejection_and_error_messages(self):
+        changes = [('protocolVersion', value) for value in (None, True, 1.0, '1', 2)] + [
+            ('operation', 'other'), ('runId', 'other'), ('status', 'error'), ('status', 'pending'),
+            ('engineVersion', ''), ('engineVersion', None), ('engineVersion', 1),
+            ('feasible', None), ('feasible', 0), ('feasible', 'false'), ('errors', None), ('errors', {}), ('errors', ['failure'])]
+        for validator, snapshot, result, message in self.cases():
+            malformed = [None, [], True, 'not an object']
+            malformed += [result | {key: value} for key, value in changes]
+            malformed += [{key: value for key, value in result.items() if key != omitted}
+                for omitted in ('protocolVersion', 'operation', 'runId', 'status', 'engineVersion', 'feasible', 'errors')]
+            for invalid in malformed:
+                with self.subTest(operation=result['operation'], invalid=invalid):
+                    with self.assertRaises(EngineIntegrationError) as error:
+                        validator(invalid, snapshot)
+                    self.assertEqual(str(error.exception), message)
+
+
 class JsonEngineIntegrationTests(TestCase):
     def setUp(self):
         self.backend = resolve_backend_executable(ROOT)  # Required, not a skipped verification.
@@ -145,6 +192,64 @@ class JsonEngineIntegrationTests(TestCase):
                 response = subprocess.run([str(self.backend.path), "--json"], input=document, encoding="utf-8", capture_output=True, timeout=30)
                 self.assertEqual(response.returncode, 2, response.stderr)
                 self.assertEqual(json.loads(response.stdout)["status"], "error")
+
+    def test_real_best_fit_limits_are_errors_not_publication_candidates(self):
+        for strategy in ('multi_room_exam_best_fit', 'shared_room_exam_best_fit'):
+            for capacity in (10000000, 2147483647):
+                with self.subTest(strategy=strategy, capacity=capacity), TemporaryDirectory() as temporary:
+                    snapshot = input_fixture()
+                    snapshot['strategy'] = strategy
+                    snapshot['spaces'][0]['capacity'] = capacity
+                    snapshot['requests'][0].update(type='Exam', exam={'courseCode': 'CS1',
+                        'courseName': 'Safety', 'examType': 'Final', 'canSplitAcrossRooms': True})
+                    response = subprocess.run([str(self.backend.path), '--json'], input=json.dumps(snapshot),
+                        encoding='utf-8', capture_output=True, cwd=temporary, timeout=10)
+                    self.assertEqual(response.returncode, 3, response.stderr)
+                    result = json.loads(response.stdout)
+                    self.assertEqual(result['status'], 'error')
+                    self.assertEqual(result['errors'][0]['code'], 'ENGINE_FAILURE')
+                    self.assertEqual(result['allocations'], [])
+                    self.assertEqual(result['requestResults'], [])
+                    self.assertIn('Best-fit', response.stderr)
+                    self.assertEqual(list(Path(temporary).iterdir()), [])
+                    with self.assertRaisesRegex(EngineIntegrationError, 'exit code 3'):
+                        self.gateway.execute(snapshot)
+
+    def test_legacy_best_fit_limits_exit_cleanly_without_replacing_outputs(self):
+        for strategy in ('multi_room_exam_best_fit', 'shared_room_exam_best_fit'):
+            with self.subTest(strategy=strategy), TemporaryDirectory() as temporary:
+                data = Path(temporary) / 'data'
+                data.mkdir()
+                for name in ('users.csv', 'spaces.csv', 'requests.csv', 'request_participants.csv',
+                             'user_busy_slots.csv', 'config.txt'):
+                    shutil.copy2(ROOT / 'data' / name, data / name)
+                with (data / 'users.csv').open(encoding='utf-8-sig', newline='') as source:
+                    instructors = {row['userId'] for row in csv.DictReader(source) if row['role'] == 'Instructor'}
+                for name in ('spaces.csv', 'requests.csv'):
+                    with (data / name).open(encoding='utf-8-sig', newline='') as source:
+                        reader = csv.DictReader(source)
+                        fields, rows = reader.fieldnames, list(reader)
+                    if name == 'spaces.csv':
+                        for row in rows:
+                            row['capacity'] = '10000000'
+                    else:
+                        rows = [next(row for row in rows if row['requestType'] == 'Exam' and row['userId'] in instructors)]
+                        rows[0].update(canSplitAcrossRooms='true', requiredFeature='', requiredBuilding='')
+                    with (data / name).open('w', encoding='utf-8', newline='') as target:
+                        writer = csv.DictWriter(target, fieldnames=fields)
+                        writer.writeheader()
+                        writer.writerows(rows)
+                (data / 'config.txt').write_text('allocation_strategy=' + strategy, encoding='utf-8')
+                outputs = ('allocations.csv', 'request_results.csv', 'request_summaries.csv', 'allocation_summaries.csv')
+                for name in outputs:
+                    (data / name).write_bytes(b'previous successful output\n')
+                response = subprocess.run([str(self.backend.path)], cwd=temporary, encoding='utf-8',
+                                          capture_output=True, timeout=10)
+                self.assertEqual(response.returncode, 1, response.stderr)
+                self.assertIn('Allocation failed: Best-fit', response.stderr)
+                self.assertIn('No results exported', response.stderr)
+                for name in outputs:
+                    self.assertEqual((data / name).read_bytes(), b'previous successful output\n')
 
     def test_allocation_and_suggestion_output_shapes_are_checked(self):
         snapshot = input_fixture()
