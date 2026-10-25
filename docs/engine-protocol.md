@@ -72,6 +72,16 @@ stderr. Clients must check the exit code **and** the response envelope before
 accepting a result. `engineVersion` identifies the protocol-capable engine;
 the gateway log/persisted `build` metadata identifies the exact verified binary.
 
+Best-fit exam selection checks positive candidate capacities and the aggregate
+integer range before constructing its DP. It applies a conservative 64 MiB
+allocation estimate and a 50-million decision-cell budget per selection. These
+are technical computation limits, not university booking quotas. Oversized work
+fails explicitly through the existing `ENGINE_FAILURE`/exit-3 envelope, with the
+diagnostic reason on stderr and no partial result. It never falls back to greedy
+selection or reports resource exhaustion as insufficient room capacity. Existing
+gateway error handling keeps prior published results active. Standalone CSV CLI
+execution returns exit 1 without exporting/replacing results on allocation errors.
+
 ## Input
 
 Required top-level fields:
