@@ -1,23 +1,44 @@
 #include "BestFitSelection.h"
 #include <algorithm>
 #include <limits>
+#include <stdexcept>
 
 namespace {
     struct BestFitState {
         bool reachable = false;
         int roomCount = std::numeric_limits<int>::max();
     };
+    constexpr std::size_t memoryBudget = 64 * 1024 * 1024;
+    constexpr std::size_t decisionBudget = 50000000;
 }
 
 std::vector<std::size_t> best_fit::selectCapacityIndices(const std::vector<int>& capacities, int demand) {
+    if (demand <= 0) {
+        return {};
+    }
     int totalCapacity = 0;
     for (int capacity : capacities) {
+        if (capacity <= 0) {
+            throw std::invalid_argument("Best-fit candidate capacities must be positive");
+        }
+        if (capacity > (std::numeric_limits<int>::max() - 1) - totalCapacity) {
+            throw std::length_error("Best-fit capacity total exceeds supported integer range");
+        }
         totalCapacity += capacity;
     }
-    if (demand <= 0 || totalCapacity < demand) {
+    if (totalCapacity < demand) {
         return {};
     }
 
+    const auto columns = static_cast<std::size_t>(totalCapacity) + 1;
+    // Conservative: budget one byte per choice, even though vector<bool> packs bits.
+    // Divide before multiplying so both the estimate and the DP stay bounded.
+    const auto rowBytes = columns + sizeof(std::vector<bool>) + sizeof(std::size_t);
+    if (columns > memoryBudget / sizeof(BestFitState) ||
+        capacities.size() > decisionBudget / columns ||
+        capacities.size() > (memoryBudget - columns * sizeof(BestFitState)) / rowBytes) {
+        throw std::length_error("Best-fit selection exceeds safe computation limits (64 MiB / 50000000 decisions)");
+    }
     std::vector<BestFitState> dp(totalCapacity + 1);
     // Stage-indexed choices survive later updates to the one-dimensional scores.
     std::vector<std::vector<bool>> takeRoom(

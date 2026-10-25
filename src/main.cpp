@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdio>
+#include <exception>
 #include "models/Request.h"
 #include "models/OneTimeRequest.h"
 #include "models/RecurringRequest.h"
@@ -58,7 +59,12 @@ int main(int argc, char* argv[]) {
 
     SystemData& data = session.getSystemData();
 
-    session.runAllocation();
+    try {
+        session.runAllocation();
+    } catch (const std::exception& error) {
+        std::cerr << "Allocation failed: " << error.what() << "\nNo results exported for this execution.\n";
+        return 1;
+    }
 
     for (Request* request : data.requests) {
         if (!request) {

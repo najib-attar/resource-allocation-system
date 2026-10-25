@@ -193,6 +193,64 @@ class JsonEngineIntegrationTests(TestCase):
                 self.assertEqual(response.returncode, 2, response.stderr)
                 self.assertEqual(json.loads(response.stdout)["status"], "error")
 
+    def test_real_best_fit_limits_are_errors_not_publication_candidates(self):
+        for strategy in ('multi_room_exam_best_fit', 'shared_room_exam_best_fit'):
+            for capacity in (10000000, 2147483647):
+                with self.subTest(strategy=strategy, capacity=capacity), TemporaryDirectory() as temporary:
+                    snapshot = input_fixture()
+                    snapshot['strategy'] = strategy
+                    snapshot['spaces'][0]['capacity'] = capacity
+                    snapshot['requests'][0].update(type='Exam', exam={'courseCode': 'CS1',
+                        'courseName': 'Safety', 'examType': 'Final', 'canSplitAcrossRooms': True})
+                    response = subprocess.run([str(self.backend.path), '--json'], input=json.dumps(snapshot),
+                        encoding='utf-8', capture_output=True, cwd=temporary, timeout=10)
+                    self.assertEqual(response.returncode, 3, response.stderr)
+                    result = json.loads(response.stdout)
+                    self.assertEqual(result['status'], 'error')
+                    self.assertEqual(result['errors'][0]['code'], 'ENGINE_FAILURE')
+                    self.assertEqual(result['allocations'], [])
+                    self.assertEqual(result['requestResults'], [])
+                    self.assertIn('Best-fit', response.stderr)
+                    self.assertEqual(list(Path(temporary).iterdir()), [])
+                    with self.assertRaisesRegex(EngineIntegrationError, 'exit code 3'):
+                        self.gateway.execute(snapshot)
+
+    def test_legacy_best_fit_limits_exit_cleanly_without_replacing_outputs(self):
+        for strategy in ('multi_room_exam_best_fit', 'shared_room_exam_best_fit'):
+            with self.subTest(strategy=strategy), TemporaryDirectory() as temporary:
+                data = Path(temporary) / 'data'
+                data.mkdir()
+                for name in ('users.csv', 'spaces.csv', 'requests.csv', 'request_participants.csv',
+                             'user_busy_slots.csv', 'config.txt'):
+                    shutil.copy2(ROOT / 'data' / name, data / name)
+                with (data / 'users.csv').open(encoding='utf-8-sig', newline='') as source:
+                    instructors = {row['userId'] for row in csv.DictReader(source) if row['role'] == 'Instructor'}
+                for name in ('spaces.csv', 'requests.csv'):
+                    with (data / name).open(encoding='utf-8-sig', newline='') as source:
+                        reader = csv.DictReader(source)
+                        fields, rows = reader.fieldnames, list(reader)
+                    if name == 'spaces.csv':
+                        for row in rows:
+                            row['capacity'] = '10000000'
+                    else:
+                        rows = [next(row for row in rows if row['requestType'] == 'Exam' and row['userId'] in instructors)]
+                        rows[0].update(canSplitAcrossRooms='true', requiredFeature='', requiredBuilding='')
+                    with (data / name).open('w', encoding='utf-8', newline='') as target:
+                        writer = csv.DictWriter(target, fieldnames=fields)
+                        writer.writeheader()
+                        writer.writerows(rows)
+                (data / 'config.txt').write_text('allocation_strategy=' + strategy, encoding='utf-8')
+                outputs = ('allocations.csv', 'request_results.csv', 'request_summaries.csv', 'allocation_summaries.csv')
+                for name in outputs:
+                    (data / name).write_bytes(b'previous successful output\n')
+                response = subprocess.run([str(self.backend.path)], cwd=temporary, encoding='utf-8',
+                                          capture_output=True, timeout=10)
+                self.assertEqual(response.returncode, 1, response.stderr)
+                self.assertIn('Allocation failed: Best-fit', response.stderr)
+                self.assertIn('No results exported', response.stderr)
+                for name in outputs:
+                    self.assertEqual((data / name).read_bytes(), b'previous successful output\n')
+
     def test_allocation_and_suggestion_output_shapes_are_checked(self):
         snapshot = input_fixture()
         result, _ = self.gateway.execute(snapshot)
