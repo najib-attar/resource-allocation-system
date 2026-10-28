@@ -85,6 +85,7 @@ class ExecutionTests(unittest.TestCase):
             self.assertEqual(report["status"], state)
             self.assertFalse(report["complete"])
             self.assertIsNone(report["feasible_set_equal"])
+            self.assertEqual(len(report["calls"]), 2, "An integration error must halt further candidate launches")
 
     def test_discrepancies_keep_both_requests_and_raw_results(self):
         report = compare(basic(), StubEngines("feasible", "infeasible"), ranking=False)

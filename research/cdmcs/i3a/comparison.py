@@ -25,6 +25,7 @@ def compare(value, engines, repetitions=1, warmups=0, ranking=True):
             raise SnapshotError("Experiment exceeds 10000 process invocations")
         observations = {name: [] for name in ("production", "cdmcs")}
         feasible = {name: set() for name in observations}
+        halted = False
         for round_number in range(-warmups, repetitions):
             for index, start in enumerate(normalized.candidates):
                 requests = {"production": production_request(normalized, start),
@@ -42,6 +43,11 @@ def compare(value, engines, repetitions=1, warmups=0, ranking=True):
                             feasible[name].add(start)
                 if pair["production"] != pair["cdmcs"]:
                     report["discrepancies"].append({"round": round_number, "candidate": start, "outcomes": pair})
+                if any(state not in ("feasible", "infeasible") for state in pair.values()):
+                    halted = True
+                    break
+            if halted:
+                break
         errors = [call for call in report["calls"] if call["classification"] not in ("feasible", "infeasible")]
         # Repeated results must also agree within each engine; union alone is not evidence.
         for name, records in observations.items():

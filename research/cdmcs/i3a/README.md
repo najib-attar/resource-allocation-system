@@ -80,7 +80,9 @@ This is test tooling, not a public endpoint or a new application protocol.
 Each candidate interval is sent to production `--appointments-json` with
 `action: validate`, and to I1 with exactly one candidate, no replacements and no
 exceptions. Feasible/infeasible sets are comparable only when every call succeeds.
-Unresolved and engine/input errors are never counted as infeasibility. All raw
+Unresolved and engine/input errors are never counted as infeasibility. The first
+integration failure halts further candidate launches instead of repeating a
+failing or timed-out operation across the complete grid. All raw
 requests/stdout/stderr/exit statuses are retained, including discrepancies.
 
 Ranking uses separate actual batch recommendation calls only on the production
