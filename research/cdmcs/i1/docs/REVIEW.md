@@ -261,6 +261,16 @@ algorithm, reference sources, tests, sanitizer settings and resource limits are
 unchanged. The initial failures are infrastructure failures, not passing tests;
 subsequent run results must be inspected before claiming Linux/sanitizer coverage.
 
+The next PR run (`40749695714`, head `7c6643e`) successfully compiled both builds
+and passed both CTest suites, including all 25 safety methods and the differential
+comparison. Both jobs then failed the clean-checkout command with Git's
+"dubious ownership" error for the container-mounted repository. The correction
+uses command-scoped `safe.directory="$GITHUB_WORKSPACE"` for that one status check;
+the check itself, untracked-file detection and all tests remain enabled. No global
+or wildcard trust is configured. Both uploaded CTest failure logs were inspected
+and showed passing suites; their job failures were the later Git ownership check,
+not sanitizer or scheduling failures. Final job success still requires a new run.
+
 ### Rollback
 
 Before merge, closing the proposed PR leaves main unchanged. After a future

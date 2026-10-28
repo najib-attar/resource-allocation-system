@@ -104,7 +104,7 @@ jobs:
             --output-on-failure --verbose --parallel 1 --timeout 300
       - name: Confirm tests left the checkout clean
         run: |
-          status="$(git status --porcelain --untracked-files=all)"
+          status="$(git -c safe.directory="$GITHUB_WORKSPACE" status --porcelain --untracked-files=all)"
           if [[ -n "$status" ]]; then
             printf '%s\n' "$status"
             exit 1
