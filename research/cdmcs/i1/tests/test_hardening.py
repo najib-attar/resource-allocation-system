@@ -151,22 +151,83 @@ class SafetyTests(unittest.TestCase):
         self.assertNotIn("recommendations", result)
 
     def test_resource_only_relocation_stays_inside_horizon(self):
-        value = request(4) | {"candidate_starts": [0], "replacement_starts": [3],
+        fixture = Path(__file__).resolve().parent.parent / "examples" / "resource_only_horizon_request.json"
+        value = json.loads(fixture.read_text(encoding="utf-8"))
+        code, result = self.invoke(value)
+        self.assertEqual(code, 0)
+        # Independent proof: leaving X=[0,2) blocks NEW=[0,1) on R, whereas
+        # moving X to [3,5) violates H=4. No other arrangement is supplied.
+        self.assertEqual(result, {"operation": "cdmcs_schedule_v1",
+                                  "model": "V15_restricted_one_blocking_move",
+                                  "status": "NO_FEASIBLE_PROPOSAL", "solutions_evaluated": 0,
+                                  "returned_count": 0, "truncated": False, "recommendations": []})
+
+    def test_resource_only_relocation_accepts_exact_horizon_end(self):
+        value = request(4) | {"candidate_starts": [0], "replacement_starts": [2],
                               "required_resources": ["R"]}
         value["existing"] = [{"id": "X", "start": 0, "duration": 2,
                               "people": [], "resources": ["R"], "flexible": True}]
         code, result = self.invoke(value)
         self.assertEqual(code, 0)
-        self.assertEqual(result["status"], "NO_FEASIBLE_PROPOSAL")
-        # The preserved reference has a known empty-people horizon hole. This is
-        # evidence of the discrepancy, not a claim of parity on that input.
+        self.assertEqual(result["solutions_evaluated"], 1)
+        row = result["recommendations"][0]
+        self.assertEqual((row["moved_meeting_id"], row["replacement_start_minute"]), ("X", 2))
+        self.assertEqual((row["total_cost"], row["fairness_max_burden"]), (20, 0))
+        self.assertEqual(row["proposal_status"], "CONDITIONAL_PENDING_APPROVAL")
+        self.assertEqual(row["required_permissions"], {"new_meeting_extra_availability": [],
+                         "relocated_meeting_extra_availability": [], "relocation_participant_approval": []})
+
+    def test_resource_only_relocation_boundary_matrix_without_python_oracle(self):
+        # Exhaust all 84 small (H, old duration, replacement) tuples. These
+        # expected outcomes use only half-open interval and horizon inequalities.
+        for horizon in (2, 4, 8):
+            for duration in range(1, horizon + 1):
+                for replacement in range(horizon):
+                    with self.subTest(horizon=horizon, duration=duration, replacement=replacement):
+                        value = request(horizon) | {"candidate_starts": [0],
+                            "replacement_starts": [replacement], "required_resources": ["R"]}
+                        value["existing"] = [{"id": "X", "start": 0, "duration": duration,
+                                              "people": [], "resources": ["R"], "flexible": True}]
+                        feasible = replacement >= 1 and replacement + duration <= horizon
+                        code, result = self.invoke(value)
+                        self.assertEqual(code, 0)
+                        self.assertEqual(result["status"], "OK" if feasible else "NO_FEASIBLE_PROPOSAL")
+                        self.assertEqual(result["solutions_evaluated"], int(feasible))
+                        self.assertEqual(result["returned_count"], int(feasible))
+                        self.assertFalse(result["truncated"])
+                        self.assertEqual(len(result["recommendations"]), int(feasible))
+                        if feasible:
+                            row = result["recommendations"][0]
+                            self.assertEqual((row["start_minute"], row["end_minute"]), (0, 1))
+                            self.assertEqual((row["moved_meeting_id"], row["replacement_start_minute"]),
+                                             ("X", replacement))
+                            self.assertEqual((row["total_cost"], row["fairness_max_burden"]), (20, 0))
+                            self.assertEqual(row["proposal_status"], "CONDITIONAL_PENDING_APPROVAL")
+
+    def test_resource_only_mixed_replacements_exclude_invalid_arrangements(self):
+        value = request(4) | {"candidate_starts": [0], "replacement_starts": [3, 2, 0, 1],
+                              "required_resources": ["R"]}
+        value["existing"] = [{"id": "X", "start": 0, "duration": 2,
+                              "people": [], "resources": ["R"], "flexible": True}]
+        code, result = self.invoke(value)
+        self.assertEqual(code, 0)
+        self.assertEqual(result["solutions_evaluated"], 2)
+        self.assertEqual(result["returned_count"], 2)
+        self.assertEqual([row["replacement_start_minute"] for row in result["recommendations"]], [1, 2])
+
+    def test_historical_python_resource_only_horizon_counterexample(self):
+        # This separate witness demonstrates the preserved reference defect; it
+        # is deliberately not the expected-result oracle for the C++ tests above.
+        from datetime import datetime, timezone
+        from zoneinfo import ZoneInfo
         sys.path.insert(0, str(Path(__file__).parent / "original_reference"))
-        from test_differential import fixture_profiles
         from cdmcs_v1_reference_prototype import Meeting
-        from cdmcs_v15_minute_domain import MinuteCase, exhaustive
+        from cdmcs_v15_minute_domain import MinuteCase, MinuteProfile, exhaustive
+        profile = MinuteProfile((0, 0, 0, 0, 0), ((0, 4),), (), 0, 0, 0, 0,
+                                datetime(2026, 10, 26, tzinfo=timezone.utc), ZoneInfo("Europe/Istanbul"))
         case = MinuteCase([Meeting("X", 0, 2, (), ("R",), True)], ("A",), ("R",),
-                          1, (0,), (3,), fixture_profiles(4, profiles=("A",)))
-        self.assertEqual(exhaustive(case)[3:], ("X", 3))
+                          1, (0,), (3,), {"A": profile}, move_participant_cost=0, delay_per_day=0)
+        self.assertEqual(exhaustive(case), (20, 0, 0, "X", 3))
 
     def test_original_research_sources_match_archive_manifest(self):
         root = Path(__file__).resolve().parent.parent

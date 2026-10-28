@@ -85,6 +85,9 @@ They are test-only dependencies, not production matching rules.
 
 Read [review and verification](docs/REVIEW.md) for confirmed fixes, actual test
 results, the preserved V15 oracle discrepancy and remaining integration decisions.
+The [minimal resource-only horizon input](examples/resource_only_horizon_request.json)
+demonstrates the historical reference discrepancy; its independent expected result
+and boundary controls are included in the review and safety tests.
 `docs/UPSTREAM_SHA256.json` describes the original ZIP contents, not edited files
 in this directory. Original generated result files, redundant generated examples,
 and the upstream engineering log are intentionally not imported.

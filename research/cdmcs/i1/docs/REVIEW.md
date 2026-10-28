@@ -60,6 +60,45 @@ unmodified reference witness. Therefore results demonstrate agreement on the
 documented bounded model, NOT unrestricted equality with every V15 behavior.
 No original research algorithm was silently repaired.
 
+### Minimal reproducible boundary case
+
+The complete, synthetic input is
+[`examples/resource_only_horizon_request.json`](../examples/resource_only_horizon_request.json).
+It uses H=4, NEW=[0,1) requiring A and R, and flexible X=[0,2) requiring only R.
+Only replacement start 3 is supplied. All preference costs are zero; the fixed
+move cost is 20. The original reference returns `(20, 0, 0, 'X', 3)`.
+
+The independent expected answer is **no feasible arrangement**: retaining X
+conflicts with NEW on R; moving X gives [3,5), which ends beyond H=4. This proof
+uses interval inequalities, not the reference implementation or its wrapper.
+The actual C++ response is exit 0 with:
+
+```json
+{"operation":"cdmcs_schedule_v1","model":"V15_restricted_one_blocking_move","status":"NO_FEASIBLE_PROPOSAL","solutions_evaluated":0,"returned_count":0,"truncated":false,"recommendations":[]}
+```
+
+The adjacent boundary controls use the same H, NEW and X:
+
+| Replacement start | X after relocation | Independent expected result |
+|---|---|---|
+| 0 | [0,2) | Infeasible: overlaps NEW on R |
+| 1 | [1,3) | Feasible: half-open adjacency; cost 20, fairness 0 |
+| 2 | [2,4) | Feasible: ending exactly at H is permitted |
+| 3 | [3,5) | Infeasible: exceeds H |
+
+The C++ guard in `src/cdmcs_i1.cpp:376` precedes participant availability checks
+and applies even when `people` is empty. No algorithm correction was necessary.
+`test_hardening.py` now separates the original-reference defect witness from
+oracle-free C++ assertions. It exhausts 84 small horizon/duration/replacement
+tuples and checks a mixed candidate list retains only valid replacements.
+The historical V1/V3/V15 files remain byte-identical to their manifest.
+
+From the repository root, after building as described in the README:
+
+```text
+python -B research/cdmcs/i1/tests/test_hardening.py --binary <executable> SafetyTests.test_resource_only_relocation_stays_inside_horizon SafetyTests.test_historical_python_resource_only_horizon_counterexample -v
+```
+
 ## Verification
 
 Toolchain: Windows x64, GCC/MinGW 14.3.0, CMake 4.0.2, Boost 1.85.0,
@@ -80,7 +119,7 @@ No C++ compiler warnings were emitted in the executed builds.
   Those runtimes and a Linux/WSL environment were unavailable; cross-platform
   execution and full sanitizer coverage are not claimed.
 
-Final gate, executed on the final C++ source:
+Accepted I2 implementation checkpoint gate, executed on the final C++ source:
 
 | Check | Actual result |
 |---|---|
@@ -108,6 +147,40 @@ The original score objective is unchanged. The scope of the differential result
 is top-100 ordered results plus complete arrangement counts under the harness's
 explicit bounded-horizon guard. It is not a comparison with the university
 appointment scheduler, nor a general proof of algorithmic superiority.
+
+### Release-readiness recheck
+
+Commit `00ffc095830b6eddc12e60b5afe85a2a9bede8f7` contains 16 additions, all
+under `research/cdmcs/i1/`. This follow-up adds the minimal synthetic input and
+strengthens only research tests/documentation; the C++ implementation is unchanged.
+The refreshed remote main and local main matched during this review.
+
+- Fresh Release and checked Debug rebuilds passed without compiler warnings.
+- Each build passed both CTest suites: 618 ordinary differential cases plus one
+  unresolved case, 7202 arrangements including 2504 relocations, 10 invalid
+  differential inputs, and 24 safety test methods including 84 oracle-free
+  resource-only boundary subcases. No failures or mismatches occurred.
+- Existing application appointment-protocol tests: 5 passed, 0 failed. The
+  production executable's source/hash freshness validation still passes.
+- Input types, identifiers, interval bounds, baseline conflicts, prefix/window
+  constraints and budget/error paths were re-reviewed. Limits are logical/input
+  bounds, not guaranteed peak RSS or wall-clock limits. Budget failures return
+  no partial top-K; int64 arithmetic remains within the documented numeric bounds.
+- An allowed resource-only move remains `CONDITIONAL_PENDING_APPROVAL` even with
+  an empty person-permission list. Resource ownership/authorization is not modeled
+  as consent by this CLI; empty lists never authorize a resource move or booking.
+- The prior full 192-test C++ and 493-test PostgreSQL/Python results above are
+  checkpoint evidence, not a claim that those complete suites were rerun during
+  this test/documentation-only review. No database was accessed in this recheck.
+- Review found no committed executables, build directories, runtime logs, database
+  files, credentials or private instructions. JSON examples are intentional
+  fictional input fixtures, not operational state.
+
+**Decision:** ready for a PR as an isolated research prototype, not for production
+activation. The resource-only horizon boundary is verified safe in C++; the
+historical Python defect remains a documented reference limitation. Existing
+GitHub workflows do not yet run the separate research CTest target; no remote CI
+result or PR publication is claimed. Linux/MSVC and ASan/UBSan remain unverified.
 
 ## Remaining limits and next integration decision
 
@@ -159,6 +232,7 @@ outside this subtree was modified.
 | `tests/original_reference/cdmcs_v3_weekly_cost.py` | Unchanged V15 research dependency |
 | `tests/original_reference/cdmcs_v15_minute_domain.py` | Unchanged minute-domain independent reference |
 | `examples/demo_request.json` | Fictional standalone input with conditional proposals |
+| `examples/resource_only_horizon_request.json` | Minimal resource-only relocation counterexample with independently derived expected result |
 | `README.md` | Scope, reproducible build/run/test instructions |
 | `docs/JSON_CONTRACT.md` | Fields, statuses, numeric/resource bounds and semantics |
 | `docs/CORRECTNESS_AND_COMPLEXITY.md` | Restricted exactness and actual computational costs |
