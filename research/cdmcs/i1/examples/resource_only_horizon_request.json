@@ -1,0 +1,28 @@
+{
+  "operation": "cdmcs_schedule_v1",
+  "horizon_minutes": 4,
+  "duration": 1,
+  "candidate_starts": [0],
+  "replacement_starts": [3],
+  "required_people": ["A"],
+  "required_resources": ["R"],
+  "existing": [
+    {"id": "X", "start": 0, "duration": 2, "people": [], "resources": ["R"], "flexible": true}
+  ],
+  "profiles": {
+    "A": {
+      "rate_prefix": [0, 0, 0, 0, 0],
+      "published": [[0, 4]],
+      "exceptions": [],
+      "preferred_break": 0,
+      "gap_weight": 0,
+      "nearby_limit": 0,
+      "exception_fee": 0
+    }
+  },
+  "local_day_index": [0, 0, 0, 0, 0],
+  "move_fixed_cost": 20,
+  "move_participant_cost": 0,
+  "delay_per_day": 0,
+  "limit": 100
+}
