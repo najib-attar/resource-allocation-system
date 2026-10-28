@@ -38,7 +38,7 @@ def mapping(value, allowed, required=()):
 
 
 def instant(value, zone):
-    require(isinstance(value, str) and len(value) <= 64, "ISO calendar instant required")
+    require(isinstance(value, str) and "T" in value and len(value) <= 64, "Explicit ISO date and time required")
     try:
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
         require(not parsed.second and not parsed.microsecond, "Times must be exact minutes; no rounding")
