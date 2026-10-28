@@ -54,15 +54,13 @@ def normalize(snapshot):
     if sum(len(windows) for name, windows in published if name != snapshot.organizer
            and any(p.id == name and p.required for p in people)) > 100000:
         reasons.append("Production published interval limit exceeded")
-    busy = []
-    for person in people:
-        intervals = []
-        for event in snapshot.commitments:
-            if person.id in event.people:
-                start, end = max(snapshot.anchor, event.interval.start), min(snapshot.horizon.end, event.interval.end)
-                if start < end:
-                    intervals.append(Interval(start, end))
-        busy.append((person.id, merged(intervals)))
+    by_person = {person.id: [] for person in people}
+    for event in snapshot.commitments:
+        start, end = max(snapshot.anchor, event.interval.start), min(snapshot.horizon.end, event.interval.end)
+        if start < end:
+            for name in event.people:
+                by_person[name].append(Interval(start, end))
+    busy = tuple((person.id, merged(by_person[person.id])) for person in people)
     if snapshot.candidate_mode == "production_grid":
         candidates = []
         for window in dict(published)[snapshot.grid_anchor]:

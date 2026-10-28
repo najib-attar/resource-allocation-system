@@ -7,9 +7,10 @@ from unittest import mock
 
 from research.cdmcs.i3a.adapter import cdmcs_request, normalize
 from research.cdmcs.i3a.comparison import compare
-from research.cdmcs.i3a.execution import ERROR, UNSUPPORTED, invoke, validate_cdmcs
+from research.cdmcs.i3a.execution import ERROR, UNSUPPORTED, OfflineEngines, invoke, validate_cdmcs
+from web.backend_executable import BackendExecutableError
 from research.cdmcs.i3a.fixtures import basic
-from research.cdmcs.i3a.__main__ import export, external_destination
+from research.cdmcs.i3a.__main__ import export, external_destination, main
 from research.cdmcs.i3a.snapshot import parse_snapshot
 
 
@@ -51,6 +52,21 @@ class ExecutionTests(unittest.TestCase):
             self.assertEqual(process.communicate.call_count, 2)
             self.assertEqual(result["classification"], ERROR)
             self.assertEqual(result["stdout"], "partial")
+
+    def test_executable_missing_hash_and_freshness_failures_do_not_fall_back(self):
+        with mock.patch("research.cdmcs.i3a.execution.resolve_backend_executable",
+                        side_effect=BackendExecutableError("Backend is stale")):
+            with self.assertRaisesRegex(ValueError, "stale"):
+                OfflineEngines("missing", "0" * 64)
+        with mock.patch("research.cdmcs.i3a.execution.resolve_backend_executable"):
+            with self.assertRaisesRegex(ValueError, "missing"):
+                OfflineEngines("nonexistent-i3a-engine", "0" * 64)
+            with tempfile.TemporaryDirectory(prefix="i3a-pin-test-") as temporary:
+                file = Path(temporary) / "engine"
+                file.write_bytes(b"synthetic non-executed binary bytes")
+                file.chmod(0o700)
+                with self.assertRaisesRegex(ValueError, "SHA-256"):
+                    OfflineEngines(file, "0" * 64)
 
     def test_counts_permissions_and_arithmetic_shapes_are_checked(self):
         result = {"operation": "cdmcs_schedule_v1", "model": "V15_restricted_one_blocking_move",
@@ -109,6 +125,18 @@ class ExecutionTests(unittest.TestCase):
             self.assertEqual(json.loads((target / "case-000.json").read_text())["input"], basic())
             with self.assertRaises(ValueError):
                 export(target, [report], {}, [])
+
+    def test_non_synthetic_input_is_not_executed_or_exported(self):
+        with tempfile.TemporaryDirectory(prefix="i3a-input-test-") as temporary:
+            source, target = Path(temporary) / "input.json", Path(temporary) / "evidence"
+            source.write_text(json.dumps(basic() | {"synthetic": False}), encoding="utf-8")
+            args = ["i3a", "--input", str(source), "--output", str(target),
+                    "--cdmcs", "not-invoked", "--cdmcs-sha256", "0" * 64]
+            with mock.patch("sys.argv", args), mock.patch("sys.stderr"), \
+                    mock.patch("research.cdmcs.i3a.__main__.OfflineEngines") as engine:
+                self.assertEqual(main(), 2)
+                engine.assert_not_called()
+            self.assertFalse(target.exists())
 
 
 if __name__ == "__main__":

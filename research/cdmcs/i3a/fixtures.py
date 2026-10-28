@@ -60,6 +60,18 @@ def matrix():
     value["commitments"] = [commitment("class-A", ["professor-A"], 60, 90),
                             commitment("class-B", ["professor-B"], 120, 135)]
     add("multiple-professors", value)
+    value = basic()
+    value["participants"].extend([participant("professor-B"), participant("professor-C")])
+    value["commitments"] = [commitment("class-A", ["professor-A"], 0, 30),
+                            commitment("class-B", ["professor-B"], 60, 90),
+                            commitment("class-C", ["professor-C"], 120, 150)]
+    add("three-professors", value)
+    value = basic()
+    value["organizer"] = "organizer,\u0130\""
+    value["participants"][0]["id"] = value["organizer"]
+    value["participants"][1]["id"] = "\u6559\u6388\nA"
+    value["candidates"]["anchor_participant"] = "\u6559\u6388\nA"
+    add("unicode-opaque-identifiers", value)
     for role in ("student", "professor", "administrator", "committee organizer"):
         value = basic()
         value["participants"][0]["role_label"] = role

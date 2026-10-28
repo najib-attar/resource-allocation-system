@@ -48,6 +48,7 @@ class NativeComparisonTests(unittest.TestCase):
 
     def test_multiple_professors_manual_and_touching_window_witnesses(self):
         self.assertEqual(self.offsets("multiple-professors"), [30, 90])
+        self.assertEqual(self.offsets("three-professors"), [30, 90, 150])
         self.assertEqual(self.offsets("manual-off-grid"), [1, 150])
         self.assertEqual(self.offsets("touching-windows-offset-grid"), list(range(22, 143, 15)))
         self.assertEqual(self.offsets("adjacent-commitment"), list(range(30, 151, 15)))
@@ -58,6 +59,7 @@ class NativeComparisonTests(unittest.TestCase):
         expected = self.offsets("one-professor")
         for role in ("student", "professor", "administrator", "committee-organizer"):
             self.assertEqual(self.offsets("organizer-" + role), expected)
+        self.assertEqual(self.offsets("unicode-opaque-identifiers"), expected)
 
     def test_more_than_100_feasible_starts_are_not_reconstructed_from_top_k(self):
         report = self.case("over-100-feasible-weekday-boundary")

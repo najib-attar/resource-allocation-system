@@ -9,7 +9,7 @@ import subprocess
 import tempfile
 from time import perf_counter_ns
 
-from web.backend_executable import file_sha256, resolve_backend_executable
+from web.backend_executable import BackendExecutableError, file_sha256, resolve_backend_executable
 from web.engine_gateway import EngineIntegrationError, validate_appointment_result
 
 
@@ -130,7 +130,10 @@ class OfflineEngines:
     def __init__(self, cdmcs_path, cdmcs_sha256, production_path=None, timeout=20):
         if type(timeout) not in (float, int) or not math.isfinite(timeout) or not 0 < timeout <= 120:
             raise ValueError("Engine timeout must be finite and at most 120 seconds")
-        self.production = resolve_backend_executable(ROOT, str(production_path) if production_path else None)
+        try:
+            self.production = resolve_backend_executable(ROOT, str(production_path) if production_path else None)
+        except BackendExecutableError as error:
+            raise ValueError(str(error)) from error
         self.cdmcs = Path(cdmcs_path).resolve()
         if not self.cdmcs.is_file() or (os.name != "nt" and not os.access(self.cdmcs, os.X_OK)):
             raise ValueError("Explicit CDMCS executable is missing or not executable")
@@ -158,7 +161,14 @@ class OfflineEngines:
         return invoke(command, request, self._temporary.name, self.timeout, engine)
 
     def provenance(self):
+        cmake_files = {}
+        for relative in ("CMakeCache.txt", "CMakeFiles/cdmcs_i1.dir/flags.make"):
+            path = self.cdmcs.parent / relative
+            if path.is_file():
+                cmake_files[relative] = {"sha256": file_sha256(path), "text": path.read_text(encoding="utf-8")}
         return {"production_path": str(self.production.path), "production_build": self.production.metadata,
+                "production_build_script_sha256": file_sha256(ROOT / "scripts/build_backend.py"),
                 "cdmcs_path": str(self.cdmcs), "cdmcs_sha256": self.hashes["cdmcs"],
                 "cdmcs_source_sha256": file_sha256(ROOT / "research/cdmcs/i1/src/cdmcs_i1.cpp"),
+                "cdmcs_build_files": cmake_files,
                 "note": "I1 binary pin and source hash are recorded separately; no embedded build attestation is claimed."}

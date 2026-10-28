@@ -80,6 +80,15 @@ class AdapterTests(unittest.TestCase):
         request["profiles"]["professor-A"]["rate_prefix"][0] = 99
         self.assertEqual(cdmcs_request(normalized)["profiles"]["professor-A"]["rate_prefix"][0], 0)
 
+    def test_clipping_does_not_reanchor_the_production_grid(self):
+        value = basic()
+        value["utc_anchor"] = stamp(10)
+        value["horizon"] = period(10, 180)
+        value["participants"][1]["published"] = [period(7, 187)]
+        normalized = normalize(parse_snapshot(value))
+        self.assertEqual(cdmcs_request(normalized)["candidate_starts"][0], 12)
+        self.assertEqual(production_request(normalized)["published"][0]["start"], parse_snapshot(basic()).anchor + 7 * 60)
+
     def test_incompatible_organizer_and_required_policies_are_not_reinterpreted(self):
         for index, flag in ((0, True), (1, False)):
             value = basic()

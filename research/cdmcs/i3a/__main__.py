@@ -75,6 +75,8 @@ def main():
             values = [strict_json(raw.decode("utf-8"))]
         else:
             values = matrix()
+        if any(not isinstance(value, dict) or value.get("synthetic") is not True for value in values):
+            raise ValueError("Only explicitly synthetic inputs may be executed or exported")
         with OfflineEngines(args.cdmcs, args.cdmcs_sha256, args.production, args.timeout) as engines:
             reports = [compare(value, engines, args.repetitions, args.warmups) for value in values]
             summary = export(destination, reports, engines.provenance(), sys.argv)

@@ -113,5 +113,30 @@ computation benchmark would require separately reviewed instrumentation.
 
 Build I1 using its existing README. Use the existing authoritative production
 binary or `scripts/build_backend.py --output <external-path>`; never select an
-arbitrary filename fallback. Execution/test commands and final verified counts
-are documented in `RESULTS.md` after actual verification.
+arbitrary filename fallback. Example from the repository root, using Python with
+the pinned I1 test dependencies installed:
+
+```text
+python -B -m research.cdmcs.i3a --matrix --cdmcs <explicit-binary> --cdmcs-sha256 <sha256> --output <new-external-directory> --repetitions 3 --warmups 1
+```
+
+Set `CDMCS_I3A_BINARY` and `CDMCS_I3A_SHA256` explicitly for native tests, then:
+
+```text
+python -B -m unittest discover -s research/cdmcs/i3a/tests -v
+```
+
+Set `PYTHONDONTWRITEBYTECODE=1` and `PYTHONTZPATH` to an empty string to use the
+pinned IANA `tzdata` dependency rather than the machine's timezone database.
+No additional package is required. Native comparisons explicitly skip without
+both executable settings; unit tests still run. `--input <synthetic.json>` runs
+one snapshot instead of `--matrix`. Optional `--production` selects an explicitly
+configured manifest-validated artifact, never a filename search/fallback.
+
+Exit codes are 0 for equal, 1 for a discrepancy, 2 for input/engine failure and
+3 for an unsupported single comparison. The built-in matrix includes declared
+unsupported/invalid cases and succeeds only when their expected classifications
+match; it never suppresses actual engine errors on valid cases.
+
+Final verified counts, measurement conditions and remaining gaps are in
+`RESULTS.md`. No current result claims a production integration or a speedup.
