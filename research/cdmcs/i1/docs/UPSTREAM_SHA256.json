@@ -1,0 +1,17 @@
+{
+  ".gitignore": "6cf68f361ed9af9c89f8304b81604d87347c3d38348e90f1e5bef55ea8fa99a5",
+  "CMakeLists.txt": "8384b43b3473cc72cbd602fdd7fff7eb3092fee7703465fe4f7f9ae99a5df862",
+  "I1_TEST_RESULTS.json": "5dfa48fa8b708a6bfe7c4d592e55c2f844a381ea1e3bbdb8678b5fef32e9ee61",
+  "README.md": "29229f74246c6d64fd66871c71dd8fb586ad3e2d1fc4d5a95860b1ddd2249b10",
+  "docs/CORRECTNESS_AND_COMPLEXITY.md": "e133f049bb18a7f39d552b0b9697dd5cbf854fecb45073aa5f21b3f08dfd3c39",
+  "docs/IMPLEMENTATION_LOG_I1.md": "1e28148437b418baf0219a806708aa80ec537a6372fc1b54b9f85a9c1d206749",
+  "docs/JSON_CONTRACT.md": "d95776a7d0c8f73a67ba17f179c244760baeae0e34a21ae0bf1da54819a42e1c",
+  "examples/create_demo.py": "fd978bb278a6c21cdc69b9a942d1583a48b94dfeb525d01fa579d840abdcb465",
+  "examples/demo_request.json": "7516903d99f3546eb767a81e2c0f5ae7efec8526b11cc0d02dafdc14a6c24bf4",
+  "examples/minimal_request.json": "fb0bda220a79d1aa5875fba1298fe3e581601a66b5ab61ca647a4c800c10bb98",
+  "src/cdmcs_i1.cpp": "1ca178226321e75d3fa425497640ad7a66e41fd13e5bb2ed55ece44255b98261",
+  "tests/original_reference/cdmcs_v15_minute_domain.py": "3de09d04364a05a0d206bb646fcda5fdb259b2c973a01e13e84726b533db3635",
+  "tests/original_reference/cdmcs_v1_reference_prototype.py": "7a2727f4e0e06c4b80c80c1a64c9953f9f420b8aa2b809fae6917b9e2a0680a8",
+  "tests/original_reference/cdmcs_v3_weekly_cost.py": "cb823324d0f6ef6f05fe4866a4cd536e360e3a33365e09e12db27702e9c127e8",
+  "tests/test_differential.py": "26daf40da8905259edfd1884e5c499a09d8d04884a9235dbdec1889703b45e6c"
+}
