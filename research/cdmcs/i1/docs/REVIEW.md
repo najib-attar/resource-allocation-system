@@ -250,6 +250,17 @@ research test diagnostics and research documentation changed for I2.5. A PR titl
 description, verification results, limitations and rollback notes are prepared
 locally; no branch was pushed and no PR was opened.
 
+### First published CI execution
+
+Draft PR #15 was opened after approval to publish the feature branch. At commit
+`213a895`, both Ubuntu research jobs failed during CMake configuration because
+the minimal container did not include `make`; no research tests executed in those
+runs and no CTest failure artifacts existed. The CI-only correction explicitly
+installs `make` and prints its version before configuration. The compiler,
+algorithm, reference sources, tests, sanitizer settings and resource limits are
+unchanged. The initial failures are infrastructure failures, not passing tests;
+subsequent run results must be inspected before claiming Linux/sanitizer coverage.
+
 ### Rollback
 
 Before merge, closing the proposed PR leaves main unchanged. After a future
