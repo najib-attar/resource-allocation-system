@@ -105,6 +105,12 @@ database, Flask request, background worker or operational file is used by the to
 Production executable resolution retains source/binary manifest checks. I1 must
 be supplied explicitly and checked against an explicit expected SHA-256.
 
+Normalization, request-dictionary construction and preflight executable hashing
+are outside the per-invocation timing. JSON encoding/decoding are included and
+reported separately. Different payload sizes and preference computations remain
+real protocol differences, not controlled-away algorithm timing. A process-free
+computation benchmark would require separately reviewed instrumentation.
+
 Build I1 using its existing README. Use the existing authoritative production
 binary or `scripts/build_backend.py --output <external-path>`; never select an
 arbitrary filename fallback. Execution/test commands and final verified counts

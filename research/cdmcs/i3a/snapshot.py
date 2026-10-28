@@ -21,8 +21,11 @@ def integer(value, low, high, label):
 
 
 def identifier(value):
-    require(isinstance(value, str) and 0 < len(value.encode("utf-8")) <= 256,
-            "Identifier must contain 1-256 UTF-8 bytes")
+    try:
+        require(isinstance(value, str) and 0 < len(value.encode("utf-8")) <= 256,
+                "Identifier must contain 1-256 UTF-8 bytes")
+    except UnicodeError as error:
+        raise SnapshotError("Identifier must be valid UTF-8") from error
     return value
 
 

@@ -51,6 +51,9 @@ def normalize(snapshot):
     order.extend(sorted(p.id for p in people if p.id not in order))
     identifiers = tuple((name, i + 1) for i, name in enumerate(order))
     published = tuple((p.id, merged(p.published)) for p in people)
+    if sum(len(windows) for name, windows in published if name != snapshot.organizer
+           and any(p.id == name and p.required for p in people)) > 100000:
+        reasons.append("Production published interval limit exceeded")
     busy = []
     for person in people:
         intervals = []
