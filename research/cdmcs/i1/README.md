@@ -69,6 +69,24 @@ on the differential runner saves a report to an explicit path. The three origina
 Python references remain byte-identical; tests verify their upstream SHA-256.
 They are test-only dependencies, not production matching rules.
 
+## Isolated CI
+
+`.github/workflows/cdmcs-research-verification.yml` defines Ubuntu 24.04 Release
+and ASan/UBSan jobs for changes to this directory or that workflow, plus manual
+dispatch. These jobs never build or deploy the web application. Each runs in a
+disposable container capped at 3 GiB RAM with no swap allowance, two CPUs and
+256 processes. Both CTest suites run, including the independent resource-only
+horizon regressions. The job limit is 20 minutes, each suite at most 300 seconds,
+and individual engine invocations at most 20/25 seconds. Failed tests report
+diagnostics and retain only the synthetic CTest failure log for seven days.
+
+Boost 1.85.0 is checksum-verified before compilation. The only Python package
+installed is the pinned research timezone dependency. Sanitizer findings are
+fatal; virtual-address limits are deliberately avoided because ASan maps a large
+shadow address space. Windows CI remains deferred; local MinGW verification does
+not establish hosted MSVC coverage. A configured workflow is not evidence of a
+successful run: see the review for actual local results and remote status.
+
 ## Boundaries and review
 
 - Output is top-K (1-100) plus the full feasible arrangement count, not a full

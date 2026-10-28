@@ -4,7 +4,8 @@
 
 Reviewed on 2026-10-28 against application base
 `5b9f7eeaa7889f570cbfa984f20dbb24ad4fcb91`. All additions are under
-`research/cdmcs/i1/`. No production source, Flask routes, PostgreSQL model,
+`research/cdmcs/i1/`. I2.5 adds one separate research-verification workflow under
+`.github/workflows/`; the engine remains isolated. No production source, Flask routes, PostgreSQL model,
 migration, application test, dependency list, or appointment workflow changes.
 The production builder/freshness manifest scans `src/`, not `research/`.
 After verification, SHA-256 checks confirmed all 520 protected preexisting files
@@ -178,9 +179,84 @@ The refreshed remote main and local main matched during this review.
 
 **Decision:** ready for a PR as an isolated research prototype, not for production
 activation. The resource-only horizon boundary is verified safe in C++; the
-historical Python defect remains a documented reference limitation. Existing
-GitHub workflows do not yet run the separate research CTest target; no remote CI
+historical Python defect remains a documented reference limitation. At that
+checkpoint, GitHub workflows did not run the separate research CTest target; no remote CI
 result or PR publication is claimed. Linux/MSVC and ASan/UBSan remain unverified.
+
+## I2.5 CI verification and PR preparation
+
+The separate `.github/workflows/cdmcs-research-verification.yml` defines two
+Ubuntu 24.04 jobs: native Release and ASan/UBSan Debug. Path filters cover this
+research subtree and the workflow itself, with optional manual dispatch. The
+existing application/PostgreSQL workflow is unchanged. No deployment, production
+engine selection, application dependency or database migration is introduced.
+
+Each job uses a disposable Ubuntu container limited to 3 GiB physical memory,
+no swap allowance, two CPUs and 256 processes. A 20-minute job timeout, bounded
+installation/build steps, 300-second CTest suite timeouts and existing 20/25-second
+engine subprocess timeouts prevent indefinite test runs. ASan's large virtual
+shadow mapping is not restricted with `ulimit -v`; the memory limit applies at
+the container/cgroup boundary instead. See the official
+[ASan limitations](https://clang.llvm.org/docs/AddressSanitizer.html#limitations)
+and [Docker resource constraints](https://docs.docker.com/engine/containers/resource_constraints/).
+
+Boost 1.85.0 is verified against its pinned archive SHA-256. The isolated Python
+environment installs only `requirements-test.txt`; `PYTHONTZPATH` is empty so
+the reference uses pinned tzdata 2026.5 rather than an OS-provided version.
+The sanitizer job compiles and links with `-fsanitize=address,undefined`, frame
+pointers, fatal sanitizer settings and disabled sanitizer recovery. Both jobs
+execute the full differential and safety suites, including the independent
+resource-only horizon boundary tests. Empty test discovery fails. The final
+checkout must remain clean. Failed jobs retain only the synthetic CTest log
+for seven days; checkout credentials are not persisted and token permissions
+are restricted to `contents: read`.
+
+The safety harness now includes engine exit status and bounded stderr when
+stdout is not JSON. Its additional regression injects a simulated sanitizer
+diagnostic to verify reporting; this is **not** a sanitizer execution claim.
+The current safety suite contains 25 test methods, including the unchanged
+84-case oracle-free horizon matrix.
+
+Local static verification passed with actionlint 1.7.12 and Bash syntax checks
+for all seven run blocks. Stubbed configure-command checks verified both matrix
+branches select C++17/testing and sanitizer flags as intended. Native MinGW
+Release and checked Debug builds/tests passed. **Ubuntu/container execution,
+ASan/UBSan and remote GitHub Actions have not run**: this Windows machine has no
+Docker executable or installed WSL environment, and publishing is not authorized.
+The first approved push must verify both research matrix jobs and the existing
+application regression job before merge. Hosted Windows/MSVC CI is deliberately
+deferred rather than presented as reliable untested coverage.
+
+I2.5 final local verification (2026-10-28):
+
+| Check | Executed result |
+|---|---|
+| Research Release / checked Debug builds | Both freshly rebuilt successfully; no compiler warnings observed |
+| Research CTest, each build | 2 suites passed; 618 ordinary + 1 unresolved case, 7202 arrangements, 2504 relocations, 10 invalid differential inputs, 25 safety methods including 84 horizon subcases |
+| CI-equivalent native configuration | Strict C++17, extensions off, pinned Python timezone data, serial CTest and timeout/no-empty-test options passed locally |
+| Workflow validation | actionlint 1.7.12 passed for both workflows; 7 Bash run blocks passed syntax checks; both configure flag branches passed stubbed command checks |
+| Existing C++ regression suite | 192 passed, 0 failed; freshly compiled |
+| Existing standalone CSV CLI smokes | 2 passed |
+| Full application Python/PostgreSQL regression | 493 run: 492 passed, 0 failed, 1 expected Windows POSIX-permission skip; isolated cluster, not the operational database |
+| Migration/drift, parity, recovery and concurrency | Executed by the full suite; all five strategy comparisons, real backup/restore and concurrent actor tests passed |
+| Schema documentation | Matches all 53 application tables |
+| Ubuntu / ASan / UBSan / hosted Windows | NOT RUN locally; Docker/WSL Linux infrastructure unavailable; no remote execution before an approved push |
+
+The disposable PostgreSQL server was stopped after verification. The research
+engine source, historical Python references, application scheduler, Student
+Service 1, Flask routes, PostgreSQL models/migrations, application requirements
+and existing application CI workflow remain unchanged. Only the isolated workflow,
+research test diagnostics and research documentation changed for I2.5. A PR title,
+description, verification results, limitations and rollback notes are prepared
+locally; no branch was pushed and no PR was opened.
+
+### Rollback
+
+Before merge, closing the proposed PR leaves main unchanged. After a future
+approved merge, revert that PR through the repository's normal revert workflow;
+do not reset or rewrite shared history. No schema, operational data, production
+configuration or application behavior needs a rollback because none changed.
+The two accepted I2 commits are retained without amendment or rebasing.
 
 ## Remaining limits and next integration decision
 

@@ -1,0 +1,118 @@
+name: CDMCS isolated research verification (Linux)
+
+on:
+  push:
+    paths:
+      - 'research/cdmcs/i1/**'
+      - '.github/workflows/cdmcs-research-verification.yml'
+  pull_request:
+    paths:
+      - 'research/cdmcs/i1/**'
+      - '.github/workflows/cdmcs-research-verification.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  standalone:
+    name: CDMCS ${{ matrix.mode }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [release, sanitizers]
+    # Bound physical memory without restricting ASan's virtual shadow mapping.
+    container:
+      image: ubuntu:24.04
+      options: --memory=3g --memory-swap=3g --cpus=2 --pids-limit=256
+    defaults:
+      run:
+        shell: bash
+    env:
+      DEBIAN_FRONTEND: noninteractive
+      LC_ALL: C.UTF-8
+      PYTHONDONTWRITEBYTECODE: '1'
+      # Use the pinned Python timezone package, not the container's OS tzdata.
+      PYTHONTZPATH: ''
+      MODE: ${{ matrix.mode }}
+      CDMCS_BUILD: /tmp/cdmcs-i1
+      CDMCS_DEPS: /tmp/cdmcs-deps
+      CDMCS_PYTHON: /tmp/cdmcs-python/bin/python
+      ASAN_OPTIONS: detect_leaks=1:halt_on_error=1:abort_on_error=1
+      UBSAN_OPTIONS: halt_on_error=1:print_stacktrace=1
+    steps:
+      - name: Install isolated build tools
+        timeout-minutes: 5
+        run: |
+          apt-get -o Acquire::Retries=3 update
+          apt-get -o Acquire::Retries=3 install --no-install-recommends -y \
+            ca-certificates curl bzip2 git cmake g++ python3 python3-venv
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify and unpack pinned Boost headers
+        timeout-minutes: 7
+        run: |
+          mkdir -p "$CDMCS_DEPS"
+          curl --fail --location --retry 2 --connect-timeout 15 --max-time 120 \
+            https://archives.boost.io/release/1.85.0/source/boost_1_85_0.tar.bz2 \
+            --output "$CDMCS_DEPS/boost.tar.bz2"
+          printf '%s  %s\n' \
+            7009fe1faa1697476bdc7027703a2badb84e849b7b0baad5086b087b971f8617 \
+            "$CDMCS_DEPS/boost.tar.bz2" | sha256sum --check --strict
+          tar -xjf "$CDMCS_DEPS/boost.tar.bz2" -C "$CDMCS_DEPS" \
+            boost_1_85_0/boost boost_1_85_0/LICENSE_1_0.txt
+      - name: Install only research test dependencies
+        timeout-minutes: 3
+        run: |
+          python3 -m venv "${CDMCS_PYTHON%/bin/python}"
+          "$CDMCS_PYTHON" -m pip install --disable-pip-version-check \
+            -r research/cdmcs/i1/requirements-test.txt
+      - name: Configure standalone C++17 target
+        run: |
+          cmake --version
+          g++ --version
+          "$CDMCS_PYTHON" --version
+          flags=()
+          build_type=Release
+          if [[ "$MODE" == sanitizers ]]; then
+            build_type=Debug
+            flags+=("-DCMAKE_CXX_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all")
+            flags+=("-DCMAKE_EXE_LINKER_FLAGS=-fsanitize=address,undefined")
+          fi
+          cmake -S research/cdmcs/i1 -B "$CDMCS_BUILD" \
+            -DCMAKE_BUILD_TYPE="$build_type" \
+            -DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_STANDARD_REQUIRED=ON \
+            -DCMAKE_CXX_EXTENSIONS=OFF -DBUILD_TESTING=ON \
+            -DBOOST_JSON_INCLUDE_DIR="$CDMCS_DEPS/boost_1_85_0" \
+            -DPython3_EXECUTABLE="$CDMCS_PYTHON" "${flags[@]}"
+      - name: Build isolated engine
+        timeout-minutes: 5
+        run: cmake --build "$CDMCS_BUILD" --parallel 2
+      - name: Run differential, safety and independent horizon regressions
+        timeout-minutes: 6
+        run: |
+          # Both registered suites run, including all resource-only boundary tests.
+          ctest --test-dir "$CDMCS_BUILD" --no-tests=error \
+            --output-on-failure --verbose --parallel 1 --timeout 300
+      - name: Confirm tests left the checkout clean
+        run: |
+          status="$(git status --porcelain --untracked-files=all)"
+          if [[ -n "$status" ]]; then
+            printf '%s\n' "$status"
+            exit 1
+          fi
+      - name: Preserve failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cdmcs-${{ matrix.mode }}-failure-log
+          path: ${{ env.CDMCS_BUILD }}/Testing/Temporary/LastTest.log
+          if-no-files-found: ignore
+          retention-days: 7

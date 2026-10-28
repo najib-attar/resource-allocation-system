@@ -6,6 +6,7 @@ from pathlib import Path
 import subprocess
 import sys
 import unittest
+from unittest import mock
 
 
 BINARY = None
@@ -26,7 +27,11 @@ class SafetyTests(unittest.TestCase):
     def invoke(self, data):
         raw = data if isinstance(data, bytes) else json.dumps(data).encode("utf-8")
         process = subprocess.run([str(BINARY)], input=raw, capture_output=True, timeout=20)
-        result = json.loads(process.stdout)
+        try:
+            result = json.loads(process.stdout)
+        except (ValueError, UnicodeError):
+            self.fail(f"Engine exit {process.returncode}: invalid JSON stdout; "
+                      f"stderr={process.stderr[:4000].decode('utf-8', errors='replace')!r}")
         self.assertIsInstance(result, dict)
         return process.returncode, result
 
@@ -44,6 +49,12 @@ class SafetyTests(unittest.TestCase):
         self.assertEqual(code, 0, result)
         self.assertEqual([r["start_minute"] for r in result["recommendations"]], [0, 1])
         self.assertEqual(result["recommendations"][1]["total_cost"], 4294967295 * 5)
+
+    def test_malformed_engine_output_includes_failure_diagnostics(self):
+        failure = subprocess.CompletedProcess([], -6, b"", b"ERROR: AddressSanitizer: test diagnostic")
+        with mock.patch.object(subprocess, "run", return_value=failure):
+            with self.assertRaisesRegex(AssertionError, "Engine exit -6.*AddressSanitizer"):
+                self.invoke(request())
 
     def test_byte_limit_before_dom_parsing(self):
         raw = json.dumps(request()).encode() + b" " * (16 * 1024 * 1024)
