@@ -76,6 +76,14 @@ dictionaries. Serializers produce fresh dictionaries; they cannot mutate inputs.
 Input size, collection counts, identifiers and numerical values are bounded.
 This is test tooling, not a public endpoint or a new application protocol.
 
+The shared internal DTO now also distinguishes the separate
+[authorized read-only I3b projection](../i3b/README.md) with an explicit origin and
+absent prepared preferences. The I3a parser still requires `synthetic: true`;
+database-derived DTOs cannot be normalized into engine requests or passed to the
+synthetic evidence exporter. These safeguards do not change synthetic comparison
+inputs, the candidate grid or either C++ protocol. Snapshot representations omit
+calendar contents to reduce accidental logging.
+
 ## Comparison and measurements
 
 Each candidate interval is sent to production `--appointments-json` with
