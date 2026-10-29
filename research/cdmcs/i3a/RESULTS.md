@@ -131,7 +131,8 @@ in-process instrumentation and broader datasets would need separate review.
 
 The prior merged I2.5 Linux/sanitizer/database CI evidence is not presented as an
 I3a test run. Full application database workflow coverage remains a separate gate
-before any future integration. The complete branch diff contains only I3a files.
+before any future integration. The original I3a diff contained only I3a files;
+I3a.5 additionally updates the existing isolated research CI workflow.
 
 ## Remaining boundaries and next stage
 
@@ -150,3 +151,59 @@ this one snapshot contract, then shadow-test it without booking writes or changi
 the default scheduler. Review privacy, missing data and response/build correlation
 before any live activation. No I3b implementation, push, merge or deployment occurs
 in I3a.
+
+## I3a.5 CI and PR readiness - 29 October 2026
+
+The six original I3a commits and the measurements above are preserved. Review
+found no blocking defect requiring a runtime, serializer, snapshot, engine or
+production-application change. Changes are limited to the research workflow,
+stronger native tests and these technical documents.
+
+Two additional tests pin the original comparison domain and reverse-project every
+paired request to verify identical intervals, mandatory people, busy calendars
+and publication windows. Optional invitees remain optional; all excluded/invalid
+matrix cases must invoke neither engine. Native tests can explicitly select a
+manifest-validated production artifact using `CDMCS_I3A_PRODUCTION`.
+
+| I3a.5 verification | Executed local result |
+|---|---|
+| I3a tests / strict no-skip CI-equivalent gate | 37 passed, 0 failed, 0 skipped (35 original plus 2 added tests) |
+| Paired CLI matrix and exported case hashes | 41 equal, 5 unsupported, 4 invalid; 469 candidate contexts, 391 feasible per engine; no unexplained discrepancies |
+| Fresh standalone C++17 / -O0 build and CTest | 2 suites passed; 618 ordinary + 1 unresolved case, 7202 arrangements, 2504 relocations, 10 invalid inputs, 25 safety methods including 84 independent horizon subcases |
+| Fresh existing application C++ suite / isolated CSV CLI smokes | 192 passed / 2 passed |
+| Complete Python suite with real PostgreSQL 17.11 | 493 run: 492 passed, 0 failed, 1 expected Windows skip for Linux execute-permission behavior |
+| Database coverage | Migrations/drift, rollback, concurrency, real backup/restore, all-five-strategy round trips and current Flask workflows executed |
+| Schema documentation / Alembic head | 53 tables match; head 0049b; no migration changes |
+| Workflow static validation | actionlint passed for both workflows; 9 multiline Bash blocks passed syntax checks; all 3 configure modes passed stubbed flag checks |
+| Python syntax | 11 sources checked in memory |
+| Protected-file integrity | 554 protected files, including the authoritative backend/manifest and unrelated local inputs/instructions, remained unchanged |
+| Original evidence archive | Original I3a ZIP SHA-256 unchanged |
+| Remote Linux / new ASan / MSVC / deployment | NOT RUN in I3a.5; publishing is not yet authorized |
+
+The full PostgreSQL run supersedes the earlier I3a database-test gap, without
+giving the offline adapter database access. Tests used a newly initialized,
+loopback-only disposable cluster, never an operational database. Owned test
+schemas were removed and that cluster was stopped after verification.
+
+The existing CI matrix retains Release and fatal ASan/UBSan standalone modes and
+adds a separate matched -O0 offline mode with strict nonempty/zero-skip tests and
+synthetic raw-evidence retention, including after native test failures when builds
+succeeded. Exact-checkout Git trust is process-scoped to the two export/test
+steps; no global or wildcard trust is introduced. The application/PostgreSQL
+workflow is unchanged. See README for deadlines, resource limits and dependencies.
+
+No additional optimized paired benchmark was added: this checkpoint prioritizes
+CI correctness and closing the database-regression gap, without expanding build/
+instrumentation tooling. Existing process-dominated -O0 timings are not evidence
+of algorithmic speedup. Release standalone correctness coverage must not be
+presented as a matched optimized comparison or pure-computation measurement.
+
+**Readiness:** ready to publish a Draft PR after approval, not yet remote-CI
+verified or approved to merge. The first push must verify CDMCS release,
+sanitizers, offline and application regression jobs. No application integration,
+push, PR creation, merge, deployment or I3b implementation occurred here.
+
+Rollback: before merge, close the proposed PR to leave main unchanged. Following
+a future approved merge, revert that PR through the normal reviewed Git workflow;
+do not rewrite shared history. There are no application schema/data changes or
+scheduler-selection changes to reverse.

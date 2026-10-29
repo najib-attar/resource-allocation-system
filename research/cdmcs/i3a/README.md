@@ -24,9 +24,10 @@ Source anchors: `src/services/AppointmentSchedulingService.cpp:18,30,59`,
 `src/integration/AppointmentJsonProtocol.cpp:41`, `web/calendar_service.py:141`,
 `web/engine_gateway.py:107`, and `research/cdmcs/i1/docs/JSON_CONTRACT.md`.
 Existing appointment/professor/invitation/commitment database models and revision
-approval rules remain solely in the application. The offline tool imports only
-the existing read-only executable/hash validator, not calendar/database services
-or the Flask gateway. It retains raw process failures instead of losing evidence.
+approval rules remain solely in the application. The offline tool reuses the
+existing read-only executable/hash validator and appointment response validator.
+It does not instantiate `EngineGateway`, import the Flask application or access
+calendar/database services. It retains raw process failures instead of losing evidence.
 
 ## Milestones
 
@@ -128,6 +129,9 @@ Set `CDMCS_I3A_BINARY` and `CDMCS_I3A_SHA256` explicitly for native tests, then:
 python -B -m unittest discover -s research/cdmcs/i3a/tests -v
 ```
 
+Optional `CDMCS_I3A_PRODUCTION` selects a manifest-validated production binary for
+native tests. Otherwise tests use the unchanged authoritative default path.
+
 Set `PYTHONDONTWRITEBYTECODE=1` and `PYTHONTZPATH` to an empty string to use the
 pinned IANA `tzdata` dependency rather than the machine's timezone database.
 No additional package is required. Native comparisons explicitly skip without
@@ -142,3 +146,38 @@ match; it never suppresses actual engine errors on valid cases.
 
 Final verified counts, measurement conditions and remaining gaps are in
 `RESULTS.md`. No current result claims a production integration or a speedup.
+
+## I3a.5 CI verification
+
+The existing isolated research workflow now runs three independent modes:
+
+- `release`: existing optimized I1 differential and safety suites.
+- `sanitizers`: existing fatal ASan/UBSan I1 differential and safety suites.
+- `offline`: I1 at `-O0`, the unchanged production builder's default `-O0` artifact,
+  all I3a tests and one full paired synthetic matrix with raw evidence export.
+
+The offline job explicitly selects the same `g++` toolchain for both engines,
+retains build-manifest/hash checks, and fails on empty test discovery or any
+skipped native tests. Tests assert the original 41/5/4 case classifications,
+469 candidate contexts, 391 feasible contexts per engine, equal per-candidate
+intervals, identical mandatory calendars and nonmandatory optional invitees.
+Excluded/invalid cases must invoke neither engine. Top-K is still not a complete set.
+
+All jobs run in Ubuntu 24.04 containers capped at 3 GiB RAM, no swap, two CPUs and
+256 processes, with a 20-minute job deadline. Individual comparison suites/matrices
+have a 300-second command timeout and six-minute step deadline; engine subprocess
+timeouts remain enforced. Boost 1.85.0 is checksum-verified and tzdata 2026.5 is
+pinned. Ubuntu's installed GCC/Python revisions are printed, not asserted to be
+the Windows toolchain that produced the original measurements.
+
+Only the two offline export/test steps receive exact-checkout, process-scoped
+`safe.directory` Git configuration; there is no global or wildcard trust. Success
+or failure may retain synthetic comparison evidence for seven days. No credentials,
+real calendars or deployment targets are involved. The unchanged application
+workflow separately runs full C++ and PostgreSQL-backed Python regressions.
+
+Workflow configuration/static validation is not a remote CI pass. The first
+approved push must verify all three research modes and the application job.
+Windows local results and platform gaps are recorded separately in `RESULTS.md`.
+Original `-O0` measurements remain unchanged. Release standalone correctness
+coverage is not an optimized paired benchmark or evidence of algorithmic speedup.
