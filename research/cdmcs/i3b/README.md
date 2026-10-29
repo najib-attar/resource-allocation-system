@@ -8,7 +8,7 @@ The existing appointment scheduler remains the default.
 ## Architecture and reuse
 
 ```text
-Authenticated Flask request (existing signed session and g.principal)
+Authenticated Flask request (signed session, g.principal, pinned database URL)
   -> CalendarProjectionService
   -> owned PostgreSQL REPEATABLE READ / READ ONLY transaction
   -> AccountService.identity(..., session=owned_session)
@@ -22,7 +22,13 @@ Authenticated Flask request (existing signed session and g.principal)
   querying the database or deciding feasibility.
 - [AccountService](../../../web/account_service.py) accepts an optional existing
   session so identity/revocation checks and calendar reads share one database
-  snapshot. Existing callers retain the same authentication behavior.
+  snapshot. It rejects pending ORM changes and refreshes cached identity objects
+  inside that transaction, without flushing, committing or rolling it back.
+- [security.py](../../../web/security.py) pins the successful authentication
+  database's immutable URL in server-side request state. Projection checks both
+  its database and actual session binding against it, including configured schema
+  options. This metadata is never serialized or logged; it may contain credentials.
+  No route, role grant, password-verification rule or CSRF behavior changes.
 - [AppointmentService](../../../web/appointment_service.py) supplies the existing
   `_participants` and `_visible` policies. These deliberate private-method
   dependencies are covered by integration tests; changes to them require review.
@@ -49,9 +55,18 @@ the authenticated request, is checked against the signed session, and is resolve
 again from PostgreSQL in the same read transaction. Forged principal attributes,
 revoked sessions and disabled identities fail closed. The generic DTO itself has
 no student/professor dispatch; application policy stays outside optimization.
+Identical user/role/session fields in a different database or configured schema
+do not establish authentication there. Separate connection pools for the same
+configured authority remain supported. Database/session construction and request
+middleware are trusted server code, not client-supplied authorization tokens.
 
 These restrictions deliberately stop unsupported paths rather than inventing new
 roles or permissions. There is no new public endpoint for obtaining these objects.
+`for_selection` accepts an explicit bounded search horizon; it does not itself
+apply the existing `/appointments/times` route's current-time lower bound. A
+future shadow caller must preserve that route's exact authorized selections and
+horizon. This is not a new grant to expose arbitrary historical or future private
+free/busy calendars.
 
 ## Authoritative calendar facts
 
@@ -131,6 +146,10 @@ PostgreSQL `REPEATABLE READ, READ ONLY`, with ORM autoflush disabled throughout
 authorization and data retrieval. No row locks or caller-owned dirty sessions are
 accepted. New/dirty/deleted ORM objects abort the read; PostgreSQL also rejects
 injected DML. Exceptions roll back and do not reveal SQL parameters or payloads.
+Missing and unrelated appointment IDs receive the same private denial. Wrapped
+database-busy errors and SQLAlchemy failures have static messages with suppressed
+causal tracebacks. Diagnostic systems must still not capture raw snapshot data,
+request-local credentials, exception contexts or frame locals.
 
 A concurrent writer may commit without blocking this read. The projection sees
 one coherent old revision/calendar, and the next projection sees the new state.
@@ -183,14 +202,66 @@ The full Python suite also exercised migrations/drift, real backup/restore,
 concurrent reservations, all five allocation strategies, JSON/CSV compatibility,
 Flask workflows, appointments, equipment, recurrence, feedback and waiting lists.
 No Linux, hosted Windows/MSVC or new sanitizer execution is claimed for I3b.
-No remote CI ran: this branch has not been published. Add the new I3b tests to
-isolated PostgreSQL CI before publication; existing application discovery does
-not automatically recurse into the research test directory.
+No remote CI ran: this branch has not been published. At that checkpoint, I3b
+tests were not in CI. The following I3b.5 review adds that coverage because
+application discovery does not recurse into research tests.
 
 An initial added equipment fixture attempted a future handover without freezing
 its clock. The existing production rule correctly rejected it. The fixture now
 uses the established explicit fictional pickup-time convention; no equipment
 rule was changed. Final reruns above passed.
+
+### I3b.5 security and CI review
+
+The review reproduced and corrected four internal-boundary weaknesses; none was
+connected to a live projection route:
+
+| Finding | Correction and regression |
+|---|---|
+| Caller-owned identity sessions could autoflush pending edits or reuse stale account/user/role objects | Deny pending ORM work; disable autoflush; refresh persisted identity in the supplied transaction. Eight application tests verify ownership, revocation, inactivation, role freshness and repeatable-read behavior. |
+| Matching principal fields did not bind projection to the authentication database | Middleware pins the authority; the projection verifies database and session URLs before calendar retrieval. Tests cover matching identities in another schema, same-authority connection pools and a misbound session. |
+| Unknown and unrelated appointment IDs had distinguishable error classes | One static permission denial for inaccessible records; no new visibility grant. |
+| A wrapped database-lock exception could retain SQL parameters in its printed cause | Sanitize wrapped busy and SQLAlchemy errors; regression verifies sensitive synthetic parameters are absent from default formatted tracebacks. |
+
+The PostgreSQL workflow now contains a separate disposable-container projection
+job. It requires both research and identity test groups, zero skips, bounded
+execution, 3 GiB/2 CPU application and 1 GiB/2 CPU database limits, and no calendar
+artifact upload. Existing application/PostgreSQL regressions remain enabled.
+I3b and authentication/calendar changes also trigger the existing I3a offline,
+standalone Release and ASan/UBSan jobs. These jobs have no deployment steps.
+Workflow linting or Windows runs do not establish hosted Linux/sanitizer success;
+remote CI requires separately authorized publication.
+
+Fresh local verification for I3b.5 used the same Windows/Python/GCC/PostgreSQL
+versions listed above, new disposable databases and synthetic records only:
+
+| Check | Actual I3b.5 result |
+|---|---|
+| Projection contract and PostgreSQL tests | 47 passed, zero failed/skipped: nine pure and 38 PostgreSQL tests |
+| Identity-session regressions | Eight passed; combined CI-equivalent projection/identity gate: 55 passed, zero skipped |
+| I3a with both native engines | 37 passed, zero skipped; 41 complete equality cases, 469 candidates and 391 feasible per engine, five unsupported cases and four invalid inputs |
+| Standalone CDMCS C++17 | Fresh `-O0` and Release builds; both CTest suites passed in each configuration, with the original differential, safety and independent horizon coverage |
+| Complete application C++ | 192 passed, zero failed; both standalone CSV CLI smokes passed |
+| Complete application Python/PostgreSQL | 501 run: 500 passed, zero failed, one expected POSIX execute-permission skip on Windows |
+| External production executable/manifest | Fresh build outside the checkout; all four engine-using projection regressions passed with the configured override |
+| Schema and migrations | All 53 tables match documentation; fresh disposable-database upgrade to 0049b and no Alembic drift |
+| CI static verification | Both workflows pass actionlint; 15 Bash blocks, two embedded Python programs and changed Python sources pass syntax checks |
+
+No original projection test was retired. Only the connection-failure fixture
+changed: it now injects an outage on the authenticated database, since a foreign
+database is deliberately denied before calendar reads.
+
+Remaining boundaries: only existing student selections and tightly scoped
+appointment review are authorized; optional invitees never become mandatory.
+Opaque busy intervals remain private data, not anonymized public evidence.
+Repeatable-read authorization is point-in-time: a later revocation is observed by
+the next read, not retroactively by an already established snapshot. No new
+preferences, delegation permissions, resource semantics or migrations are added.
+DTO limits (32 days, 101 required/100 optional participants, 10,000 busy rows,
+100,000 publication rows and 1,024 windows per person) apply after calendar
+retrieval. The existing read-only database context does not impose a SQL statement
+deadline. CI budgets are not live request admission control; future live shadow
+execution must review query/execution budgets before exposure.
 
 ## Next-stage boundary
 
