@@ -2,6 +2,7 @@
 
 import json
 import os
+from collections import Counter
 from pathlib import Path
 import unittest
 
@@ -16,7 +17,8 @@ from research.cdmcs.i3a.snapshot import parse_snapshot
 class NativeComparisonTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.owner = OfflineEngines(os.environ["CDMCS_I3A_BINARY"], os.environ["CDMCS_I3A_SHA256"])
+        cls.owner = OfflineEngines(os.environ["CDMCS_I3A_BINARY"], os.environ["CDMCS_I3A_SHA256"],
+                                  os.environ.get("CDMCS_I3A_PRODUCTION"))
         cls.engines = cls.owner.__enter__()
         cls.addClassCleanup(cls.owner.__exit__, None, None, None)
         cls.reports = {value["snapshot_id"]: compare(value, cls.engines) for value in matrix()}
@@ -36,6 +38,56 @@ class NativeComparisonTests(unittest.TestCase):
                 self.assertEqual(report["status"], expected_status(value),
                                  json.dumps({k: v for k, v in report.items() if k != "normalized"}))
                 self.assertFalse(report["discrepancies"])
+                if report["status"] != "equal":
+                    self.assertEqual(report["calls"], [], "Excluded/invalid cases must not reach either engine")
+
+    def test_reported_comparison_domain_is_preserved(self):
+        self.assertEqual(Counter(row["status"] for row in self.reports.values()),
+                         {"equal": 41, "unsupported_comparison": 5, "input_engine_error": 4})
+        supported = [row for row in self.reports.values() if row["status"] == "equal"]
+        self.assertEqual(sum(row["candidate_count"] for row in supported), 469)
+        self.assertEqual(sum(len(row["feasible_sets"]["production"]) for row in supported), 391)
+        self.assertEqual(sum(len(row["feasible_sets"]["cdmcs"]) for row in supported), 391)
+        self.assertTrue(all(row["complete"] and row["feasible_set_equal"] for row in supported))
+
+    def test_paired_requests_preserve_intervals_people_and_hard_calendars(self):
+        for report in self.reports.values():
+            if report["status"] != "equal":
+                continue
+            snapshot = parse_snapshot(report["input"])
+            ids = dict(report["normalized"]["identifiers"])
+            required = {p.id for p in snapshot.participants if p.required}
+            by_candidate = {}
+            for call in report["calls"]:
+                if call["phase"] == "validation":
+                    by_candidate.setdefault(call["candidate"], {})[call["engine"]] = call["request"]
+            self.assertEqual(len(by_candidate), report["candidate_count"])
+            for candidate, requests in by_candidate.items():
+                production, cdmcs = requests["production"], requests["cdmcs"]
+                self.assertEqual(production["proposed"], {"start": candidate, "end": candidate + snapshot.duration * 60})
+                self.assertEqual(cdmcs["candidate_starts"], [(candidate - snapshot.anchor) // 60])
+                self.assertEqual(cdmcs["duration"], production["durationMinutes"])
+                self.assertEqual(set(cdmcs["required_people"]), required)
+                self.assertEqual({ids[p] for p in required}, {production["organizerId"], *production["professorIds"]})
+                self.assertEqual(set(production["invitedIds"]), {ids[p.id] for p in snapshot.participants if not p.required})
+                self.assertTrue(set(production["invitedIds"]).isdisjoint(ids[p] for p in required))
+                self.assertEqual(cdmcs["profiles"][snapshot.organizer]["published"],
+                                 [[0, (snapshot.horizon.end - snapshot.anchor) // 60]])
+                production_busy = {(row["userId"], row["start"], row["end"]) for row in production["busy"]
+                                   if row["userId"] in {ids[p] for p in required}}
+                cdmcs_busy = {(ids[row["people"][0]], snapshot.anchor + row["start"] * 60,
+                               snapshot.anchor + (row["start"] + row["duration"]) * 60) for row in cdmcs["existing"]}
+                self.assertEqual(production_busy, cdmcs_busy)
+                for person in required - {snapshot.organizer}:
+                    published = {(max(row["start"], snapshot.anchor), min(row["end"], snapshot.horizon.end))
+                                 for row in production["published"] if row["userId"] == ids[person]
+                                 and max(row["start"], snapshot.anchor) < min(row["end"], snapshot.horizon.end)}
+                    self.assertEqual(published, {(snapshot.anchor + a * 60, snapshot.anchor + b * 60)
+                                                for a, b in cdmcs["profiles"][person]["published"]})
+                self.assertEqual(cdmcs["replacement_starts"], [])
+                self.assertEqual(cdmcs["required_resources"], [])
+                self.assertTrue(all(not row["flexible"] for row in cdmcs["existing"]))
+                self.assertTrue(all(not row["exceptions"] for row in cdmcs["profiles"].values()))
 
     def test_independent_small_exhaustive_feasible_sets(self):
         count = 0
