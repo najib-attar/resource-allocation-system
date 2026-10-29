@@ -86,7 +86,7 @@ class Participant:
     published_required: bool
     calendar_state: str
     published: tuple
-    preference: Preference
+    preference: Preference | None
     role_label: str
 
 
@@ -98,7 +98,7 @@ class Commitment:
     resources: tuple
 
 
-@dataclass(frozen=True)
+@dataclass(frozen=True, repr=False)
 class Snapshot:
     id: str
     zone: str
@@ -115,6 +115,10 @@ class Snapshot:
     preferred_start: int | None
     provenance: tuple
     unsupported: tuple
+    origin: str = "synthetic"
+
+    def __repr__(self):
+        return f"Snapshot(origin={self.origin!r}; calendar details withheld)"
 
 
 def unique_ids(values, label):

@@ -53,11 +53,11 @@ class AccountService:
             if reset:
                 account.session_version += 1
 
-    def _principal(self, session, account):
-        user = session.get(User, account.user_id)
+    def _principal(self, session, account, *, refresh=False):
+        user = session.get(User, account.user_id, populate_existing=refresh)
         if not account.enabled or user is None or user.status.casefold() != "active":
             return None
-        role = session.get(Role, user.primary_role_id)
+        role = session.get(Role, user.primary_role_id, populate_existing=refresh)
         return Principal(user.id, user.name, role.name,
                          account.administrator or role.name == "Administrator", account.session_version)
 
@@ -82,14 +82,21 @@ class AccountService:
             account.failed_attempts, account.locked_until = 0, None
             return self._principal(session, account)
 
-    def identity(self, user_id, version):
+    def identity(self, user_id, version, *, session=None):
+        """Read persisted identity in the caller's clean transaction without owning it."""
         if type(user_id) is not int or type(version) is not int:
             return None
-        with self.database.transaction(read_only=True) as session:
-            account = session.get(LoginAccount, user_id)
+        if session is None:
+            with self.database.transaction(read_only=True) as owned:
+                return self.identity(user_id, version, session=owned)
+        with session.no_autoflush:
+            if not session.is_active or session.new or session.dirty or session.deleted:
+                return None
+            # A clean identity map may still contain objects from an older transaction.
+            account = session.get(LoginAccount, user_id, populate_existing=True)
             if account is None or account.session_version != version:
                 return None
-            return self._principal(session, account)
+            return self._principal(session, account, refresh=True)
 
     def revoke(self, user_id):
         with self.database.transaction() as session:
