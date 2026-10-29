@@ -40,6 +40,10 @@ def normalize(snapshot):
     people = tuple(sorted(snapshot.participants, key=lambda p: p.id))
     required = [p for p in people if p.required]
     reasons = list(snapshot.unsupported)
+    if snapshot.origin != "synthetic":
+        reasons.append("Database-derived snapshots are not approved for engine execution in I3b")
+    if any(p.preference is None for p in required):
+        reasons.append("Prepared participant cost preferences are unavailable")
     if snapshot.resources:
         reasons.append("Production appointment protocol cannot enforce shared exclusive resources")
     for person in required:

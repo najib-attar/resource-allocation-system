@@ -82,14 +82,17 @@ class AccountService:
             account.failed_attempts, account.locked_until = 0, None
             return self._principal(session, account)
 
-    def identity(self, user_id, version):
+    def identity(self, user_id, version, *, session=None):
+        """Optionally share the caller's transaction for coherent authorization reads."""
         if type(user_id) is not int or type(version) is not int:
             return None
-        with self.database.transaction(read_only=True) as session:
-            account = session.get(LoginAccount, user_id)
-            if account is None or account.session_version != version:
-                return None
-            return self._principal(session, account)
+        if session is None:
+            with self.database.transaction(read_only=True) as owned:
+                return self.identity(user_id, version, session=owned)
+        account = session.get(LoginAccount, user_id)
+        if account is None or account.session_version != version:
+            return None
+        return self._principal(session, account)
 
     def revoke(self, user_id):
         with self.database.transaction() as session:

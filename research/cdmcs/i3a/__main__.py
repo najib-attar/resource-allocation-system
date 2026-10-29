@@ -23,6 +23,9 @@ def external_destination(value):
 
 
 def export(destination, reports, provenance, command):
+    if any(not isinstance(report.get("input"), dict) or report["input"].get("synthetic") is not True
+           for report in reports):
+        raise ValueError("Only explicitly synthetic inputs may enter offline evidence")
     destination = external_destination(destination)
     destination.mkdir(parents=True, exist_ok=False)
     metadata = {"created_at": datetime.now(timezone.utc).isoformat(), "python": sys.version,
