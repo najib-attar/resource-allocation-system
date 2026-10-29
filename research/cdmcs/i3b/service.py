@@ -3,11 +3,13 @@
 from contextlib import contextmanager
 
 from flask import g, has_request_context, session as login_session
-from sqlalchemy.exc import DBAPIError
+from sqlalchemy.engine import URL
+from sqlalchemy.exc import SQLAlchemyError
 
 from web.account_service import AccountService, Principal
-from web.appointment_service import AppointmentService
+from web.appointment_service import AppointmentError, AppointmentService
 from web.calendar_service import aware, calendar_snapshot, local_instant, university_zone
+from web.persistence.database import DatabaseBusy
 from web.persistence.repository import PersistenceError
 
 from .projection import ProjectionError, UnsupportedProjection, project_facts
@@ -21,8 +23,13 @@ class CalendarProjectionService:
     def _read(self):
         if not has_request_context() or not isinstance(getattr(g, "principal", None), Principal):
             raise PermissionError("An authenticated server-side request context is required.")
+        authenticated = getattr(g, "authenticated_database_url", None)
+        if not isinstance(authenticated, URL) or self.database.engine.url != authenticated:
+            raise PermissionError("The projection must use the authenticated database context.")
         try:
             with self.database.transaction(read_only=True) as session, session.no_autoflush:
+                if getattr(session.get_bind(), "url", None) != authenticated:
+                    raise PermissionError("The projection session has an inconsistent database binding.")
                 principal = AccountService(self.database).identity(login_session.get("user_id"),
                     login_session.get("session_version"), session=session)
                 if principal is None or principal != g.principal:
@@ -30,7 +37,7 @@ class CalendarProjectionService:
                 yield session, principal
                 if session.new or session.dirty or session.deleted:
                     raise ProjectionError("WRITE_ATTEMPT", "The read-only projection attempted an ORM mutation.")
-        except DBAPIError:
+        except (SQLAlchemyError, DatabaseBusy):
             raise ProjectionError("DATABASE_READ_FAILED", "The read-only calendar transaction could not complete.") from None
         except PersistenceError:
             raise ProjectionError("CALENDAR_CONFIGURATION", "Calendar configuration or participant data cannot be projected safely.") from None
@@ -56,7 +63,10 @@ class CalendarProjectionService:
             if type(appointment_id) is not int or appointment_id <= 0:
                 raise ProjectionError("INVALID_CONTEXT", "Select an existing appointment context.")
             service = AppointmentService(self.database, None)
-            record, professors, invitations = service._visible(session, appointment_id, principal.user_id)
+            try:
+                record, professors, invitations = service._visible(session, appointment_id, principal.user_id)
+            except (AppointmentError, PermissionError):
+                raise PermissionError("The appointment context is unavailable to this identity.") from None
             if principal.user_id not in {record.organizer_id, *(row.user_id for row in professors)}:
                 raise PermissionError("Viewing an invitation does not grant calendar projection access.")
             if record.status not in {"Pending Approval", "Confirmed"}:

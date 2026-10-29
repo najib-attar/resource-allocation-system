@@ -37,10 +37,14 @@ def init_security(app, database_provider):
         if not isinstance(secret, str) or len(secret) < 32:
             return "Configure RESOURCE_ALLOCATION_SECRET_KEY with at least 32 random characters before serving authenticated workflows.", 503
         g.principal = None
+        g.authenticated_database_url = None
         if "user_id" in session:
-            g.principal = AccountService(database_provider()).identity(session.get("user_id"), session.get("session_version"))
+            database = database_provider()
+            g.principal = AccountService(database).identity(session.get("user_id"), session.get("session_version"))
             if g.principal is None:
                 session.clear()
+            else:
+                g.authenticated_database_url = database.engine.url
         if request.method not in {"GET", "HEAD", "OPTIONS"}:
             supplied = request.form.get("csrf_token") or request.headers.get("X-CSRF-Token", "")
             if not isinstance(supplied, str) or not hmac.compare_digest(session.get("csrf", ""), supplied) or not supplied:

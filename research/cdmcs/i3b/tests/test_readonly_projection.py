@@ -9,12 +9,13 @@ from pathlib import Path
 import secrets
 import sys
 import threading
+import traceback
 from unittest import mock
 from zoneinfo import ZoneInfo
 
 from flask import g, session as login_session
 from sqlalchemy import delete, event, select, text
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, OperationalError
 
 ROOT = Path(__file__).resolve().parents[4]
 sys.path.insert(0, str(ROOT / "tests"))
@@ -25,7 +26,7 @@ from web.account_service import AccountService, Principal
 from web.appointment_service import AppointmentService
 from web.calendar_service import calendar_snapshot, epoch
 from web.engine_gateway import EngineGateway
-from web.persistence.database import Database
+from web.persistence.database import Database, DatabaseBusy
 from web.persistence.models import (Appointment, AppointmentCommitment, AppointmentInvitation, AppointmentProfessor,
     Base, BusySlot, CalendarBlock, LoginAccount, ProfessorAvailability, Role, User)
 from web.persistence.repository import state_row
@@ -131,6 +132,29 @@ class ReadonlyProjectionTests(PostgresTestCase):
         with self.context(None), self.assertRaises(PermissionError):
             self.selection()
 
+    def test_unrelated_and_missing_appointments_have_the_same_private_denial(self):
+        key = self.appointment(organizer=4)
+        errors = []
+        for target in (key, key + 1000):
+            with self.context(6), self.assertRaises(PermissionError) as caught:
+                self.projection.for_appointment(target)
+            errors.append(str(caught.exception))
+        self.assertEqual(errors[0], errors[1])
+
+    def test_wrapped_database_error_does_not_leak_its_sensitive_cause(self):
+        marker = "Synthetic confidential SQL parameter"
+        @contextmanager
+        def busy(*args, **kwargs):
+            try:
+                raise OperationalError("SELECT private_calendar", {"private": marker}, RuntimeError(marker))
+            except OperationalError as cause:
+                raise DatabaseBusy("Busy") from cause
+            yield
+        with self.context(), mock.patch.object(self.database, "transaction", side_effect=busy):
+            with self.assertRaises(ProjectionError) as caught:
+                self.selection()
+        self.assertNotIn(marker, "".join(traceback.format_exception(caught.exception)))
+
     def test_forged_principal_and_stale_session_are_rejected(self):
         with self.context(), mock.patch("research.cdmcs.i3b.service.calendar_snapshot") as read:
             g.principal = Principal(2, "Forged", "Instructor", True, 1)
@@ -141,6 +165,24 @@ class ReadonlyProjectionTests(PostgresTestCase):
             AccountService(self.database).revoke(1)
             with self.assertRaises(PermissionError):
                 self.selection()
+
+    def test_identical_identity_fields_in_another_schema_do_not_authorize_that_database(self):
+        other = PostgresTestCase()
+        other.setUp()
+        self.addCleanup(other.doCleanups)
+        faculty = seed_appointments(other.database)
+        AccountService(other.database).provision(1, "foreign-realm-fixture", secrets.token_urlsafe(24))
+        statements = []
+        def capture(_, __, statement, *args):
+            statements.append(statement)
+        event.listen(other.database.engine, "before_cursor_execute", capture)
+        try:
+            with self.context(), self.assertRaises(PermissionError):
+                CalendarProjectionService(other.database).for_selection([2], [], 30, START,
+                    START + timedelta(hours=2), faculty)
+            self.assertEqual(statements, [], "A foreign authentication realm must be denied before any reads")
+        finally:
+            event.remove(other.database.engine, "before_cursor_execute", capture)
 
     def test_disabled_identity_and_unknown_or_inactive_participants_fail_closed(self):
         with self.context():
@@ -403,14 +445,36 @@ class ReadonlyProjectionTests(PostgresTestCase):
         self.assertEqual(before, self.fingerprint())
 
     def test_database_connection_failure_does_not_fall_back_or_echo_credentials(self):
-        unavailable = Database("postgresql+psycopg://fictional:never-used-test-password@127.0.0.1:1/unavailable")
-        try:
-            with self.context(), self.assertRaises(ProjectionError) as caught:
-                CalendarProjectionService(unavailable).for_selection([2], [], 30, START, START + timedelta(hours=2), self.faculty)
-            self.assertEqual(caught.exception.code, "DATABASE_READ_FAILED")
-            self.assertNotIn("password", str(caught.exception))
-        finally:
-            unavailable.dispose()
+        def unavailable(*args):
+            raise OperationalError("CONNECT", {}, RuntimeError("Fictional private connection password"))
+        with self.context():
+            self.database.engine.dispose()
+            event.listen(self.database.engine, "do_connect", unavailable)
+            try:
+                with self.assertRaises(ProjectionError) as caught:
+                    self.selection()
+                self.assertEqual(caught.exception.code, "DATABASE_READ_FAILED")
+                self.assertNotIn("password", "".join(traceback.format_exception(caught.exception)))
+            finally:
+                event.remove(self.database.engine, "do_connect", unavailable)
+
+    def test_same_database_in_another_pool_is_allowed_but_misbound_session_is_denied(self):
+        equivalent = Database(self.database.url)
+        self.addCleanup(equivalent.dispose)
+        with self.context():
+            self.assertEqual(CalendarProjectionService(equivalent).for_selection([2], [], 30, START,
+                START + timedelta(hours=2), self.faculty).internal_snapshot().duration, 30)
+        other = Database(self.database.url.set(database="not-connected-fictional-realm"))
+        self.addCleanup(other.dispose)
+        with self.context():
+            # Database.transaction issues SET TRANSACTION before yielding, so reject
+            # the foreign bind without connecting in this injected-session case.
+            @contextmanager
+            def misbound(*args, **kwargs):
+                with other.sessions() as session:
+                    yield session
+            with mock.patch.object(self.database, "transaction", side_effect=misbound), self.assertRaises(PermissionError):
+                self.selection()
 
     def test_dirty_orm_objects_are_detected_without_autoflush(self):
         before = self.fingerprint()
