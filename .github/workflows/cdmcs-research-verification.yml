@@ -4,10 +4,22 @@ on:
   push:
     paths:
       - 'research/cdmcs/i1/**'
+      - 'research/cdmcs/i3a/**'
+      - 'src/services/AppointmentSchedulingService.*'
+      - 'src/integration/AppointmentJsonProtocol.*'
+      - 'web/backend_executable.py'
+      - 'web/engine_gateway.py'
+      - 'scripts/build_backend.py'
       - '.github/workflows/cdmcs-research-verification.yml'
   pull_request:
     paths:
       - 'research/cdmcs/i1/**'
+      - 'research/cdmcs/i3a/**'
+      - 'src/services/AppointmentSchedulingService.*'
+      - 'src/integration/AppointmentJsonProtocol.*'
+      - 'web/backend_executable.py'
+      - 'web/engine_gateway.py'
+      - 'scripts/build_backend.py'
       - '.github/workflows/cdmcs-research-verification.yml'
   workflow_dispatch:
 
@@ -26,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mode: [release, sanitizers]
+        mode: [release, sanitizers, offline]
     # Bound physical memory without restricting ASan's virtual shadow mapping.
     container:
       image: ubuntu:24.04
@@ -82,6 +94,10 @@ jobs:
           "$CDMCS_PYTHON" --version
           flags=()
           build_type=Release
+          if [[ "$MODE" == offline ]]; then
+            build_type=''
+            flags+=("-DCMAKE_CXX_FLAGS=-O0")
+          fi
           if [[ "$MODE" == sanitizers ]]; then
             build_type=Debug
             flags+=("-DCMAKE_CXX_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer -fno-sanitize-recover=all")
@@ -89,6 +105,7 @@ jobs:
           fi
           cmake -S research/cdmcs/i1 -B "$CDMCS_BUILD" \
             -DCMAKE_BUILD_TYPE="$build_type" \
+            -DCMAKE_CXX_COMPILER=g++ \
             -DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_STANDARD_REQUIRED=ON \
             -DCMAKE_CXX_EXTENSIONS=OFF -DBUILD_TESTING=ON \
             -DBOOST_JSON_INCLUDE_DIR="$CDMCS_DEPS/boost_1_85_0" \
@@ -102,6 +119,58 @@ jobs:
           # Both registered suites run, including all resource-only boundary tests.
           ctest --test-dir "$CDMCS_BUILD" --no-tests=error \
             --output-on-failure --verbose --parallel 1 --timeout 300
+      - name: Build unchanged production engine for offline comparison
+        id: offline_production
+        if: matrix.mode == 'offline'
+        timeout-minutes: 5
+        run: |
+          # The existing builder uses C++17 and default -O0, like this I1 job.
+          "$CDMCS_PYTHON" -B scripts/build_backend.py \
+            --compiler g++ --output /tmp/cdmcs-production/allocation_system
+      - name: Require complete I3a native and boundary test execution
+        if: matrix.mode == 'offline'
+        timeout-minutes: 6
+        # The Python exporter runs Git inside the container-mounted checkout.
+        env:
+          GIT_CONFIG_COUNT: '1'
+          GIT_CONFIG_KEY_0: safe.directory
+          GIT_CONFIG_VALUE_0: ${{ github.workspace }}
+        run: |
+          export CDMCS_I3A_BINARY="$CDMCS_BUILD/cdmcs_i1"
+          export CDMCS_I3A_SHA256="$(sha256sum "$CDMCS_I3A_BINARY" | cut -d' ' -f1)"
+          export CDMCS_I3A_PRODUCTION=/tmp/cdmcs-production/allocation_system
+          timeout 300s "$CDMCS_PYTHON" -B - <<'PY'
+          import sys
+          import unittest
+          suite = unittest.defaultTestLoader.discover('research/cdmcs/i3a/tests')
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if not result.testsRun or result.skipped:
+              raise SystemExit('I3a requires nonempty discovery and zero skipped native tests')
+          sys.exit(0 if result.wasSuccessful() else 1)
+          PY
+      - name: Export paired synthetic comparison evidence
+        # Keep raw discrepancy evidence even if the native test gate failed.
+        if: ${{ !cancelled() && matrix.mode == 'offline' && steps.offline_production.outcome == 'success' }}
+        timeout-minutes: 6
+        env:
+          GIT_CONFIG_COUNT: '1'
+          GIT_CONFIG_KEY_0: safe.directory
+          GIT_CONFIG_VALUE_0: ${{ github.workspace }}
+        run: |
+          binary="$CDMCS_BUILD/cdmcs_i1"
+          expected="$(sha256sum "$binary" | cut -d' ' -f1)"
+          timeout 300s "$CDMCS_PYTHON" -B -m research.cdmcs.i3a --matrix \
+            --cdmcs "$binary" --cdmcs-sha256 "$expected" \
+            --production /tmp/cdmcs-production/allocation_system \
+            --output /tmp/cdmcs-i3a-evidence
+      - name: Preserve synthetic offline comparison evidence
+        if: always() && matrix.mode == 'offline'
+        uses: actions/upload-artifact@v4
+        with:
+          name: cdmcs-i3a-offline-evidence
+          path: /tmp/cdmcs-i3a-evidence/
+          if-no-files-found: warn
+          retention-days: 7
       - name: Confirm tests left the checkout clean
         run: |
           status="$(git -c safe.directory="$GITHUB_WORKSPACE" status --porcelain --untracked-files=all)"
