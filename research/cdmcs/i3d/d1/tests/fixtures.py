@@ -1,6 +1,8 @@
 """Explicit fictional choices and test coefficients, never production defaults."""
 
 from research.cdmcs.i3a.fixtures import basic
+from research.cdmcs.i3a.snapshot import parse_snapshot
+from research.cdmcs.i3d.d1.compiler import compile_preferences
 
 
 def preference(owner="organizer", **changes):
@@ -38,3 +40,11 @@ def context(value=None, **changes):
               "provenance": {"source": "synthetic-complete-calendar", "fixture_id": "fictional-D1"}}
     result.update(changes)
     return result
+
+
+def compile_case(value=None, specs=None, weights=None, facts=None):
+    value = value or calendar()
+    specs = specs if specs is not None else [preference(p['id'], timezone=value['timezone'])
+                                           for p in value['participants'] if p['required']]
+    return compile_preferences(parse_snapshot(value), specs, policy() if weights is None else weights,
+                               context(value) if facts is None else facts)
