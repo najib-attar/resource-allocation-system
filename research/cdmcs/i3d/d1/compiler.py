@@ -122,10 +122,12 @@ def _profile(spec, policy, coverage):
     last = datetime.fromtimestamp(coverage.end - 60, timezone).date()
     if spec.first > first or spec.last < last:
         raise PreferenceUnavailable("PREFERENCE_EFFECTIVE_COVERAGE")
-    current = first
+    # Validate supplied endpoints, not boundaries erased by merging or introduced
+    # by midnight splitting. Include an overnight window beginning the prior day.
+    current = first - timedelta(days=1)
     while current <= last:
-        for weekday, start, end in spec.windows:
-            if current.isoweekday() != weekday:
+        for weekday, start, end in spec.source_windows:
+            if current.isoweekday() != weekday or (current < first and end <= 1440):
                 continue
             for minute in (start, end):
                 wall = datetime.combine(current, time()) + timedelta(minutes=minute)

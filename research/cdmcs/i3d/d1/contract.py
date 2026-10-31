@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from datetime import date
+import math
 import re
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
@@ -93,6 +94,7 @@ class PreferenceSpec:
     last: date | None
     weekdays: tuple
     windows: tuple
+    source_windows: tuple
     desired_gap: int | str | None
     provenance: tuple
 
@@ -127,7 +129,7 @@ def parse_preference(value):
     if state != "configured":
         check(all(value[k] is None for k in ("effective", "preferred_weekdays", "preferred_windows", "desired_gap_minutes")),
               "STATE_VALUE_CONFLICT")
-        return PreferenceSpec(owner, revision, state, timezone, None, None, (), (), None, source)
+        return PreferenceSpec(owner, revision, state, timezone, None, None, (), (), (), None, source)
     check(all(value[k] is not None for k in ("effective", "preferred_weekdays", "preferred_windows", "desired_gap_minutes")),
           "MISSING_VALUE")
     effective = record(value["effective"], ("from", "until"))
@@ -139,12 +141,13 @@ def parse_preference(value):
     check(len(set(weekdays)) == len(weekdays), "DUPLICATE_WEEKDAY")
     windows = value["preferred_windows"]
     check(type(windows) is list and len(windows) <= 64, "WINDOW_BUDGET")
-    segments = []
+    segments, source_windows = [], []
     for item in windows:
         record(item, ("weekday", "start", "end"))
         weekday = number(item["weekday"], 7, 1)
         start, end = clock(item["start"]), clock(item["end"], end=True)
         check(start != end, "EMPTY_WINDOW")
+        source_windows.append((weekday, start, end if end > start else end + 1440))
         segments.append((weekday, start, end if end > start else 1440))
         if end < start and end:
             segments.append((weekday % 7 + 1, 0, end))
@@ -161,7 +164,8 @@ def parse_preference(value):
     gap = value["desired_gap_minutes"]
     if gap != "indifferent":
         gap = number(gap, 1440)
-    return PreferenceSpec(owner, revision, state, timezone, first, last, weekdays, tuple(merged), gap, source)
+    return PreferenceSpec(owner, revision, state, timezone, first, last, weekdays, tuple(merged),
+                          tuple(sorted(source_windows)), gap, source)
 
 
 def parse_policy(value):
@@ -183,6 +187,15 @@ def load_document(raw):
     try:
         value = strict_json(raw.decode("utf-8"))
         check(type(value) is dict)
+        pending = [value]
+        while pending:
+            item = pending.pop()
+            if type(item) is dict:
+                pending.extend(item.values())
+            elif type(item) is list:
+                pending.extend(item)
+            elif type(item) is float:
+                check(math.isfinite(item), "INVALID_JSON")
         return value
     except (ValueError, UnicodeError, RecursionError):
         raise PreferenceError("INVALID_JSON") from None

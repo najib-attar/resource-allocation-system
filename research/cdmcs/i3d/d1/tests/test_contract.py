@@ -105,6 +105,12 @@ class PreferenceContractTests(unittest.TestCase):
         value = preference()
         self.assertEqual(parse_preference(load_document(json.dumps(value).encode())), parse_preference(value))
 
+    def test_json_exponent_overflow_is_rejected_at_any_depth(self):
+        for raw in (b'{"x":1e999}', b'{"x":[-1e999]}', b'{"x":{"y":1e309}}'):
+            with self.subTest(raw=raw), self.assertRaises(PreferenceError) as caught:
+                load_document(raw)
+            self.assertEqual(caught.exception.code, 'INVALID_JSON')
+
     def test_unknown_fields_and_payloads_do_not_leak_in_errors(self):
         value = preference()
         value["PRIVATE-MARKER"] = "PRIVATE-MARKER"
@@ -117,6 +123,17 @@ class PreferenceContractTests(unittest.TestCase):
         self.assertEqual(parse_preference(preference(owner='\u6559'*85)).owner, '\u6559'*85)
         with self.assertRaises(PreferenceError):
             parse_preference(preference(owner='\u6559'*86))
+
+    def test_nested_json_and_invalid_metadata_fail_without_echoing_content(self):
+        with self.assertRaises(PreferenceError) as caught:
+            load_document(b'{"PRIVATE-MARKER":' + b'['*20000 + b'0' + b']'*20000 + b'}')
+        self.assertEqual(caught.exception.code, 'INVALID_JSON')
+        for changes in ({'owner': '\ud800'}, {'revision': True}, {'revision': 2**63},
+                        {'preference_version': True}, {'timezone': 'PRIVATE-MARKER\x00'},
+                        {'provenance': {'source': 'synthetic-test', 'fixture_id': '\ud800'}}):
+            with self.subTest(field=next(iter(changes))), self.assertRaises(PreferenceError) as rejected:
+                parse_preference(preference(**changes))
+            self.assertNotIn('PRIVATE-MARKER', str(rejected.exception))
 
 
 class CostPolicyTests(unittest.TestCase):
@@ -159,3 +176,12 @@ class CostPolicyTests(unittest.TestCase):
         original = copy.deepcopy(value)
         parse_policy(value)
         self.assertEqual(value, original)
+
+    def test_every_numerical_policy_field_uses_strict_integer_validation(self):
+        keys = ('preferred_rate', 'outside_window_rate', 'outside_day_rate', 'gap_weight',
+                'nearby_limit', 'exception_fee', 'move_fixed_cost', 'move_participant_cost',
+                'delay_per_day', 'revision', 'policy_version')
+        for key in keys:
+            for value in (True, 1.0, '1', None, -1, 2**63):
+                with self.subTest(key=key, value=value), self.assertRaises(PreferenceError):
+                    parse_policy(policy(**{key: value}))

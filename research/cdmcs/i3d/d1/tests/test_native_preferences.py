@@ -227,6 +227,18 @@ class NativePreferenceTests(unittest.TestCase):
         result = self.assert_scores(compile_case(value, specs, weights), specs, weights)
         self.assertEqual([r['total_cost'] for r in result['recommendations']], [60, 60, 90])
 
+    def test_original_overnight_endpoints_span_a_missing_midnight(self):
+        value = rebase(calendar(), '2018-11-04T01:00:00+00:00')
+        value['timezone'] = 'America/Sao_Paulo'
+        effective = {'from': '2018-11-01', 'until': '2018-11-06'}
+        specs = [preference(timezone=value['timezone'], effective=effective, preferred_weekdays=[6, 7],
+                            preferred_windows=[{'weekday': 6, 'start': '23:00', 'end': '03:00'}]),
+                 preference('professor-A', timezone=value['timezone'], effective=effective)]
+        weights = policy()
+        result = self.assert_scores(compile_case(value, specs, weights), specs, weights)
+        self.assertEqual((result['recommendations'][0]['start_minute'],
+                          result['recommendations'][0]['total_cost']), (60, 60))
+
     def test_repeated_compilation_and_native_output_are_deterministic(self):
         first = compile_case()
         self.assertEqual(self.call(first.to_request()), self.call(compile_case().to_request()))

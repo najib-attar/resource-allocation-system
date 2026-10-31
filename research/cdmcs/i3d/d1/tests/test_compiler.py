@@ -1,6 +1,11 @@
 import copy
+from contextlib import redirect_stderr, redirect_stdout
 from dataclasses import replace
+import io
+import logging
+import traceback
 import unittest
+from unittest import mock
 
 from research.cdmcs.i3a.adapter import cdmcs_request, normalize, production_request
 from research.cdmcs.i3a.fixtures import commitment, participant, period, rebase, stamp
@@ -71,6 +76,25 @@ class CompilationTests(unittest.TestCase):
         for export in (cdmcs_request, production_request):
             with self.assertRaises(ValueError):
                 export(normalized)
+
+    def test_projection_origin_is_rejected_before_preferences_or_normalization(self):
+        from research.cdmcs.i3b.projection import project_facts
+        projection = project_facts({
+            'protocolVersion': 1, 'operation': 'appointment', 'action': 'recommend',
+            'organizerId': 11, 'professorIds': [22], 'invitedIds': [], 'durationMinutes': 30,
+            'horizon': {'start': 1893996000, 'end': 1894006800},
+            'published': [{'userId': 22, 'start': 1893996000, 'end': 1894006800}],
+            'busy': [{'userId': 11, 'start': 1893996000, 'end': 1893997800}], 'unresolvedIds': []
+        }, 1, 'Europe/Istanbul')
+        snapshot = projection.internal_snapshot()
+        specs = [preference(p.id) for p in snapshot.participants]
+        with mock.patch('research.cdmcs.i3d.d1.compiler.normalize') as normalization:
+            with self.assertRaises(PreferenceError) as caught:
+                compile_preferences(snapshot, specs, policy(), context())
+            self.assertEqual(caught.exception.code, 'SYNTHETIC_ONLY')
+            normalization.assert_not_called()
+        self.assertEqual(snapshot.origin, 'authorized_calendar')
+        self.assertTrue(all(p.preference is None for p in snapshot.participants))
 
     def test_original_objects_and_returned_requests_do_not_mutate_compilation(self):
         value, specs, weights, facts = calendar(), [preference(), preference('professor-A')], policy(), context()
@@ -253,6 +277,25 @@ class CompilationTests(unittest.TestCase):
             compile_case(facts=facts)
         self.assertNotIn('PRIVATE', str(caught.exception))
 
+    def test_dependency_errors_and_success_are_silent_and_sanitized(self):
+        output, logs = io.StringIO(), io.StringIO()
+        handler = logging.StreamHandler(logs)
+        logging.getLogger().addHandler(handler)
+        self.addCleanup(logging.getLogger().removeHandler, handler)
+        with redirect_stdout(output), redirect_stderr(output):
+            compiled = compile_case()
+            facts = context(coverage={'start': 'PRIVATE-CALENDAR-MARKER', 'end': stamp(180)})
+            try:
+                compile_case(facts=facts)
+            except PreferenceError as error:
+                rendered = ''.join(traceback.format_exception(error))
+            else:
+                self.fail('Malformed context must fail')
+        self.assertNotIn('PRIVATE-CALENDAR-MARKER', rendered)
+        self.assertNotIn('organizer', repr(compiled))
+        self.assertEqual(output.getvalue(), '')
+        self.assertEqual(logs.getvalue(), '')
+
 
 class DelayContractTests(unittest.TestCase):
     def case(self, weight):
@@ -311,3 +354,26 @@ class TimezoneTests(unittest.TestCase):
             with self.subTest(anchor=anchor), self.assertRaises(PreferenceUnavailable) as caught:
                 self.case(anchor, 180, '02:15', '03:30')
             self.assertEqual(caught.exception.code, 'AMBIGUOUS_OR_NONEXISTENT_PREFERENCE_WINDOW')
+
+    def test_touching_windows_do_not_erase_invalid_original_endpoints(self):
+        for anchor in ('2030-03-31T00:00:00+00:00', '2030-10-26T23:00:00+00:00'):
+            value = rebase(calendar(), anchor)
+            value['timezone'] = 'Europe/Berlin'
+            specs = [preference(timezone='Europe/Berlin', preferred_weekdays=[7], preferred_windows=[
+                {'weekday': 7, 'start': '01:00', 'end': '02:15'},
+                {'weekday': 7, 'start': '02:15', 'end': '04:00'}]),
+                preference('professor-A', timezone='Europe/Berlin')]
+            with self.subTest(anchor=anchor), self.assertRaises(PreferenceUnavailable) as caught:
+                compile_case(value, specs)
+            self.assertEqual(caught.exception.code, 'AMBIGUOUS_OR_NONEXISTENT_PREFERENCE_WINDOW')
+
+    def test_overnight_window_does_not_validate_artificial_midnight_boundaries(self):
+        value = rebase(calendar(), '2018-11-04T01:00:00+00:00')
+        value['timezone'] = 'America/Sao_Paulo'
+        effective = {'from': '2018-11-01', 'until': '2018-11-06'}
+        specs = [preference(timezone=value['timezone'], effective=effective, preferred_weekdays=[6, 7],
+                            preferred_windows=[{'weekday': 6, 'start': '23:00', 'end': '03:00'}]),
+                 preference('professor-A', timezone=value['timezone'], effective=effective)]
+        request = compile_case(value, specs).to_request()
+        self.assertEqual(request['profiles']['organizer']['rate_prefix'],
+                         [2*min(i, 60)+max(0, i-60) for i in range(181)])
