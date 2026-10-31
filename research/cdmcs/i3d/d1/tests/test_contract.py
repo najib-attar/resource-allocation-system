@@ -93,7 +93,8 @@ class PreferenceContractTests(unittest.TestCase):
 
     def test_clock_values_do_not_round_or_guess(self):
         for start, end in (("9:00", "10:00"), ("24:00", "24:00"), ("09:61", "10:00"),
-                           ("09:00", "09:00"), ("09:00:01", "10:00"), ("09:00", "24:01")):
+                           ("09:00", "09:00"), ("09:00:01", "10:00"), ("09:00", "24:01"),
+                           ("\u0660\u0669:\u0660\u0660", "10:00")):
             with self.subTest(start=start, end=end), self.assertRaises(PreferenceError):
                 parse_preference(preference(preferred_windows=[{"weekday": 1, "start": start, "end": end}]))
 

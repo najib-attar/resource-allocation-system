@@ -44,7 +44,7 @@ def label(value):
 
 
 def day(value):
-    check(type(value) is str and re.fullmatch(r"\d{4}-\d{2}-\d{2}", value), "INVALID_DATE")
+    check(type(value) is str and re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value), "INVALID_DATE")
     try:
         result = date.fromisoformat(value)
         check(date(1970, 1, 1) <= result < date(2100, 1, 1), "INVALID_DATE")
@@ -77,7 +77,7 @@ def envelope(value, fields, version_field):
 
 
 def clock(value, *, end=False):
-    check(type(value) is str and re.fullmatch(r"\d{2}:\d{2}", value), "INVALID_CLOCK")
+    check(type(value) is str and re.fullmatch(r"[0-9]{2}:[0-9]{2}", value), "INVALID_CLOCK")
     hour, minute = map(int, value.split(":"))
     check((0 <= hour < 24 and 0 <= minute < 60) or (end and hour == 24 and minute == 0), "INVALID_CLOCK")
     return hour * 60 + minute
