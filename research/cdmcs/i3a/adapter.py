@@ -35,13 +35,18 @@ def merged(intervals):
 
 
 def normalize(snapshot):
+    return _normalize_fixed_calendar(snapshot, synthetic_only=True)
+
+
+def _normalize_fixed_calendar(snapshot, *, synthetic_only=False):
+    """Shared mechanics only; internal callers must enforce their own admission policy."""
     if not isinstance(snapshot, Snapshot):
         raise SnapshotError("Use parse_snapshot/load_snapshot before normalization")
     people = tuple(sorted(snapshot.participants, key=lambda p: p.id))
     required = [p for p in people if p.required]
     reasons = list(snapshot.unsupported)
-    if snapshot.origin != "synthetic":
-        reasons.append("Database-derived snapshots are not approved for engine execution in I3b")
+    if synthetic_only and snapshot.origin != "synthetic":
+        reasons.append("Database-derived snapshots are not approved for engine execution through synthetic pathways")
     if any(p.preference is None for p in required):
         reasons.append("Prepared participant cost preferences are unavailable")
     if snapshot.resources:
@@ -105,12 +110,18 @@ def normalize(snapshot):
 
 
 def _supported(normalized):
+    if normalized.snapshot.origin != "synthetic":
+        raise UnsupportedComparison("Database-derived snapshots cannot enter synthetic engine or export pathways")
     if normalized.unsupported:
         raise UnsupportedComparison("; ".join(normalized.unsupported))
 
 
 def production_request(normalized, candidate=None):
     _supported(normalized)
+    return _serialize_production(normalized, candidate)
+
+
+def _serialize_production(normalized, candidate=None):
     snapshot = normalized.snapshot
     ids = dict(normalized.identifiers)
     professors = sorted(ids[p.id] for p in snapshot.participants if p.required and p.id != snapshot.organizer)
@@ -138,6 +149,10 @@ def production_request(normalized, candidate=None):
 
 def cdmcs_request(normalized, candidates=None):
     _supported(normalized)
+    return _serialize_cdmcs(normalized, candidates)
+
+
+def _serialize_cdmcs(normalized, candidates=None):
     snapshot = normalized.snapshot
     starts = normalized.candidates if candidates is None else tuple(candidates)
     if not starts or len(set(starts)) != len(starts) or any(t not in normalized.candidates for t in starts):
