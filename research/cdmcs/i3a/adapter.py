@@ -34,6 +34,21 @@ def merged(intervals):
     return tuple(result)
 
 
+def _candidate_starts(snapshot, published):
+    """Shared grid mechanics; this does not authorize or evaluate a calendar."""
+    if snapshot.candidate_mode != "production_grid":
+        return tuple(sorted(snapshot.explicit_starts))
+    candidates = []
+    for window in dict(published)[snapshot.grid_anchor]:
+        first = max(window.start, snapshot.horizon.start)
+        first += (900 - (first - window.start) % 900) % 900
+        last = min(window.end, snapshot.horizon.end) - snapshot.duration * 60
+        candidates.extend(range(first, last + 1, 900))
+    if len(candidates) > 10000:
+        raise SnapshotError("Candidate budget exceeded")
+    return tuple(candidates)
+
+
 def normalize(snapshot):
     return _normalize_fixed_calendar(snapshot, synthetic_only=True)
 
@@ -70,18 +85,7 @@ def _normalize_fixed_calendar(snapshot, *, synthetic_only=False):
             for name in event.people:
                 by_person[name].append(Interval(start, end))
     busy = tuple((person.id, merged(by_person[person.id])) for person in people)
-    if snapshot.candidate_mode == "production_grid":
-        candidates = []
-        for window in dict(published)[snapshot.grid_anchor]:
-            first = max(window.start, snapshot.horizon.start)
-            first += (900 - (first - window.start) % 900) % 900
-            last = min(window.end, snapshot.horizon.end) - snapshot.duration * 60
-            candidates.extend(range(first, last + 1, 900))
-        if len(candidates) > 10000:
-            raise SnapshotError("Candidate budget exceeded")
-        candidates = tuple(candidates)
-    else:
-        candidates = tuple(sorted(snapshot.explicit_starts))
+    candidates = _candidate_starts(snapshot, published)
     horizon = (snapshot.horizon.end - snapshot.anchor) // 60
     if len(required) * (horizon + 1) > 3000000:
         reasons.append("I1 total preference-prefix entry limit exceeded")
