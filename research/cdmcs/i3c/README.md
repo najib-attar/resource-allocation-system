@@ -208,6 +208,120 @@ allocation inside a 128 MiB child budget. Linux `prlimit` awaits platform CI;
 ASan's large virtual shadow mapping is incompatible with this address-space cap,
 so sanitizer verification must remain a separate appropriately budgeted job.
 
+## I3c.5 release review
+
+The first I3c checkpoint above remains the historical verification of `e5a8175`.
+The independent review added two reproduced safety corrections, without changing
+either scheduling engine or its hard constraints:
+
+| Confirmed finding | Correction and regression |
+|---|---|
+| An I/O thread-start failure could make cleanup join an unstarted thread, masking the failure and leaving pipes open | Track only successfully started threads; return static `THREAD_START`; test each of the three start positions, closed pipes, child reaping and sanitized exception chains |
+| An empty candidate universe could return success after the whole-run deadline expired | Check the deadline after preparation and before returning completion, including empty universes |
+
+Source guards still enforce synthetic declaration, immutable scope, unchanged
+database origin, missing-preference rejection and blocked public I3a export.
+Authentication grants a projection context, not execution rights. The test-only
+declaration is not a new permission or proof against arbitrary trusted Python.
+Configured executables remain constructor/configuration inputs, not snapshot or
+HTTP request fields; no shell or calendar-bearing command arguments are used.
+
+### Performance assessment
+
+`benchmark.py` is an explicitly invoked synthetic-only harness. It accepts no
+calendar input file or database connection. It checks exact parity and counts
+actual launches, hash calls/bytes, partial startup and exchange wall time. Windows
+also supplies child CPU and peak working-set measurements through OS counters.
+CPU includes startup and native JSON parsing/serialization as well as scheduling;
+**scheduling computation alone is not measured**. Linux reports cumulative child
+CPU and cumulative maximum child RSS, not per-case peak RSS. Missing counters
+remain null, not zero. Compiler flags and source/binary hashes accompany evidence.
+
+```text
+python -B -m research.cdmcs.i3c.benchmark --cdmcs <binary> --cdmcs-sha256 <hash> --production <manifest-validated-binary> --candidates 1 8 32 128 --repetitions 3 --warmups 1
+```
+
+There are exactly `2N` subprocesses for `N` candidates, never overlapping inside
+one run. The original loop also rehashed the unused peer before each launch:
+`4N+1` runner hash calls versus the corrected `2N+1` (plus unchanged production
+manifest/source validation). Each executable is still verified immediately before
+its own launch. A mutation between paired calls still aborts the complete run.
+
+| Candidates | Original wall ms | Corrected wall ms | Matched Release wall ms |
+|---:|---:|---:|---:|
+| 1 | 287.68 | 329.56 | 220.35 |
+| 8 | 991.10 | 1051.99 | 654.08 |
+| 32 | 3785.13 | 3061.06 | 1795.62 |
+| 128 | 15582.26 | 11572.97 | 7820.60 |
+
+Medians use three trials after one warmup: one required professor, fixed empty
+busy calendars and all-feasible explicit starts. Original/corrected columns use
+the same canonical production `-O0` and CDMCS Release artifacts. The last column
+uses separately built **both `-O3 -DNDEBUG`**, outside the checkout, with their
+actual flags recorded. Background regressions were active: small cases were
+noisy and these are not causal or algorithmic speedup measurements.
+
+At 128 candidates the redundant-hash correction reduced runner executable reads
+from about 1644.77 MiB to half that amount. The matched Release experiment observed
+one active child maximum and 5.17 MiB maximum child working set across its cases.
+Mean combined child CPU was 31.25/322.92/1270.83/5578.12 ms for the four sizes;
+Windows accounting is quantized. This is not peak parent memory or a worst-case
+inventory/calendar benchmark. Large prefixes are retransmitted for every singleton,
+so path growth includes `O(N * horizon)` transport, not just optimizer work.
+
+Singletons remain intentionally unchanged. A future bounded CDMCS batch of at
+most 100 fixed candidates could reduce startup/transport work, but needs a separate
+complete-output and resource-failure review; a capped result must never silently
+replace complete singleton feasibility. Parallel execution is not enabled.
+
+### CI and platform boundary
+
+The existing disposable PostgreSQL job now builds a SHA-verified Boost 1.85.0
+Release CDMCS, runs both standalone CTest suites against **that binary**, pins its
+SHA-256, preserves the 55-test I3b/identity gate and requires every I3c test group
+with zero skips. The existing I3a/Release/ASan-UBSan workflow also triggers on I3c
+changes. Application C++/Python/PostgreSQL regressions remain enabled. Permissions
+stay read-only; there are no deployment steps or projection/shadow artifact uploads.
+
+The I3c child is Release, **not sanitizer-instrumented**. ASan/UBSan executes only
+in the existing separately instrumented standalone job with suitable virtual
+memory. Workflow parsing, shell/Python syntax checks and Windows test runs do not
+prove hosted CI success. Publication is required before those jobs can execute.
+
+Windows/MinGW Job Object limits are locally tested; Windows/MSVC hosted coverage
+is not added. Linux `prlimit` awaits actual hosted execution (no local Docker/WSL).
+Windows limits committed process memory; Linux limits virtual address space, not
+RSS. Windows prevents descendant processes; Linux relies on the audited no-fork
+CLIs, process-group termination and the CI container's PID limit. Abrupt parent
+death on Linux requires external process/container supervision; there is no
+claim of Windows Job Object-equivalent parent-death enforcement. Normal timeout,
+crash, output-flood, memory-exhaustion and thread-start cleanup are regression-tested.
+Whole-run checks are cooperative during Python preparation; arbitrary blocked
+filesystem/kernel calls are not preemptible by this wrapper. An outer job/service
+supervisor is still needed, in addition to the child-process deadline.
+
+### Executed I3c.5 verification: 31 October 2026
+
+Same Windows/Python/GCC/PostgreSQL/tzdata versions as above, with a new isolated
+synthetic cluster and fresh Release engine. No operating database was used.
+
+| Check | Actual result |
+|---|---|
+| Complete I3c CI-equivalent gate | 47 passed, zero failed/skipped: original 41 retained plus six review/benchmark regressions |
+| I3b PostgreSQL + identity CI-equivalent gate | 55 passed, zero failed/skipped |
+| I3a offline regressions | 37 passed, zero failed/skipped; original 41/5/4 matrix and 469/391 counts unchanged |
+| Fresh standalone Release | Both CTest suites passed: 618 differential cases, one unresolved, 10 invalid, 25 safety tests/84 independent horizon subcases |
+| Complete application C++ | 192 passed, zero failed; both CSV CLI smokes passed |
+| Complete application Python/PostgreSQL | 501 run in 2314.224 seconds: 500 passed, zero failed, one expected POSIX execute-permission skip on Windows; no PostgreSQL skips |
+| Schema | All 53 tables match documentation; migrations/drift and backup/restore tests passed; Alembic head unchanged at 0049b |
+| Workflow static verification | Both workflows pass actionlint; 17 Bash blocks, three embedded Python programs and I3c Python source syntax pass |
+
+The two failure regressions failed on the original implementation before the
+corrections; their failing evidence is preserved separately from final green runs.
+No previous tests or safety budgets were removed or weakened. Hosted/Linux and
+new sanitizer verification remain **not run**, pending separately authorized
+publication. This is readiness for a draft PR, not approval for live calendars.
+
 ## Approval gates before real-data shadow execution
 
 This stage does **not** authorize real-calendar execution. A separately reviewed
