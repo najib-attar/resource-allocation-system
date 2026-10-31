@@ -160,8 +160,12 @@ def _communicate(command, raw, cwd, timeout, memory_bytes, output_limit):
 
         for target, args in ((read, (process.stdout, True)), (read, (process.stderr, False)), (write, ())):
             thread = threading.Thread(target=target, args=args, daemon=True)
+            try:
+                thread.start()
+            except RuntimeError:
+                raise ProcessFailure("THREAD_START") from None
+            # Only successfully started threads may be joined during cleanup.
             threads.append(thread)
-            thread.start()
         while process.poll() is None or any(t.is_alive() for t in threads):
             if monotonic() >= deadline:
                 raise ProcessFailure("TIMEOUT")

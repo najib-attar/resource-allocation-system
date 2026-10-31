@@ -110,9 +110,11 @@ class ShadowRunner:
                 or (os.name != "nt" and not os.access(cdmcs, os.X_OK))):
             raise ValueError()
         production = resolve_backend_executable(ROOT, self._production) if compare else None
-        hashes = [(cdmcs, self._sha.lower())]
+        hashes = {"cdmcs": self._sha.lower()}
         if production:
-            hashes.append((production.path, production.metadata["binary_sha256"]))
+            hashes["production"] = production.metadata["binary_sha256"]
+        if monotonic() > deadline:
+            raise ProcessFailure("RUN_DEADLINE")
         evaluated = feasible_c = feasible_p = discrepancies = launch = exchange = 0
         for candidate in normalized.candidates:
             outcomes = {}
@@ -121,7 +123,7 @@ class ShadowRunner:
                 requests.reverse()
             for engine, args, request in requests:
                 path = cdmcs if engine == "cdmcs" else production.path
-                if any(file_sha256(p) != h for p, h in hashes):
+                if file_sha256(path) != hashes[engine]:
                     raise ProcessFailure("EXECUTABLE_CHANGED")
                 remaining = deadline - monotonic()
                 if remaining <= 0:
@@ -150,6 +152,8 @@ class ShadowRunner:
             feasible_p += outcomes.get("production") == "feasible"
             discrepancies += compare and outcomes["cdmcs"] != outcomes["production"]
             evaluated += 1
+        if monotonic() > deadline:
+            raise ProcessFailure("RUN_DEADLINE")
         return ShadowResult("discrepancy" if discrepancies else "match" if compare else "cdmcs_only",
             complete=True, candidates=count, evaluated=evaluated, cdmcs_feasible=feasible_c,
             production_feasible=feasible_p, discrepancies=discrepancies, launch_ns=launch, exchange_ns=exchange)
