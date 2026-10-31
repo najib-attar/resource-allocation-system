@@ -141,6 +141,29 @@ jobs:
               raise SystemExit('Projection verification requires nonempty discovery and zero skips')
           sys.exit(0 if result.wasSuccessful() else 1)
           PY
+      - name: Require synthetic D1 contract, compiler and independent native score tests
+        timeout-minutes: 6
+        run: |
+          # This is the pinned Release executable, not the instrumented ASan build.
+          test -x "$CDMCS_I3A_BINARY"
+          printf '%s  %s\n' "$CDMCS_I3A_SHA256" "$CDMCS_I3A_BINARY" | sha256sum --check --strict
+          timeout --kill-after=5s 300s "$PROJECTION_PYTHON" -B - <<'PY'
+          import sys
+          import unittest
+          suite = unittest.TestSuite()
+          for pattern, minimum in [('test_contract.py', 26), ('test_compiler.py', 40),
+                                   ('test_native_preferences.py', 18)]:
+              discovered = unittest.TestLoader().discover('research/cdmcs/i3d/d1/tests', pattern=pattern)
+              count = discovered.countTestCases()
+              print(f'D1 {pattern}: {count} tests', flush=True)
+              if count < minimum:
+                  raise SystemExit('D1 requires every contract/compiler/native score test group')
+              suite.addTests(discovered)
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if not result.testsRun or result.skipped:
+              raise SystemExit('D1 requires nonempty discovery and zero skipped tests')
+          sys.exit(0 if result.wasSuccessful() else 1)
+          PY
       - name: Require synthetic-only I3c security and native PostgreSQL shadow tests
         timeout-minutes: 8
         run: |

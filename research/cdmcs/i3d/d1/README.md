@@ -31,7 +31,8 @@ Sanitized repr/error messages withhold their contents. There is no file exporter
 
 All object fields below are required; unknown fields/versions are rejected. JSON
 can be decoded with `load_document(bytes)`: UTF-8, at most 4 MiB, one document,
-no duplicate members or nonfinite numbers. No handwritten JSON parser is used.
+no duplicate members or nonfinite numbers (including exponent overflow such as
+`1e999`). No handwritten JSON parser is used.
 
 This is one **fictional configured example**, not university defaults:
 
@@ -198,11 +199,15 @@ decides every candidate's feasibility from unchanged publication and busy facts.
 
 ## Timezone and numeric safety
 
-Each preference-window endpoint for relevant local dates must be unambiguous and
-existent. Ambiguous/nonexistent endpoints yield unsupported computation; no clock
-rounding or DST guessing occurs. A window spanning a transition with unambiguous
-endpoints is evaluated at actual UTC minutes: spring gaps have fewer minutes and
-both fall folds receive their corresponding wall-clock rate. Mixed participant
+Each supplied preference-window endpoint for relevant local dates must be
+unambiguous and existent. Original windows are retained separately from merged
+rate segments: touching-window merging cannot erase an invalid endpoint, and
+overnight splitting does not invent a midnight endpoint. Validation includes an
+overnight window beginning the prior local day. Ambiguous/nonexistent supplied
+endpoints yield unsupported computation; no clock rounding or DST guessing occurs.
+A window spanning a transition with unambiguous endpoints is evaluated at actual
+UTC minutes: spring gaps have fewer minutes and both fall folds receive their
+corresponding wall-clock rate. Mixed participant
 timezones are unsupported because the existing model has one shared day array.
 Historically decreasing local-date mappings remain unsupported by I3a/I1.
 
@@ -288,9 +293,72 @@ PostgreSQL 17.11 in an owned loopback cluster, pinned tzdata 2026.5:
 
 Full application tests exercised migration/drift/recovery, concurrent reservations,
 all five strategy comparisons and existing room/equipment/appointment/calendar
-workflows. No UI change required browser testing. No hosted CI or fresh sanitizer
-coverage is claimed here; D1 has not been published or added to a dedicated CI
-gate. Prior research references and both engine implementations are unchanged.
+workflows. No UI change required browser testing. These results predate the D1.5
+CI integration below; no hosted CI or fresh sanitizer coverage is claimed here.
+Prior research references and both engine implementations are unchanged.
+
+### D1.5 correctness review and CI
+
+Four reproducible contract defects were corrected without changing either C++
+engine or the objective:
+
+- Touching Berlin Sunday windows `01:00-02:15` and `02:15-04:00` previously hid
+  their shared invalid endpoint after merging. Both the spring gap and fall fold
+  are now rejected before rate compilation.
+- The valid Sao Paulo overnight window `2018-11-03 23:00` through
+  `2018-11-04 03:00` previously failed on an artificial midnight split boundary.
+  Only actual endpoints are now checked. Across the synthetic `01:00Z-04:00Z`
+  coverage, 60 nonpreferred minutes at rate 2 plus 120 preferred minutes at rate 1
+  give prefix cost 240; independent full-calendar/native scoring agrees.
+- JSON exponent overflow could decode to infinity despite nonfinite-literal
+  rejection. A bounded-document traversal now rejects nonfinite floats at any
+  nesting level. Numeric policies already rejected floats; no compiled-score
+  bypass was found.
+- A valid overnight preference near the 1970/2099 limits could fail because its
+  supplied endpoint lay outside the scheduling epoch. Wall-time uniqueness is
+  now checked without that unrelated range guard. Actual snapshot/context instants
+  retain their existing bounds. UTC boundary fixtures independently yield prefix
+  totals 240 and 180, respectively.
+
+The existing isolated PostgreSQL/Release CI job now also runs D1 against its
+SHA-pinned Release CDMCS and manifest-validated production binary. Each contract,
+compiler and native test group is required (at least 26/40/18 tests respectively),
+and any skip fails the gate. It includes the independent 20-case full-score oracle,
+numerical/cutoff/fairness/delay witnesses, actual I3b-origin rejection, and silent,
+sanitized failure checks. The Python gate is bounded to 300 seconds, the step to
+six minutes, and the existing job container to 3 GiB/two CPUs/256 processes.
+
+D1 changes also trigger the existing research Release, ASan/UBSan and I3a offline
+jobs. I3b/identity, I3c, and full application C++/PostgreSQL regressions remain
+enabled. D1 native tests use **Release**, not an ASan binary under the 256 MiB
+child address-space limit. Sanitizer coverage is only attributable to the existing
+separately instrumented standalone suites. No D1 payload/evidence exporter,
+deployment step, secret, production preference, or new dependency is introduced.
+
+The local CI-equivalent D1 gate executed all 84 tests with zero skips. A negative
+gate check with absent native prerequisites correctly rejected the resulting 18
+skips. Both workflows pass actionlint and all four embedded Python programs
+compile. Hosted Ubuntu, Linux resource-limit behavior and ASan/UBSan execution
+remain **pending publication**; local static checks are not a hosted CI pass.
+
+Final D1.5 local verification, same Windows/Python/GCC/PostgreSQL/tzdata versions
+as above, with fresh Release CDMCS and a separately owned synthetic cluster:
+
+| Gate | Actual result |
+|---|---|
+| D1 | 84 passed, zero skips; all four reproduced defects have regression tests |
+| I3a | 37 passed, zero skips |
+| I3b and application identity | 47 + 8 passed, zero skips |
+| I3c | 47 passed, zero skips |
+| Standalone Release | 2/2 CTest suites passed: 618 differential cases, one unresolved, ten invalid; 25 safety methods/84 independent horizon subcases |
+| Application C++ | 192 passed, zero failed; both standalone CSV CLI smokes passed |
+| Application Python/PostgreSQL | 501 run in 2390.657 seconds: 500 passed, one expected Windows-only POSIX execute-permission skip; no PostgreSQL skips |
+
+Migration/drift, backup/restore, rollback/concurrency, all five strategy comparisons,
+and existing appointment/room/equipment/waiting-list/calendar workflows passed.
+Both engines, I3b/I3c, production application modules and all 53 database tables
+remain unchanged. No real calendars, production database or user preferences were
+used. No new sanitizer or hosted result is inferred from these local runs.
 
 ## Remaining decisions
 
