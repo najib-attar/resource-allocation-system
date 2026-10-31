@@ -1,12 +1,12 @@
 """Pure synthetic preparation; no engine execution, persistence or authorization."""
 
 from dataclasses import dataclass, replace
-from datetime import datetime, time, timedelta
+from datetime import datetime, time, timedelta, timezone
 import json
 from zoneinfo import ZoneInfo
 
 from research.cdmcs.i3a.adapter import _candidate_starts, cdmcs_request, merged, normalize
-from research.cdmcs.i3a.snapshot import Commitment, Interval, Preference, Snapshot, SnapshotError, instant
+from research.cdmcs.i3a.snapshot import Commitment, Interval, Preference, Snapshot, instant
 from .contract import (PreferenceError, PreferenceUnavailable, check, envelope, label,
                        parse_policy, parse_preference, provenance, record)
 
@@ -117,9 +117,9 @@ def _context(value, snapshot, required, candidates, padding):
 
 
 def _profile(spec, policy, coverage):
-    timezone = ZoneInfo(spec.timezone)
-    first = datetime.fromtimestamp(coverage.start, timezone).date()
-    last = datetime.fromtimestamp(coverage.end - 60, timezone).date()
+    zone = ZoneInfo(spec.timezone)
+    first = datetime.fromtimestamp(coverage.start, zone).date()
+    last = datetime.fromtimestamp(coverage.end - 60, zone).date()
     if spec.first > first or spec.last < last:
         raise PreferenceUnavailable("PREFERENCE_EFFECTIVE_COVERAGE")
     # Validate supplied endpoints, not boundaries erased by merging or introduced
@@ -131,14 +131,19 @@ def _profile(spec, policy, coverage):
                 continue
             for minute in (start, end):
                 wall = datetime.combine(current, time()) + timedelta(minutes=minute)
-                try:
-                    instant(wall.isoformat(), timezone)
-                except SnapshotError:
-                    raise PreferenceUnavailable("AMBIGUOUS_OR_NONEXISTENT_PREFERENCE_WINDOW") from None
+                # Recurring wall endpoints can lie outside the bounded cost
+                # calendar; only scheduling instants need the epoch-range guard.
+                choices = set()
+                for fold in (0, 1):
+                    utc = wall.replace(tzinfo=zone, fold=fold).astimezone(timezone.utc)
+                    if utc.astimezone(zone).replace(tzinfo=None) == wall:
+                        choices.add(utc)
+                if len(choices) != 1:
+                    raise PreferenceUnavailable("AMBIGUOUS_OR_NONEXISTENT_PREFERENCE_WINDOW")
         current += timedelta(days=1)
     segments, total, previous, beginning = [], 0, None, coverage.start
     for stamp in range(coverage.start, coverage.end, 60):
-        local = datetime.fromtimestamp(stamp, timezone)
+        local = datetime.fromtimestamp(stamp, zone)
         weekday, minute = local.isoweekday(), local.hour * 60 + local.minute
         if spec.weekdays and weekday not in spec.weekdays:
             rate = policy.outside_day_rate

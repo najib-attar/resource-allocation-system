@@ -377,3 +377,18 @@ class TimezoneTests(unittest.TestCase):
         request = compile_case(value, specs).to_request()
         self.assertEqual(request['profiles']['organizer']['rate_prefix'],
                          [2*min(i, 60)+max(0, i-60) for i in range(181)])
+
+    def test_window_endpoints_can_extend_beyond_the_bounded_cost_calendar(self):
+        cases = [('1970-01-01T00:00:00+00:00', 180, 3, '1970-01-01', '1970-01-02', 240),
+                 ('2099-12-31T22:00:00+00:00', 120, 4, '2099-12-30', '2099-12-31', 180)]
+        for anchor, length, weekday, first, last, expected in cases:
+            value = rebase(calendar(), anchor)
+            value['timezone'] = 'UTC'
+            value['horizon'] = period(0, length, anchor)
+            value['participants'][1]['published'] = [copy.deepcopy(value['horizon'])]
+            specs = [preference(timezone='UTC', effective={'from': first, 'until': last}, preferred_windows=[
+                        {'weekday': weekday, 'start': '23:00', 'end': '02:00'}]),
+                     preference('professor-A', timezone='UTC', effective={'from': first, 'until': last})]
+            with self.subTest(anchor=anchor):
+                request = compile_case(value, specs).to_request()
+                self.assertEqual(request['profiles']['organizer']['rate_prefix'][-1], expected)
