@@ -50,7 +50,7 @@ jobs:
   projection:
     name: I3b authorized read-only PostgreSQL projection
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     container:
       image: ubuntu:24.04
       options: --memory=3g --memory-swap=3g --cpus=2 --pids-limit=256
@@ -78,13 +78,15 @@ jobs:
       TEST_DATABASE_URL: postgresql+psycopg://postgres@postgres:5432/ras_test
       PROJECTION_PYTHON: /tmp/cdmcs-projection-python/bin/python
       RESOURCE_ALLOCATION_BACKEND: /tmp/cdmcs-projection-engine/allocation_system
+      CDMCS_I3A_BINARY: /tmp/cdmcs-shadow-release/cdmcs_i1
+      CDMCS_I3A_PRODUCTION: /tmp/cdmcs-projection-engine/allocation_system
     steps:
       - name: Install isolated test tools
         timeout-minutes: 5
         run: |
           apt-get -o Acquire::Retries=3 update
           apt-get -o Acquire::Retries=3 install --no-install-recommends -y \
-            ca-certificates git g++ python3 python3-venv
+            ca-certificates curl bzip2 git cmake make g++ python3 python3-venv
       - uses: actions/checkout@v4
         with:
           persist-credentials: false
@@ -98,6 +100,29 @@ jobs:
         run: |
           "$PROJECTION_PYTHON" -B scripts/build_backend.py \
             --compiler g++ --output "$RESOURCE_ALLOCATION_BACKEND"
+      - name: Build and test pinned Release CDMCS for the actual shadow subprocess
+        timeout-minutes: 8
+        run: |
+          deps=/tmp/cdmcs-shadow-deps
+          mkdir -p "$deps"
+          curl --fail --location --retry 2 --connect-timeout 15 --max-time 120 \
+            https://archives.boost.io/release/1.85.0/source/boost_1_85_0.tar.bz2 \
+            --output "$deps/boost.tar.bz2"
+          printf '%s  %s\n' \
+            7009fe1faa1697476bdc7027703a2badb84e849b7b0baad5086b087b971f8617 \
+            "$deps/boost.tar.bz2" | sha256sum --check --strict
+          tar -xjf "$deps/boost.tar.bz2" -C "$deps" \
+            boost_1_85_0/boost boost_1_85_0/LICENSE_1_0.txt
+          cmake -S research/cdmcs/i1 -B "${CDMCS_I3A_BINARY%/*}" \
+            -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER=g++ \
+            -DCMAKE_CXX_STANDARD=17 -DCMAKE_CXX_STANDARD_REQUIRED=ON \
+            -DCMAKE_CXX_EXTENSIONS=OFF -DBUILD_TESTING=ON \
+            -DBOOST_JSON_INCLUDE_DIR="$deps/boost_1_85_0" \
+            -DPython3_EXECUTABLE="$PROJECTION_PYTHON"
+          cmake --build "${CDMCS_I3A_BINARY%/*}" --parallel 2
+          ctest --test-dir "${CDMCS_I3A_BINARY%/*}" --no-tests=error \
+            --output-on-failure --verbose --parallel 1 --timeout 300
+          echo "CDMCS_I3A_SHA256=$(sha256sum "$CDMCS_I3A_BINARY" | cut -d' ' -f1)" >> "$GITHUB_ENV"
       - name: Require all projection and identity tests without skips
         timeout-minutes: 11
         run: |
@@ -114,6 +139,26 @@ jobs:
           result = unittest.TextTestRunner(verbosity=2).run(suite)
           if not result.testsRun or result.skipped:
               raise SystemExit('Projection verification requires nonempty discovery and zero skips')
+          sys.exit(0 if result.wasSuccessful() else 1)
+          PY
+      - name: Require synthetic-only I3c security and native PostgreSQL shadow tests
+        timeout-minutes: 8
+        run: |
+          # Release binary tested immediately above, not an ASan binary under RLIMIT_AS.
+          test -x "$CDMCS_I3A_BINARY"
+          printf '%s  %s\n' "$CDMCS_I3A_SHA256" "$CDMCS_I3A_BINARY" | sha256sum --check --strict
+          timeout --kill-after=5s 420s "$PROJECTION_PYTHON" -B - <<'PY'
+          import sys
+          import unittest
+          for pattern in ('test_shadow.py', 'test_release_review.py',
+                          'test_native_shadow.py', 'test_projection_shadow.py'):
+              discovered = unittest.TestLoader().discover('research/cdmcs/i3c/tests', pattern=pattern)
+              if not discovered.countTestCases():
+                  raise SystemExit('I3c requires each admission/process/native/database test group')
+          suite = unittest.TestLoader().discover('research/cdmcs/i3c/tests')
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if not result.testsRun or result.skipped:
+              raise SystemExit('I3c requires nonempty discovery and zero skipped tests')
           sys.exit(0 if result.wasSuccessful() else 1)
           PY
       - name: Confirm tests left the checkout clean
