@@ -111,6 +111,12 @@ class PreferenceContractTests(unittest.TestCase):
             parse_preference(value)
         self.assertNotIn("PRIVATE", str(caught.exception))
 
+    def test_identifiers_are_bounded_in_utf8_bytes_not_characters(self):
+        self.assertEqual(parse_preference(preference(owner='x'*256)).owner, 'x'*256)
+        self.assertEqual(parse_preference(preference(owner='\u6559'*85)).owner, '\u6559'*85)
+        with self.assertRaises(PreferenceError):
+            parse_preference(preference(owner='\u6559'*86))
+
 
 class CostPolicyTests(unittest.TestCase):
     def test_policy_has_no_omitted_numerical_defaults(self):
