@@ -1,4 +1,8 @@
-from dataclasses import replace
+from contextlib import redirect_stderr, redirect_stdout
+from dataclasses import asdict, replace
+import io
+import json
+import logging
 from pathlib import Path
 import subprocess
 import sys
@@ -126,6 +130,68 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(result.status,'match')
         self.assertEqual(hashing.call_count,1+calls.call_count)
 
+    def test_failure_after_a_complete_paired_batch_discards_every_observation(self):
+        for code in ('TIMEOUT', 'RUN_DEADLINE', 'ENGINE_EXIT', 'INPUT_LIMIT', 'OUTPUT_LIMIT',
+                     'MALFORMED_RESPONSE', 'LIMIT_SETUP', 'THREAD_START'):
+            completed = []
+            def fail_later(command, request, **kwargs):
+                if len(completed) == 3:
+                    self.assertEqual(request['operation'], 'cdmcs_schedule_v1')
+                    raise ProcessFailure(code)
+                completed.append(request['operation'])
+                return self.success(command, request, **kwargs)
+            with self.subTest(code=code), mock.patch.object(kernel, 'execute', side_effect=fail_later) as calls:
+                result = self.runner(batch_size=2).run(prepared(fixture(4)))
+            self.assertEqual(completed, ['cdmcs_schedule_v1', 'appointment', 'appointment'])
+            self.assertEqual(calls.call_count, 4)
+            self.assertEqual((result.status, result.code, result.complete, result.evaluated),
+                             ('engine_failure', code, False, 0))
+            self.assertFalse(hasattr(result, 'observations'))
+
+    def test_bad_later_batch_never_leaves_a_complete_first_batch_result(self):
+        for malformed in ('truncated', 'duplicate', 'foreign', 'missing-count', 'pending-permission'):
+            batches_seen = 0
+            def bad_later(command, request, **kwargs):
+                nonlocal batches_seen
+                call = self.success(command, request, **kwargs)
+                if request['operation'] == 'cdmcs_schedule_v1':
+                    batches_seen += 1
+                    if batches_seen == 2:
+                        payload = call.payload
+                        if malformed == 'truncated': payload['truncated'] = True
+                        if malformed == 'duplicate': payload['recommendations'][1] = payload['recommendations'][0]
+                        if malformed == 'foreign': payload['recommendations'][0]['start_minute'] = 999999
+                        if malformed == 'missing-count': del payload['solutions_evaluated']
+                        if malformed == 'pending-permission':
+                            payload['recommendations'][0]['required_permissions']['new_meeting_extra_availability'] = ['private']
+                return call
+            with self.subTest(malformed=malformed), mock.patch.object(kernel, 'execute', side_effect=bad_later) as calls:
+                result = self.runner(batch_size=2).run(prepared(fixture(4)))
+            self.assertEqual(calls.call_count, 4)
+            self.assertEqual((result.status, result.code, result.complete, result.evaluated),
+                             ('engine_failure', 'INVALID_PROTOCOL', False, 0))
+            self.assertFalse(hasattr(result, 'observations'))
+
+    def test_late_dependency_messages_cannot_enter_logs_or_results(self):
+        marker = 'SYNTHETIC-PRIVATE-CALENDAR-MARKER'
+        for error in (ValueError(marker), OSError(marker), MemoryError(marker)):
+            count = 0
+            def fail_later(command, request, **kwargs):
+                nonlocal count
+                count += 1
+                if count == 4: raise error
+                return self.success(command, request, **kwargs)
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with self.subTest(error=type(error).__name__), redirect_stdout(stdout), redirect_stderr(stderr), \
+                 mock.patch.object(logging.Logger, '_log') as logs, \
+                 mock.patch.object(kernel, 'execute', side_effect=fail_later):
+                result = self.runner(batch_size=2).run(prepared(fixture(4)))
+            self.assertEqual(count, 4)
+            self.assertEqual((result.status, result.complete), ('input_error', False))
+            self.assertNotIn(marker, repr(result) + json.dumps(asdict(result)) + stdout.getvalue() + stderr.getvalue())
+            logs.assert_not_called()
+            self.assertFalse(hasattr(result, 'observations'))
+
     def test_changed_executable_fails_before_the_next_child(self):
         with mock.patch.object(kernel,'execute',side_effect=self.success) as calls, \
              mock.patch.object(kernel,'file_sha256',side_effect=(self.digest,self.digest,'0'*64)):
@@ -181,6 +247,49 @@ class RunnerTests(unittest.TestCase):
 
 
 class ActualProcessTests(unittest.TestCase):
+    def test_actual_second_batch_faults_are_reaped_without_exposing_earlier_scores(self):
+        # This is a transport double, not a native cost/feasibility oracle.
+        good = """import json,sys
+q=json.load(sys.stdin)
+rows=[{'start_minute':t,'end_minute':t+q['duration'],'total_cost':0,'fairness_max_burden':0,
+       'moved_meeting_id':None,'replacement_start_minute':None,
+       'required_permissions':{'new_meeting_extra_availability':[],
+           'relocated_meeting_extra_availability':[],'relocation_participant_approval':[]},
+       'proposal_status':'DIRECT_PENDING_NORMAL_MEETING_APPROVAL'} for t in q['candidate_starts']]
+print(json.dumps({'operation':'cdmcs_schedule_v1','model':'V15_restricted_one_blocking_move',
+    'status':'OK','returned_count':len(rows),'solutions_evaluated':len(rows),
+    'truncated':False,'recommendations':rows}))
+"""
+        original = subprocess.Popen
+        for expected, fault in (
+                ('ENGINE_EXIT', "import sys;sys.stdin.read();sys.stderr.write('PRIVATE-MARKER');sys.exit(7)"),
+                ('MALFORMED_RESPONSE', "import sys;sys.stdin.read();print('{')"),
+                ('ENGINE_EXIT', "import sys;sys.stdin.read();sys.stdout.write('{');sys.exit(7)"),
+                ('OUTPUT_LIMIT', "import sys;sys.stdin.read();sys.stdout.write('x'*100000)"),
+                ('TIMEOUT', "import sys,time;sys.stdin.read();time.sleep(10)"),
+                ('ENGINE_EXIT', "import sys;sys.stdin.read();a=bytearray(512*1024**2)")):
+            children = []
+            def spawn(command, **kwargs):
+                child = original([sys._base_executable, '-B', '-c', good if not children else fault], **kwargs)
+                children.append(child)
+                return child
+            budget = Budget(per_process_seconds=0.3 if expected == 'TIMEOUT' else 3,
+                            memory_bytes=64*1024**2, output_bytes=1024)
+            runner = BatchedShadowRunner(sys.executable, file_sha256(sys.executable),
+                                         enabled=True, batch_size=2, budget=budget)
+            with self.subTest(expected=expected, fault=fault), \
+                 mock.patch('research.cdmcs.i3c.process.subprocess.Popen', side_effect=spawn):
+                result = runner.run(prepared(fixture(4)), compare=False)
+            self.assertEqual(len(children), 2)
+            self.assertEqual(children[0].returncode, 0)
+            self.assertEqual((result.status, result.code, result.complete, result.evaluated),
+                             ('engine_failure', expected, False, 0))
+            self.assertNotIn('PRIVATE', repr(result))
+            self.assertFalse(hasattr(result, 'observations'))
+            for child in children:
+                self.assertIsNotNone(child.poll())
+                self.assertTrue(all(stream.closed for stream in (child.stdin, child.stdout, child.stderr)))
+
     def test_faulting_children_are_bounded_reaped_and_sanitized(self):
         digest=file_sha256(sys.executable)
         original=subprocess.Popen
