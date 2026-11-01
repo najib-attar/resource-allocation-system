@@ -98,9 +98,11 @@ class SchedulingPreferenceService:
                     raise PreferenceAccessDenied()
                 if write:
                     # Account revocation/deletion and concurrent self-writes serialize here.
-                    session.get(LoginAccount, uid, with_for_update=True, populate_existing=True)
+                    if session.get(LoginAccount, uid, with_for_update=True, populate_existing=True) is None:
+                        raise PreferenceAccessDenied()
                     # Keep active university identity stable until the preference commit.
-                    session.get(User, uid, with_for_update={'read': True}, populate_existing=True)
+                    if session.get(User, uid, with_for_update={'read': True}, populate_existing=True) is None:
+                        raise PreferenceAccessDenied()
                 current = AccountService(self.database).identity(uid, version, session=session)
                 if current is None or current != principal:
                     raise PreferenceAccessDenied()

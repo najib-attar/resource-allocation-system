@@ -192,6 +192,24 @@ class SchedulingPreferenceTests(PostgresTestCase):
             with self.assertRaises(PreferenceAccessDenied):
                 self.service.current()
 
+    def test_missing_locked_account_cannot_be_replaced_by_a_later_identity_read(self):
+        transaction = self.database.transaction
+        @contextmanager
+        def injected(**kwargs):
+            with transaction(**kwargs) as session:
+                original = session.get
+                def missing(model, *args, **kwargs):
+                    if model is LoginAccount and kwargs.get('with_for_update'):
+                        return None
+                    return original(model, *args, **kwargs)
+                with mock.patch.object(session, 'get', side_effect=missing):
+                    yield session
+        with self.authenticated(), mock.patch.object(self.database, 'transaction', injected), \
+                mock.patch.object(AccountService, 'identity', side_effect=AssertionError('No unlocked identity fallback')):
+            with self.assertRaises(PreferenceAccessDenied):
+                self.service.replace(0, document())
+        self.assertEqual(self.count(), 0)
+
     def test_latest_future_revision_supersedes_and_deactivation_never_resurrects(self):
         with self.authenticated():
             self.service.replace(0, document())
