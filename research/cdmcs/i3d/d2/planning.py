@@ -5,7 +5,7 @@ from datetime import datetime
 from zoneinfo import ZoneInfo
 
 from research.cdmcs.i3a.execution import validate_cdmcs
-from research.cdmcs.i3c.admission import admitted_snapshot
+from research.cdmcs.i3c.admission import ShadowInput, admitted_snapshot
 from research.cdmcs.i3d.d1.compiler import CompiledPreferences, compile_preferences
 from research.cdmcs.i3d.d1.contract import PreferenceError, PreferenceUnavailable
 
@@ -15,10 +15,10 @@ _SEAL = object()
 
 @dataclass(frozen=True, repr=False)
 class PreparedInput:
-    scope: object = field(repr=False)
-    compiled: object = field(repr=False)
-    bound_scope: object = field(repr=False)
-    bound_compiled: object = field(repr=False)
+    scope: ShadowInput = field(repr=False)
+    compiled: CompiledPreferences = field(repr=False)
+    bound_scope: ShadowInput = field(repr=False)
+    bound_compiled: CompiledPreferences = field(repr=False)
     seal: object = field(repr=False)
 
     def __repr__(self):
