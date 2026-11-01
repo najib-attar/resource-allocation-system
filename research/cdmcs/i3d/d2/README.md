@@ -109,7 +109,7 @@ membership, and native tests independently verify the actual engine's behavior.
 
 ## Correctness evidence
 
-The D2 gate executed **52 tests with zero skips**: 14 planning/response,
+The initial D2 checkpoint executed **52 tests with zero skips**: 14 planning/response,
 14 runner plus one real faulting-child test, three benchmark tests and 20 native
 tests. Native tests cover candidate counts 1, 2, 8, 32, 99, 100, 101, 128, 191 and
 256, batch sizes 1, 2, 8, 32, 99 and 100, plus 20 seeded calendar/cost cases.
@@ -156,7 +156,8 @@ python -B -m unittest discover -s research/cdmcs/i3d/d2/tests -p "test_*.py" -v
 ```
 
 Missing native prerequisites deliberately skip native tests; a complete gate must
-require all 52 methods and zero skips, not accept a partial green unittest result.
+require all current methods and zero skips, not accept a partial green unittest
+result. D2.5 increases this gate to 56 methods, as described below.
 
 ## Performance methodology
 
@@ -239,7 +240,7 @@ Non-neutral/complex calendar performance and other platforms remain unbenchmarke
 
 | Suite | Actual local result |
 |---|---|
-| D2 | 52 passed, zero skips; includes 20 native methods and 20 randomized subcases |
+| Initial D2 checkpoint | 52 passed, zero skips; includes 20 native methods and 20 randomized subcases |
 | D1 | 84 passed, zero skips |
 | I3a | 37 passed, zero skips; 41 complete equality cases, 469 candidates, 391 feasible per engine; five unsupported/four invalid |
 | I3b and identity | 47 + 8 passed, zero skips |
@@ -278,5 +279,132 @@ database, binary or private calendar was added to Git.
   snapshots remain rejected; existing I3a export restrictions are unchanged.
 - Distributed admission, production query budgets, actual user weights,
   real-calendar authorization/retention and activation require separate approval.
-  No new hosted CI, Linux D2 run or sanitizer result is implied by local Windows
-  Release execution. Security/CI review is the next checkpoint, not D3 activation.
+  No hosted CI, Linux D2 run or sanitizer result is implied by local Windows
+  Release execution. The D2.5 gate below prepares that verification, not D3 activation.
+
+## D2.5 correctness and security review
+
+The review found no confirmed optimizer, preference-mapping or partition defect.
+In the unchanged I1 source, `read_case()` fixes the earliest submitted start before
+feasibility; `score()` adds its civil-day delay after personal burdens; `solve()`
+enumerates submitted starts independently and caps retained arrangements. With
+protected fixed events, empty exception/replacement/resource sets, at most one
+arrangement exists per start. Thus the partition proof above applies, including an
+infeasible reference and negative personal-net costs. Production ranking remains
+separate: only its exact single-time feasibility validator is compared.
+
+One verified coverage gap was corrected. The older injected-failure test failed
+on the third call: the second production validation in the *first* paired batch.
+New tests finish the first CDMCS batch and both production validations before
+failing the next batch. They check later truncation, duplicate/foreign starts,
+missing counts, conditional permissions and sanitized dependency exceptions.
+Real child tests also finish a successful batch before a later crash, partial
+stdout/nonzero exit, malformed output, flood, timeout or memory exhaustion. Both
+children are reaped, pipes are closed, and no earlier scores or complete result
+survive. These process doubles test transport, not native mathematical correctness.
+
+The current **56-test** gate consists of 14 planning/response, 19 runner/process,
+three benchmark and 20 native methods. It ran locally with zero skips. Existing
+D1, I3a, I3b/identity, I3c and standalone tests also passed without weakening them.
+The five original D2 commits remain intact; no C++ or production module changed.
+
+Hosted coverage reuses the existing isolated PostgreSQL projection job rather
+than duplicating builds or adding another runner framework. Its D2 step requires
+each test group/minimum count, executable presence and SHA verification, and zero
+skips. The Python gate has a 420-second timeout plus a five-second kill grace;
+the step has an eight-minute cap. Existing container limits remain 3 GiB/two CPUs/
+256 processes, with a separately bounded disposable PostgreSQL service. A local
+execution of the exact embedded program passed all 56 methods. A negative check
+with absent native prerequisites correctly rejected 20 skipped native methods.
+Both workflows pass actionlint; all five embedded Python programs compile.
+
+D2 changes now trigger the existing standalone Release, ASan/UBSan and I3a offline
+jobs. Application C++/Python/PostgreSQL, D1, I3b/identity and I3c gates remain intact.
+D2 runs with **Release CDMCS**, not ASan under its child address-space limit. The
+projection job's production binary uses the existing builder's default flags;
+that correctness gate is not an optimized performance experiment. Sanitizer
+coverage applies only to actually executed instrumented standalone C++ suites,
+never to D2 Python or its Release children. No deployment or private-payload
+artifact step was added. Hosted execution remains pending publication; locally,
+Windows has neither an installed WSL environment nor Docker.
+
+Admission remains a trusted in-process synthetic contract, not an authorization
+sandbox or a proof that a fixture author supplied every real commitment. Binary
+pinning assumes trusted local build files; it is not an atomic-exec defense against
+malicious concurrent replacement. Distributed admission, parent preparation/query
+budgets and real-data policy still require separate approval. None is silently
+enabled or resolved by batching.
+
+Fresh D2.5 local verification repeated all gates with synthetic records on an
+independently initialized PostgreSQL 17.11 cluster and newly built Release CDMCS:
+
+| Gate | Executed result |
+|---|---|
+| Exact embedded D2 CI program | 56 passed, zero skips, in 127.079 seconds |
+| D1 | 84 passed, zero skips |
+| I3a | 37 passed, zero skips; original 41/469/391 complete-set baseline preserved |
+| I3b and identity | 47 + 8 passed, zero skips |
+| I3c | 47 passed, zero skips |
+| Standalone Release | 2/2 CTest suites passed, including differential/safety/horizon tests |
+| Application C++ | 192 passed; clean-slot and normal-dataset CSV CLI smokes passed |
+| Application Python/PostgreSQL | 501 run in 2075.785 seconds: 500 passed, one expected Windows-only POSIX permission skip; no PostgreSQL skips |
+
+The cluster was stopped after testing. No operational database, private calendar,
+production scheduler or booking was used or changed. Hosted Ubuntu and ASan/UBSan
+results are still pending; local static validation is not a hosted CI pass.
+
+### D2.5 performance reproduction
+
+The same audited benchmark/neutral synthetic fixture was re-executed using fresh
+GCC 14.3 Release CDMCS and the SHA/manifest-validated unchanged optimized production
+binary. Both use C++17, `-O3 -DNDEBUG`; environment remains Windows 11/Python
+3.12.14/i5-10210U. All test/build processes and PostgreSQL shutdown finished before
+measurement. Workstation load, frequency and thermal effects were not controlled.
+
+Primary results: one warmup and five alternating trials per mode, batch size 100.
+All times are milliseconds; each p95 is the observed sample maximum.
+
+| Candidates | Singleton median | Batched median | Singleton p95 | Batched p95 | Median ratio | Processes, singleton/batched |
+|---|---:|---:|---:|---:|---:|---:|
+| 1 | 227.30 | 213.95 | 237.46 | 236.10 | 1.06 | 2 / 2 |
+| 8 | 537.10 | 547.84 | 1580.33 | 1470.74 | 0.98 | 16 / 9 |
+| 32 | 1990.31 | 1347.39 | 2132.88 | 2330.70 | 1.48 | 64 / 33 |
+| 128 | 4781.24 | 2596.39 | 5615.00 | 3382.15 | 1.84 | 256 / 130 |
+| 256 | 11171.68 | 5105.89 | 12405.45 | 5813.04 | 2.19 | 512 / 259 |
+
+Separate boundary experiment: one warmup and **three** alternating measured trials
+per mode, not pooled with the primary data. Its p95 also equals the sample maximum.
+
+| Candidates | Singleton median | Batched median | Singleton p95 | Batched p95 | Median ratio | Processes, singleton/batched |
+|---|---:|---:|---:|---:|---:|---:|
+| 2 | 310.96 | 332.63 | 354.32 | 380.02 | 0.93 | 4 / 3 |
+| 99 | 5058.85 | 2075.44 | 5627.03 | 2126.89 | 2.44 | 198 / 100 |
+| 100 | 3642.09 | 1962.48 | 3759.34 | 1970.67 | 1.86 | 200 / 101 |
+| 101 | 3781.00 | 2067.58 | 3978.20 | 2090.87 | 1.83 | 202 / 103 |
+
+Every result was complete/matched and every child was reaped, with at most one
+active child. Maximum observed child RSS was 5.18 MiB and the primary parent
+lifetime peak was 88.94 MiB. The boundary process had a separate 60.71 MiB lifetime
+peak; neither value is a per-mode heap measurement.
+
+The negative observations are important: batching's median was slower at 2 and 8,
+and its 32-candidate sample maximum was worse despite a better median. The
+8-candidate coefficients of variation were 58.07% singleton/54.00% batched;
+32-candidate values were 9.87%/29.95%. Single-candidate 1.06 ratio saves no process
+and does not establish an advantage. No outlier was removed or rerun until green.
+These workstation samples do not justify a universal crossover threshold or SLA.
+Keep compatible singleton/reference execution selectable for small comparisons;
+do not silently zero D1 costs or rebase delay to obtain that fallback.
+
+At 256, median JSON dumping was 328.8/12.1 ms (singleton/batched), hashing
+2454.8/1468.6 ms, partial launch 2074.7/969.1 ms, and exchange 5617.2/2311.2 ms.
+Child CPU was 6734.4/2828.1 ms with the same coarse-accounting/parsing limitations.
+The observations are consistent with reduced process/transport/serialization and
+repeated initialization work. Pure optimizer computation was not isolated, so no
+faster scheduling algorithm or precise causal percentage is claimed.
+
+Raw primary/boundary trials, counts, min/max/deviation/CV, components, hardware,
+flags, executable/source hashes and test logs are retained outside the checkout in
+`CDMCS_D25_Review_20261101_205015`. Earlier D2 measurements remain intact. These
+experiments use neutral explicit weights/empty calendars; non-neutral correctness
+is independently tested, not presented as benchmarked production performance.
