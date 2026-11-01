@@ -184,6 +184,32 @@ jobs:
               raise SystemExit('I3c requires nonempty discovery and zero skipped tests')
           sys.exit(0 if result.wasSuccessful() else 1)
           PY
+      - name: Require exact synthetic D2 batches, late-failure cleanup and independent native costs
+        timeout-minutes: 8
+        run: |
+          # Correctness uses the pinned Release engine, never ASan under RLIMIT_AS.
+          # The production binary is the existing builder's default configuration;
+          # this gate makes no performance claim from that non-Release build.
+          test -x "$CDMCS_I3A_BINARY"
+          test -x "$CDMCS_I3A_PRODUCTION"
+          printf '%s  %s\n' "$CDMCS_I3A_SHA256" "$CDMCS_I3A_BINARY" | sha256sum --check --strict
+          timeout --kill-after=5s 420s "$PROJECTION_PYTHON" -B - <<'PY'
+          import sys
+          import unittest
+          suite = unittest.TestSuite()
+          for pattern, minimum in [('test_planning.py', 14), ('test_runner.py', 19),
+                                   ('test_benchmark.py', 3), ('test_native_batching.py', 20)]:
+              discovered = unittest.TestLoader().discover('research/cdmcs/i3d/d2/tests', pattern=pattern)
+              count = discovered.countTestCases()
+              print(f'D2 {pattern}: {count} tests', flush=True)
+              if count < minimum:
+                  raise SystemExit('D2 requires every planning/process/benchmark/native test group')
+              suite.addTests(discovered)
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if not result.testsRun or result.skipped:
+              raise SystemExit('D2 requires nonempty discovery and zero skipped tests')
+          sys.exit(0 if result.wasSuccessful() else 1)
+          PY
       - name: Confirm tests left the checkout clean
         run: |
           status="$(git -c safe.directory="$GITHUB_WORKSPACE" status --porcelain --untracked-files=all)"
