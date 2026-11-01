@@ -427,6 +427,26 @@ class NativeBatchingTests(unittest.TestCase):
                 self.assert_full_calendar(data, reference)
                 self.run_batch(data[0], reference, 2, compare=True)
 
+    @unittest.skipUnless(PRODUCTION, 'Explicit CDMCS_I3A_PRODUCTION required for multiple calendars')
+    def test_four_required_calendars_and_optional_unavailable_invitee_match(self):
+        raw = fixture(8)
+        raw['participants'].extend((participant('professor-B', end=135),
+                                    participant('professor-C', end=135),
+                                    participant('guest', required=False, published_required=False)))
+        raw['commitments'] = [commitment('B-class', ['professor-B'], 0, 30),
+                              commitment('C-class', ['professor-C'], 45, 60),
+                              commitment('organizer-class', ['organizer'], 90, 105),
+                              commitment('optional-busy', ['guest'], 0, 135)]
+        data = choices(raw)
+        self.assertEqual(len(data[0].compiled.to_request()['required_people']), 4)
+        reference = self.singleton_reference(data[0].compiled)
+        self.assertEqual(tuple(row[1] for row in reference),
+                         (False, False, False, False, True, False, False, True))
+        self.assert_full_calendar(data, reference)
+        for size in (1, 2, 8, 100):
+            with self.subTest(size=size):
+                self.run_batch(data[0], reference, size, compare=True)
+
     def test_twenty_seeded_cases_match_native_targets_and_full_calendar_recomputation(self):
         rng = random.Random(205646)
         pool = (1, 17, 31, 45, 60, 73, 90, 115, 140, 1430, 1440, 1457, 1490)
