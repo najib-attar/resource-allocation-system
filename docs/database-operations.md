@@ -1,10 +1,17 @@
 # PostgreSQL setup and safe operations
 
+## Current schema (0050a)
+
+The current source migration head is `0050a`: 54 application tables plus Alembic.
+It adds empty, private personal-preference history only. It does not initialize
+preferences or weights, publish availability, invoke an optimizer or alter bookings.
+See [private preference operations](#private-preference-revisions-0050a) below.
+
 ## Resource feedback upgrade (Iteration 48)
 
 Back up an existing database using the procedures below before applying migrations.
 With the intended `DATABASE_URL` configured, run `python -m alembic upgrade head`.
-Head is `0048a`: 50 application tables plus Alembic infrastructure. This additive
+That extension's revision is `0048a`: 50 application tables plus Alembic infrastructure. This additive
 migration preserves existing room, loan, calendar and waiting-list records. It
 does not seed reports, change inventory or modify engine configuration.
 
@@ -504,3 +511,17 @@ Previously created series without a semester stay intact but cannot be approved
 until administration uses the explicit series-binding form on the policy page.
 Binding validates every original date and never rewrites the calendar. Backups
 remain required before migrations; no reset or automatic semester inference occurs.
+
+## Private preference revisions (0050a)
+
+This additive migration creates an empty personal-preference history table; it
+does not backfill preferences, weights, availability or bookings. Run migrations
+only through the established reviewed process. D3-B verification uses a separately
+owned synthetic PostgreSQL database, never operational data.
+
+Preference history belongs to the university identity, survives login deletion and
+is not exposed through existing raw-data/admin pages. Downgrade refuses populated
+history. End-user deactivation is not erasure. No retention period or application
+erasure endpoint exists; the institution must approve the privileged audited DBA
+process and non-owner application credentials before adopting erasure operations.
+See [architecture and account-lifecycle limitations](architecture/personal-preferences-design.md).

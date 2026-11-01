@@ -1,8 +1,17 @@
 # PostgreSQL application persistence and dated calendars
 
+## Private preference persistence (0050a)
+
+The current schema has **54 application tables** plus Alembic.
+`scheduling_preference_revision` holds private, append-only self-owned intent and
+deactivation history keyed by university identity and positive BIGINT revision.
+It does not publish availability, store numerical policies or enable an optimizer.
+See [personal preference architecture](personal-preferences-design.md) for access,
+transactions, account lifecycle and the separately authorized erasure boundary.
+
 ## Dated recurring reservations (0049a / 0049b)
 
-The schema now has **53 application tables** plus Alembic. `reservation_series`
+That extension brought the schema to **53 application tables** plus Alembic. `reservation_series`
 links exactly one existing room or borrowing request, retaining its bounded weekly
 rule, original timezone and retry identity. `reservation_occurrence` stores the
 complete ordered dated expansion and lifecycle state. Existing request details,
