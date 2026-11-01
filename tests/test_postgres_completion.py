@@ -153,6 +153,8 @@ class PostgresCompletionTests(PostgresTestCase):
         expected.update({table+'_lock':(False,False) for table in ('reservation_series','reservation_occurrence')})
         expected.update({name:(False,False) for name in ('semester_reserved_dates','recurring_policy_guard','occurrence_policy_guard',
             'room_priority_guard','equipment_priority_guard','priority_audit_immutable','extension_semester_guard')})
+        expected.update({name: (False, False) for name in
+                         ('preference_history_immutable', 'preference_history_no_truncate')})
         self.assertEqual({row[0]: (row[1], row[2]) for row in rows}, expected)
 
     def test_concurrent_child_deletions_cannot_leave_empty_recurring_request(self):

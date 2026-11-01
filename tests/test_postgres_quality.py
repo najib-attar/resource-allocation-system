@@ -63,8 +63,11 @@ class PostgresQualityTests(PostgresTestCase):
                 self.assertTrue({item.name for item in checks if item.name} <= {item["name"] for item in actual_checks})
                 self.assertEqual({tuple(item.columns.keys()) for item in table.constraints if isinstance(item, UniqueConstraint)},
                                  {tuple(item["column_names"]) for item in inspector.get_unique_constraints(table.name)})
-                self.assertTrue(all(item["options"].get("ondelete", "NO ACTION") == "NO ACTION"
-                                    for item in inspector.get_foreign_keys(table.name)))
+                expected_deletion = {tuple(fk.columns.keys()): fk.ondelete or "NO ACTION"
+                                     for fk in table.foreign_key_constraints}
+                for foreign_key in inspector.get_foreign_keys(table.name):
+                    self.assertEqual(foreign_key["options"].get("ondelete", "NO ACTION"),
+                                     expected_deletion[tuple(foreign_key["constrained_columns"])])
 
     def test_inconsistent_result_totals_cannot_be_published(self):
         run_id, snapshot = self.repository.start_run()

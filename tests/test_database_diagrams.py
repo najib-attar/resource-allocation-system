@@ -19,6 +19,7 @@ class DatabaseDiagramTests(TestCase):
             self.assertIn("    " + table.name + " {", physical)
             self.assertTrue(all(column.name in physical for column in table.columns))
         rendered = ' '.join(ElementTree.parse(ROOT / 'docs/architecture/database-er-physical.svg').getroot().itertext())
+        self.assertNotIn('\\l', rendered)
         for table in Base.metadata.tables.values():
             self.assertIn(table.name, rendered)
             self.assertTrue(all(column.name in rendered for column in table.columns))

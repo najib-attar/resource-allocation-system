@@ -13,7 +13,7 @@ from .account_service import AccountService, Principal
 from .persistence.database import DatabaseBusy
 from .persistence.models import LoginAccount, SchedulingPreferenceRevision, User
 from .preference_values import (PreferenceError, PreferenceUnavailable, PreferenceValues,
-                                VALUE_FIELDS, check, load_document, number, parse_values, record)
+                                VALUE_FIELDS, load_document, number, parse_values, record)
 
 
 MAX_REVISION = 2**63 - 1
