@@ -84,10 +84,7 @@ class ShadowRunner:
         finally:
             _SLOT.release()
 
-    def _run(self, value, compare):
-        deadline = monotonic() + self.budget.total_seconds
-        if type(compare) is not bool:
-            raise ValueError()
+    def _normalize_scope(self, value):
         snapshot = admitted_snapshot(value)
         # Pre-normalization budgets bound Python allocations, not just child memory.
         required = sum(p.required for p in snapshot.participants)
@@ -104,6 +101,9 @@ class ShadowRunner:
         count = len(normalized.candidates)
         if count > self.budget.candidates:
             return ShadowResult("unsupported", "CANDIDATE_BUDGET")
+        return normalized
+
+    def _executables(self, compare):
         cdmcs = Path(self._cdmcs).resolve()
         if (not cdmcs.is_file() or not isinstance(self._sha, str) or len(self._sha) != 64
                 or file_sha256(cdmcs) != self._sha.lower()
@@ -113,6 +113,30 @@ class ShadowRunner:
         hashes = {"cdmcs": self._sha.lower()}
         if production:
             hashes["production"] = production.metadata["binary_sha256"]
+        return cdmcs, production, hashes
+
+    def _call(self, engine, path, args, request, hashes, deadline):
+        if file_sha256(path) != hashes[engine]:
+            raise ProcessFailure("EXECUTABLE_CHANGED")
+        remaining = deadline - monotonic()
+        if remaining <= 0:
+            raise ProcessFailure("RUN_DEADLINE")
+        call = execute([str(path), *args], request,
+            timeout=min(remaining, self.budget.per_process_seconds), memory_bytes=self.budget.memory_bytes,
+            input_limit=self.budget.input_bytes, output_limit=self.budget.output_bytes)
+        if monotonic() > deadline:
+            raise ProcessFailure("RUN_DEADLINE")
+        return call
+
+    def _run(self, value, compare):
+        deadline = monotonic() + self.budget.total_seconds
+        if type(compare) is not bool:
+            raise ValueError()
+        normalized = self._normalize_scope(value)
+        if isinstance(normalized, ShadowResult):
+            return normalized
+        count = len(normalized.candidates)
+        cdmcs, production, hashes = self._executables(compare)
         if monotonic() > deadline:
             raise ProcessFailure("RUN_DEADLINE")
         evaluated = feasible_c = feasible_p = discrepancies = launch = exchange = 0
@@ -123,16 +147,7 @@ class ShadowRunner:
                 requests.reverse()
             for engine, args, request in requests:
                 path = cdmcs if engine == "cdmcs" else production.path
-                if file_sha256(path) != hashes[engine]:
-                    raise ProcessFailure("EXECUTABLE_CHANGED")
-                remaining = deadline - monotonic()
-                if remaining <= 0:
-                    raise ProcessFailure("RUN_DEADLINE")
-                call = execute([str(path), *args], request,
-                    timeout=min(remaining, self.budget.per_process_seconds), memory_bytes=self.budget.memory_bytes,
-                    input_limit=self.budget.input_bytes, output_limit=self.budget.output_bytes)
-                if monotonic() > deadline:
-                    raise ProcessFailure("RUN_DEADLINE")
+                call = self._call(engine, path, args, request, hashes, deadline)
                 launch += call.launch_ns
                 exchange += call.exchange_ns
                 try:
