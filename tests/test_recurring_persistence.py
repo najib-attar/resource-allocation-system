@@ -82,6 +82,6 @@ class RecurringPersistenceTests(RoomFixture):
             command.downgrade(configuration,'0048a')
             command.upgrade(configuration,'head')
             command.check(configuration)
-        self.assertEqual(len(Base.metadata.tables),53)
+        self.assertEqual(len(Base.metadata.tables),54)
         self.assertEqual(self.rooms.detail(key,1)['status'],'Confirmed')
         self.assertEqual(self.totals(),(1,1))

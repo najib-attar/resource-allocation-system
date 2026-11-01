@@ -1,6 +1,7 @@
 """Generate reviewable Mermaid ER sources and a physical catalog from ORM metadata."""
 
 import argparse
+import json
 from pathlib import Path
 import sys
 
@@ -12,6 +13,7 @@ from web.persistence.models import Base
 
 
 PURPOSES = {
+    'scheduling_preference_revision': 'Private self-owned append-only configured/deactivated personal intent; no availability, numerical policy or optimizer activation.',
     'reservation_priority_override': 'Immutable shared room/equipment priority override with responsible actor, server time, original/selected priority and mandatory reason.',
     'reservation_series': 'Shared immutable bounded weekly proposal linked to one existing room or borrowing request; no duplicated requirements or approval system.',
     'reservation_occurrence': 'Ordered real dated series interval, cancellation/completion state and exact links to existing reservations and physical loans.',
@@ -72,6 +74,7 @@ MAIN_TABLES |= {"login_account", "academic_period", "legacy_calendar_binding", "
                 "appointment_invitation", "appointment_commitment", "professor_availability", "calendar_block"}
 MAIN_TABLES |= {"room_policy", "faculty_room_approver", "student_room_request", "room_reservation", "room_invitation", "room_organizer_commitment"}
 MAIN_TABLES.add("notification")
+MAIN_TABLES.add("scheduling_preference_revision")
 MAIN_TABLES |= {'reservation_series','reservation_occurrence','reservation_priority_override'}
 MAIN_TABLES.add("waiting_list_entry")
 MAIN_TABLES |= {'resource_feedback', 'feedback_event'}
@@ -126,7 +129,7 @@ def er_source(tables, physical):
 
 def catalog(tables):
     lines = ["# Physical schema catalog", "", f"Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the {len(tables)} application tables.",
-             "", "All foreign keys use PostgreSQL **NO ACTION**: no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.",
+             "", "Foreign keys use PostgreSQL **NO ACTION** unless explicitly marked RESTRICT; no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.",
              "ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.", ""]
     for table in tables:
         lines += ["## " + table.name, "", PURPOSES[table.name], "", "| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |", "|---|---|---|---|---|"]
@@ -139,7 +142,7 @@ def catalog(tables):
         lines += ["", "- Primary key: `" + ", ".join(table.primary_key.columns.keys()) + "`."]
         for fk in sorted(table.foreign_key_constraints, key=lambda item: ",".join(item.columns.keys())):
             lines.append("- Foreign key: `(" + ", ".join(fk.columns.keys()) + ") -> " + fk.referred_table.name
-                         + " (" + ", ".join(element.column.name for element in fk.elements) + ")`; NO ACTION.")
+                         + " (" + ", ".join(element.column.name for element in fk.elements) + ")`; " + (fk.ondelete or "NO ACTION") + ".")
         for constraint in sorted(table.constraints, key=lambda item: (type(item).__name__, str(getattr(item, "sqltext", "")), ",".join(item.columns.keys()))):
             if isinstance(constraint, UniqueConstraint):
                 lines.append("- Unique: `" + ", ".join(constraint.columns.keys()) + "`.")
@@ -179,11 +182,46 @@ def artifacts():
             "database-schema-catalog.md": catalog(tables)}
 
 
+def graphviz_source(physical):
+    """Render the same metadata using a local Graphviz/Viz.js tool, without browser tools."""
+    tables = sorted((table for table in Base.metadata.tables.values()
+                     if physical or table.name in MAIN_TABLES), key=lambda table: table.name)
+    lines = ['digraph schema {',
+             'graph [rankdir=LR, bgcolor="white", nodesep=.25, ranksep=1.5];',
+             'node [shape=Mrecord, fontname="Helvetica", fontsize=10, style=filled, fillcolor="#f1f6f7"];',
+             'edge [fontname="Helvetica", fontsize=8, color="#83999f"];']
+    for table in tables:
+        columns = [column for column in table.columns if physical or column.primary_key or column.foreign_keys]
+        fields = []
+        for column in columns:
+            keys = (' PK' if column.primary_key else '') + (' FK' if column.foreign_keys else '')
+            fields.append(f'{column.name}: {kind(column)}{keys}' + (' nullable' if column.nullable else ''))
+        label = json.dumps('{' + table.name + '|' + '\\l'.join(fields) + '\\l}').replace(r'\\l', r'\l')
+        lines.append(json.dumps(table.name) + ' [label=' + label + '];')
+    if physical:
+        lines.append('alembic_version [label="{alembic_version|version_num: varchar_32 PK}"];')
+    names = {table.name for table in tables}
+    for table in tables:
+        for fk in sorted(table.foreign_key_constraints, key=lambda item: ','.join(item.columns.keys())):
+            if fk.referred_table.name not in names:
+                continue
+            parent = '0..1' if any(column.nullable for column in fk.columns) else '1'
+            children = '0..1' if set(fk.columns.keys()) in unique_sets(table) or table.name == 'application_state' else '1..*' if table.name == 'request_slot' else '0..*'
+            lines.append(json.dumps(fk.referred_table.name) + ' -> ' + json.dumps(table.name)
+                         + ' [label=' + json.dumps(','.join(fk.columns.keys()))
+                         + ',taillabel=' + json.dumps(parent) + ',headlabel=' + json.dumps(children) + '];')
+    return '\n'.join([*lines, '}']) + '\n'
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--check", action="store_true")
+    parser.add_argument("--graphviz", choices=('physical', 'high-level'), help='Write DOT to stdout for an installed SVG renderer')
     parser.add_argument("--output-dir", type=Path, default=Path(__file__).resolve().parent.parent / "docs/architecture")
     args = parser.parse_args()
+    if args.graphviz:
+        print(graphviz_source(args.graphviz == 'physical'), end='')
+        return 0
     stale = []
     for name, contents in artifacts().items():
         path = args.output_dir / name

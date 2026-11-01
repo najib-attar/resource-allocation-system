@@ -84,5 +84,3 @@ def parse_policy(value):
     return CostPolicy(label(value["id"]), number(value["revision"], 2**63 - 1, 1), *parsed_rates,
                       number(value["gap_weight"], 100000), number(value["nearby_limit"], 10080),
                       *(number(value[key], 10**7) for key in fees), provenance(value["provenance"]))
-
-
