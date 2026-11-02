@@ -126,17 +126,12 @@ DDL capability is deliberately not removed or exposed through an application API
 Future deployment needs an approved retention/audit/backup-erasure procedure and
 appropriate separation of migration/DBA and non-owner application credentials.
 
-Account deletion/recreation is not password reset. Existing provisioning starts a
-new login row at session version 1. A synthetic D3-B.5 witness confirmed that a
-previously revoked session can read its preferences again after manual login
-deletion and reprovisioning with that reused generation. This requires a separate
-privileged account deletion, not a preference operation; there is no preference
-route or account-deletion workflow added here. D3-B does not change global authentication.
-Do not use that unsupported recovery procedure: existing password reset/revoke
-preserves the account and advances its version. A recreated account must use a
-non-reused generation or invalidate prior cookies through separately reviewed
-account-lifecycle hardening before production use of such recovery. Tests cover
-deleted-account denial and recovery with an explicitly new session version.
+An inherited account-lifecycle security limitation remains open and must be
+addressed before operational rollout. D3-B adds no account-lifecycle interface or
+authentication change. Detailed findings and validation evidence are maintained
+in restricted security-review materials, not in public operational guidance.
+Review or merge of this inactive, unexposed foundation is separate from production
+approval; neither documentation changes nor passing tests remediate that limitation.
 
 Empty-table downgrade is reversible. Downgrade takes an ACCESS EXCLUSIVE table
 lock before checking for history, preventing a concurrent append from committing
