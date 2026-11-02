@@ -434,6 +434,67 @@ erDiagram
         bigint occurrence_id FK,UK "nullable"
         tstzrange period
     }
+    scheduling_cost_policy_authority_revision {
+        integer user_id PK,FK
+        varchar_16 capability PK
+        bigint revision PK
+        varchar_12 decision
+        integer actor_id FK
+        timestamptz effective_from
+        timestamptz effective_until
+        text reason
+        text authorization_ref
+        timestamptz created_at
+    }
+    scheduling_cost_policy_event {
+        bigint id PK "identity"
+        varchar_32 policy_id FK
+        bigint policy_revision FK
+        varchar_16 event_type
+        integer actor_id FK
+        varchar_16 actor_capability FK
+        bigint authority_revision FK
+        bigint head_version UK
+        bigint preceding_event_id FK "nullable"
+        text reason
+        timestamptz created_at
+    }
+    scheduling_cost_policy_head {
+        integer id PK
+        bigint version
+        bigint active_event_id FK "nullable"
+        timestamptz updated_at
+    }
+    scheduling_cost_policy_revision {
+        varchar_32 policy_id PK
+        bigint revision PK
+        integer contract_version
+        integer objective_version
+        varchar_32 engine_operation
+        varchar_64 objective_model
+        varchar_64 rate_model
+        varchar_256 timezone
+        timestamptz effective_from
+        timestamptz effective_until
+        text cost_unit
+        text calibration_ref
+        varchar_32 provenance_type
+        text provenance_ref
+        varchar_64 content_digest
+        integer preferred_rate
+        integer outside_window_rate
+        integer outside_day_rate
+        integer gap_weight
+        integer nearby_limit
+        integer exception_fee
+        integer move_fixed_cost
+        integer move_participant_cost
+        integer delay_per_day
+        integer proposer_id FK
+        varchar_16 proposer_capability FK
+        bigint proposer_authority_revision FK
+        timestamptz created_at
+    }
     scheduling_preference_revision {
         integer owner_id PK,FK
         bigint revision PK
@@ -616,6 +677,15 @@ erDiagram
     reservation_occurrence o|--o| room_reservation : occurrence_id
     student_room_request ||--o{ room_reservation : request_id
     resource ||--o{ room_reservation : resource_id
+    university_user ||--o{ scheduling_cost_policy_authority_revision : actor_id
+    university_user ||--o{ scheduling_cost_policy_authority_revision : user_id
+    university_user ||--o{ scheduling_cost_policy_event : actor_id
+    scheduling_cost_policy_authority_revision ||--o{ scheduling_cost_policy_event : actor_id_actor_capability_authority_revision
+    scheduling_cost_policy_revision ||--o{ scheduling_cost_policy_event : policy_id_policy_revision
+    scheduling_cost_policy_event o|--o{ scheduling_cost_policy_event : preceding_event_id
+    scheduling_cost_policy_event o|--o{ scheduling_cost_policy_head : active_event_id
+    university_user ||--o{ scheduling_cost_policy_revision : proposer_id
+    scheduling_cost_policy_authority_revision ||--o{ scheduling_cost_policy_revision : proposer_id_proposer_capability_proposer_authority_revision
     university_user ||--o{ scheduling_preference_revision : owner_id
     login_account o|--o{ student_room_request : approved_by
     login_account ||--o{ student_room_request : approver_id

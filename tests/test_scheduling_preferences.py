@@ -594,7 +594,8 @@ class PreferenceMigrationTests(PostgresTestCase):
         before = set(inspect(self.database.engine).get_table_names())
         self.migrate('upgrade', 'head')
         after = set(inspect(self.database.engine).get_table_names())
-        self.assertEqual(after - before, {'scheduling_preference_revision'})
+        self.assertEqual(after - before, {'scheduling_preference_revision', 'scheduling_cost_policy_revision',
+            'scheduling_cost_policy_authority_revision', 'scheduling_cost_policy_event', 'scheduling_cost_policy_head'})
         with self.database.transaction(read_only=True) as session:
             self.assertEqual(session.scalar(select(func.count()).select_from(Revision)), 0)
             self.assertEqual(session.get(User, 1).name, 'Fictional retained identity')
@@ -616,7 +617,7 @@ class PreferenceMigrationTests(PostgresTestCase):
         with self.assertRaisesRegex(RuntimeError, 'history'):
             self.migrate('downgrade', '0049b')
         with self.database.transaction(read_only=True) as session:
-            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), '0050a')
+            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), '0050b')
             self.assertEqual(session.scalar(select(func.count()).select_from(Revision)), 1)
 
     def test_downgrade_locks_before_empty_check_so_a_concurrent_append_cannot_be_lost(self):

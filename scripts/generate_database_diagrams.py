@@ -13,6 +13,10 @@ from web.persistence.models import Base
 
 
 PURPOSES = {
+    'scheduling_cost_policy_revision': 'Immutable institutional numerical intent and canonical digest; not approval, activation or calibrated defaults.',
+    'scheduling_cost_policy_event': 'Immutable governance decision associations and explicit approval/activation/deactivation provenance; no management commands.',
+    'scheduling_cost_policy_head': 'Optional singleton optimistic concurrency and active-event pointer; empty until future authorized governance initializes it.',
+    'scheduling_cost_policy_authority_revision': 'Immutable explicit named-capability grant/revocation history; no default authority for any existing role.',
     'scheduling_preference_revision': 'Private self-owned append-only configured/deactivated personal intent; no availability, numerical policy or optimizer activation.',
     'reservation_priority_override': 'Immutable shared room/equipment priority override with responsible actor, server time, original/selected priority and mandatory reason.',
     'reservation_series': 'Shared immutable bounded weekly proposal linked to one existing room or borrowing request; no duplicated requirements or approval system.',
@@ -75,6 +79,8 @@ MAIN_TABLES |= {"login_account", "academic_period", "legacy_calendar_binding", "
 MAIN_TABLES |= {"room_policy", "faculty_room_approver", "student_room_request", "room_reservation", "room_invitation", "room_organizer_commitment"}
 MAIN_TABLES.add("notification")
 MAIN_TABLES.add("scheduling_preference_revision")
+MAIN_TABLES |= {'scheduling_cost_policy_revision', 'scheduling_cost_policy_event',
+                'scheduling_cost_policy_head', 'scheduling_cost_policy_authority_revision'}
 MAIN_TABLES |= {'reservation_series','reservation_occurrence','reservation_priority_override'}
 MAIN_TABLES.add("waiting_list_entry")
 MAIN_TABLES |= {'resource_feedback', 'feedback_event'}

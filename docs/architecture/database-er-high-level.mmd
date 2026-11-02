@@ -191,6 +191,32 @@ erDiagram
         timestamptz start_at PK
         bigint occurrence_id FK,UK "nullable"
     }
+    scheduling_cost_policy_authority_revision {
+        integer user_id PK,FK
+        varchar_16 capability PK
+        bigint revision PK
+        integer actor_id FK
+    }
+    scheduling_cost_policy_event {
+        bigint id PK "identity"
+        varchar_32 policy_id FK
+        bigint policy_revision FK
+        integer actor_id FK
+        varchar_16 actor_capability FK
+        bigint authority_revision FK
+        bigint preceding_event_id FK "nullable"
+    }
+    scheduling_cost_policy_head {
+        integer id PK
+        bigint active_event_id FK "nullable"
+    }
+    scheduling_cost_policy_revision {
+        varchar_32 policy_id PK
+        bigint revision PK
+        integer proposer_id FK
+        varchar_16 proposer_capability FK
+        bigint proposer_authority_revision FK
+    }
     scheduling_preference_revision {
         integer owner_id PK,FK
         bigint revision PK
@@ -294,6 +320,15 @@ erDiagram
     reservation_occurrence o|--o| room_reservation : occurrence_id
     student_room_request ||--o{ room_reservation : request_id
     resource ||--o{ room_reservation : resource_id
+    university_user ||--o{ scheduling_cost_policy_authority_revision : actor_id
+    university_user ||--o{ scheduling_cost_policy_authority_revision : user_id
+    university_user ||--o{ scheduling_cost_policy_event : actor_id
+    scheduling_cost_policy_authority_revision ||--o{ scheduling_cost_policy_event : actor_id_actor_capability_authority_revision
+    scheduling_cost_policy_revision ||--o{ scheduling_cost_policy_event : policy_id_policy_revision
+    scheduling_cost_policy_event o|--o{ scheduling_cost_policy_event : preceding_event_id
+    scheduling_cost_policy_event o|--o{ scheduling_cost_policy_head : active_event_id
+    university_user ||--o{ scheduling_cost_policy_revision : proposer_id
+    scheduling_cost_policy_authority_revision ||--o{ scheduling_cost_policy_revision : proposer_id_proposer_capability_proposer_authority_revision
     university_user ||--o{ scheduling_preference_revision : owner_id
     login_account o|--o{ student_room_request : approved_by
     login_account ||--o{ student_room_request : approver_id

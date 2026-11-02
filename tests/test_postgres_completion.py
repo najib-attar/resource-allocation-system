@@ -155,6 +155,10 @@ class PostgresCompletionTests(PostgresTestCase):
             'room_priority_guard','equipment_priority_guard','priority_audit_immutable','extension_semester_guard')})
         expected.update({name: (False, False) for name in
                          ('preference_history_immutable', 'preference_history_no_truncate')})
+        expected.update({name: (False, False) for name in ('cost_revision_validate', 'cost_event_validate',
+            'cost_head_validate', 'cost_authority_timestamp', 'cost_authority_immutable', 'cost_authority_no_truncate',
+            'cost_revision_immutable', 'cost_revision_no_truncate', 'cost_event_immutable', 'cost_event_no_truncate',
+            'cost_head_no_delete', 'cost_head_no_truncate')})
         self.assertEqual({row[0]: (row[1], row[2]) for row in rows}, expected)
 
     def test_concurrent_child_deletions_cannot_leave_empty_recurring_request(self):

@@ -1,8 +1,16 @@
 # PostgreSQL application persistence and dated calendars
 
+## Institutional cost-policy foundation (0050b)
+
+The source schema now has **58 application tables** plus Alembic. Four empty
+institutional cost-policy tables separate immutable values, governance history,
+an optional current pointer and explicit authority history. No numerical defaults,
+authority grants, management commands or optimizer activation are introduced.
+See [institutional policy architecture](institutional-cost-policy-design.md).
+
 ## Private preference persistence (0050a)
 
-The current schema has **54 application tables** plus Alembic.
+That revision brought the schema to **54 application tables** plus Alembic.
 `scheduling_preference_revision` holds private, append-only self-owned intent and
 deactivation history keyed by university identity and positive BIGINT revision.
 It does not publish availability, store numerical policies or enable an optimizer.

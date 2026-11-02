@@ -282,6 +282,119 @@ class SchedulingPreferenceRevision(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.clock_timestamp())
 
 
+class SchedulingCostPolicyAuthorityRevision(Base):
+    __tablename__ = 'scheduling_cost_policy_authority_revision'
+    __table_args__ = (
+        CheckConstraint("capability IN ('propose','approve','audit')", name='ck_cost_authority_capability'),
+        CheckConstraint("decision IN ('Granted','Revoked')", name='ck_cost_authority_decision'),
+        CheckConstraint('revision > 0', name='ck_cost_authority_revision'),
+        CheckConstraint("isfinite(effective_from) AND isfinite(effective_until) AND effective_from < effective_until", name='ck_cost_authority_effective'),
+        CheckConstraint('length(btrim(reason)) BETWEEN 1 AND 2000', name='ck_cost_authority_reason'),
+        CheckConstraint('octet_length(authorization_ref) BETWEEN 1 AND 256 AND length(btrim(authorization_ref)) > 0', name='ck_cost_authority_reference'),
+    )
+    user_id: Mapped[int] = mapped_column(ForeignKey('university_user.id', ondelete='RESTRICT'), primary_key=True)
+    capability: Mapped[str] = mapped_column(String(16), primary_key=True)
+    revision: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    decision: Mapped[str] = mapped_column(String(12))
+    actor_id: Mapped[int] = mapped_column(ForeignKey('university_user.id', ondelete='RESTRICT'), index=True)
+    effective_from: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    effective_until: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    reason: Mapped[str] = mapped_column(Text)
+    authorization_ref: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.clock_timestamp())
+
+
+class SchedulingCostPolicyRevision(Base):
+    __tablename__ = 'scheduling_cost_policy_revision'
+    __table_args__ = (
+        Index('ix_cost_revision_proposer', 'proposer_id', 'proposer_capability', 'proposer_authority_revision'),
+        ForeignKeyConstraint(('proposer_id', 'proposer_capability', 'proposer_authority_revision'),
+            ('scheduling_cost_policy_authority_revision.user_id', 'scheduling_cost_policy_authority_revision.capability',
+             'scheduling_cost_policy_authority_revision.revision'), ondelete='RESTRICT'),
+        CheckConstraint("policy_id = 'university' AND revision > 0", name='ck_cost_policy_identity'),
+        CheckConstraint("contract_version = 1 AND objective_version = 1 AND engine_operation = 'cdmcs_schedule_v1' "
+            "AND objective_model = 'V15_restricted_one_blocking_move' AND rate_model = 'weekday_window_tiers_v1'", name='ck_cost_policy_model'),
+        CheckConstraint("proposer_capability = 'propose' AND proposer_authority_revision > 0", name='ck_cost_policy_proposer'),
+        CheckConstraint("isfinite(effective_from) AND isfinite(effective_until) AND effective_from >= TIMESTAMPTZ '1970-01-01 00:00:00+00' "
+            "AND effective_until < TIMESTAMPTZ '2100-01-01 00:00:00+00' AND effective_from < effective_until", name='ck_cost_policy_effective'),
+        CheckConstraint('preferred_rate BETWEEN 0 AND outside_window_rate AND outside_window_rate <= outside_day_rate AND outside_day_rate <= 100000000', name='ck_cost_policy_rates'),
+        CheckConstraint('gap_weight BETWEEN 0 AND 100000 AND nearby_limit BETWEEN 0 AND 10080', name='ck_cost_policy_gap'),
+        CheckConstraint('exception_fee BETWEEN 0 AND 10000000 AND move_fixed_cost BETWEEN 0 AND 10000000 '
+                        'AND move_participant_cost BETWEEN 0 AND 10000000 AND delay_per_day BETWEEN 0 AND 10000000', name='ck_cost_policy_fees'),
+        CheckConstraint("content_digest ~ '^[0-9a-f]{64}$'", name='ck_cost_policy_digest'),
+        *(CheckConstraint(f'octet_length({key}) BETWEEN 1 AND 256 AND length(btrim({key})) > 0', name='ck_cost_policy_' + key)
+          for key in ('timezone', 'cost_unit', 'calibration_ref', 'provenance_ref')),
+        CheckConstraint("provenance_type = 'institutional_policy'", name='ck_cost_policy_provenance'),
+    )
+    policy_id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    revision: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    contract_version: Mapped[int] = mapped_column(Integer)
+    objective_version: Mapped[int] = mapped_column(Integer)
+    engine_operation: Mapped[str] = mapped_column(String(32))
+    objective_model: Mapped[str] = mapped_column(String(64))
+    rate_model: Mapped[str] = mapped_column(String(64))
+    timezone: Mapped[str] = mapped_column(String(256))
+    effective_from: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    effective_until: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    cost_unit: Mapped[str] = mapped_column(Text)
+    calibration_ref: Mapped[str] = mapped_column(Text)
+    provenance_type: Mapped[str] = mapped_column(String(32))
+    provenance_ref: Mapped[str] = mapped_column(Text)
+    content_digest: Mapped[str] = mapped_column(String(64))
+    preferred_rate: Mapped[int] = mapped_column(Integer)
+    outside_window_rate: Mapped[int] = mapped_column(Integer)
+    outside_day_rate: Mapped[int] = mapped_column(Integer)
+    gap_weight: Mapped[int] = mapped_column(Integer)
+    nearby_limit: Mapped[int] = mapped_column(Integer)
+    exception_fee: Mapped[int] = mapped_column(Integer)
+    move_fixed_cost: Mapped[int] = mapped_column(Integer)
+    move_participant_cost: Mapped[int] = mapped_column(Integer)
+    delay_per_day: Mapped[int] = mapped_column(Integer)
+    proposer_id: Mapped[int] = mapped_column(ForeignKey('university_user.id', ondelete='RESTRICT'))
+    proposer_capability: Mapped[str] = mapped_column(String(16))
+    proposer_authority_revision: Mapped[int] = mapped_column(BigInteger)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.clock_timestamp())
+
+
+class SchedulingCostPolicyEvent(Base):
+    __tablename__ = 'scheduling_cost_policy_event'
+    __table_args__ = (
+        Index('ix_cost_event_actor', 'actor_id', 'actor_capability', 'authority_revision'),
+        Index('ix_cost_event_policy', 'policy_id', 'policy_revision'),
+        ForeignKeyConstraint(('policy_id', 'policy_revision'),
+            ('scheduling_cost_policy_revision.policy_id', 'scheduling_cost_policy_revision.revision'), ondelete='RESTRICT'),
+        ForeignKeyConstraint(('actor_id', 'actor_capability', 'authority_revision'),
+            ('scheduling_cost_policy_authority_revision.user_id', 'scheduling_cost_policy_authority_revision.capability',
+             'scheduling_cost_policy_authority_revision.revision'), ondelete='RESTRICT'),
+        CheckConstraint("event_type IN ('Approved','Rejected','Activated','Deactivated')", name='ck_cost_event_type'),
+        CheckConstraint("actor_capability = 'approve' AND authority_revision > 0 AND head_version > 0", name='ck_cost_event_actor'),
+        CheckConstraint("(event_type IN ('Approved','Rejected') AND preceding_event_id IS NULL) OR "
+                        "(event_type IN ('Activated','Deactivated') AND preceding_event_id IS NOT NULL)", name='ck_cost_event_link'),
+        CheckConstraint('length(btrim(reason)) BETWEEN 1 AND 2000', name='ck_cost_event_reason'),
+        UniqueConstraint('head_version', name='uq_cost_event_head'),
+    )
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    policy_id: Mapped[str] = mapped_column(String(32))
+    policy_revision: Mapped[int] = mapped_column(BigInteger)
+    event_type: Mapped[str] = mapped_column(String(16))
+    actor_id: Mapped[int] = mapped_column(ForeignKey('university_user.id', ondelete='RESTRICT'))
+    actor_capability: Mapped[str] = mapped_column(String(16))
+    authority_revision: Mapped[int] = mapped_column(BigInteger)
+    head_version: Mapped[int] = mapped_column(BigInteger)
+    preceding_event_id: Mapped[int | None] = mapped_column(ForeignKey('scheduling_cost_policy_event.id', ondelete='RESTRICT'), index=True)
+    reason: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.clock_timestamp())
+
+
+class SchedulingCostPolicyHead(Base):
+    __tablename__ = 'scheduling_cost_policy_head'
+    __table_args__ = (CheckConstraint('id = 1 AND version >= 0', name='ck_cost_head_identity'),)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    version: Mapped[int] = mapped_column(BigInteger)
+    active_event_id: Mapped[int | None] = mapped_column(ForeignKey('scheduling_cost_policy_event.id', ondelete='RESTRICT'), index=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.clock_timestamp())
+
+
 class LoginAccount(Base):
     __tablename__ = "login_account"
     __table_args__ = (CheckConstraint("failed_attempts >= 0 AND session_version > 0"),)
