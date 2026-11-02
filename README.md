@@ -31,10 +31,13 @@ unanimous revision-specific professor approval, rescheduling and cancellation. S
 [current requirements](docs/srs/UC-STU-01-requirements.md). Existing weekly room
 allocation remains unchanged; legacy calendar applicability requires explicit configuration.
 Technical dashboard views now require a trusted administrative account.
-Students land on a personal Home page with an expandable current-month Monday-Friday hourly
-timetable, their next confirmed meeting, pending requests, optional invitations and confirmed appointments
-they organize. Counts and cards come from one student-scoped PostgreSQL snapshot;
-pending requests are never presented as reservations.
+Students land on a responsive Home page with five existing service hubs, current
+appointment/room activity and a compact dated calendar preview. Student navigation
+contains Home, My Activity (a Home anchor), University Calendar and Inbox. Cards come
+from one student-scoped PostgreSQL snapshot; pending requests and optional invitations
+remain distinct from organizer reservations. The full monthly timetable and personal
+blocks remain available through My Schedule. See the [UI-01 implementation and visual
+evidence](docs/ui/student-portal-ui01/README.md) for data limits and responsive captures.
 All authenticated pages share a profile header with a circular initials avatar,
 name, role and private notification bell. Appointment/room decisions and invitations
 and equipment updates appear in the inbox; read state persists in PostgreSQL. Navigation remains role-aware

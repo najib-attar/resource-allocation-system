@@ -48,10 +48,12 @@ class SharedShellTests(TestCase):
                 self.assertIn('&lt;script&gt;Private name&lt;/script&gt;', html)
                 self.assertNotIn('<script>Private name</script>', html)
 
-    def test_request_route_has_one_active_parent_navigation_item(self):
-        html = self.render('Student', path='/appointments/new')
-        active = [attrs for attrs in Document(html).select('a', aria_current='page')]
-        self.assertEqual([attrs['href'] for attrs in active], ['/appointments/'])
+    def test_student_service_route_and_professor_parent_navigation_remain_distinct(self):
+        for role, expected in [('Student', []), ('Instructor', ['/appointments/'])]:
+            with self.subTest(role=role):
+                html = self.render(role, path='/appointments/new')
+                active = Document(html).select('a', aria_current='page')
+                self.assertEqual([attrs['href'] for attrs in active], expected)
 
     def test_shell_has_skip_target_post_logout_and_local_assets(self):
         html = self.render('Student')
@@ -103,19 +105,21 @@ class FrontendPrototypeWorkflowTests(AppointmentFixture):
         accounts.provision(4, 'prototype-peer', 'isolated-fixture-password-123')
         self.client = authorized_client(web_app.app, 1, 2)
 
-    def test_dashboard_uses_real_counts_and_preserves_timetable_and_private_links(self):
+    def test_dashboard_uses_real_activity_compact_calendar_and_private_links(self):
         appointment = self.submit()
         self.service.submit(4, [3], [], 'Private peer appointment', 30, START + timedelta(hours=1), self.faculty)
         response = self.client.get('/student/?week=2030-01-07')
         self.assertEqual(response.status_code, 200)
         html = response.get_data(as_text=True)
-        self.assertIn('ui-stat-value">1</strong>', html)
+        self.assertEqual(len(Document(html).select('article', **{'class': 'student-activity-row'})), 1)
+        self.assertIn('Pending Approval', html)
         self.assertIn(f'href="/appointments/{appointment}"', html)
         self.assertNotIn('Private peer appointment', html)
-        self.assertIn('Monday to Friday hourly timetable', html)
-        self.assertIn('name="month"', html)
-        self.assertIn('id="my-timetable" open', html)
-        for href in ('/appointments/new', '/rooms/new', '/equipment/catalog', '/calendar/'):
+        self.assertIn('Calendar preview', html)
+        self.assertTrue(Document(html).select('a', href='/calendar/?view=week&date=2030-01-07'))
+        self.assertTrue(Document(html).select('a', href='/appointments/calendar?month=2030-01&week=2030-01-07'))
+        self.assertNotIn('Monday to Friday hourly timetable', html)
+        for href in ('/appointments/', '/rooms/', '/equipment/', '/waiting-lists/', '/feedback/', '/calendar/'):
             self.assertTrue(Document(html).select('a', href=href))
 
     def test_form_preserves_contract_validation_and_successful_submission(self):

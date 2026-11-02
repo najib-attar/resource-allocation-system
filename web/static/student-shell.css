@@ -68,6 +68,8 @@
     .student-shell .student-calendar-label { display: none; }
     .student-shell .student-calendar-short { display: inline; }
     .student-shell .app-workspace { margin-left: 0; padding-bottom: calc(82px + env(safe-area-inset-bottom)); }
+    /* Keep keyboard focus above the fixed navigation when the browser scrolls it into view. */
+    .student-shell :is(a, button, input, select, textarea, summary, [tabindex]) { scroll-margin-block: calc(90px + env(safe-area-inset-bottom)); }
     .student-shell .app-topbar { min-height: 72px; padding: 14px 21px; gap: 10px; flex-wrap: wrap; }
     .student-shell .student-mobile-brand { display: flex; align-items: center; gap: 10px; min-width: 0; color: var(--ui-ink); font-size: 14px; font-weight: 700; text-decoration: none; }
     .student-shell .app-heading { flex-basis: 100%; order: 3; }

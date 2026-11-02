@@ -1,0 +1,20 @@
+{
+  "modules": 47,
+  "expected": 608,
+  "testsRun": 608,
+  "seconds": 1343.3,
+  "failedModules": [],
+  "skips": [
+    {
+      "module": "test_backend_executable",
+      "reasons": [
+        "'POSIX permission check runs on Linux.'"
+      ]
+    }
+  ],
+  "passed": 607,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 1,
+  "execution": "All discovered unittest modules; six isolated processes; dedicated PostgreSQL cluster"
+}
