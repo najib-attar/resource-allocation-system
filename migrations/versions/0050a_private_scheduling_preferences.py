@@ -51,6 +51,8 @@ CREATE TRIGGER preference_history_no_truncate BEFORE TRUNCATE ON scheduling_pref
 
 
 def downgrade():
+    # Serialize the emptiness check with INSERTs before dropping private history.
+    op.execute('LOCK TABLE scheduling_preference_revision IN ACCESS EXCLUSIVE MODE')
     if op.get_bind().scalar(sa.text('SELECT EXISTS(SELECT 1 FROM scheduling_preference_revision)')):
         raise RuntimeError('Downgrade would discard private preference history. Authorized retention/erasure review is required first.')
     op.drop_table('scheduling_preference_revision')

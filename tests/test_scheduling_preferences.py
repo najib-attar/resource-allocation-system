@@ -12,9 +12,10 @@ from unittest import mock
 
 from alembic import command
 from alembic.config import Config
+from alembic.operations import Operations
 from flask import Flask, g, session as login_session
 from sqlalchemy import delete, event, func, inspect, select, text
-from sqlalchemy.exc import DBAPIError, IntegrityError
+from sqlalchemy.exc import DBAPIError, IntegrityError, ProgrammingError
 
 from postgres_fixtures import PostgresTestCase, ROOT
 from test_preference_values import preference_values
@@ -151,6 +152,26 @@ class SchedulingPreferenceTests(PostgresTestCase):
             self.service.current()
         with self.authenticated(version=2):
             self.assertEqual(self.service.current().revision, 1)
+
+    def test_supported_password_reset_preserves_history_and_rejects_old_sessions(self):
+        with self.authenticated():
+            self.service.replace(0, document())
+            AccountService(self.database).provision(1, 'reset-fixture', 'fictional-reset-password', reset=True)
+            for action in (self.service.current, self.service.history, lambda: self.service.deactivate(1)):
+                with self.assertRaises(PreferenceAccessDenied):
+                    action()
+        with self.authenticated(version=2):
+            self.assertEqual(self.service.current().revision, 1)
+        self.assertEqual(self.count(), 1)
+
+    def test_every_role_can_deactivate_only_its_own_preferences(self):
+        for uid in range(1, 6):
+            with self.authenticated(uid):
+                self.service.replace(0, document())
+                self.service.deactivate(1)
+                self.assertEqual(self.service.current().stored_status, 'deactivated')
+                self.assertEqual([row.revision for row in self.service.history().entries], [2, 1])
+        self.assertEqual(self.count(), 10)
 
     def test_wrong_authenticated_database_and_session_binding_are_denied(self):
         other = Database(self.database.url.set(database='not-the-authenticated-database'))
@@ -328,6 +349,122 @@ class SchedulingPreferenceTests(PostgresTestCase):
         with self.authenticated():
             self.assertEqual(self.service.current().revision, 2)
 
+    def test_concurrent_updates_with_the_same_revision_have_one_winner(self):
+        with self.authenticated():
+            self.service.replace(0, document())
+        self.race(1, (lambda r: self.service.replace(r, document(desired_gap_minutes=5)),
+                      lambda r: self.service.replace(r, document(desired_gap_minutes=10))))
+        self.assertEqual(self.count(), 2)
+
+    def test_concurrent_deactivations_have_one_winner_without_resurrection(self):
+        with self.authenticated():
+            self.service.replace(0, document())
+        self.race(1, (self.service.deactivate, self.service.deactivate))
+        self.assertEqual(self.count(), 2)
+        with self.authenticated():
+            current = self.service.current()
+            self.assertEqual((current.revision, current.state, current.stored_status), (2, 'missing', 'deactivated'))
+
+    def test_account_lock_timeout_is_sanitized_and_saves_nothing(self):
+        short = Database(self.database.url, lock_timeout=.1)
+        self.addCleanup(short.dispose)
+        with self.database.transaction() as blocker, self.authenticated():
+            blocker.get(LoginAccount, 1, with_for_update=True)
+            with self.assertRaises(PreferenceStorageError) as caught:
+                SchedulingPreferenceService(short).replace(0, document())
+            self.assertIsNone(caught.exception.__cause__)
+            self.assertNotIn('login_account', str(caught.exception))
+        self.assertEqual(self.count(), 0)
+
+    def test_real_database_deadlock_is_sanitized_and_rolls_back(self):
+        locked, share_attempt = threading.Event(), threading.Event()
+        other = Database(self.database.url)
+        self.addCleanup(other.dispose)
+        transaction = self.database.transaction
+
+        @contextmanager
+        def fast_deadlock_detection(**kwargs):
+            with transaction(**kwargs) as session:
+                session.execute(text("SET LOCAL deadlock_timeout='100ms'"))
+                yield session
+
+        def capture(_, __, statement, *args):
+            if 'FOR SHARE' in statement:
+                share_attempt.set()
+
+        def blocker():
+            with other.transaction() as session:
+                session.execute(text("SET LOCAL deadlock_timeout='5s'"))
+                session.get(User, 1, with_for_update=True)
+                locked.set()
+                if not share_attempt.wait(10):
+                    raise AssertionError('Preference writer did not request the user lock')
+                session.get(LoginAccount, 1, with_for_update=True)
+
+        with self.authenticated(), ThreadPoolExecutor(max_workers=1) as pool:
+            pending = pool.submit(blocker)
+            self.assertTrue(locked.wait(10))
+            event.listen(self.database.engine, 'before_cursor_execute', capture)
+            try:
+                with mock.patch.object(self.database, 'transaction', fast_deadlock_detection):
+                    with self.assertRaises(PreferenceStorageError):
+                        self.service.replace(0, document())
+            finally:
+                event.remove(self.database.engine, 'before_cursor_execute', capture)
+            pending.result(timeout=10)
+        self.assertEqual(self.count(), 0)
+
+    def test_commit_failure_never_returns_success_or_persists_a_revision(self):
+        def fail_commit(connection):
+            raise DBAPIError('PRIVATE-MARKER', {'private': 'PRIVATE-MARKER'}, Exception('PRIVATE-MARKER'))
+        with self.authenticated():
+            event.listen(self.database.engine, 'commit', fail_commit)
+            try:
+                with self.assertRaises(PreferenceStorageError) as caught:
+                    self.service.replace(0, document())
+                self.assertNotIn('PRIVATE-MARKER', str(caught.exception))
+            finally:
+                event.remove(self.database.engine, 'commit', fail_commit)
+            self.assertEqual(self.service.current().state, 'missing')
+        self.assertEqual(self.count(), 0)
+
+    def test_other_schema_binding_is_denied_even_with_matching_identity_rows(self):
+        # A second owned schema has the same fictional IDs, version, names and roles.
+        fixture = SchedulingPreferenceTests('test_each_existing_role_can_only_manage_its_own_complete_profile')
+        try:
+            fixture.setUp()
+            with fixture.authenticated():
+                fixture.service.replace(0, document(desired_gap_minutes=123))
+            with self.authenticated(), mock.patch.object(AccountService, 'identity', side_effect=AssertionError('No cross-schema read')):
+                with self.assertRaises(PreferenceAccessDenied):
+                    fixture.service.current()
+                with self.assertRaises(PreferenceAccessDenied):
+                    fixture.service.history()
+                with self.assertRaises(PreferenceAccessDenied):
+                    fixture.service.deactivate(1)
+        finally:
+            fixture.doCleanups()
+        self.assertEqual(self.count(), 0)
+
+    def test_direct_sql_semantic_corruption_fails_closed_without_older_fallback(self):
+        invalid = ({'preferred_weekdays': [1, 1]},
+                   {'preferred_windows': [{'weekday': 1, 'start': '11:00', 'end': '11:00'}]},
+                   {'preferred_windows': [{'private': 'PRIVATE-MARKER'}]},
+                   {'preferred_windows': [{'weekday': 1, 'start': '09:00', 'end': '11:00'},
+                                          {'weekday': 1, 'start': '10:00', 'end': '12:00'}]})
+        with self.authenticated():
+            self.service.replace(0, document())
+            for revision, changes in enumerate(invalid, 2):
+                values = dict(owner_id=1, revision=revision, contract_version=1, status='configured',
+                    timezone='UTC', effective_from=date(2030, 1, 1), effective_until=date(2030, 12, 31),
+                    preferred_weekdays=[], preferred_windows=[], gap_indifferent=True)
+                values.update(changes)
+                with self.database.transaction() as writer:
+                    writer.add(Revision(**values))
+                current = self.service.current()
+                self.assertEqual((current.revision, current.state, current.values), (revision, 'unknown', None))
+                self.assertNotIn('PRIVATE-MARKER', json.dumps(current.document()))
+
     def test_revocation_serializes_with_an_in_progress_write(self):
         locked, release, revoked = threading.Event(), threading.Event(), threading.Event()
         original = self.service._latest
@@ -481,6 +618,40 @@ class PreferenceMigrationTests(PostgresTestCase):
         with self.database.transaction(read_only=True) as session:
             self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), '0050a')
             self.assertEqual(session.scalar(select(func.count()).select_from(Revision)), 1)
+
+    def test_downgrade_locks_before_empty_check_so_a_concurrent_append_cannot_be_lost(self):
+        self.migrate('upgrade', 'head')
+        checked, release, committed = threading.Event(), threading.Event(), threading.Event()
+        original = Operations.drop_table
+
+        def pause(operations, name, *args, **kwargs):
+            if name == Revision.__tablename__:
+                checked.set()
+                if not release.wait(10):
+                    raise AssertionError('Downgrade release missing')
+            return original(operations, name, *args, **kwargs)
+
+        def append():
+            try:
+                with self.database.transaction() as session:
+                    session.add(Revision(owner_id=1, revision=1, contract_version=1, status='deactivated'))
+                committed.set()
+                return 'committed'
+            except ProgrammingError as error:
+                self.assertEqual(error.orig.sqlstate, '42P01')
+                return 'table_removed'
+
+        with ThreadPoolExecutor(max_workers=2) as pool, mock.patch.object(Operations, 'drop_table', pause):
+            downgrade = pool.submit(self.migrate, 'downgrade', '0049b')
+            self.assertTrue(checked.wait(10))
+            writer = pool.submit(append)
+            try:
+                self.assertFalse(committed.wait(.4), 'A committed append could be silently dropped')
+            finally:
+                release.set()
+            downgrade.result(timeout=10)
+            self.assertEqual(writer.result(timeout=10), 'table_removed')
+        self.migrate('upgrade', 'head')
 
     def test_privileged_approved_erasure_is_possible_and_transactional_not_an_app_api(self):
         self.migrate('upgrade', 'head')
