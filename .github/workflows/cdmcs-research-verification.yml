@@ -25,6 +25,8 @@ on:
       - 'web/backend_executable.py'
       - 'web/engine_gateway.py'
       - 'scripts/build_backend.py'
+      - 'tests/test_application_entrypoints.py'
+      - '.github/workflows/backend-postgresql-regression.yml'
       - '.github/workflows/cdmcs-research-verification.yml'
   pull_request:
     paths:
@@ -50,6 +52,8 @@ on:
       - 'web/backend_executable.py'
       - 'web/engine_gateway.py'
       - 'scripts/build_backend.py'
+      - 'tests/test_application_entrypoints.py'
+      - '.github/workflows/backend-postgresql-regression.yml'
       - '.github/workflows/cdmcs-research-verification.yml'
   workflow_dispatch:
 

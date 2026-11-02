@@ -65,7 +65,8 @@ jobs:
         env:
           POSTGRES_TEST_TOOLS_CONTAINER: ${{ job.services.postgres.id }}
         run: |
-          python -B - <<'PY'
+          # -c leaves no <stdin> main path for spawn workers to re-import.
+          python -B -c "$(cat <<'PY'
           import os
           import sys
           import unittest
@@ -78,10 +79,11 @@ jobs:
                             'PowerShell runner cleanup is exercised on Windows.')}
           unexpected = [(test.id(), reason) for test, reason in result.skipped
                         if (test.id(), reason) not in allowed_skips]
-          if result.testsRun < 552 or unexpected:
-              raise SystemExit('Linux application verification requires at least 552 tests and zero unexpected skips')
+          if result.testsRun < 553 or unexpected:
+              raise SystemExit('Linux application verification requires at least 553 tests and zero unexpected skips')
           sys.exit(0 if result.wasSuccessful() else 1)
           PY
+          )"
       - name: Compile and run existing C++ tests
         run: |
           g++ -std=c++17 -I. -Isrc $(find src -name '*.cpp' ! -name main.cpp) tests/*.cpp -o /tmp/allocation-tests
