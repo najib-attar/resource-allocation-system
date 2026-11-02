@@ -296,7 +296,7 @@ class SchedulingCostPolicyAuthorityRevision(Base):
     capability: Mapped[str] = mapped_column(String(16), primary_key=True)
     revision: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
     decision: Mapped[str] = mapped_column(String(12))
-    actor_id: Mapped[int] = mapped_column(ForeignKey('university_user.id', ondelete='RESTRICT'))
+    actor_id: Mapped[int] = mapped_column(ForeignKey('university_user.id', ondelete='RESTRICT'), index=True)
     effective_from: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     effective_until: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     reason: Mapped[str] = mapped_column(Text)
@@ -307,6 +307,7 @@ class SchedulingCostPolicyAuthorityRevision(Base):
 class SchedulingCostPolicyRevision(Base):
     __tablename__ = 'scheduling_cost_policy_revision'
     __table_args__ = (
+        Index('ix_cost_revision_proposer', 'proposer_id', 'proposer_capability', 'proposer_authority_revision'),
         ForeignKeyConstraint(('proposer_id', 'proposer_capability', 'proposer_authority_revision'),
             ('scheduling_cost_policy_authority_revision.user_id', 'scheduling_cost_policy_authority_revision.capability',
              'scheduling_cost_policy_authority_revision.revision'), ondelete='RESTRICT'),
@@ -358,6 +359,8 @@ class SchedulingCostPolicyRevision(Base):
 class SchedulingCostPolicyEvent(Base):
     __tablename__ = 'scheduling_cost_policy_event'
     __table_args__ = (
+        Index('ix_cost_event_actor', 'actor_id', 'actor_capability', 'authority_revision'),
+        Index('ix_cost_event_policy', 'policy_id', 'policy_revision'),
         ForeignKeyConstraint(('policy_id', 'policy_revision'),
             ('scheduling_cost_policy_revision.policy_id', 'scheduling_cost_policy_revision.revision'), ondelete='RESTRICT'),
         ForeignKeyConstraint(('actor_id', 'actor_capability', 'authority_revision'),
@@ -378,7 +381,7 @@ class SchedulingCostPolicyEvent(Base):
     actor_capability: Mapped[str] = mapped_column(String(16))
     authority_revision: Mapped[int] = mapped_column(BigInteger)
     head_version: Mapped[int] = mapped_column(BigInteger)
-    preceding_event_id: Mapped[int | None] = mapped_column(ForeignKey('scheduling_cost_policy_event.id', ondelete='RESTRICT'))
+    preceding_event_id: Mapped[int | None] = mapped_column(ForeignKey('scheduling_cost_policy_event.id', ondelete='RESTRICT'), index=True)
     reason: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.clock_timestamp())
 
@@ -388,7 +391,7 @@ class SchedulingCostPolicyHead(Base):
     __table_args__ = (CheckConstraint('id = 1 AND version >= 0', name='ck_cost_head_identity'),)
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
     version: Mapped[int] = mapped_column(BigInteger)
-    active_event_id: Mapped[int | None] = mapped_column(ForeignKey('scheduling_cost_policy_event.id', ondelete='RESTRICT'))
+    active_event_id: Mapped[int | None] = mapped_column(ForeignKey('scheduling_cost_policy_event.id', ondelete='RESTRICT'), index=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.clock_timestamp())
 
 

@@ -1092,6 +1092,7 @@ Immutable explicit named-capability grant/revocation history; no default authori
 - Check: `length(btrim(reason)) BETWEEN 1 AND 2000`.
 - Check: `octet_length(authorization_ref) BETWEEN 1 AND 256 AND length(btrim(authorization_ref)) > 0`.
 - Check: `revision > 0`.
+- Index: `ix_scheduling_cost_policy_authority_revision_actor_id (actor_id)`.
 
 ## scheduling_cost_policy_event
 
@@ -1121,6 +1122,9 @@ Immutable governance decision associations and explicit approval/activation/deac
 - Check: `event_type IN ('Approved','Rejected','Activated','Deactivated')`.
 - Check: `length(btrim(reason)) BETWEEN 1 AND 2000`.
 - Unique: `head_version`.
+- Index: `ix_cost_event_actor (actor_id, actor_capability, authority_revision)`.
+- Index: `ix_cost_event_policy (policy_id, policy_revision)`.
+- Index: `ix_scheduling_cost_policy_event_preceding_event_id (preceding_event_id)`.
 
 ## scheduling_cost_policy_head
 
@@ -1136,6 +1140,7 @@ Optional singleton optimistic concurrency and active-event pointer; empty until 
 - Primary key: `id`.
 - Foreign key: `(active_event_id) -> scheduling_cost_policy_event (id)`; RESTRICT.
 - Check: `id = 1 AND version >= 0`.
+- Index: `ix_scheduling_cost_policy_head_active_event_id (active_event_id)`.
 
 ## scheduling_cost_policy_revision
 
@@ -1188,6 +1193,7 @@ Immutable institutional numerical intent and canonical digest; not approval, act
 - Check: `preferred_rate BETWEEN 0 AND outside_window_rate AND outside_window_rate <= outside_day_rate AND outside_day_rate <= 100000000`.
 - Check: `proposer_capability = 'propose' AND proposer_authority_revision > 0`.
 - Check: `provenance_type = 'institutional_policy'`.
+- Index: `ix_cost_revision_proposer (proposer_id, proposer_capability, proposer_authority_revision)`.
 
 ## scheduling_preference_revision
 

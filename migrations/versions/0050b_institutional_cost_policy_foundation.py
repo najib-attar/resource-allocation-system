@@ -83,6 +83,14 @@ def upgrade():
         sa.Column('active_event_id', sa.BigInteger(), sa.ForeignKey(TABLES[2] + '.id', ondelete='RESTRICT')),
         sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False, server_default=sa.text('clock_timestamp()')),
         sa.CheckConstraint('id = 1 AND version >= 0', name='ck_cost_head_identity'))
+    for table, name, columns in (
+        (TABLES[0], 'ix_scheduling_cost_policy_authority_revision_actor_id', ['actor_id']),
+        (TABLES[1], 'ix_cost_revision_proposer', ['proposer_id', 'proposer_capability', 'proposer_authority_revision']),
+        (TABLES[2], 'ix_cost_event_actor', ['actor_id', 'actor_capability', 'authority_revision']),
+        (TABLES[2], 'ix_cost_event_policy', ['policy_id', 'policy_revision']),
+        (TABLES[2], 'ix_scheduling_cost_policy_event_preceding_event_id', ['preceding_event_id']),
+        (TABLES[3], 'ix_scheduling_cost_policy_head_active_event_id', ['active_event_id'])):
+        op.create_index(name, table, columns)
     op.execute("""
 CREATE FUNCTION ras_cost_history_immutable() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN RAISE EXCEPTION 'Institutional policy history is immutable' USING ERRCODE='23514'; END; $$;
