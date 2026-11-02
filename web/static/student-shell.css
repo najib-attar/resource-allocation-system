@@ -1,0 +1,86 @@
+/* The student workspace only; other roles retain the shared shell. */
+.student-shell {
+    --ui-sidebar-width: 220px;
+    --ui-ink: #23313c;
+    --ui-muted: #647582;
+    --ui-line: #e2e9ec;
+    background: #fff;
+    font-family: "Avenir Next", "Segoe UI", Arial, sans-serif;
+}
+.student-shell .app-sidebar {
+    position: fixed;
+    width: var(--ui-sidebar-width);
+    padding: 37px 22px 22px;
+    background: #fbfcfc;
+    border-right: 1px solid var(--ui-line);
+    color: var(--ui-ink);
+}
+.student-shell .app-brand { gap: 11px; padding: 0 6px 67px; color: var(--ui-ink); font-size: 15px; letter-spacing: .02em; }
+.student-shell .app-brand-mark {
+    position: relative;
+    width: 37px;
+    height: 37px;
+    flex-shrink: 0;
+    border: 0;
+    border-radius: 11px;
+    color: #fff;
+    background: #204b69;
+    font-size: 17px;
+    font-weight: 750;
+}
+.student-shell .app-brand-mark::after { content: ""; position: absolute; top: -3px; right: -3px; width: 12px; height: 12px; border: 3px solid #fff; border-radius: 50%; background: #c6a17a; }
+.student-shell .app-brand-subtitle { color: var(--ui-muted); font-size: 11px; letter-spacing: 0; }
+.student-shell .app-nav-label { margin: 5px 11px 14px; color: #687d8b; font-size: 10px; letter-spacing: .14em; }
+.student-shell .app-navigation { gap: 7px; }
+.student-shell .app-nav-link { gap: 13px; padding: 13px 12px; color: #5c6f7c; border-radius: 8px; font-size: 13px; }
+.student-shell .app-nav-link:hover { background: #f0f4f6; color: #204b69; }
+.student-shell .app-nav-link[aria-current="page"] { color: #204b69; background: #e9f1f5; font-weight: 700; box-shadow: none; }
+.student-shell .nav-active-dot { display: none; }
+.student-shell .sidebar-note { padding: 21px 8px 4px; border-top: 1px solid var(--ui-line); color: var(--ui-ink); font-size: 12px; }
+.student-shell .sidebar-note strong { font-size: 12px; }
+.student-shell .sidebar-note span { color: var(--ui-muted); margin-top: 5px; }
+.student-shell .app-workspace { margin-left: var(--ui-sidebar-width); }
+.student-shell .app-topbar { min-height: 94px; padding: 18px 48px; background: #fff; }
+.student-shell .app-breadcrumb { color: var(--ui-muted); font-size: 10px; }
+.student-shell .student-current-page { margin: 0; color: #204b69; font-size: 13px; font-weight: 600; }
+.student-shell .app-content { max-width: 1320px; padding: 44px 48px 64px; }
+.student-shell .app-topbar .profile-avatar { background: #204b69; color: #fff; border: 0; }
+.student-shell .app-topbar .profile-copy strong { overflow-wrap: anywhere; }
+.student-shell .student-mobile-brand, .student-shell .student-calendar-short { display: none; }
+@media (max-width: 1200px) and (min-width: 801px) {
+    .student-shell .app-content { padding: 36px 30px 56px; }
+    .student-shell .app-topbar { padding-inline: 30px; }
+}
+@media (max-width: 800px) {
+    .student-shell .app-sidebar {
+        inset: auto 0 0;
+        width: 100%;
+        padding: 8px 4px max(10px, env(safe-area-inset-bottom));
+        border: 0;
+        border-top: 1px solid var(--ui-line);
+        background: #fff;
+        overflow: visible;
+    }
+    .student-shell .app-sidebar > .app-brand, .student-shell .sidebar-note, .student-shell .app-nav-label { display: none; }
+    .student-shell .app-navigation { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; }
+    .student-shell .app-nav-link { flex-direction: column; justify-content: center; gap: 5px; min-height: 48px; padding: 5px 2px; font-size: 10px; }
+    .student-shell .app-nav-link[aria-current="page"] { background: #f1f6f9; }
+    .student-shell .student-calendar-label { display: none; }
+    .student-shell .student-calendar-short { display: inline; }
+    .student-shell .app-workspace { margin-left: 0; padding-bottom: calc(82px + env(safe-area-inset-bottom)); }
+    .student-shell .app-topbar { min-height: 72px; padding: 14px 21px; gap: 10px; flex-wrap: wrap; }
+    .student-shell .student-mobile-brand { display: flex; align-items: center; gap: 10px; min-width: 0; color: var(--ui-ink); font-size: 14px; font-weight: 700; text-decoration: none; }
+    .student-shell .app-heading { flex-basis: 100%; order: 3; }
+    .student-shell .app-heading:has(.student-current-page) { display: none; }
+    .student-shell .app-content { padding: 29px 21px 40px; }
+    .student-shell .app-topbar .account-controls { gap: 8px; }
+    .student-shell .app-topbar .profile-copy, .student-shell .account-menu > summary > .ui-icon { display: none; }
+    .student-shell .app-topbar .notification-panel { position: fixed; top: 76px; right: 12px; left: auto; width: calc(100vw - 24px); max-height: calc(100dvh - 170px); overflow-y: auto; }
+    .student-shell .account-menu-panel { max-width: calc(100vw - 24px); min-width: min(240px, calc(100vw - 24px)); }
+}
+@media (max-width: 360px) {
+    .student-shell .app-topbar { padding-inline: 15px; gap: 5px; }
+    .student-shell .student-mobile-brand { gap: 8px; font-size: 13px; }
+    .student-shell .app-topbar .account-controls { gap: 4px; }
+    .student-shell .app-content { padding-inline: 16px; }
+}
