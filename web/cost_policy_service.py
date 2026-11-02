@@ -139,6 +139,10 @@ class CostPolicyService:
                 if (getattr(bind, 'url', None) != authenticated or not session.is_active
                         or session.new or session.dirty or session.deleted):
                     raise PolicyAccessDenied()
+                # After waiting for a revocation lock, writers must see its newly
+                # committed row rather than a transaction's earlier snapshot.
+                if write and session.scalar(text('SHOW transaction_isolation')) != 'read committed':
+                    raise PolicyStorageError()
                 schema = session.scalar(text('SELECT pg_catalog.current_schema()'))
                 if schema is None:
                     raise PolicyAccessDenied()

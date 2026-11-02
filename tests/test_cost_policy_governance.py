@@ -379,6 +379,13 @@ class CostPolicyGovernanceTests(PostgresTestCase):
         finally: event.remove(self.database.engine, 'before_cursor_execute', capture)
         self.assertEqual(self.totals(), (0, 0, 0))
 
+    def test_non_read_committed_writers_are_rejected_before_head_initialization(self):
+        for isolation in ('REPEATABLE READ', 'SERIALIZABLE'):
+            self.database.sessions.configure(bind=self.database.engine.execution_options(isolation_level=isolation))
+            with self.subTest(isolation=isolation), self.authenticated(), self.assertRaises(PolicyStorageError):
+                self.service.propose(0, policy_document())
+            self.assertEqual(self.totals(), (0, 0, 0))
+
     def test_inflight_publication_blocks_raw_revocation_and_later_transaction_is_denied(self):
         held, attempted, release = threading.Event(), threading.Event(), threading.Event()
         other = Database(self.database.url); self.addCleanup(other.dispose)
