@@ -78,6 +78,8 @@ class CostPolicyValueTests(TestCase):
                           ('1969-01-01T00:00Z', '2031-01-01T00:00Z'), ('2030-01-01T00:00Z', '2100-01-01T00:00Z')):
             with self.subTest(start=start), self.assertRaises(PreferenceError):
                 parse(policy_document(effective={'from': start, 'until': end}))
+        with self.assertRaises(PreferenceError):
+            parse(policy_document(effective={'from': '2030-01-01T00:00:00.1234567Z', 'until': '2031-01-01T00:00:00Z'}))
 
     def test_timezone_and_institutional_provenance_are_not_synthetic(self):
         for timezone in ('Mars/Invalid', 'UTC', '', None):
