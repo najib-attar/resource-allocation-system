@@ -14,11 +14,12 @@ class DatabaseDiagramTests(TestCase):
             self.assertEqual((ROOT / "docs/architecture" / name).read_text(encoding="utf-8"), expected)
         physical = artifacts()["database-er-physical.mmd"]
         self.assertIn("    alembic_version {", physical)
-        self.assertEqual(len(Base.metadata.tables), 53)
+        self.assertEqual(len(Base.metadata.tables), 54)
         for table in Base.metadata.tables.values():
             self.assertIn("    " + table.name + " {", physical)
             self.assertTrue(all(column.name in physical for column in table.columns))
         rendered = ' '.join(ElementTree.parse(ROOT / 'docs/architecture/database-er-physical.svg').getroot().itertext())
+        self.assertNotIn('\\l', rendered)
         for table in Base.metadata.tables.values():
             self.assertIn(table.name, rendered)
             self.assertTrue(all(column.name in rendered for column in table.columns))

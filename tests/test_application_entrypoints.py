@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import textwrap
 from tempfile import TemporaryDirectory
 from unittest import TestCase, skipUnless
 
@@ -12,6 +13,42 @@ ROOT = Path(__file__).resolve().parent.parent
 
 
 class ApplicationEntrypointTests(TestCase):
+    def test_full_ci_launcher_supports_spawn_workers(self):
+        workflow = (ROOT / '.github/workflows/backend-postgresql-regression.yml').read_text(encoding='utf-8')
+        step = workflow.split('- name: Run Python, PostgreSQL, gateway, CLI and Flask tests', 1)[1]
+        command = next(line.strip() for line in step.splitlines() if line.strip().startswith('python -B '))
+        gate = textwrap.dedent(step.split("<<'PY'\n", 1)[1].split('          PY', 1)[0])
+        # Exercise the real gate's interpreter mode, without discovering application tests.
+        harness = '''
+import multiprocessing, time, types, unittest
+class ProbeRunner:
+    def __init__(self, **kwargs): pass
+    def run(self, suite):
+        worker = multiprocessing.get_context('spawn').Process(target=time.sleep, args=(0,))
+        worker.start()
+        try:
+            worker.join(5)
+            if worker.exitcode != 0:
+                raise RuntimeError('CI interpreter cannot bootstrap spawn workers')
+        finally:
+            if worker.is_alive():
+                worker.terminate()
+                worker.join(5)
+            worker.close()
+        return types.SimpleNamespace(testsRun=553, skipped=[], wasSuccessful=lambda: True)
+unittest.TextTestRunner = ProbeRunner
+unittest.TestLoader = lambda: types.SimpleNamespace(discover=lambda *args, **kwargs: unittest.TestSuite())
+'''
+        source = textwrap.dedent(harness) + '\n' + gate
+        if command.startswith('python -B -c '):
+            arguments, stdin = ['-c', source], None
+        else:
+            self.assertTrue(command.startswith("python -B - <<'PY'"))
+            arguments, stdin = ['-'], source
+        result = subprocess.run([sys.executable, '-B', *arguments], input=stdin, capture_output=True,
+            text=True, timeout=20, cwd=ROOT, env=dict(os.environ, TEST_DATABASE_URL='synthetic-no-connection'))
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
     @skipUnless(os.name == 'nt', 'PowerShell runner cleanup is exercised on Windows.')
     def test_cpp_runner_cleans_owned_artifacts_and_preserves_compile_failure_status(self):
         with TemporaryDirectory(prefix='cpp-runner-isolation-') as directory:

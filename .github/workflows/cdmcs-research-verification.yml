@@ -10,6 +10,12 @@ on:
       - 'research/cdmcs/i3d/d1/**'
       - 'research/cdmcs/i3d/d2/**'
       - 'web/account_service.py'
+      - 'web/preference_values.py'
+      - 'web/scheduling_preference_service.py'
+      - 'web/persistence/models.py'
+      - 'migrations/versions/0050a_private_scheduling_preferences.py'
+      - 'tests/test_preference_values.py'
+      - 'tests/test_scheduling_preferences.py'
       - 'web/security.py'
       - 'web/appointment_service.py'
       - 'web/calendar_service.py'
@@ -19,6 +25,8 @@ on:
       - 'web/backend_executable.py'
       - 'web/engine_gateway.py'
       - 'scripts/build_backend.py'
+      - 'tests/test_application_entrypoints.py'
+      - '.github/workflows/backend-postgresql-regression.yml'
       - '.github/workflows/cdmcs-research-verification.yml'
   pull_request:
     paths:
@@ -29,6 +37,12 @@ on:
       - 'research/cdmcs/i3d/d1/**'
       - 'research/cdmcs/i3d/d2/**'
       - 'web/account_service.py'
+      - 'web/preference_values.py'
+      - 'web/scheduling_preference_service.py'
+      - 'web/persistence/models.py'
+      - 'migrations/versions/0050a_private_scheduling_preferences.py'
+      - 'tests/test_preference_values.py'
+      - 'tests/test_scheduling_preferences.py'
       - 'web/security.py'
       - 'web/appointment_service.py'
       - 'web/calendar_service.py'
@@ -38,6 +52,8 @@ on:
       - 'web/backend_executable.py'
       - 'web/engine_gateway.py'
       - 'scripts/build_backend.py'
+      - 'tests/test_application_entrypoints.py'
+      - '.github/workflows/backend-postgresql-regression.yml'
       - '.github/workflows/cdmcs-research-verification.yml'
   workflow_dispatch:
 

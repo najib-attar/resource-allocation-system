@@ -1,8 +1,8 @@
 # Physical schema catalog
 
-Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 53 application tables.
+Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 54 application tables.
 
-All foreign keys use PostgreSQL **NO ACTION**: no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
+Foreign keys use PostgreSQL **NO ACTION** unless explicitly marked RESTRICT; no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
 ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.
 
 ## academic_period
@@ -1065,6 +1065,36 @@ Exact confirmed exclusive room interval; GiST overlap exclusion.
 - Check: `start_at < end_at`.
 - Unique: `occurrence_id`.
 - Index: `ix_room_reservation_resource_id (resource_id)`.
+
+## scheduling_preference_revision
+
+Private self-owned append-only configured/deactivated personal intent; no availability, numerical policy or optimizer activation.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| owner_id | integer | PK; FK -> university_user.id | no | - |
+| revision | bigint | PK | no | - |
+| contract_version | integer | - | no | - |
+| status | varchar(20) | - | no | - |
+| timezone | varchar(256) | - | yes | - |
+| effective_from | date | - | yes | - |
+| effective_until | date | - | yes | - |
+| preferred_weekdays | jsonb | - | yes | - |
+| preferred_windows | jsonb | - | yes | - |
+| gap_indifferent | boolean | - | yes | - |
+| desired_gap_minutes | integer | - | yes | - |
+| created_at | timestamp with time zone | - | no | clock_timestamp() |
+
+- Primary key: `owner_id, revision`.
+- Foreign key: `(owner_id) -> university_user (id)`; RESTRICT.
+- Check: `(status = 'deactivated' AND timezone IS NULL AND effective_from IS NULL AND effective_until IS NULL AND preferred_weekdays IS NULL AND preferred_windows IS NULL AND gap_indifferent IS NULL AND desired_gap_minutes IS NULL) OR (status = 'configured' AND timezone IS NOT NULL AND effective_from IS NOT NULL AND effective_until IS NOT NULL AND preferred_weekdays IS NOT NULL AND preferred_windows IS NOT NULL AND gap_indifferent IS NOT NULL AND ((gap_indifferent AND desired_gap_minutes IS NULL) OR (NOT gap_indifferent AND desired_gap_minutes IS NOT NULL)))`.
+- Check: `desired_gap_minutes BETWEEN 0 AND 1440`.
+- Check: `effective_from >= DATE '1970-01-01' AND effective_from <= effective_until AND effective_until < DATE '2100-01-01'`.
+- Check: `jsonb_typeof(preferred_weekdays) = 'array' AND jsonb_array_length(preferred_weekdays) <= 7 AND '[1,2,3,4,5,6,7]'::jsonb @> preferred_weekdays`.
+- Check: `jsonb_typeof(preferred_windows) = 'array' AND jsonb_array_length(preferred_windows) <= 64 AND octet_length(preferred_windows::text) <= 16384`.
+- Check: `octet_length(timezone) BETWEEN 1 AND 256`.
+- Check: `revision > 0 AND contract_version > 0`.
+- Check: `status IN ('configured','deactivated')`.
 
 ## student_room_request
 

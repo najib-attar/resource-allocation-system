@@ -248,6 +248,40 @@ class RequestHistory(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class SchedulingPreferenceRevision(Base):
+    __tablename__ = "scheduling_preference_revision"
+    __table_args__ = (
+        CheckConstraint("revision > 0 AND contract_version > 0", name="ck_preference_revision"),
+        CheckConstraint("status IN ('configured','deactivated')", name="ck_preference_status"),
+        CheckConstraint("(status = 'deactivated' AND timezone IS NULL AND effective_from IS NULL AND effective_until IS NULL "
+                        "AND preferred_weekdays IS NULL AND preferred_windows IS NULL AND gap_indifferent IS NULL AND desired_gap_minutes IS NULL) OR "
+                        "(status = 'configured' AND timezone IS NOT NULL AND effective_from IS NOT NULL AND effective_until IS NOT NULL "
+                        "AND preferred_weekdays IS NOT NULL AND preferred_windows IS NOT NULL AND gap_indifferent IS NOT NULL "
+                        "AND ((gap_indifferent AND desired_gap_minutes IS NULL) OR (NOT gap_indifferent AND desired_gap_minutes IS NOT NULL)))",
+                        name="ck_preference_shape"),
+        CheckConstraint("octet_length(timezone) BETWEEN 1 AND 256", name="ck_preference_timezone"),
+        CheckConstraint("effective_from >= DATE '1970-01-01' AND effective_from <= effective_until AND effective_until < DATE '2100-01-01'",
+                        name="ck_preference_dates"),
+        CheckConstraint("jsonb_typeof(preferred_weekdays) = 'array' AND jsonb_array_length(preferred_weekdays) <= 7 "
+                        "AND '[1,2,3,4,5,6,7]'::jsonb @> preferred_weekdays", name="ck_preference_weekdays"),
+        CheckConstraint("jsonb_typeof(preferred_windows) = 'array' AND jsonb_array_length(preferred_windows) <= 64 "
+                        "AND octet_length(preferred_windows::text) <= 16384", name="ck_preference_windows"),
+        CheckConstraint("desired_gap_minutes BETWEEN 0 AND 1440", name="ck_preference_gap"),
+    )
+    owner_id: Mapped[int] = mapped_column(ForeignKey("university_user.id", ondelete="RESTRICT"), primary_key=True)
+    revision: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=False)
+    contract_version: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(20))
+    timezone: Mapped[str | None] = mapped_column(String(256))
+    effective_from: Mapped[date | None] = mapped_column(Date)
+    effective_until: Mapped[date | None] = mapped_column(Date)
+    preferred_weekdays: Mapped[list | None] = mapped_column(JSONB(none_as_null=True))
+    preferred_windows: Mapped[list | None] = mapped_column(JSONB(none_as_null=True))
+    gap_indifferent: Mapped[bool | None] = mapped_column(Boolean)
+    desired_gap_minutes: Mapped[int | None] = mapped_column(Integer)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.clock_timestamp())
+
+
 class LoginAccount(Base):
     __tablename__ = "login_account"
     __table_args__ = (CheckConstraint("failed_attempts >= 0 AND session_version > 0"),)

@@ -434,6 +434,20 @@ erDiagram
         bigint occurrence_id FK,UK "nullable"
         tstzrange period
     }
+    scheduling_preference_revision {
+        integer owner_id PK,FK
+        bigint revision PK
+        integer contract_version
+        varchar_20 status
+        varchar_256 timezone "nullable"
+        date effective_from "nullable"
+        date effective_until "nullable"
+        jsonb preferred_weekdays "nullable"
+        jsonb preferred_windows "nullable"
+        boolean gap_indifferent "nullable"
+        integer desired_gap_minutes "nullable"
+        timestamptz created_at
+    }
     student_room_request {
         bigint id PK "identity"
         integer organizer_id FK
@@ -602,6 +616,7 @@ erDiagram
     reservation_occurrence o|--o| room_reservation : occurrence_id
     student_room_request ||--o{ room_reservation : request_id
     resource ||--o{ room_reservation : resource_id
+    university_user ||--o{ scheduling_preference_revision : owner_id
     login_account o|--o{ student_room_request : approved_by
     login_account ||--o{ student_room_request : approver_id
     organization_unit ||--o{ student_room_request : faculty_id

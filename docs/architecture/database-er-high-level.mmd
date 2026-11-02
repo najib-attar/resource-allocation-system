@@ -191,6 +191,10 @@ erDiagram
         timestamptz start_at PK
         bigint occurrence_id FK,UK "nullable"
     }
+    scheduling_preference_revision {
+        integer owner_id PK,FK
+        bigint revision PK
+    }
     student_room_request {
         bigint id PK "identity"
         integer organizer_id FK
@@ -290,6 +294,7 @@ erDiagram
     reservation_occurrence o|--o| room_reservation : occurrence_id
     student_room_request ||--o{ room_reservation : request_id
     resource ||--o{ room_reservation : resource_id
+    university_user ||--o{ scheduling_preference_revision : owner_id
     login_account o|--o{ student_room_request : approved_by
     login_account ||--o{ student_room_request : approver_id
     organization_unit ||--o{ student_room_request : faculty_id
