@@ -12,6 +12,7 @@ from alembic import command
 from alembic.config import Config
 from alembic.operations import Operations
 from sqlalchemy import delete, func, inspect, select, text, update
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import DBAPIError, IntegrityError
 
 from postgres_fixtures import PostgresTestCase, ROOT
@@ -133,6 +134,20 @@ class PolicyDatabaseTests(PostgresTestCase):
                     session.execute(statement)
         self.assertEqual(self.totals(), (2, 1, 1, 0))
 
+    def test_digest_text_domain_matches_python_without_unicode_normalization(self):
+        self.fixture()
+        for revision, unit in enumerate(('Fictional \u0085 unit', 'Fictional \u009f unit',
+                'Fictional \u00e9', 'Fictional e\u0301', 'Fictional \u2028 unit'), 2):
+            with self.subTest(revision=revision), self.database.transaction() as session:
+                session.add(policy_row(policy_document(revision=revision, cost_unit=unit)))
+        for char in ('\x01', '\x1f', '\x7f'):
+            row = policy_row(policy_document(revision=7)); row.cost_unit = 'Fictional ' + char
+            items = json.loads(parse(policy_document(revision=7)).canonical_bytes()); items[11] = row.cost_unit
+            row.content_digest = hashlib.sha256(json.dumps(items, ensure_ascii=False,
+                separators=(', ', ': ')).encode('utf-8')).hexdigest()
+            with self.subTest(control=ord(char)), self.assertRaises(IntegrityError), self.database.transaction() as session:
+                session.add(row)
+
     def test_proposal_and_approval_do_not_publish_or_change_any_other_service(self):
         self.fixture(); self.decision()
         with self.database.transaction(read_only=True) as session:
@@ -197,6 +212,100 @@ class PolicyDatabaseTests(PostgresTestCase):
         with ThreadPoolExecutor(max_workers=2) as pool:
             self.assertEqual(sorted(pool.map(lambda _: attempt(), range(2))), [0, 1])
 
+    def test_first_head_initialization_can_serialize_competing_expected_versions(self):
+        barrier = threading.Barrier(2)
+        def attempt():
+            barrier.wait(timeout=10)
+            with self.database.transaction() as session:
+                session.execute(insert(Head).values(id=1, version=0).on_conflict_do_nothing(index_elements=['id']))
+                head = session.scalar(select(Head).where(Head.id == 1).with_for_update())
+                if head.version != 0: return 'stale'
+                head.version = 1
+                return 'accepted'
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            self.assertEqual(sorted(pool.map(lambda _: attempt(), range(2))), ['accepted', 'stale'])
+        with self.database.transaction(read_only=True) as session:
+            self.assertEqual(session.get(Head, 1).version, 1)
+            self.assertIsNone(session.get(Head, 1).active_event_id)
+
+    def test_competing_same_revision_proposals_cannot_overwrite_history(self):
+        with self.database.transaction() as session: session.add(authority_row())
+        barrier = threading.Barrier(2)
+        def attempt():
+            barrier.wait(timeout=10)
+            try:
+                with self.database.transaction() as session: session.add(policy_row())
+                return 'inserted'
+            except IntegrityError as error:
+                self.assertEqual(error.orig.sqlstate, '23505')
+                return 'duplicate'
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            self.assertEqual(sorted(pool.map(lambda _: attempt(), range(2))), ['duplicate', 'inserted'])
+        self.assertEqual(self.totals(), (1, 1, 0, 0))
+
+    def test_competing_decisions_have_one_head_version_and_atomic_audit(self):
+        self.fixture()
+        with self.database.transaction() as session: session.add(Head(id=1, version=0))
+        barrier = threading.Barrier(2)
+        def attempt(kind):
+            barrier.wait(timeout=10)
+            with self.database.transaction() as session:
+                head = session.scalar(select(Head).where(Head.id == 1).with_for_update())
+                if head.version != 0: return 'stale'
+                session.add(Event(policy_id='university', policy_revision=1, event_type=kind,
+                    actor_id=2, actor_capability='approve', authority_revision=1, head_version=1,
+                    reason='Isolated lock protocol witness'))
+                head.version = 1
+                return 'accepted'
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            self.assertEqual(sorted(pool.map(attempt, ('Approved', 'Rejected'))), ['accepted', 'stale'])
+        self.assertEqual(self.totals(), (2, 1, 1, 1))
+
+    def test_head_lock_can_order_revocation_before_decision_and_rollback_partial_event(self):
+        self.fixture()
+        with self.database.transaction() as session: session.add(Head(id=1, version=0))
+        held, attempted, release = threading.Event(), threading.Event(), threading.Event()
+        def revoke():
+            with self.database.transaction() as session:
+                session.scalar(select(Head).where(Head.id == 1).with_for_update())
+                row = authority_row(2, 'approve', revision=2); row.decision = 'Revoked'; session.add(row)
+                session.flush(); held.set()
+                if not release.wait(10): raise AssertionError('Missing release')
+        def decide():
+            attempted.set()
+            with self.database.transaction() as session:
+                session.scalar(select(Head).where(Head.id == 1).with_for_update())
+                latest = session.scalar(select(Authority).where(Authority.user_id == 2,
+                    Authority.capability == 'approve').order_by(Authority.revision.desc()).limit(1))
+                return latest.decision
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            revoker = pool.submit(revoke); self.assertTrue(held.wait(10))
+            decision = pool.submit(decide); self.assertTrue(attempted.wait(10))
+            try: self.assertFalse(decision.done())
+            finally: release.set()
+            revoker.result(timeout=10); self.assertEqual(decision.result(timeout=10), 'Revoked')
+        with self.assertRaises(RuntimeError), self.database.transaction() as session:
+            head = session.scalar(select(Head).where(Head.id == 1).with_for_update())
+            session.add(Event(policy_id='university', policy_revision=1, event_type='Approved',
+                actor_id=2, actor_capability='approve', authority_revision=1, head_version=1,
+                reason='Structural historic grant only, not a B2 authorization'))
+            head.version = 1; session.flush(); raise RuntimeError('Isolated rollback')
+        self.assertEqual(self.totals(), (3, 1, 0, 1))
+        with self.database.transaction(read_only=True) as session: self.assertEqual(session.get(Head, 1).version, 0)
+
+    def test_immutable_digest_does_not_claim_current_authority_or_lifecycle_authorization(self):
+        self.fixture()
+        with self.database.transaction() as session:
+            revoked = authority_row(1, revision=2); revoked.decision = 'Revoked'; session.add(revoked)
+        # Historic grant FKs preserve evidence; B2 must separately reject stale grants.
+        with self.database.transaction() as session: session.add(policy_row(policy_document(revision=2)))
+        approved = self.decision(); activated = self.decision('Activated', 2, approved)
+        self.decision('Deactivated', 3, activated)
+        with self.database.transaction() as session: session.add(Head(id=1, version=3, active_event_id=activated))
+        with self.database.transaction(read_only=True) as session:
+            self.assertEqual(session.get(Head, 1).active_event_id, activated)
+        # This witnesses the documented service boundary, not a usable governance command.
+
     def test_head_cannot_reset_its_version_by_deletion_truncation_or_overflow(self):
         with self.database.transaction() as session: session.add(Head(id=1, version=2**63 - 1))
         for statement in (delete(Head), text('TRUNCATE scheduling_cost_policy_head'), update(Head).values(version=0)):
@@ -218,6 +327,8 @@ class PolicyDatabaseTests(PostgresTestCase):
                 "AND proname LIKE 'ras_cost_%'")).scalars().all()
             self.assertEqual(len(settings), 5)
             self.assertTrue(all(any(self.schema in setting for setting in row) for row in settings))
+            self.assertTrue(all(any(setting.startswith('search_path=pg_catalog,') and setting.endswith(', pg_temp')
+                for setting in row) for row in settings))
         with self.database.transaction() as session:
             session.execute(text('CREATE SCHEMA "' + self.schema + '_shadow"'))
         self.addCleanup(self.drop_shadow)
@@ -232,6 +343,16 @@ class PolicyDatabaseTests(PostgresTestCase):
     def drop_shadow(self):
         with self.database.transaction() as session:
             session.execute(text('DROP SCHEMA "' + self.schema + '_shadow" CASCADE'))
+
+    def test_temporary_shadow_event_cannot_make_approval_an_active_policy(self):
+        self.fixture(); approved = self.decision()
+        with self.assertRaises(IntegrityError), self.database.transaction() as session:
+            session.execute(text('CREATE TEMP TABLE scheduling_cost_policy_event '
+                '(id bigint, event_type text, head_version bigint) ON COMMIT DROP'))
+            session.execute(text("INSERT INTO pg_temp.scheduling_cost_policy_event VALUES (:id,'Activated',1)"),
+                {'id': approved})
+            session.add(Head(id=1, version=1, active_event_id=approved))
+        with self.database.transaction(read_only=True) as session: self.assertIsNone(session.get(Head, 1))
 
 
 class PolicyMigrationTests(PostgresTestCase):
@@ -303,6 +424,11 @@ class PolicyMigrationTests(PostgresTestCase):
                 self.assertEqual(error.orig.sqlstate, '42P01'); return 'table_removed'
         with ThreadPoolExecutor(max_workers=2) as pool, mock.patch.object(Operations, 'drop_table', pause):
             downgrade = pool.submit(self.migrate, 'downgrade', '0050a'); self.assertTrue(checked.wait(10))
+            with self.database.transaction(read_only=True) as session:
+                locked = session.execute(text("SELECT c.relname FROM pg_locks l JOIN pg_class c ON c.oid=l.relation "
+                    "JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname=:schema "
+                    "AND l.mode='AccessExclusiveLock' AND l.granted"), {'schema': self.schema}).scalars().all()
+                self.assertEqual(set(locked), set(TABLES))
             writer = pool.submit(append)
             try: self.assertFalse(committed.wait(.3))
             finally: release.set()
@@ -321,3 +447,48 @@ class PolicyMigrationTests(PostgresTestCase):
             session.execute(delete(Authority))
             session.execute(text('ALTER TABLE scheduling_cost_policy_authority_revision ENABLE TRIGGER cost_authority_immutable'))
         self.migrate('downgrade', '0050a')
+
+    def test_failed_upgrade_rolls_back_tables_functions_and_version(self):
+        original = Operations.create_index
+        def fail(operations, name, *args, **kwargs):
+            if name == 'ix_cost_event_policy': raise RuntimeError('Isolated migration failure')
+            return original(operations, name, *args, **kwargs)
+        with mock.patch.object(Operations, 'create_index', fail), self.assertRaisesRegex(RuntimeError, 'Isolated'):
+            self.migrate('upgrade', 'head')
+        self.assertFalse(set(TABLES).intersection(inspect(self.database.engine).get_table_names()))
+        with self.database.transaction(read_only=True) as session:
+            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), '0050a')
+        self.migrate('upgrade', 'head'); self.migrate('check', None)
+
+    def test_initialized_head_alone_also_blocks_downgrade_without_data_loss(self):
+        self.migrate('upgrade', 'head')
+        with self.database.transaction() as session: session.add(Head(id=1, version=0))
+        with self.assertRaisesRegex(RuntimeError, 'history'): self.migrate('downgrade', '0050a')
+        with self.database.transaction(read_only=True) as session:
+            self.assertEqual(session.get(Head, 1).version, 0)
+            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), '0050b')
+
+    def test_downgrade_lock_order_with_concurrent_decision_append_has_no_lost_history(self):
+        self.actor(); self.migrate('upgrade', 'head')
+        with self.database.transaction() as session:
+            session.add(User(id=2, source_order=2, name='Fictional approver', primary_role_id=1)); session.flush()
+            session.add_all([authority_row(), authority_row(2, 'approve')]); session.flush()
+            session.add(policy_row())
+        held, release = threading.Event(), threading.Event()
+        def append():
+            with self.database.transaction() as session:
+                session.add(Event(policy_id='university', policy_revision=1, event_type='Approved',
+                    actor_id=2, actor_capability='approve', authority_revision=1,
+                    head_version=1, reason='Isolated concurrent history'))
+                session.flush(); held.set()
+                if not release.wait(10): raise AssertionError('Missing release')
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            writer = pool.submit(append); self.assertTrue(held.wait(10))
+            downgrade = pool.submit(self.migrate, 'downgrade', '0050a')
+            try: self.assertFalse(downgrade.done())
+            finally: release.set()
+            writer.result(timeout=10)
+            with self.assertRaisesRegex(RuntimeError, 'history'): downgrade.result(timeout=10)
+        with self.database.transaction(read_only=True) as session:
+            self.assertEqual(session.scalar(select(func.count()).select_from(Event)), 1)
+            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), '0050b')

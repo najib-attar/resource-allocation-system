@@ -91,7 +91,8 @@ def upgrade():
         (TABLES[2], 'ix_scheduling_cost_policy_event_preceding_event_id', ['preceding_event_id']),
         (TABLES[3], 'ix_scheduling_cost_policy_head_active_event_id', ['active_event_id'])):
         op.create_index(name, table, columns)
-    op.execute("""
+    # Match the Python contract's ASCII control set, not locale character classes.
+    op.execute(r"""
 CREATE FUNCTION ras_cost_history_immutable() RETURNS trigger LANGUAGE plpgsql AS $$
 BEGIN RAISE EXCEPTION 'Institutional policy history is immutable' USING ERRCODE='23514'; END; $$;
 CREATE FUNCTION ras_cost_revision_validate() RETURNS trigger LANGUAGE plpgsql AS $$
@@ -105,7 +106,8 @@ BEGIN
      AND revision=NEW.proposer_authority_revision AND decision='Granted') THEN
   RAISE EXCEPTION 'Policy proposer grant reference required' USING ERRCODE='23514';
  END IF;
- IF NEW.cost_unit ~ '[[:cntrl:]]' OR NEW.calibration_ref ~ '[[:cntrl:]]' OR NEW.provenance_ref ~ '[[:cntrl:]]' THEN
+ IF NEW.cost_unit ~ '[\u0001-\u001f\u007f]' OR NEW.calibration_ref ~ '[\u0001-\u001f\u007f]'
+   OR NEW.provenance_ref ~ '[\u0001-\u001f\u007f]' THEN
   RAISE EXCEPTION 'Invalid policy text' USING ERRCODE='23514';
  END IF;
  expected := encode(sha256(convert_to(jsonb_build_array(NEW.contract_version, NEW.provenance_type,
@@ -177,9 +179,10 @@ CREATE TRIGGER cost_head_no_truncate BEFORE TRUNCATE ON scheduling_cost_policy_h
                    'FOR EACH STATEMENT EXECUTE FUNCTION ras_cost_history_immutable()')
     schema = op.get_bind().scalar(sa.text('SELECT current_schema()'))
     quoted = op.get_bind().dialect.identifier_preparer.quote(schema)
+    # Omitting pg_temp would implicitly search it first for relation names.
     for function in ('ras_cost_revision_validate', 'ras_cost_event_validate', 'ras_cost_head_validate',
                      'ras_cost_authority_timestamp', 'ras_cost_history_immutable'):
-        op.execute(f'ALTER FUNCTION {function}() SET search_path TO {quoted}, pg_catalog')
+        op.execute(f'ALTER FUNCTION {function}() SET search_path TO pg_catalog, {quoted}, pg_temp')
 
 
 def downgrade():

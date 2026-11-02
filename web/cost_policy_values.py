@@ -55,7 +55,7 @@ def _text(value):
 def _instant(value):
     _text(value)
     check(bool(re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}'
-        r'(?::[0-9]{2}(?:\.[0-9]{1,6})?)?(?:Z|[+-][0-9]{2}:[0-9]{2})', value)), 'INVALID_EFFECTIVE_INTERVAL')
+        r'(?::[0-9]{2}(?:\.[0-9]{1,6})?)?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])', value)), 'INVALID_EFFECTIVE_INTERVAL')
     try:
         result = datetime.fromisoformat(value)
         check(result.tzinfo is not None and result.utcoffset() is not None, 'INVALID_EFFECTIVE_INTERVAL')

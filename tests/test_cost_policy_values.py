@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 from dataclasses import FrozenInstanceError
+import hashlib
 import json
 from unittest import TestCase
 
@@ -88,6 +89,13 @@ class CostPolicyValueTests(TestCase):
             with self.assertRaises(PreferenceError): parse(policy_document(provenance=provenance))
         with self.assertRaises(PreferenceError): parse_policy(parse(policy_document()).document())
 
+    def test_malformed_utc_offsets_are_rejected_instead_of_normalized(self):
+        for offset in ('+00:60', '+12:99', '-00:60', '+24:00'):
+            for endpoint in ('from', 'until'):
+                effective = policy_document()['effective'] | {endpoint: '2030-06-01T00:00:00' + offset}
+                with self.subTest(offset=offset, endpoint=endpoint), self.assertRaises(PreferenceError):
+                    parse(policy_document(effective=effective))
+
     def test_digest_is_canonical_across_key_order_and_equivalent_offsets(self):
         value = policy_document(cost_unit='Fictional \u00fcniversity "points"')
         before = parse(value)
@@ -107,6 +115,35 @@ class CostPolicyValueTests(TestCase):
         for text in ('', ' ', 'secret\ncalendar', 'x' * 257):
             with self.assertRaises(PreferenceError) as raised: parse(policy_document(cost_unit=text))
             self.assertNotIn('secret', str(raised.exception))
+
+    def test_digest_matches_independent_scalar_contract_and_every_variable_field(self):
+        coefficients = dict(zip(COEFFICIENT_FIELDS, (1, 3, 5, 7, 9, 11, 13, 15, 17)))
+        value = policy_document(coefficients=coefficients)
+        independent = [1, 'institutional_policy', 'university', 1, 1, 'cdmcs_schedule_v1',
+            'V15_restricted_one_blocking_move', 'weekday_window_tiers_v1', 'Europe/Istanbul',
+            1893456000000000, 1924992000000000, 'Fictional study points', 'fictional-study-v1',
+            'institutional_policy', 'fictional-institution-record', 1, 3, 5, 7, 9, 11, 13, 15, 17]
+        expected = hashlib.sha256(json.dumps(independent, ensure_ascii=False,
+            separators=(', ', ': ')).encode('utf-8')).hexdigest()
+        self.assertEqual(parse(value).content_digest, expected)
+        changes = [{'revision': 2}, {'cost_unit': 'Other fictional unit'}, {'calibration_ref': 'other-study'},
+            {'provenance': {'type': 'institutional_policy', 'source_ref': 'other-decision'}},
+            {'effective': value['effective'] | {'from': '2030-01-01T00:00:00.000001Z'}},
+            {'effective': value['effective'] | {'until': '2031-01-01T00:00:00.000001Z'}}]
+        changes += [{'coefficients': coefficients | {key: coefficients[key] + 1}} for key in COEFFICIENT_FIELDS]
+        for change in changes:
+            with self.subTest(field=next(iter(change))):
+                self.assertNotEqual(parse(value | change).content_digest, expected)
+        self.assertNotEqual(parse_institutional_policy(value | {'timezone': 'UTC'},
+            university_timezone='UTC').content_digest, expected)
+
+    def test_unicode_is_exact_utf8_not_implicit_normalization(self):
+        composed = parse(policy_document(cost_unit='Fictional \u00e9'))
+        decomposed = parse(policy_document(cost_unit='Fictional e\u0301'))
+        self.assertNotEqual(composed.content_digest, decomposed.content_digest)
+        self.assertIn('Fictional \u00e9'.encode('utf-8'), composed.canonical_bytes())
+        for text in ('Fictional \u0085 unit', 'Fictional \u009f unit', 'Fictional \u2028 unit'):
+            self.assertEqual(parse(policy_document(cost_unit=text)).cost_unit, text)
 
     def test_limits_do_not_claim_feasible_execution_or_new_objective(self):
         self.assertEqual(PREFIX_TOTAL_LIMIT, 10**12)
