@@ -244,7 +244,7 @@ RequestTypeRule
 - [Existing Engine Protocol](docs/engine-protocol.md): compatibility contract for Flask-C++ execution.
 - [Database Design](docs/architecture/database-design.md): entities, ER diagram, constraints and transactional workflow.
 - [Private Scheduling Preferences](docs/architecture/personal-preferences-design.md): internal self-only persistence foundation; no settings UI, cost policies or optimizer activation.
-- [Institutional Cost Policy Foundation](docs/architecture/institutional-cost-policy-design.md): explicit values and empty immutable ledgers; no policy-management commands or activation.
+- [Institutional Cost Policy Governance](docs/architecture/institutional-cost-policy-design.md): explicit values, immutable ledgers and internal authenticated decisions; no authority bootstrap, public routes or optimizer activation.
 - [Database Operations](docs/database-operations.md): setup, safe import, testing and failure behavior.
 - [Iteration 41 Report](docs/iteration-reports/Iteration_41.pdf): PostgreSQL persistence, database tables, diagrams, migration and verification.
 - [Iteration 42 Report](docs/iteration-reports/Iteration_42.pdf): authenticated dated appointments, calendar coexistence, approval integrity and verification.
