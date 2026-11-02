@@ -1,6 +1,6 @@
 # Physical schema catalog
 
-Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 54 application tables.
+Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 58 application tables.
 
 Foreign keys use PostgreSQL **NO ACTION** unless explicitly marked RESTRICT; no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
 ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.
@@ -1065,6 +1065,129 @@ Exact confirmed exclusive room interval; GiST overlap exclusion.
 - Check: `start_at < end_at`.
 - Unique: `occurrence_id`.
 - Index: `ix_room_reservation_resource_id (resource_id)`.
+
+## scheduling_cost_policy_authority_revision
+
+Immutable explicit named-capability grant/revocation history; no default authority for any existing role.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| user_id | integer | PK; FK -> university_user.id | no | - |
+| capability | varchar(16) | PK | no | - |
+| revision | bigint | PK | no | - |
+| decision | varchar(12) | - | no | - |
+| actor_id | integer | FK -> university_user.id | no | - |
+| effective_from | timestamp with time zone | - | no | - |
+| effective_until | timestamp with time zone | - | no | - |
+| reason | text | - | no | - |
+| authorization_ref | text | - | no | - |
+| created_at | timestamp with time zone | - | no | clock_timestamp() |
+
+- Primary key: `user_id, capability, revision`.
+- Foreign key: `(actor_id) -> university_user (id)`; RESTRICT.
+- Foreign key: `(user_id) -> university_user (id)`; RESTRICT.
+- Check: `capability IN ('propose','approve','audit')`.
+- Check: `decision IN ('Granted','Revoked')`.
+- Check: `isfinite(effective_from) AND isfinite(effective_until) AND effective_from < effective_until`.
+- Check: `length(btrim(reason)) BETWEEN 1 AND 2000`.
+- Check: `octet_length(authorization_ref) BETWEEN 1 AND 256 AND length(btrim(authorization_ref)) > 0`.
+- Check: `revision > 0`.
+
+## scheduling_cost_policy_event
+
+Immutable governance decision associations and explicit approval/activation/deactivation provenance; no management commands.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| policy_id | varchar(32) | FK -> scheduling_cost_policy_revision.policy_id | no | - |
+| policy_revision | bigint | FK -> scheduling_cost_policy_revision.revision | no | - |
+| event_type | varchar(16) | - | no | - |
+| actor_id | integer | FK -> scheduling_cost_policy_authority_revision.user_id; FK -> university_user.id | no | - |
+| actor_capability | varchar(16) | FK -> scheduling_cost_policy_authority_revision.capability | no | - |
+| authority_revision | bigint | FK -> scheduling_cost_policy_authority_revision.revision | no | - |
+| head_version | bigint | - | no | - |
+| preceding_event_id | bigint | FK -> scheduling_cost_policy_event.id | yes | - |
+| reason | text | - | no | - |
+| created_at | timestamp with time zone | - | no | clock_timestamp() |
+
+- Primary key: `id`.
+- Foreign key: `(actor_id) -> university_user (id)`; RESTRICT.
+- Foreign key: `(actor_id, actor_capability, authority_revision) -> scheduling_cost_policy_authority_revision (user_id, capability, revision)`; RESTRICT.
+- Foreign key: `(policy_id, policy_revision) -> scheduling_cost_policy_revision (policy_id, revision)`; RESTRICT.
+- Foreign key: `(preceding_event_id) -> scheduling_cost_policy_event (id)`; RESTRICT.
+- Check: `(event_type IN ('Approved','Rejected') AND preceding_event_id IS NULL) OR (event_type IN ('Activated','Deactivated') AND preceding_event_id IS NOT NULL)`.
+- Check: `actor_capability = 'approve' AND authority_revision > 0 AND head_version > 0`.
+- Check: `event_type IN ('Approved','Rejected','Activated','Deactivated')`.
+- Check: `length(btrim(reason)) BETWEEN 1 AND 2000`.
+- Unique: `head_version`.
+
+## scheduling_cost_policy_head
+
+Optional singleton optimistic concurrency and active-event pointer; empty until future authorized governance initializes it.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | integer | PK | no | - |
+| version | bigint | - | no | - |
+| active_event_id | bigint | FK -> scheduling_cost_policy_event.id | yes | - |
+| updated_at | timestamp with time zone | - | no | clock_timestamp() |
+
+- Primary key: `id`.
+- Foreign key: `(active_event_id) -> scheduling_cost_policy_event (id)`; RESTRICT.
+- Check: `id = 1 AND version >= 0`.
+
+## scheduling_cost_policy_revision
+
+Immutable institutional numerical intent and canonical digest; not approval, activation or calibrated defaults.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| policy_id | varchar(32) | PK | no | - |
+| revision | bigint | PK | no | - |
+| contract_version | integer | - | no | - |
+| objective_version | integer | - | no | - |
+| engine_operation | varchar(32) | - | no | - |
+| objective_model | varchar(64) | - | no | - |
+| rate_model | varchar(64) | - | no | - |
+| timezone | varchar(256) | - | no | - |
+| effective_from | timestamp with time zone | - | no | - |
+| effective_until | timestamp with time zone | - | no | - |
+| cost_unit | text | - | no | - |
+| calibration_ref | text | - | no | - |
+| provenance_type | varchar(32) | - | no | - |
+| provenance_ref | text | - | no | - |
+| content_digest | varchar(64) | - | no | - |
+| preferred_rate | integer | - | no | - |
+| outside_window_rate | integer | - | no | - |
+| outside_day_rate | integer | - | no | - |
+| gap_weight | integer | - | no | - |
+| nearby_limit | integer | - | no | - |
+| exception_fee | integer | - | no | - |
+| move_fixed_cost | integer | - | no | - |
+| move_participant_cost | integer | - | no | - |
+| delay_per_day | integer | - | no | - |
+| proposer_id | integer | FK -> scheduling_cost_policy_authority_revision.user_id; FK -> university_user.id | no | - |
+| proposer_capability | varchar(16) | FK -> scheduling_cost_policy_authority_revision.capability | no | - |
+| proposer_authority_revision | bigint | FK -> scheduling_cost_policy_authority_revision.revision | no | - |
+| created_at | timestamp with time zone | - | no | clock_timestamp() |
+
+- Primary key: `policy_id, revision`.
+- Foreign key: `(proposer_id) -> university_user (id)`; RESTRICT.
+- Foreign key: `(proposer_id, proposer_capability, proposer_authority_revision) -> scheduling_cost_policy_authority_revision (user_id, capability, revision)`; RESTRICT.
+- Check: `content_digest ~ '^[0-9a-f]{64}$'`.
+- Check: `contract_version = 1 AND objective_version = 1 AND engine_operation = 'cdmcs_schedule_v1' AND objective_model = 'V15_restricted_one_blocking_move' AND rate_model = 'weekday_window_tiers_v1'`.
+- Check: `exception_fee BETWEEN 0 AND 10000000 AND move_fixed_cost BETWEEN 0 AND 10000000 AND move_participant_cost BETWEEN 0 AND 10000000 AND delay_per_day BETWEEN 0 AND 10000000`.
+- Check: `gap_weight BETWEEN 0 AND 100000 AND nearby_limit BETWEEN 0 AND 10080`.
+- Check: `isfinite(effective_from) AND isfinite(effective_until) AND effective_from >= TIMESTAMPTZ '1970-01-01 00:00:00+00' AND effective_until < TIMESTAMPTZ '2100-01-01 00:00:00+00' AND effective_from < effective_until`.
+- Check: `octet_length(calibration_ref) BETWEEN 1 AND 256 AND length(btrim(calibration_ref)) > 0`.
+- Check: `octet_length(cost_unit) BETWEEN 1 AND 256 AND length(btrim(cost_unit)) > 0`.
+- Check: `octet_length(provenance_ref) BETWEEN 1 AND 256 AND length(btrim(provenance_ref)) > 0`.
+- Check: `octet_length(timezone) BETWEEN 1 AND 256 AND length(btrim(timezone)) > 0`.
+- Check: `policy_id = 'university' AND revision > 0`.
+- Check: `preferred_rate BETWEEN 0 AND outside_window_rate AND outside_window_rate <= outside_day_rate AND outside_day_rate <= 100000000`.
+- Check: `proposer_capability = 'propose' AND proposer_authority_revision > 0`.
+- Check: `provenance_type = 'institutional_policy'`.
 
 ## scheduling_preference_revision
 

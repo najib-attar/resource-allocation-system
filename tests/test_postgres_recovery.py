@@ -22,6 +22,8 @@ from web.engine_gateway import EngineGateway
 from web.persistence.database import Database, database_url
 from web.persistence.importer import import_csv
 from web.persistence.models import RequestSlot
+from web.persistence.models import SchedulingCostPolicyRevision as CostRevision, SchedulingCostPolicyHead as CostHead
+from test_cost_policy_persistence import authority_row, policy_row
 from web.persistence.repository import Repository
 
 
@@ -91,6 +93,10 @@ class PostgresRecoveryTests(PostgresTestCase):
         from web.account_service import AccountService
         import secrets
         AccountService(self.database).provision(1, "recovery-fixture", secrets.token_urlsafe(24), administrator=True)
+        # Explicit synthetic ledger content must survive a real dump/restore too.
+        fixture_policy = policy_row()
+        with self.database.transaction() as session:
+            session.add(authority_row()); session.flush(); session.add(fixture_policy)
         result = execute_allocation(repository, EngineGateway(ROOT))
         original_view = repository.read_view()
         url = database_url(self.url)
@@ -127,6 +133,9 @@ class PostgresRecoveryTests(PostgresTestCase):
                        input=backup, env=env, capture_output=True, check=True, timeout=60)
         recovered = Database(url.set(database=restored_name))
         try:
+            with recovered.transaction(read_only=True) as session:
+                self.assertEqual(session.get(CostRevision, ('university', 1)).content_digest, fixture_policy.content_digest)
+                self.assertIsNone(session.get(CostHead, 1))
             restored = Repository(recovered)
             self.assertEqual(restored.read_view()[1:], original_view[1:])
             self.assertGreater(restored.save_request(new_request()), 45)
