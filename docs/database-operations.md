@@ -1,8 +1,17 @@
 # PostgreSQL setup and safe operations
 
-## Current schema (0050a)
+## Current schema (0050b)
 
-The current source migration head is `0050a`: 54 application tables plus Alembic.
+The current source migration head is `0050b`: 58 application tables plus Alembic.
+It creates four empty institutional cost-policy foundation tables, not an active
+policy or an administration interface. No coefficients, authority grants or head
+row are seeded. Downgrade locks all four tables before checking and refuses any
+populated state/history. No operational migration is authorized by test execution.
+See [institutional cost-policy architecture](architecture/institutional-cost-policy-design.md).
+
+## Private preference foundation (0050a)
+
+That revision introduced 54 application tables plus Alembic.
 It adds empty, private personal-preference history only. It does not initialize
 preferences or weights, publish availability, invoke an optimizer or alter bookings.
 See [private preference operations](#private-preference-revisions-0050a) below.
