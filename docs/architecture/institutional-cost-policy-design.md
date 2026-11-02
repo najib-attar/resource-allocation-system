@@ -194,19 +194,35 @@ inventing that information.
 `current()` returns a policy only for the exact current, effective, supported and
 integrity-checked activation. Missing, deactivated, expired, not-effective,
 unsupported or unknown state returns no policy, never older or zero-cost values.
-Contradictory active pointers/event chains fail closed. `history()` returns newest
+Contradictory active pointers/event chains fail closed. The global activation
+stream must alternate activation/deactivation with matching predecessor IDs, even
+across revisions and after all activations have closed. A SQL window checks this
+metadata without loading the entire ledger into Python; its database work grows
+with activation history, independently of the bounded page size.
+`history()` returns newest
 revisions with immutable policy content, status, proposer/grant/time and bounded
 decision tuples `(id, type, actor, authority_revision, head_version, timestamp,
 reason, predecessor)`. At most 101 revisions and four events per returned revision
 are read; a legal chain has at most three events. A corrupt page raises rather than
 returning a partial successful history. These internal values are not a research
-export or user-visible API. Their representations withhold contents.
+export or user-visible API. Their representations withhold contents. Calibration
+and provenance references are internal declarations, not fetched evidence. Audit
+readers may inspect those references and decision actors/reasons, not other users'
+personal preferences or calendars. Any future public explanation of approved
+coefficients requires a separately approved sanitized representation, not these
+complete internal views. There is no such public route or serializer here.
+`audit` is an explicit read capability, not a new access-log or retention service:
+these read-only operations do not append governance decision events. Operational
+access logging and its retention still require approved private logging controls.
 
 ### Transactions and concurrent authority changes
 
 Writers require the existing READ COMMITTED transaction and use consistent order.
 The service explicitly checks the actual isolation before any head initialization;
 a changed server/engine default of REPEATABLE READ or SERIALIZABLE fails closed.
+It also rejects actual DBAPI autocommit and verifies read-write mode. A logical
+SQLAlchemy transaction and a READ COMMITTED report alone do not prove atomicity:
+an autocommit connection can commit initialization before a later denial.
 Merely waiting for the authority lock under an older transaction snapshot is not
 enough to observe a newly committed revocation. This guard does not change global
 database configuration or the supported coherent read-only snapshot behavior.
@@ -234,12 +250,24 @@ service returns a sanitized storage failure, with no automatic replay. Existing
 configurable lock timeout bounds waits (default five seconds). Clients refresh
 versions and explicitly retry; stale decisions are never silently reapplied.
 
-Readers use owned REPEATABLE READ, READ ONLY transactions, no autoflush, fresh
-identity checks and capability evaluation at the coherent read snapshot. A
-concurrent revocation/deactivation does not retroactively rewrite an earlier
+Readers require actual non-autocommit REPEATABLE READ, READ ONLY transactions,
+with no autoflush and fresh identity checks. The early database clock query returns
+`transaction_timestamp()` and `clock_timestamp()`, enclosing the transaction's
+snapshot acquisition. The same Granted authority revision must be valid at both
+endpoints. This ensures the identity and grant have a coherent authorized snapshot
+instant, instead of combining an earlier valid session with a later-starting grant.
+`statement_timestamp()` is not a sufficient lower bound because protocol
+preparation can acquire a snapshot before Execute resets that timestamp.
+If authority changes or begins/expires across the interval, the read fails closed;
+the caller may start a fresh transaction, not fall back to older rights. A backward
+clock interval is rejected. Policy effectivity uses the upper endpoint.
+
+A concurrent revocation/deactivation does not retroactively rewrite an already
 authorized read. Dirty ORM state is rejected and PostgreSQL also rejects injected
 Core writes. SQL/lock failures are replaced by generic errors without raw SQL,
-parameters or exception chaining; no new payload logging is added.
+parameters or exception chaining; no new payload logging is added. Caller-supplied
+Connection-bound sessions are not supported as owned service transactions and are
+denied rather than trusted based on matching user IDs.
 
 Institutional values must remain outside synthetic export/execution paths. Real
 calendar access, cost compilation from persisted records, relocation consent,
@@ -429,3 +457,68 @@ recovery procedure, not silent history repair or fallback. The inherited
 account-lifecycle correction remains mandatory before rollout. Public routes,
 authority bootstrap, persisted-preference compilation, real-calendar execution,
 CDMCS activation and booking changes remain absent.
+
+## Independent governance review (B2.5)
+
+Review preserved B2's three commits and found three concrete gaps. Each was
+reproduced on disposable PostgreSQL before its correction:
+
+| Finding | Correction and evidence |
+|---|---|
+| An AUTOCOMMIT-bound session reported READ COMMITTED but persisted an initialized head after denial; reads could also run without the promised mode | Inspect actual psycopg autocommit and server isolation/read-only state before initialization or policy reads. Regressions reject autocommit, wrong read mode and unsupported Connection-bound contexts |
+| RR identity and a later grant-validity clock could describe no jointly authorized instant | Bound snapshot acquisition by transaction start/current clock and require the same valid grant at both endpoints. Real database witnesses cover revocation before a future grant, already-authorized reads finishing after revocation and the actual stable snapshot/lower clock bound |
+| B1 structural references allowed an out-of-service overlapping activation across revisions to look like valid current/history | Validate the entire activation/deactivation stream with SQL LAG, not just the last revision. The witness also closes both overlapping activations and requires historical corruption to remain rejected |
+
+The normal service state machine and explicit replacement protocol are unchanged.
+No B1 schema correction was necessary: it can represent all required transitions;
+structural FKs alone are not governance authorization. B2.5 neither weakens its
+constraints nor treats digests as privileged-database tamper protection. Both
+engines, nine coefficients/bounds, canonicalization, D1 synthetic provenance,
+negative net costs, fairness and D2 global delay reference remain unchanged.
+
+Real two-connection tests additionally cover approval and activation in both
+revocation lock orders. A revocation that holds its insertion lock first prevents
+the later decision; a decision holding SHARE first commits before revocation and
+later attempts are denied. Writers all require READ COMMITTED/read-write mode;
+no automatic retries or second lock order were introduced. Existing tests still
+cover initial head/proposal races, duplicate decisions, stale versions, timeout,
+deadlock, flushed-event failure and atomic commit failure.
+
+The backend workflow now explicitly requires discovery of at least 56 governance
+tests, execution of every discovered case and zero skips. Missing PostgreSQL,
+incomplete discovery, partial execution and failed tests cannot pass. The full
+Linux application floor is 656 with only its existing known platform skip.
+Governance source/test changes trigger the existing push and PR research jobs,
+including Release, sanitizers and offline comparisons. All evidence remains
+synthetic; no new governance-data upload or deployment step is added.
+
+Final local verification used the same Windows/Python 3.12.14/PostgreSQL 17.11/
+GCC 14.3.0 environment and a new isolated cluster containing only fictional data.
+
+| Gate | Actual result |
+|---|---|
+| Original B2 baseline | 43 passed in 118.784 seconds; zero skips |
+| Actual embedded governance CI gate, executed locally | 56 passed in 284.486 seconds; zero skips |
+| Full application Python/PostgreSQL | 656 run in 3256.696 seconds: 655 passed; one expected Windows POSIX-permission skip, no PostgreSQL skips |
+| Existing policy / personal preferences | All 44 / 51 methods passed in the complete application run |
+| Application C++ | Fresh compile: 192 passed; both CSV smoke cases passed |
+| I3a / I3b / identity / I3c | 37 / 47 / 8 / 47 passed; zero skips |
+| D1 / D2 | 84 / 56 passed; zero skips |
+| Standalone CDMCS Release | Preserved hash-verified artifact: 618 differential cases, 7202 arrangements, 2504 moves, ten invalid inputs rejected and one expected unresolved case; 25 safety methods passed |
+| CI / additional witnesses | Seven entry-point/gate tests passed; both workflows passed actionlint 1.7.12; nine embedded Python blocks parsed; strengthened clock lower-bound assertion separately rerun and passed |
+| Persistence compatibility | 58 tables match generated schema documentation; head 0050b; full migration, drift, rollback, recovery, backup/restore and concurrency tests passed |
+
+The strengthened lower-bound assertion was executed separately after the full
+run had imported its tests; application code was unchanged. Initial red witnesses
+are not counted as passing runs. Hosted Linux/PostgreSQL, Release and ASan/UBSan
+verification remains pending authorized publication. WSL/Linux is not installed
+locally; no fresh local standalone sanitizer build or Python sanitizer coverage
+is claimed. Native checks used the same preserved SHA-256 Release artifact noted
+above, while application C++ was freshly compiled.
+
+The inactive service is ready to publish for review, not operational rollout.
+Authority assignment/revocation governance, calibrated coefficients, restricted
+database roles, retention/authorized erasure, private logging and the inherited
+account-lifecycle correction remain mandatory prerequisites. No public routes,
+management UI, operational grants, production values, operational policy activation,
+real-calendar optimization or booking changes were introduced.
