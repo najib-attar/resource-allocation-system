@@ -25,6 +25,7 @@ from research.cdmcs.i3d.d1.contract import parse_policy as synthetic_policy
 
 
 NOW = datetime(2030, 6, 1, tzinfo=timezone.utc)
+REAL_READ_CLOCK = CostPolicyService._read_clock
 
 
 class CostPolicyGovernanceTests(PostgresTestCase):
@@ -46,6 +47,9 @@ class CostPolicyGovernanceTests(PostgresTestCase):
         self.service = CostPolicyService(self.database, university_timezone='Europe/Istanbul')
         timer = mock.patch.object(CostPolicyService, '_now', return_value=NOW)
         timer.start(); self.addCleanup(timer.stop)
+        reader_clock = mock.patch.object(CostPolicyService, '_read_clock',
+            side_effect=lambda session: (self.service._now(session), self.service._now(session)))
+        reader_clock.start(); self.addCleanup(reader_clock.stop)
 
     @contextmanager
     def authenticated(self, uid=1, version=1):
@@ -357,6 +361,136 @@ class CostPolicyGovernanceTests(PostgresTestCase):
                 self.assertEqual(reader.result(timeout=10).state, 'active')
         self.assertEqual(self.read().state, 'deactivated')
 
+    def test_future_audit_grant_cannot_combine_with_a_revoked_old_session(self):
+        self.active()
+        with self.database.transaction() as session:
+            grant = authority_row(6, 'audit')
+            grant.effective_from = NOW + timedelta(seconds=1)
+            session.add(grant)
+        def capture_and_revoke(session):
+            session.execute(select(func.pg_catalog.transaction_timestamp(), func.pg_catalog.clock_timestamp())).one()
+            AccountService(self.database).revoke(6)
+            return NOW, NOW + timedelta(seconds=2)
+        with self.authenticated(6), mock.patch.object(self.service, '_read_clock', side_effect=capture_and_revoke), \
+                self.assertRaises(PolicyAccessDenied):
+            self.service.current()
+        self.assertIsNone(AccountService(self.database).identity(6, 1))
+
+    def test_already_authorized_read_can_finish_after_session_revocation(self):
+        self.active()
+        with self.database.transaction() as session:
+            session.add(authority_row(6, 'audit'))
+        def capture_and_revoke(session):
+            session.execute(select(func.pg_catalog.transaction_timestamp(), func.pg_catalog.clock_timestamp())).one()
+            AccountService(self.database).revoke(6)
+            return NOW, NOW
+        with self.authenticated(6), mock.patch.object(self.service, '_read_clock', side_effect=capture_and_revoke):
+            self.assertEqual(self.service.current().state, 'active')
+        with self.authenticated(6), self.assertRaises(PolicyAccessDenied):
+            self.service.current()
+
+    def test_backward_read_clock_is_rejected(self):
+        with self.authenticated(3), mock.patch.object(self.service, '_read_clock',
+                return_value=(NOW, NOW-timedelta(seconds=1))), self.assertRaises(PolicyStorageError):
+            self.service.current()
+
+    def test_real_read_clock_establishes_the_coherent_postgresql_snapshot(self):
+        with self.database.transaction() as session:
+            session.add(Head(id=1, version=0))
+        with self.database.transaction(read_only=True) as reader:
+            start, end = REAL_READ_CLOCK(reader)
+            self.assertIsNotNone(start.tzinfo)
+            self.assertLessEqual(start, end)
+            self.assertEqual(start, reader.scalar(select(func.pg_catalog.transaction_timestamp())))
+            with self.database.transaction() as writer:
+                writer.get(Head, 1).version = 1
+            self.assertEqual(reader.scalar(select(Head.version)), 0)
+        with self.database.transaction(read_only=True) as reader:
+            self.assertEqual(reader.scalar(select(Head.version)), 1)
+
+    def test_connection_bound_session_cannot_impersonate_an_owned_engine_transaction(self):
+        with self.database.engine.connect() as connection:
+            self.database.sessions.configure(bind=connection)
+            with self.authenticated(3), self.assertRaises(PolicyAccessDenied):
+                self.service.current()
+        self.database.sessions.configure(bind=self.database.engine)
+        self.assertEqual(self.totals(), (0, 0, 0))
+
+    def _decision_revocation_race(self, kind, revocation_first):
+        self.propose()
+        expected = 1
+        if kind == 'activate':
+            self.decide('approve', 1)
+            expected = 2
+        before = self.totals()
+        held, attempted, release = threading.Event(), threading.Event(), threading.Event()
+        other = Database(self.database.url)
+        self.addCleanup(other.dispose)
+        original = self.service._authority
+        calls = []
+        def pause_authority(*args):
+            result = original(*args)
+            if not revocation_first and not calls:
+                calls.append(True)
+                held.set()
+                if not release.wait(10):
+                    raise AssertionError('Missing decision release')
+            return result
+        def revoke():
+            with other.transaction() as session:
+                row = authority_row(2, 'approve', revision=2)
+                row.decision = 'Revoked'
+                session.add(row)
+                if revocation_first:
+                    session.flush()
+                    held.set()
+                    if not release.wait(10):
+                        raise AssertionError('Missing revocation release')
+        def capture(_, __, statement, *args):
+            if statement.startswith('LOCK TABLE scheduling_cost_policy_authority_revision' if revocation_first
+                    else 'INSERT INTO scheduling_cost_policy_authority_revision'):
+                attempted.set()
+        engine = self.database.engine if revocation_first else other.engine
+        event.listen(engine, 'before_cursor_execute', capture)
+        try:
+            with mock.patch.object(self.service, '_authority', side_effect=pause_authority), \
+                    ThreadPoolExecutor(max_workers=2) as pool:
+                first = pool.submit(revoke if revocation_first else self.decide,
+                    *(() if revocation_first else (kind, expected)))
+                try:
+                    self.assertTrue(held.wait(10))
+                    second = pool.submit(self.decide if revocation_first else revoke,
+                        *((kind, expected) if revocation_first else ()))
+                    self.assertTrue(attempted.wait(10))
+                    self.assertFalse(second.done())
+                finally:
+                    release.set()
+                if revocation_first:
+                    first.result(timeout=10)
+                    with self.assertRaises(PolicyAccessDenied):
+                        second.result(timeout=10)
+                else:
+                    self.assertEqual(first.result(timeout=10).head_version, expected+1)
+                    second.result(timeout=10)
+        finally:
+            release.set()
+            event.remove(engine, 'before_cursor_execute', capture)
+        self.assertEqual(self.totals(), before if revocation_first else (before[0], before[1]+1, before[2]))
+        with self.assertRaises(PolicyAccessDenied):
+            self.decide(kind, expected if revocation_first else expected+1)
+
+    def test_revocation_before_approval_prevents_the_decision(self):
+        self._decision_revocation_race('approve', True)
+
+    def test_revocation_before_activation_prevents_the_decision(self):
+        self._decision_revocation_race('activate', True)
+
+    def test_approval_before_revocation_commits_once_and_later_decisions_are_denied(self):
+        self._decision_revocation_race('approve', False)
+
+    def test_activation_before_revocation_commits_once_and_later_decisions_are_denied(self):
+        self._decision_revocation_race('activate', False)
+
     def test_raw_revocation_committed_before_publication_is_observed(self):
         held, attempted, release = threading.Event(), threading.Event(), threading.Event()
         other = Database(self.database.url); self.addCleanup(other.dispose)
@@ -385,6 +519,28 @@ class CostPolicyGovernanceTests(PostgresTestCase):
             with self.subTest(isolation=isolation), self.authenticated(), self.assertRaises(PolicyStorageError):
                 self.service.propose(0, policy_document())
             self.assertEqual(self.totals(), (0, 0, 0))
+
+    def test_autocommit_denial_does_not_commit_an_initialized_head(self):
+        self.database.sessions.configure(bind=self.database.engine.execution_options(isolation_level='AUTOCOMMIT'))
+        with self.authenticated(6), self.assertRaises(PolicyStorageError):
+            self.service.propose(0, policy_document())
+        self.database.sessions.configure(bind=self.database.engine)
+        self.assertEqual(self.totals(), (0, 0, 0))
+
+    def test_autocommit_read_cannot_claim_a_coherent_readonly_snapshot(self):
+        self.database.sessions.configure(bind=self.database.engine.execution_options(isolation_level='AUTOCOMMIT'))
+        with self.authenticated(3), self.assertRaises(PolicyStorageError):
+            self.service.current()
+
+    def test_read_in_a_writer_transaction_is_rejected_before_policy_queries(self):
+        transaction = self.database.transaction
+        @contextmanager
+        def incorrect_mode(**kwargs):
+            with transaction(read_only=False) as session:
+                yield session
+        with self.authenticated(3), mock.patch.object(self.database, 'transaction', incorrect_mode), \
+                self.assertRaises(PolicyStorageError):
+            self.service.history()
 
     def test_inflight_publication_blocks_raw_revocation_and_later_transaction_is_denied(self):
         held, attempted, release = threading.Event(), threading.Event(), threading.Event()
@@ -553,6 +709,36 @@ class CostPolicyGovernanceTests(PostgresTestCase):
             session.get(Head, 1).version = 3
         with self.assertRaises(PolicyStorageError): self.decide('activate', 3)
         with self.authenticated(3), self.assertRaises(PolicyStorageError): self.service.history()
+
+    def test_cross_revision_activation_overlap_is_not_a_valid_current_or_history(self):
+        self.active()
+        self.propose(3, 2)
+        self.decide('approve', 4, 2)
+        with self.database.transaction() as session:
+            approval = session.scalar(select(Event).where(Event.policy_revision == 2, Event.event_type == 'Approved'))
+            second = Event(policy_id='university', policy_revision=2, event_type='Activated', actor_id=2,
+                actor_capability='approve', authority_revision=1, head_version=6,
+                preceding_event_id=approval.id, reason='Fictional out-of-service replacement')
+            session.add(second)
+            session.flush()
+            head = session.get(Head, 1)
+            head.version, head.active_event_id = 6, second.id
+        self.assertEqual((self.read().state, self.read().policy), ('unknown', None))
+        with self.authenticated(3), self.assertRaises(PolicyStorageError):
+            self.service.history()
+        # Even closing both activations must not hide the earlier overlap.
+        for revision, version in ((1, 7), (2, 8)):
+            with self.database.transaction() as session:
+                activation = session.scalar(select(Event).where(Event.policy_revision == revision,
+                    Event.event_type == 'Activated'))
+                session.add(Event(policy_id='university', policy_revision=revision, event_type='Deactivated', actor_id=2,
+                    actor_capability='approve', authority_revision=1, head_version=version,
+                    preceding_event_id=activation.id, reason='Fictional structural close'))
+                head = session.get(Head, 1)
+                head.version, head.active_event_id = version, None
+        self.assertEqual((self.read().state, self.read().policy), ('unknown', None))
+        with self.authenticated(3), self.assertRaises(PolicyStorageError):
+            self.service.history()
 
     def test_privileged_methods_have_no_caller_supplied_actor_override(self):
         with self.authenticated():

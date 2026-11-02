@@ -6,7 +6,7 @@ from datetime import datetime
 import re
 
 from flask import g, has_request_context, session as login_session
-from sqlalchemy import func, select, text
+from sqlalchemy import and_, func, or_, select, text
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.engine import URL
 from sqlalchemy.exc import SQLAlchemyError
@@ -104,6 +104,13 @@ class CostPolicyService:
         return session.scalar(select(func.clock_timestamp()))
 
     @staticmethod
+    def _read_clock(session):
+        # Transaction start also precedes snapshots acquired during protocol
+        # preparation; statement_timestamp alone does not provide that bound.
+        return session.execute(select(func.pg_catalog.transaction_timestamp(),
+            func.pg_catalog.clock_timestamp())).one()
+
+    @staticmethod
     def _authority(session, uid, capability, now):
         # Future revisions are not effective early; never fall back after selecting
         # the latest begun revision, even if it is revoked or has expired.
@@ -139,10 +146,20 @@ class CostPolicyService:
                 if (getattr(bind, 'url', None) != authenticated or not session.is_active
                         or session.new or session.dirty or session.deleted):
                     raise PolicyAccessDenied()
-                # After waiting for a revocation lock, writers must see its newly
-                # committed row rather than a transaction's earlier snapshot.
-                if write and session.scalar(text('SHOW transaction_isolation')) != 'read committed':
+                # SHOW isolation alone cannot detect DBAPI AUTOCOMMIT, where
+                # initialization could commit before a later authorization denial.
+                connection = session.connection()
+                if getattr(connection.connection.driver_connection, 'autocommit', None) is not False:
                     raise PolicyStorageError()
+                isolation = session.scalar(text('SHOW transaction_isolation'))
+                readonly = session.scalar(text('SHOW transaction_read_only'))
+                if ((write and (isolation != 'read committed' or readonly != 'off'))
+                        or (not write and (isolation != 'repeatable read' or readonly != 'on'))):
+                    raise PolicyStorageError()
+                if not write:
+                    read_start, now = self._read_clock(session)
+                    if now < read_start:
+                        raise PolicyStorageError()
                 schema = session.scalar(text('SELECT pg_catalog.current_schema()'))
                 if schema is None:
                     raise PolicyAccessDenied()
@@ -163,8 +180,11 @@ class CostPolicyService:
                 current = AccountService(self.database).identity(uid, version, session=session)
                 if current is None or current != principal:
                     raise PolicyAccessDenied()
-                now = self._now(session)
+                if write:
+                    now = self._now(session)
                 authority = self._authority(session, uid, capability, now)
+                if not write and self._authority(session, uid, capability, read_start).revision != authority.revision:
+                    raise PolicyAccessDenied()
                 before = head.active_event_id if head else None
                 yield session, current, head, authority, now
                 if write:
@@ -210,6 +230,20 @@ class CostPolicyService:
         return state, rows
 
     def _active(self, session, head):
+        # Per-revision chains are insufficient: a replacement must follow the
+        # previous revision's explicit deactivation, including in closed history.
+        stream = select(Event.id, Event.event_type, Event.preceding_event_id,
+            func.lag(Event.id).over(order_by=Event.head_version).label('previous_id'),
+            func.lag(Event.event_type).over(order_by=Event.head_version).label('previous_type')) \
+            .where(Event.event_type.in_(('Activated', 'Deactivated'))).subquery()
+        invalid = or_(
+            and_(stream.c.event_type == 'Activated', stream.c.previous_type.is_not(None),
+                stream.c.previous_type != 'Deactivated'),
+            and_(stream.c.event_type == 'Deactivated', or_(
+                stream.c.previous_type.is_distinct_from('Activated'),
+                stream.c.preceding_event_id.is_distinct_from(stream.c.previous_id))))
+        if session.scalar(select(stream.c.id).where(invalid).limit(1)) is not None:
+            raise PolicyStorageError()
         last = session.scalar(select(Event).where(Event.event_type.in_(('Activated', 'Deactivated')))
             .order_by(Event.head_version.desc()).limit(1))
         highest = session.scalar(select(func.max(Event.head_version)))
