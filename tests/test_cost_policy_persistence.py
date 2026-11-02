@@ -449,15 +449,22 @@ class PolicyMigrationTests(PostgresTestCase):
         self.migrate('downgrade', '0050a')
 
     def test_failed_upgrade_rolls_back_tables_functions_and_version(self):
-        original = Operations.create_index
-        def fail(operations, name, *args, **kwargs):
-            if name == 'ix_cost_event_policy': raise RuntimeError('Isolated migration failure')
-            return original(operations, name, *args, **kwargs)
-        with mock.patch.object(Operations, 'create_index', fail), self.assertRaisesRegex(RuntimeError, 'Isolated'):
+        original = Operations.execute
+        installed = []
+        def fail(operations, statement, *args, **kwargs):
+            result = original(operations, statement, *args, **kwargs)
+            if isinstance(statement, str) and statement.startswith('ALTER FUNCTION ras_cost_history_immutable()'):
+                installed.append(True)
+                raise RuntimeError('Isolated migration failure after complete guard installation')
+            return result
+        with mock.patch.object(Operations, 'execute', fail), self.assertRaisesRegex(RuntimeError, 'Isolated'):
             self.migrate('upgrade', 'head')
+        self.assertEqual(installed, [True])
         self.assertFalse(set(TABLES).intersection(inspect(self.database.engine).get_table_names()))
         with self.database.transaction(read_only=True) as session:
             self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), '0050a')
+            self.assertEqual(session.scalar(text("SELECT count(*) FROM pg_proc WHERE "
+                "pronamespace=current_schema()::regnamespace AND proname LIKE 'ras_cost_%'")), 0)
         self.migrate('upgrade', 'head'); self.migrate('check', None)
 
     def test_initialized_head_alone_also_blocks_downgrade_without_data_loss(self):
