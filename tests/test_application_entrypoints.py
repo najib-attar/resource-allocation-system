@@ -35,7 +35,7 @@ class ProbeRunner:
                 worker.terminate()
                 worker.join(5)
             worker.close()
-        return types.SimpleNamespace(testsRun=553, skipped=[], wasSuccessful=lambda: True)
+        return types.SimpleNamespace(testsRun=598, skipped=[], wasSuccessful=lambda: True)
 unittest.TextTestRunner = ProbeRunner
 unittest.TestLoader = lambda: types.SimpleNamespace(discover=lambda *args, **kwargs: unittest.TestSuite())
 '''
@@ -48,6 +48,35 @@ unittest.TestLoader = lambda: types.SimpleNamespace(discover=lambda *args, **kwa
         result = subprocess.run([sys.executable, '-B', *arguments], input=stdin, capture_output=True,
             text=True, timeout=20, cwd=ROOT, env=dict(os.environ, TEST_DATABASE_URL='synthetic-no-connection'))
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_policy_ci_gate_rejects_missing_postgresql_discovery_and_skips(self):
+        workflow = (ROOT / '.github/workflows/backend-postgresql-regression.yml').read_text(encoding='utf-8')
+        step = workflow.split('- name: Require inactive institutional policy values, integrity and migration tests', 1)[1]
+        gate = textwrap.dedent(step.split("<<'PY'\n", 1)[1].split('          PY', 1)[0])
+        for scenario in ('missing_database', 'incomplete_discovery', 'skipped_database', 'complete'):
+            harness = '''
+import types, unittest
+scenario = %r
+class Suite:
+    def addTests(self, tests): pass
+class Loader:
+    def discover(self, path, pattern):
+        count = 1 if scenario == 'incomplete_discovery' else 13 if pattern == 'test_cost_policy_values.py' else 31
+        return types.SimpleNamespace(countTestCases=lambda: count)
+class Runner:
+    def __init__(self, **kwargs): pass
+    def run(self, suite):
+        return types.SimpleNamespace(testsRun=44, skipped=[('fixture', 'missing PostgreSQL')]
+            if scenario == 'skipped_database' else [], wasSuccessful=lambda: True)
+unittest.TestSuite, unittest.TestLoader, unittest.TextTestRunner = Suite, Loader, Runner
+''' % scenario
+            environment = dict(os.environ)
+            environment.pop('TEST_DATABASE_URL', None)
+            if scenario != 'missing_database': environment['TEST_DATABASE_URL'] = 'synthetic-no-connection'
+            result = subprocess.run([sys.executable, '-B', '-c', textwrap.dedent(harness) + '\n' + gate],
+                capture_output=True, text=True, timeout=20, cwd=ROOT, env=environment)
+            with self.subTest(scenario=scenario):
+                self.assertEqual(result.returncode == 0, scenario == 'complete', result.stdout + result.stderr)
 
     @skipUnless(os.name == 'nt', 'PowerShell runner cleanup is exercised on Windows.')
     def test_cpp_runner_cleans_owned_artifacts_and_preserves_compile_failure_status(self):
