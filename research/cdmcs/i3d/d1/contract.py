@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from datetime import date
+from web.cost_policy_values import COEFFICIENT_FIELDS, parse_coefficients
 
 from web.preference_values import (PreferenceError, PreferenceUnavailable, VALUE_FIELDS,
                                    check, clock, day, label, load_document, number,
@@ -79,8 +80,6 @@ def parse_policy(value):
     envelope(value, ("policy_version", "synthetic", "id", "revision", "rate_model", *rates,
                      "gap_weight", "nearby_limit", *fees, "provenance"), "policy_version")
     check(value["rate_model"] == "weekday_window_tiers_v1", "UNSUPPORTED_RATE_MODEL")
-    parsed_rates = tuple(number(value[key], 10**8) for key in rates)
-    check(parsed_rates[0] <= parsed_rates[1] <= parsed_rates[2], "CONFLICTING_RATES")
-    return CostPolicy(label(value["id"]), number(value["revision"], 2**63 - 1, 1), *parsed_rates,
-                      number(value["gap_weight"], 100000), number(value["nearby_limit"], 10080),
-                      *(number(value[key], 10**7) for key in fees), provenance(value["provenance"]))
+    coefficients = parse_coefficients({key: value[key] for key in COEFFICIENT_FIELDS})
+    return CostPolicy(label(value["id"]), number(value["revision"], 2**63 - 1, 1),
+                      *(getattr(coefficients, key) for key in COEFFICIENT_FIELDS), provenance(value["provenance"]))
