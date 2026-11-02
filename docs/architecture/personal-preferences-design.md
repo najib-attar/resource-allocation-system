@@ -127,17 +127,39 @@ Future deployment needs an approved retention/audit/backup-erasure procedure and
 appropriate separation of migration/DBA and non-owner application credentials.
 
 Account deletion/recreation is not password reset. Existing provisioning starts a
-new login row at session version 1; manually recreating that row with a reused
-version can revive old signed cookies. D3-B does not change global authentication.
+new login row at session version 1. A synthetic D3-B.5 witness confirmed that a
+previously revoked session can read its preferences again after manual login
+deletion and reprovisioning with that reused generation. This requires a separate
+privileged account deletion, not a preference operation; there is no preference
+route or account-deletion workflow added here. D3-B does not change global authentication.
 Do not use that unsupported recovery procedure: existing password reset/revoke
 preserves the account and advances its version. A recreated account must use a
 non-reused generation or invalidate prior cookies through separately reviewed
 account-lifecycle hardening before production use of such recovery. Tests cover
 deleted-account denial and recovery with an explicitly new session version.
 
-Empty-table downgrade is reversible. Populated history blocks downgrade pending
-explicit authorized retention/erasure review; migration never silently discards it.
+Empty-table downgrade is reversible. Downgrade takes an ACCESS EXCLUSIVE table
+lock before checking for history, preventing a concurrent append from committing
+between the empty check and DROP. Without that lock a two-transaction regression
+reproduced silent loss of a newly appended revision; the corrected test verifies
+the append cannot commit through that gap. Populated history blocks downgrade
+pending explicit authorized retention/erasure review.
 All migrations and erasure tests run only in disposable synthetic databases.
+
+Minimum deployment separation: migrations/authorized erasure use a distinct owner
+role. Ordinary application credentials must be non-owner, non-superuser, unable to
+assume that owner role, and unable to disable triggers or perform DDL. Grant only
+the required SELECT/INSERT access on preference history, not UPDATE/DELETE/TRUNCATE;
+end users receive no direct SQL access. These are deployment requirements, not new
+roles or grants installed by this migration. Database/server payload logging,
+backup retention and erasure auditing require a separately approved operational
+policy; sanitized service exceptions do not sanitize privileged database logs.
+
+Database checks enforce state shape, types and bounds, not a second implementation
+of weekly-window validation. Direct SQL can insert semantically invalid window
+arrays or duplicate weekdays; every read revalidates them and returns unknown
+without values or fallback. This is not a public SQL interface or an authorization
+grant. Valid timezone storage likewise does not imply compiler compatibility.
 
 ## Verification boundaries
 
@@ -146,23 +168,33 @@ session binds, revocation/inactivation, concurrent first creation and update/cle
 consistent reads, immutable history, bounded paging, JSON/numeric/timezone limits,
 overnight source preservation, rollback, empty/populated downgrade and DBA erasure.
 They also require no engine calls/calendar queries and no changes to other tables.
-Local verification used Windows, Python 3.12.14 and isolated PostgreSQL 17.11:
+Local D3-B.5 verification used Windows, Python 3.12.14 and isolated PostgreSQL 17.11:
 
 | Suite | Executed result |
 |---|---|
-| Full application Python/PostgreSQL | 542 run: 541 passed, one POSIX execute-permission test skipped on Windows |
-| New shared values / preference persistence | 11 / 30 passed; also included in the full application run |
+| Full application Python/PostgreSQL | 552 run: 551 passed, one POSIX execute-permission test skipped on Windows |
+| Shared values / preference persistence | 11 / 40 passed, combined zero-skip gate 51; also included in the full run |
 | D1 / D2 | 84 / 56 passed, zero skips |
 | I3a / I3b plus identity / I3c | 37 / 55 / 47 passed, zero skips |
 | Application C++ | 192 passed, plus two standalone CSV smoke checks |
 | Standalone CDMCS | 618 differential cases and 25 safety methods passed |
-| Migration / metadata | Fresh upgrade, empty downgrade/re-upgrade, populated downgrade refusal and no drift verified |
+| Migration / metadata | Fresh upgrade, locked concurrent downgrade, empty downgrade/re-upgrade, populated refusal and no drift verified |
+| Historical D1 parser comparison | 1,200 deterministic synthetic cases: 832 accepted and 368 rejected identically |
 
-An initial full run found five obsolete schema assertions (trigger inventory,
+The original D3-B full run found five obsolete schema assertions (trigger inventory,
 FK deletion action and three literal migration heads). Those expectations were
 corrected to match the declared schema without removing checks; the complete
-542-test rerun passed. D1 tests and both native engines remain unchanged.
+542-test rerun passed. D3-B.5 added ten targeted tests and the downgrade-lock
+correction; its complete 552-test rerun passed. D1 tests and both native engines remain unchanged.
 Research execution used verified existing Release binaries; application C++ tests
-were freshly compiled. No local Linux sanitizer run or hosted CI is claimed.
+were freshly compiled. Local Linux/WSL is unavailable; no sanitizer run is claimed.
+
+Both workflows passed actionlint 1.7.7 syntax/expression validation; 14 inline-gate
+policy checks verified rejection of missing PostgreSQL, empty/incomplete discovery,
+failed tests and unexpected skips. The explicit 51-test preference gate permits
+no skips. The full Linux gate allows only the named Windows-only runner test;
+database/tooling skips are errors. Existing research Release and ASan/UBSan jobs
+remain configured. Hosted CI is unexecuted until publication; Python persistence
+tests are not sanitizer coverage. No deployment steps were added.
 Existing I3c synthetic-only admission and default-disabled execution are untouched.
 Numerical governance, real-calendar execution, UI and D3-C/D4 remain out of scope.
