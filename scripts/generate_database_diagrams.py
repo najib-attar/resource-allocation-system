@@ -13,6 +13,9 @@ from web.persistence.models import Base
 
 
 PURPOSES = {
+    'request_eligibility': 'Explicit administrative eligibility for the current request revision; legacy provenance is unverified, never automatically approved.',
+    'eligibility_event': 'Append-only eligibility decision/revision audit, separate from allocation outcomes and calendar publication.',
+    'allocation_eligibility': 'Immutable per-run request revision and eligibility-version proof used to reject stale replacement publications.',
     'scheduling_cost_policy_revision': 'Immutable institutional numerical intent and canonical digest; not approval, activation or calibrated defaults.',
     'scheduling_cost_policy_event': 'Immutable governance decision associations and explicit approval/activation/deactivation provenance; no management commands.',
     'scheduling_cost_policy_head': 'Optional singleton optimistic concurrency and active-event pointer; empty until future authorized governance initializes it.',
@@ -78,6 +81,7 @@ MAIN_TABLES |= {"login_account", "academic_period", "legacy_calendar_binding", "
                 "appointment_invitation", "appointment_commitment", "professor_availability", "calendar_block"}
 MAIN_TABLES |= {"room_policy", "faculty_room_approver", "student_room_request", "room_reservation", "room_invitation", "room_organizer_commitment"}
 MAIN_TABLES.add("notification")
+MAIN_TABLES |= {'request_eligibility','eligibility_event','allocation_eligibility'}
 MAIN_TABLES.add("scheduling_preference_revision")
 MAIN_TABLES |= {'scheduling_cost_policy_revision', 'scheduling_cost_policy_event',
                 'scheduling_cost_policy_head', 'scheduling_cost_policy_authority_revision'}

@@ -1,8 +1,24 @@
 # PostgreSQL application persistence and dated calendars
 
+## Academic eligibility review (0051a)
+
+The schema now has **61 application tables** plus Alembic. `request_eligibility`
+stores independent human review, provenance, reviewed request revision and review
+version. `eligibility_event` holds immutable review/invalidation history.
+`allocation_eligibility` binds each run to its reviewed request revisions.
+`resource_request.faculty_declaration` stores unverified declared context.
+
+Only currently Eligible revisions enter academic snapshots. Application-state
+locking and immutable run proofs reject stale execution/publication. Material edits
+invalidate review; inputs included in the active publication remain read-only.
+Migration marks every old request Legacy/Pending Eligibility Review without
+changing existing results. Outstanding current legacy reviews block replacement;
+rejection preserves current reservations until authorized replacement. A populated
+downgrade refuses history loss. See the [approved contracts and rollout assumptions](../srs/professor-workflows.md).
+
 ## Institutional cost-policy foundation (0050b)
 
-The source schema now has **58 application tables** plus Alembic. Four empty
+That revision brought the schema to **58 application tables** plus Alembic. Four empty
 institutional cost-policy tables separate immutable values, governance history,
 an optional current pointer and explicit authority history. No numerical defaults,
 authority grants, management commands or optimizer activation are introduced.

@@ -1,97 +1,116 @@
-# Professor Services v1 — backend review and safe increment
+# Professor Services v1 — eligibility and backend acceptance
 
-**CHANGES REQUIRED — academic intake is blocked by the missing administrative eligibility gate.**
+**PASS for the approved eligibility/backend increment.** The former missing-gate blocker is resolved under the user's explicit approval. Full professor visual redesign and academic outcome notifications remain outside this completed increment; historical pre-gate reports are identified below.
 
-The user approved self-owned requests by any active Instructor and declared course/activity metadata, but explicitly required unreviewed/rejected requests to be excluded from allocation. The current backend does not enforce that gate. UC-PROF-06–08 intake was therefore stopped as instructed. No schema, engine contract, scheduling semantics or eligibility policy was silently introduced.
+## Source and delivery boundary
 
-## Git preparation and reviewed source
+Professor branch `codex/professor-services-v1` is based on completed Student UI-10 commit `747c925b14c29368e6cb9bc8b2e2d9d33c494462`. Student work is unchanged and clean. [Draft PR #24](https://github.com/najib-attar/resource-allocation-system/pull/24) remains open, draft, unmerged and targets main with that exact head. The professor branch has no remote branch or upstream. [Current remote/PR proof](git-isolation-current.json), [original preparation](git-preparation.json).
 
-- Completed student branch: `design/student-portal`, clean at `747c925b14c29368e6cb9bc8b2e2d9d33c494462`; pushed normally. All 18 student commits are in **Draft PR [#24](https://github.com/najib-attar/resource-allocation-system/pull/24)** targeting main. The PR is unmerged and mergeable; four reported check runs succeeded. The legacy combined commit-status API says pending and is recorded separately, not interpreted as an additional successful gate.
-- Professor branch/worktree: `codex/professor-services-v1`, separately created from that exact completed student commit. It inherits the shared Campus Space components and explicitly depends on PR #24. No professor push or PR was made.
-- Latest reviewed main: `d9a63f3ef0f5f22b56a79af670c740a13f7bb6ad`. Seven main-only governance/CI/cost-policy commits were inspected; no merge, rebase, reset or CDMCS edit occurred. Student and research worktrees were preserved.
-- [Remote/PR commit proof](git-preparation.json), [source and handoff integrity](source-review.json). All nine individual PDFs, combined PDF and two handoff Markdown files match the supplied ZIP bytes. The inherited Student UI-10 acceptance report, feature matrix and screenshots were reviewed as prior evidence, not substituted for this increment's actual tests.
+Reviewed main was `d9a63f3ef0f5f22b56a79af670c740a13f7bb6ad`; its seven main-only governance/cost-policy commits were inspected but not merged or changed. C++ algorithms/protocols, CDMCS, account/session internals, appointment/room/equipment/notification/calendar services are preserved. No professor push, PR, deployment or operational database migration was performed.
 
-## Use-case outcome
+## Use-case results
 
-| Use case | Status | Result |
-|---|---|---|
-| UC-PROF-01 Appointment hours | Verified existing | Own dated hours/exclusions, role/CSRF/ownership, invalid inputs and protected removal; existing future-confirmed-appointment restriction retained |
-| UC-PROF-02 Student appointments | Verified existing | Required-professor current-revision approval/rejection, all four participant combinations, unanimous confirmation, optional students, rescheduling/invalidation, cancellation, history/calendar/notifications |
-| UC-PROF-03 Personal schedule/blocks | Verified existing | Own dated blocks and timetable, cross-user denial, no override of confirmed commitments, privacy |
-| UC-PROF-04 Student room invitations | Verified existing | Optional acceptance/decline with conflict checks; no faculty approval/custody authority or exclusive reservation |
-| UC-PROF-05 Calendar/Inbox | Verified existing | Month/week/day, filters/date navigation, source-scoped details, recipient read/unread behavior; public academic attribution remains metadata |
-| UC-PROF-06 Exam requests | **Blocked intake** | Existing engine/read support verified; no administrative eligibility gate before engine snapshots |
-| UC-PROF-07 Teaching/recurring requests | **Blocked intake** | Existing OneTime/Recurring engine/read contracts verified; same gate prevents professor submission |
-| UC-PROF-08 Academic committee requests | **Blocked intake** | Existing CommitteeMeeting engine/read contract verified; separate from appointments; same gate blocks new intake |
-| UC-PROF-09 Own academic tracking | **Implemented read API; partial UC** | Strict owner list/detail, filters/pagination, active Pending/Approved/Rejected results, allocations, declarations, history and explicit bindings. Professor frontend is planned; academic notifications need separately approved persistence/producer support |
-
-The [exact endpoint/service/database/engine/result matrix](traceability.md) covers the existing controls, new API and denied/deferred capabilities. [Approved policy clarification and required gate changes](../srs/professor-workflows.md). [Reproduced snapshot proof](approval-gate-evidence.json): a saved Pending request enters the administrative engine input without any review state; the proof deliberately did not invoke the engine or publish a reservation.
-
-## Implementation, security and cleanup
-
-New `ProfessorService` and `/professor/academic-requests` GET endpoints enforce active enabled Instructor identity and `requester_id=actor` in SQL before details are loaded. They expose only active successful publication decisions and owner-scoped relations, with read-only repeatable-read transactions. Failed later runs do not replace active results; changed inputs warn explicitly. Unknown and non-owned identifiers return the same private error. Neither public visibility, instructor attribution, committee participation nor an administrator flag grants owner access. Responses are private/no-store; validation is bounded; database errors omit SQL details.
-
-The new namespace has an explicit Instructor guard and bypasses the old global result-adapter loading path. Existing login/session/CSRF internals, administrator endpoints and all business services are unchanged. There are no academic POST endpoints, allocation/strategy/publication permissions, new notification sources, migrations or new dependencies.
-
-A confirmed existing calendar accessibility issue was corrected: native keyboard scrolling left an inline week/day heading link partly clipped at tablet width. A 15-line calendar-specific focus handler reveals the full target inside its horizontal scrollport. The final browser test walks the week grid for all five roles and the full professor views at four widths. An attempted CSS-only adjustment did not resolve the defect and was removed; no redundant CSS remains.
-
-No shared legacy code or valid regression test was removed or consolidated. New Python sources were parsed and checked for unused imports; existing protected persistence/authentication/business/C++ sources were verified unchanged. One temporary native-picker diagnostic screenshot was relocated to ignored build storage; the 22 final application screenshots and state-transition proof remain. The PDFs are requirement references, not screenshot evidence of implementation.
-
-| Changed files | Purpose |
+| Use case | Implementation |
 |---|---|
-| `web/professor_service.py`, `web/professor_routes.py` | Owner-only academic read model and GET API |
-| `web/app.py`, `web/security.py` | Blueprint registration, scoped legacy-adapter exclusion and explicit Instructor namespace guard |
-| `web/static/calendar.js`, `web/templates/university_calendar.html` | Calendar-only keyboard scroll correction and script inclusion |
-| `tests/test_professor_services.py`, `tests/test_professor_existing_workflows.py` | 17 additional PostgreSQL/engine/HTTP/security regression methods |
-| `tests/professor/run_tests.py`, `review_contracts.py`, `browser_review.py`, `browser_review.cjs` | Reproducible test, contract-gap and real-browser verification tools; these four paths share `tests/professor/` |
-| `docs/srs/professor-workflows.md`, `docs/professor-services/` | Reviewed contract decisions, traceability, frontend plan and exact acceptance evidence |
-| Imported `Codex-Professor-Handoff.md`, `docs/srs/professor-backend-audit.md`, nine `docs/use-cases/UC-PROF-*.pdf`, `reference/Professor-Use-Cases-Combined.pdf` | Original supplied requirement/reference material preserved |
+| UC-PROF-01 | Existing own dated hours/exclusions/removal verified; confirmed-appointment protection retained |
+| UC-PROF-02 | Existing professor approval/rejection, all participant combinations, unanimous current revision, reschedule invalidation, cancellation/history/calendar verified |
+| UC-PROF-03 | Existing own timetable/blocks and cross-user protection retained |
+| UC-PROF-04 | Existing optional room invitation response retained; no faculty approval or reservation authority granted |
+| UC-PROF-05 | Existing university calendar views/filters/privacy and recipient Inbox/read actions retained |
+| UC-PROF-06 | Self-owned Exam intake, declarations, eligibility review and existing engine result tracking implemented |
+| UC-PROF-07 | Self-owned OneTime/Recurring weekly academic intake, review and existing allocations implemented |
+| UC-PROF-08 | Self-owned CommitteeMeeting with active mandatory participants/roles, review and existing committee allocation implemented; separate from appointments |
+| UC-PROF-09 | Functional owner Jinja list/detail, filters/pagination, eligibility/revision/history, actual active outcomes/rooms and explicit bindings implemented; academic outcome notifications remain deferred |
 
-## Executed verification
+The [complete control-to-endpoint/service/persistence/engine/result matrix](traceability.md) includes authorization, stale/invalid paths, run entry points and intentionally unavailable controls. [Approved state, legacy and revision contracts](../srs/professor-workflows.md). [Professor frontend sequence](frontend-plan.md).
 
-Dedicated owner-read suite: **14/14 passed**, zero failures/errors/skips, 106.44 seconds. Additional existing-workflow contracts: **3/3 passed**, zero failures/errors/skips, 30.25 seconds. The earlier 13-test read run also passed before the all-four-type real-engine case was added. [Read results](owner-reads-final/tests.json), [existing contracts](existing-contracts/tests.json).
+## Eligibility, persistence and migration
 
-Full application C++ regressions: **192 passed, zero failed**, with both `clean-slot` and `normal-dataset` runtime smokes passing. The runner exited 0 and cleaned its owned temporary build directory. [Complete C++ output](cpp-tests.txt).
+Migration `0051a` adds one declaration column and three tables: RequestEligibility, EligibilityEvent and AllocationEligibility. There are 61 application tables plus Alembic; generated schema catalog and ER diagrams were updated.
 
-The broader Python/PostgreSQL verification covers **25 relevant modules / 391 selected tests**. The accepted latest results are **390 passed, zero failures/errors, one Windows platform skip**. This is not a rerun of unrelated backup/recovery and inactive cost-policy suites.
+New professor requests begin **Pending Eligibility Review**, independently of allocation Pending/Approved/Rejected and calendar publication. Active enabled Instructor ownership is checked in HTTP and services. A different active administrator reviews a specific request revision and review version with a reason. Decisions append immutable history, invalidate in-flight input revisions and reserve nothing. Material unpublished revisions return to review. All requests included in the active published batch are read-only, even engine-rejected requests or requests whose eligibility later changes.
 
-| Actual execution | Run | Passed | Failures | Errors | Skipped | Seconds |
+All repository snapshots/start paths filter Eligible current revisions. The default Python gateway refuses unguarded raw academic dictionaries and revalidates captured digest/current eligible payload. Standalone protocol fixtures explicitly opt in; production never does. C++ itself remains the trusted protocol primitive without SQL or publication authority. Publication rechecks current input/review versions and immutable run proofs under the same application-state lock. A later review/edit makes a captured run stale and preserves the previous active results.
+
+Every old academic record becomes **Legacy / Pending Eligibility Review**, with baseline revision and audit record; no blanket approval. Outstanding current legacy reviews block a new run and replacement publication, with a clear queue of IDs. Individual rejection excludes future input but preserves the current reservation until authorized replacement. Current allocations, results, bindings and history are retained. Downgrade with eligibility/history refuses destructive loss.
+
+Rollout assumes old workers stopped, backup verified, Alembic upgraded through 0051a, then matching application code restarted. Old in-flight revisions are invalidated. No operational schema was migrated. Administrator-owned legacy requests require a different administrator to review them. Review changes do not themselves alter existing reservations or calendars.
+
+## Confirmed corrections and code quality
+
+- Closed raw-dictionary/presentation-snapshot allocation bypasses at the Python gateway; copy/deepcopy retain guards and payloads are checked against current eligible data.
+- Extended published read-only enforcement to every active RequestDecision, including engine rejection, at service and database boundaries.
+- Protected eligibility audit/proof records against rewriting, deletion and truncation; protected populated downgrade with table locks.
+- Changed existing admin save/run shortcuts to explicit review-first behavior; no silent automatic approval.
+- Fixed garbled separators in new Jinja views using HTML entities and rendered weekday/time values in readable HH:mm form. New forms reuse existing panels/form grids and one shared field component; no additional CSS/framework/dependency was retained.
+- Demo seeds await review by default. Only explicit new-fictional-demo opt-in performs real synthetic administrator reviews; existing profiles are preserved.
+
+All **617 baseline test methods remain**, with **35 additional methods** (17 from the initial professor verification and 18 from eligibility/intake/migration). No valid regression test was deleted, renamed or consolidated. Older allocation fixtures now perform real synthetic administrator reviews through EligibilityService in owned random PostgreSQL schemas; new gate/security tests call production paths directly. Presentation assertions use the all-record read model rather than eligible-only input. Historical-schema replay clears only gate-specific test metadata inside owned disposable schemas, never operational data. Schema/table/trigger counts reflect the additive migration. Inactive cost-policy implementation and tests' policy assertions are preserved.
+
+No shared template/style/service was proven obsolete across every role, so none was removed. One unused test import was removed. Generated schema diagrams are current documentation; browser screenshots are retained as evidence. Temporary executables, fixture credentials and runtime profiles stay under ignored build storage.
+
+## Executed results
+
+| Execution | Run | Passed | Failures | Errors | Skipped | Seconds |
 |---|---:|---:|---:|---:|---:|---:|
-| Original broader run | 391 | 389 | 0 | 1 | 1 | 1024.56 |
-| Appointment protocol recheck after artifact repair | 5 | 5 | 0 | 0 | 0 | 12.91 |
+| Fresh full Python/PostgreSQL regression, all 52 modules | 652 | 651 | 0 | 0 | 1 | 1375.41 |
+| Intake recheck after adding dated-calendar/direct-SQL assertions | 7 | 7 | 0 | 0 | 0 | 70.02 |
+| Earlier focused gate/intake/legacy verification | 15 | 15 | 0 | 0 | 0 | 98.03 |
 
-The initial protocol error was a missing default `build/backend/allocation_system.exe` in the new worktree: one test calls the default resolver directly instead of the configured external artifact. The source/binary hashes of the existing unchanged Student artifact and manifest were verified, then copied to the new worktree's default ignored build path without replacing any existing file. The unchanged five-test module passed on recheck. **The original failed transcript is preserved; no new complete run is claimed.** [Original exact results/log](regression/tests.json), [full transcript](regression/tests.txt), [successful recheck](protocol-artifact-recheck/tests.json), [artifact integrity](backend-artifact.json), [accepted result accounting](accepted-results.json).
+[Full results](eligibility-final-regression/tests.json), [full transcript](eligibility-final-regression/tests.txt), [calendar/intake recheck](calendar-preservation-recheck/tests.json). No PostgreSQL integration test was skipped. The sole skip is `test_linux_execute_permission_is_checked`: POSIX execute-permission checking runs on Linux, not Windows. The full suite includes all five-role authentication/authorization, student services, real allocation, recovery/restore, concurrency, migration drift, inactive preference/cost-policy persistence and new professor workflows. The later recheck strengthens an existing test; it does not replace the full run.
 
-All appointment, room, equipment, waiting-list (49/49), feedback, recurring workflow/policy, calendar, schedule, notification, account/session, student dashboard/UI, gateway and application entry-point modules in this selected set passed after that setup repair. **No database test was skipped.** The sole skip is `test_linux_execute_permission_is_checked`: “POSIX permission check runs on Linux.” Four independent module processes used owned disposable PostgreSQL schemas. Browser acceptance had completed before this broader run; no browser run overlapped it. The C++ run completed as the broader run started. Existing valid tests were retained unchanged.
+The [current contract/source audit](source-review.json) verified 14 new Python sources, no unused imports, all 45 matrix test references, unchanged protected services/C++ and session/CSRF internals, clean preserved Student worktree and all 12 original handoff file hashes. [Current gate proof](eligibility-contract-review.json) shows pending input excluded, explicitly reviewed input included, and no allocation/publication caused by review.
 
-Actual Flask/Edge browser acceptance: **41 views**, widths 1440/768/390/320, **884 keyboard steps**, including 45 native date/time/month picker subfocus steps; all five roles were exercised. No page overflow, unlabeled visible tested field, application JavaScript exception or unexpected page HTTP error was observed. Native picker subcontrols use Edge's own focus indication; a diagnostic capture was visually inspected rather than requiring an outer CSS outline that the browser does not expose during native subfocus. This is not a screen-reader certification.
+C++ output: [eligibility-cpp-tests.txt](eligibility-cpp-tests.txt), **192 passed, zero failed**; clean-slot and normal-dataset runtime smokes passed. Existing engine source/binary fingerprints remain recorded in [backend-artifact.json](backend-artifact.json).
 
-**41 actual POSTs**, including genuine login/logout, availability, blocks, professor decisions, rescheduling, cancellation, invitation responses, read-state changes and denied attempts. **28 domain/rejection outcomes** were independently checked using fresh committed PostgreSQL transactions, including no mutation on rejected actions, exact current-revision approval/commitment transitions, no reservation from an optional room response, and persisted recipient read timestamps. The remaining POSTs are successful authentication/session operations; role redirects, CSRF rejection and logout were checked in the browser. No response or persistence mocks were used for the browser workflow.
+The earlier diagnostic full run executed 651 tests: 635 passed, 10 failures, 5 errors and one Windows-only skip. It exposed old immediate-allocation fixtures/schema counts, mocked unguarded payloads, historical replay trigger expectations and the now-forbidden published-slot edit. The source was still being hardened during that diagnostic run; it is not final acceptance. [Original diagnostic results](eligibility-full-regression/tests.json), [transcript](eligibility-full-regression/tests.txt). Earlier compatibility (71 run, 67 passed, four failures) and intake harness (12 run, three subtest failures) evidence is retained; no failed attempt is counted as passing. Causes were corrected and rerun. Earlier pre-gate reports under regression/, owner-reads-final/, approval-gate-evidence.json and accepted-results.json remain historical snapshots of the previous stage. The browser/ evidence has been refreshed against the current gate; its earlier version remains in Git history.
 
-Exact split: **15 successful domain mutations, 13 rejected POSTs with unchanged captured domain state, 13 successful login/logout POSTs**. Passwords, CSRF tokens and cookies are omitted from tracked state evidence; identities and activities are synthetic.
+## Real browser and responsive acceptance
 
-[Browser results](browser/browser-results.json), [control inventory](browser/controls.json), [raw before/after states](browser/post-states.json), [independent persistence checks](browser/persistence-verification.json), [cleanup proof](browser/cleanup.json). The review server stopped and the last owned review schema was verified absent. Earlier failed harness attempts also ran fixture cleanup; failure reasons were a missing synthetic academic binding, a form `action` property collision in the control collector, native-picker outer-outline assertions and the reproducible calendar focus defect. No such attempt is reported as a pass.
+| Browser execution | Views | Keyboard steps | POSTs | Independently verified domain/rejection outcomes |
+|---|---:|---:|---:|---:|
+| Existing UC01–05 and owner-read workflows, all five roles | 41 | 884 | 41 | 28 |
+| New eligibility/intake/revision/legacy replacement workflows | 32 | 396 | 28 | 21 |
 
-22 real application screenshots are inventoried in [screenshots.json](screenshots.json), with SHA-256/dimensions/PNG verification. Representative views: [hours 320](browser/hours-320.png), [appointment 1440](browser/appointment-1440.png), [week 320](browser/calendar-week-320.png), [room invitation 320](browser/room-invitation-320.png), [rescheduled approvals](browser/reschedule-invalidated-approvals.png). The existing shared shell was preserved; these captures do not claim completion of the future professor Campus Space frontend.
+Both scripts exited 0. There were no application JavaScript exceptions, unexpected HTTP errors, horizontal overflow or unlabeled tested visible fields. Expected authorization/validation denials were asserted explicitly and left captured state unchanged. The 69 POSTs include 20 authentication/session operations and 49 verified domain/rejection outcomes; these are separate executions, not 69 unique workflows. Native picker subfocus contributed 45 and 24 steps respectively. The final eligibility browser was rerun after the HH:mm display correction; the retained results/screenshots come from that final run.
 
-## Remaining decisions and delivery sequence
+[Existing workflow browser results](browser/browser-results.json), [controls](browser/controls.json), [actual POST states](browser/post-states.json), [independent verification](browser/persistence-verification.json), [cleanup](browser/cleanup.json). [Eligibility browser results/control inventory](eligibility-browser/browser-results.json), [actual POST states](eligibility-browser/post-states.json), [independent verification and real engine inputs](eligibility-browser/persistence-verification.json), [cleanup](eligibility-browser/cleanup.json). Both owned schemas were independently confirmed absent and both servers stopped.
 
-1. Approve a separate eligibility-review design/migration: review state, reviewer/audit, reviewed revision and invalidation, admin-only actions, filtering every allocation snapshot, stale-run safety, legacy/import treatment and regression/security proof. The C++ JSON schema and algorithms can remain unchanged by filtering eligible inputs in the Python persistence boundary, subject to that review.
-2. Separately approve academic notification source/schema, producers, recipient/destination policy and migration. Existing appointment/room notifications need no replacement.
-3. Decide any future private attribution-based teaching entitlement explicitly. Current public metadata does not establish ownership or an enrollment relationship; the read API does not add such a permission.
-4. Implement the [bounded professor frontend sequence](frontend-plan.md): Home/navigation → appointments/hours → personal schedule → read-only academic tracking → intake only after the gate → calendar/Inbox → cross-role/mobile acceptance. Reuse shared components and services; do not independently redesign Campus Space.
+**38 real application PNGs** are inventoried with dimensions, SHA-256 and PNG CRC verification in [screenshots.json](screenshots.json). Visual review included [desktop academic list](eligibility-browser/academic-list-1440.png), [320px exam form](eligibility-browser/new-Exam-320.png), [320px legacy review](eligibility-browser/legacy-review-320.png), [rejected legacy reservation warning](eligibility-browser/legacy-rejected-reservation-preserved.png), and the original shared hour/calendar screens. No screenshot is a prototype image.
 
-This safe backend increment can be reviewed locally. The full Professor Services v1 is **not ready** for acceptance while intake and academic notification contracts remain unresolved. Preserve Student Draft PR #24's dependency and inspect the eventual merged main revision before proposing a professor Draft PR. No professor push, PR, merge, deployment, operational database change or research edit is authorized by this report.
+Initial browser harness attempts exposed synthetic identity/sequence collisions, which were repaired in the fixture. Visual inspection then corrected separator encoding and raw-minute display. Earlier failures are not reported as passing runs; the final scripts and artifacts reproduce the corrected behavior.
+
+No prototype image is used as implementation proof. Browser fixtures are synthetic PostgreSQL schemas; actual Flask responses and real state-changing POSTs are checked using independent committed database reads. Passwords, cookies and CSRF values are omitted from tracked evidence. The gate browser also creates a real pre-migration publication, upgrades it, verifies review holds and runs an actual C++ replacement using eligible inputs only. Fixture/server cleanup is verified.
+
+Keyboard/label/focus/overflow checks cover 1440, 768, 390 and 320 pixels. Native date/time picker subfocus uses Edge's native focus indicator. This is automated keyboard review and visual inspection, not screen-reader certification or a full professor visual redesign. The shared Campus Space shell and controls are reused; full professor page-group visual acceptance remains planned.
+
+## Remaining scope and risks
+
+1. Academic outcome notifications require a separately approved ResourceRequest event source/schema, producer and recipient/destination policy. Existing appointment/room/equipment/feedback notifications remain functional; the API explicitly reports academic notifications unsupported.
+2. Published versioned replacement requests are deferred by user decision. Current active published requests are read-only until an authorized replacement excludes them.
+3. Full professor Home and visual redesign follow the existing shared component sequence. Minimal functional academic/review interfaces are delivered now.
+4. Dated calendar applicability needs existing explicit administrative bindings; declarations do not establish verified faculty/course affiliation or private attribution entitlement.
+5. A reviewed maintenance migration and individual legacy review are required before operational use; no bulk approval policy is introduced.
+6. The professor branch depends on Student Draft PR #24. Review eventual main integration before requesting a professor Draft PR; no merge/rebase of main-only research/governance work occurred here.
+
+The approved backend gate and professor academic workflows passed local acceptance. Full Professor Services visual/notification completion is not claimed. A professor Draft PR can be prepared after explicit approval and dependency/integration review; no push or PR is authorized now.
 
 ## Local commits
 
-| SHA | Focus |
+| SHA | Scope |
 |---|---|
-| `19457e4aea950b34bfbba4e38dda031a6013fd08` | Handoff import, reviewed source/contracts and blocked gate |
-| `9a751c6ba383bce06d7875cd358e33af6c1a93f7` | Owner-only read API and 14 real database/engine/security tests |
-| `4bf6f7c3bde8f4915cbc2f6f8e70aa7b3692a450` | Calendar keyboard correction and browser/persistence evidence |
-| `3c3af41928f0a3dae55a70bdc743b0ee83785ee7` | Additional three existing-workflow tests, contract-gap and C++/artifact proof |
+| 19457e4 | Handoff, source/contracts and original gate gap |
+| 9a751c6 | Owner academic read API |
+| 4bf6f7c | Calendar keyboard focus correction and original browser evidence |
+| 3c3af41 | Existing professor role/workflow tests |
+| 9a3dc8a | Original blocked-stage acceptance/plan |
+| 1c50ecd | Revision-bound review persistence, migration and allocation gate |
+| 0ae1b84 | Professor submissions/revisions, minimal admin review and integration |
+| 49552d3 | Strict gateway, immutable audit and all-published-input protection |
+| 48beaeb | Explicit review for fictional demo allocation |
+| 8e4ca07 | Full regression compatibility, retained tests and dated-calendar proof |
+| 50cacf2 | Readable shared forms/states and refreshed real-browser evidence |
 
-The final documentation/evidence commit follows these four local commits. Its SHA is available from `git log -1`; no professor commit is on the remote. The original student HEAD/remote and main were rechecked unchanged at final verification.
+The final documentation/schema-catalog commit follows these local commits; its SHA is available with `git log -1`. No professor commit was pushed. The complete [changed-file inventory](changed-files.json) is relative to the reviewed Student base. No tracked file was deleted.
 
-**CHANGES REQUIRED**
+**PASS — approved backend increment ready for local acceptance review. Full Professor Services visual redesign and academic notifications remain deferred.**

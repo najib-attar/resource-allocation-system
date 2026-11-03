@@ -58,4 +58,3 @@ class ProfessorExistingContractTests(ProfessorFixture):
         page = self.client.get('/appointments/calendar?month=2030-01&week=2030-01-07')
         self.assertEqual(page.status_code,200)
         self.assertNotIn(b'Private professor peer block',page.data)
-

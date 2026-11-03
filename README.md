@@ -438,7 +438,7 @@ explicitly date academic activities. Undated legacy records produce a warning,
 not guessed calendar dates. The existing **My Schedule** page still manages blocks.
 See the [calendar architecture](docs/architecture/unified-calendar-design.md).
 
-For a new empty development database, `python scripts/seed_demo_database.py --seed 41 --run-allocation` creates reproducible fictional university data and runs the real engine. Use `--size large` for a 1,200-request sanity dataset. Seeding never overwrites/resets existing data. See the [ER diagrams and full schema inventory](docs/architecture/database-design.md) and [demo/recovery guide](docs/database-operations.md).
+For a new empty development database, `python scripts/seed_demo_database.py --seed 41` creates reproducible fictional data. Academic inputs await individual administrator eligibility review; `--run-allocation` reports an error if none has been reviewed. Use `--size large` for a 1,200-request dataset. Local-demo setup has an explicit `seed --review-academics` option that reviews newly generated fictional inputs through the real service before running the engine. Default seeding never approves requests or overwrites existing profiles. See [Professor contracts](docs/srs/professor-workflows.md), [schema inventory](docs/architecture/database-design.md) and [demo/recovery guide](docs/database-operations.md).
 
 The current dashboard supports:
 

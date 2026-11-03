@@ -66,11 +66,21 @@ this is not automatic C++ hot reload or signed-artifact verification. The
 1. Add a OneTime, Recurring, Exam or CommitteeMeeting request.
 2. Save Request Only commits the request, occurrences, exam metadata where relevant,
    selected committee participants and history without running allocation.
-3. Submit and Run saves first, then invokes the C++ JSON engine. Failures/timeouts
-   leave the saved request pending and keep previous successful results visible.
-4. Review Requests, request details, Allocation Summary and Schedules.
-5. Raw Data is a technical **database projection**, not a file browser. Old CSV-style
+3. Save and review eligibility opens administrator review. All new requests start
+   Pending Eligibility Review. A different active administrator records a decision
+   and reason for the current revision; review reserves nothing.
+4. Only Eligible current revisions enter an administrator-initiated C++ run.
+   Failures/timeouts/stale inputs retain previous results. Current legacy requests
+   require individual review before replacement.
+5. Review Requests, request details, Allocation Summary and Schedules.
+6. Raw Data is a technical **database projection**, not a file browser. Old CSV-style
    tab names/URLs are retained for compatibility; no operational files are read.
+
+Instructors use `/professor/requests` for self-owned academic intake and tracking.
+Only unpublished requests may be revised; revisions invalidate eligibility.
+Administrators review at `/academic-eligibility/`. Eligibility, engine outcomes
+and calendar publication are separate. See [Professor contracts](../docs/srs/professor-workflows.md)
+for migration, concurrency and deferred notifications/versioned replacements.
 
 Committee forms show instructor, teaching assistant, staff and administrator
 participants. At least one is required, with a role such as Supervisor or

@@ -1,6 +1,6 @@
 # Physical schema catalog
 
-Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 58 application tables.
+Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 61 application tables.
 
 Foreign keys use PostgreSQL **NO ACTION** unless explicitly marked RESTRICT; no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
 ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.
@@ -49,6 +49,22 @@ Assigned resource/time/count, linked to exactly one run/request decision.
 - Index: `ix_allocation_decision (run_id, request_id)`.
 - Index: `ix_allocation_request_id (request_id)`.
 - Index: `ix_allocation_resource_id (resource_id)`.
+
+## allocation_eligibility
+
+Immutable per-run request revision and eligibility-version proof used to reject stale replacement publications.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| run_id | bigint | PK; FK -> allocation_run.id | no | - |
+| request_id | integer | PK; FK -> resource_request.id | no | - |
+| request_revision | integer | - | no | - |
+| eligibility_version | integer | - | no | - |
+
+- Primary key: `run_id, request_id`.
+- Foreign key: `(request_id) -> resource_request (id)`; NO ACTION.
+- Foreign key: `(run_id) -> allocation_run (id)`; NO ACTION.
+- Index: `ix_allocation_eligibility_request_id (request_id)`.
 
 ## allocation_participant
 
@@ -321,6 +337,29 @@ Private dated unavailable intervals for a university user.
 - Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
 - Check: `start_at < end_at`.
 - Index: `ix_calendar_block_user_start (user_id, start_at)`.
+
+## eligibility_event
+
+Append-only eligibility decision/revision audit, separate from allocation outcomes and calendar publication.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| request_id | integer | FK -> resource_request.id | no | - |
+| version | integer | - | no | - |
+| request_revision | integer | - | no | - |
+| status | varchar(40) | - | no | - |
+| origin | varchar(24) | - | no | - |
+| actor_id | integer | FK -> university_user.id | yes | - |
+| reason | text | - | no | - |
+| created_at | timestamp with time zone | - | no | now() |
+
+- Primary key: `id`.
+- Foreign key: `(actor_id) -> university_user (id)`; NO ACTION.
+- Foreign key: `(request_id) -> resource_request (id)`; NO ACTION.
+- Unique: `request_id, version`.
+- Index: `ix_eligibility_event_actor_id (actor_id)`.
+- Index: `ix_eligibility_event_request_id (request_id)`.
 
 ## equipment_category
 
@@ -677,6 +716,36 @@ One decision per run/request, including immutable engine detail/history.
 - Unique: `run_id, ordinal`.
 - Index: `ix_request_decision_request_id (request_id)`.
 
+## request_eligibility
+
+Explicit administrative eligibility for the current request revision; legacy provenance is unverified, never automatically approved.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| request_id | integer | PK; FK -> resource_request.id | no | - |
+| origin | varchar(24) | - | no | Repository |
+| submitted_by | integer | FK -> university_user.id | yes | - |
+| legacy_revision | integer | - | yes | - |
+| status | varchar(40) | - | no | Pending Eligibility Review |
+| version | integer | - | no | 0 |
+| reviewed_revision | integer | - | yes | - |
+| reviewer_id | integer | FK -> university_user.id | yes | - |
+| reason | text | - | no |  |
+| decided_at | timestamp with time zone | - | yes | - |
+
+- Primary key: `request_id`.
+- Foreign key: `(request_id) -> resource_request (id)`; NO ACTION.
+- Foreign key: `(reviewer_id) -> university_user (id)`; NO ACTION.
+- Foreign key: `(submitted_by) -> university_user (id)`; NO ACTION.
+- Check: `(status = 'Pending Eligibility Review' AND reviewed_revision IS NULL AND reviewer_id IS NULL AND decided_at IS NULL) OR (status <> 'Pending Eligibility Review' AND reviewed_revision > 0 AND reviewer_id IS NOT NULL AND decided_at IS NOT NULL AND length(btrim(reason)) BETWEEN 1 AND 2000)`.
+- Check: `origin <> 'Professor' OR submitted_by IS NOT NULL`.
+- Check: `origin IN ('Legacy','Repository','Import','Demo','Professor','Administration')`.
+- Check: `status IN ('Pending Eligibility Review','Eligible','Eligibility Rejected')`.
+- Check: `version >= 0`.
+- Index: `ix_request_eligibility_reviewer_id (reviewer_id)`.
+- Index: `ix_request_eligibility_status (status)`.
+- Index: `ix_request_eligibility_submitted_by (submitted_by)`.
+
 ## request_history
 
 Timestamped save/import/decision events with optional run provenance.
@@ -909,6 +978,7 @@ Ordered request identity, requirements and private-by-default academic publicati
 | submission_fingerprint | varchar(64) | - | yes | - |
 | calendar_public | boolean | - | no | false |
 | academic_instructor_id | integer | FK -> university_user.id | yes | - |
+| faculty_declaration | text | - | no |  |
 
 - Primary key: `id`.
 - Foreign key: `(academic_instructor_id) -> university_user (id)`; NO ACTION.

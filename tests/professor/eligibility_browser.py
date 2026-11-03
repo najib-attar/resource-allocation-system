@@ -136,7 +136,7 @@ def main():
             env=dict(os.environ,PROFESSOR_INFO_FILE=str(info),PROFESSOR_OUTPUT_DIR=str(OUTPUT))
             result=subprocess.run(['node',str(ROOT/'tests/professor/eligibility_browser.cjs')],cwd=ROOT,env=env,
                 capture_output=True,text=True,encoding='utf-8',timeout=900)
-            (OUTPUT/'browser-output.txt').write_text(result.stdout+'\n'+result.stderr,encoding='utf-8')
+            (OUTPUT/'browser-output.txt').write_text((result.stdout+'\n'+result.stderr).rstrip()+'\n',encoding='utf-8')
             (OUTPUT/'post-states.json').write_text(json.dumps(posts,indent=2,default=str)+'\n',encoding='utf-8')
             if result.returncode:raise RuntimeError('Eligibility browser failed; inspect browser-output.txt')
             verified=verify(posts)

@@ -1,17 +1,17 @@
-# Professor frontend sequence — plan only
+# Professor frontend sequence
 
-Prerequisite: review the backend acceptance report, merge/review dependent Student Draft PR #24, and resolve the eligibility gate before enabling academic intake. Reuse the Campus Space system in `base.html`, `components/ui.html`, `components/student_services.html`, existing icons, status badges, panels, form patterns, `tokens.css`, `shell.css` and page-specific scripts. Extract shared presentation where needed from the existing student styles without granting a professor the student shell or its services. Keep shared design corrections small; do not copy student services into a professor dashboard.
+The backend gate, minimal academic forms, tracking and administrator review are implemented. Full professor visual acceptance follows separately. Keep Student Draft PR #24's dependency explicit and inspect eventual main before preparing a professor PR. No professor push or PR is authorized.
 
-| Group | Scope and actual backend contract | Acceptance boundary |
+Reuse base.html, existing panels/form grids, components/ui.html, icons, badges, tokens and page-specific scripts. Academic forms already share components/_academic_request_fields.html; no framework or duplicate scheduling service is needed. Preserve the Student shell and services.
+
+| Group | Current state and next scope | Acceptance boundary |
 |---|---|---|
-| PUI-01 | Instructor Home and navigation: Home, Appointments, Schedule, Calendar, Inbox; Academic Requests once its read page exists | Active Instructor only; real destinations; no administrator/custodian buttons; reuse shared shell and responsive panels |
-| PUI-02 | Existing `/appointments/`, detail/decision/cancellation, `/appointments/availability` hours/exclusions | Current revision, all required approvals, rejection, mandatory availability, conflict feedback, history; hours are publication to appointment matching, not a private-calendar browser |
-| PUI-03 | `/appointments/calendar` personal timetable and blocks | Own blocks only; confirmed commitments cannot be overridden; distinct optional room/student invitations; no peer calendar disclosure |
-| PUI-04 | Read-only My Academic Requests using the new owner list/detail API | Paginated type/status filters, loading/empty/400/403/503, active allocations and reasons/history, unresolved binding warning, no fake dates or submit button |
-| PUI-05 | Exam, OneTime/Recurring teaching and CommitteeMeeting intake | **Blocked** until separately approved review schema/admin actions/snapshot gate/legacy policy are implemented and tested; then session-owned Pending submission, declarations, explicit space, real constraints and revision invalidation |
-| PUI-06 | Existing university calendar, scoped academic details and Inbox | Month/week/day/filter/navigation; public attribution remains metadata; no private attribution entitlement; existing notification sources only; no academic notifications until approved |
-| PUI-07 | Cross-role integration and acceptance | Real PostgreSQL persistence; allowed/rejected POSTs; all five roles; 1440/768/390/320; keyboard/focus, overflow, console/network, actual screenshots |
+| PUI-01 | Instructor navigation includes Academic Requests; add a coherent professor Home | Real destinations, no student-only services, admin controls or invented activity route |
+| PUI-02 | Existing appointments/hours verified; apply shared visual components | Current revision, all required approvals, rejection/conflict/history; no peer-calendar browsing |
+| PUI-03 | Personal timetable/blocks verified; visual refinement | Own blocks, confirmed commitments protected, optional invitations distinct |
+| PUI-04 | Functional academic list/detail, filters/pagination/history/bindings implemented; refine presentation | Separate eligibility/allocation/calendar states, owner-only and real empty/error states |
+| PUI-05 | Four functional intake forms and unpublished revisions implemented; refine field presentation | Declarations, explicit resources/slots, pending review, no reservation, published read-only explanation |
+| PUI-06 | Existing calendar/Inbox verified; align shared visuals | Month/week/day/filters/privacy, no invented academic notifications or attribution entitlement |
+| PUI-07 | Repeat visual and cross-role acceptance after redesign | Real PostgreSQL/C++, allowed/denied POSTs, 1440/768/390/320, keyboard, overflow, console/network, real screenshots |
 
-Each group needs a focused local commit and real Flask evidence. Do not implement a new framework, unified invented activity endpoint, registration/recovery, student borrowing/request services, private professor calendar browsing or administrator allocation UI. Reuse existing appointment, room-invitation, personal schedule and calendar services. Academic CommitteeMeeting remains separate from appointment approvals.
-
-The new API is a service/read-model boundary, not a replacement for Jinja: future pages may call `ProfessorService` server-side and reuse its validated query contract. Keep a single implementation of owner scoping and outcome semantics. Only add JavaScript when interaction requires it.
+Keep a single ProfessorService owner/state contract for JSON and Jinja. Minimal admin review may be refined without exposing admin controls to professors. CommitteeMeeting remains separate from appointments. Versioned replacements and academic notifications are deferred, not represented as working controls.

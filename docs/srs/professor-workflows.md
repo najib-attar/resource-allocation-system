@@ -1,53 +1,59 @@
-# Professor Services v1 — reviewed contracts and decisions
+# Professor Services v1 — approved contracts
 
-This review uses the supplied nine UC-PROF PDFs and `Codex-Professor-Handoff.md` as reference material. The user's subsequent instructions and explicit policy clarification control implementation. The supplied `professor-backend-audit.md` is historical input, not evidence that the current code behaves as described.
+The nine supplied UC-PROF PDFs and handoff audit are reference material. The user's later eligibility, legacy-data and published-revision decisions govern implementation. Original handoff files remain unchanged.
 
-## Reviewed revision and isolation
+## Reviewed source and isolation
 
-Student UI-01–UI-10 is committed through `747c925b14c29368e6cb9bc8b2e2d9d33c494462` on `design/student-portal`. It was clean, pushed without force, and is in **Draft PR [#24](https://github.com/najib-attar/resource-allocation-system/pull/24)** targeting `main`; all 18 student commits were verified in the PR. It has not been merged.
+`codex/professor-services-v1` uses a separate worktree based on completed Student UI-10 commit `747c925b14c29368e6cb9bc8b2e2d9d33c494462`. Student Draft PR [#24](https://github.com/najib-attar/resource-allocation-system/pull/24) targets main and remains an explicit dependency. Professor work is local; no professor push, PR, merge or deployment is authorized.
 
-Professor development uses **`codex/professor-services-v1`**, a separate worktree based on that exact student revision. It therefore depends on PR #24. No professor branch was pushed or professor PR created. After student merge, the dependency must be reviewed against the resulting main revision before preparing a professor PR; this work does not rewrite or merge the student commits.
+Reviewed main was `d9a63f3ef0f5f22b56a79af670c740a13f7bb6ad`. Its seven main-only governance/cost-policy commits were inspected, not merged or edited. C++ strategies, protocols, CDMCS and authentication/session internals remain unchanged.
 
-Fetched `origin/main` was `d9a63f3ef0f5f22b56a79af670c740a13f7bb6ad`; common ancestor `610c104`. The student/professor base is 18 commits ahead and seven behind main. Those seven commits cover B2/CDMCS governance, cost-policy services/tests/docs and CI. They do not change the appointment, resource-request persistence or professor ownership contracts reviewed here. They were inspected, not merged, modified or activated. CDMCS and C++ sources remain unchanged.
+## Identity and supported inputs
 
-## Authorized roles and declarations
+The existing role is **Instructor**. An active enabled Instructor may submit, read and revise only self-owned academic requests. Identity comes from the signed session and is checked again in the service. Administrator flags, committee participation, public attribution and declarations grant no access to a peer's private request.
 
-The backend role is **Instructor**, not a new Professor role. Ordinary Instructors may manage their own appointment availability and dated blocks, decide required appointment invitations, respond to optional student-room invitations and read their own academic requests. A room invitation does not grant faculty review rights. Staff faculty approvers, equipment custodians and administrators retain their existing separate permissions. Student and TeachingAssistant accounts gain no Instructor authority.
+Exam, OneTime, Recurring and CommitteeMeeting reuse ResourceRequest, explicit resource IDs, weekday/minute slots, exam details and required participants. Faculty/course/activity descriptions are declarations, not verified affiliations. New exams require course code/name and a supported examination type. Committees require at least one active, unique participant; they do not create student-professor appointments. Existing resource/role/conflict rules still determine allocation.
 
-The user explicitly approved allowing any active Instructor to submit a **self-owned** academic request, with course/faculty/activity descriptions treated as declarations rather than verified affiliations. Requester identity must come from the session, never a client field. However, the user also required **administrative eligibility review before any unreviewed or rejected request reaches the allocation engine**. The latter requirement blocks intake on the current backend.
+Academic recurrence uses the existing weekly-slot contract, not the dated student reservation-series contract. Dated commitments require existing explicit period bindings; no dates, enrollment or faculty entitlement are inferred.
 
-## Blocking gap: eligibility review before allocation (UC-PROF-06–08)
+## Three independent state axes
 
-Observed path: administrative `/add-request` → `Repository.save_request` → ResourceRequest/subtype rows and `RequestHistory(kind=saved, message=pending allocation)` → `Repository.start_run` → `snapshot_from_session` → `EngineGateway.execute` → `Repository.publish_run`. The snapshot iterates **every** ResourceRequest. There is no administrative review state, reviewer, approved revision or eligibility filter. Pending means absence of a published engine decision; it is not a human approval gate. `RequestDecision.Approved/Rejected` is an engine outcome, not eligibility review.
+| Axis | Authoritative state | Meaning |
+|---|---|---|
+| Administrative eligibility | Pending Eligibility Review / Eligible / Eligibility Rejected, reviewer/reason/time, reviewed revision and review version | Human review; never a reservation or guarantee |
+| Allocation | Existing Pending / Approved / Rejected from the active successful run | Existing C++ outcome; Pending means no active decision for this revision |
+| Calendar publication | Existing academic bindings, publication metadata and visibility | Dated projection; review does not change existing commitments |
 
-Consequently, no professor create/update endpoint or functional submission button is implemented. Existing administrator behavior is preserved. Merely inserting a Pending request would violate the user's condition even if only administrators could start allocation.
+New records begin Pending Eligibility Review. A different active administrator may approve/reject with a reason and current request/review revisions. Self-review is prohibited, including administrator-owned legacy requests; another administrator is needed. Review alone changes no reservation or calendar commitment.
 
-Separate authorization/design review is required for:
+Only Eligible records reviewed at the current request revision enter allocation. All repository snapshot/start/publication paths enforce this. Presentation snapshots retain all records but cannot be executed. The production Python gateway refuses raw unguarded academic inputs; standalone protocol fixtures require an explicit opt-in unused by production. C++ JSON is unchanged and its CLI has no database publication authority.
 
-1. Persistent eligibility lifecycle (unreviewed, eligible, rejected), reviewer identity/time, explanation, and the precise reviewed request revision.
-2. Administrator-only review/rejection actions and audit history; editing a reviewed request must invalidate eligibility.
-3. Snapshot construction that includes only currently eligible reviewed revisions, enforced at the server boundary, for every strategy and engine entry point. Unreviewed/rejected rows must never be sent to C++.
-4. Transactional input revision handling and stale-run checks when review decisions or request revisions change.
-5. A migration and explicit treatment of historical administrator/imported requests, existing active publications, retries and review rejection notifications. Do not silently classify legacy records as approved.
-6. Regression/security tests proving the gate, all five roles, cross-user protection, zero reservation on submission and unchanged engine JSON/algorithms.
+## Revisions, concurrency and audit
 
-These require schema and scheduling-input policy changes. They are **documented, not implemented**. Existing explicit `spaceId`, weekday/minute slots, ExamDetails and CommitteeMeeting participant contracts remain authoritative. Recurring academic requests are not the separate student recurring-reservation workflow. CommitteeMeeting is not a student-professor appointment.
+Owners may revise unpublished requests with an expected revision. Material revisions reset eligibility, clear the reviewer/reviewed revision and record history. Database triggers also invalidate reviewed parent/subtype/slot/participant edits outside the service.
 
-The legacy repository validator also accepts empty exam description strings and validates committee participant references/duplicates without requiring active accounts or a nonempty participant list at save time (the existing C++ participant rule rejects empty committees at allocation). It is a persistence contract, not a professor intake authorization/eligibility validator. Once the review gate is approved, new intake must separately enforce the approved UC requirements: active session owner, nonempty course declarations for exams, and at least one active required committee participant. Do not tighten historical administrator/import contracts or C++ behavior silently.
+Every request included in the active publication is read-only, including engine-rejected outcomes and requests whose eligibility was later rejected. Service and database checks cover direct requests and concurrency. Professor revisions and eligibility decisions leave existing reservations, request inputs and calendar commitments intact until authorized replacement excludes the request. Separate existing administrative calendar-publication metadata operations retain their own permissions and semantics. Versioned replacement requests are explicitly deferred.
 
-## Safe implementation: UC-PROF-09 owner-only reads
+Academic inputs, eligibility decisions, run capture and publication serialize through ApplicationState. Runs store input revision plus immutable per-request revision/review-version proof. The gateway revalidates captured inputs before execution. A later edit/review makes an in-flight run stale; publication refuses it and retains previous results. It does not retroactively rewrite already captured engine input.
 
-`GET /professor/academic-requests` and `GET /professor/academic-requests/<id>` require a signed-in active, enabled Instructor account. Both the HTTP guard and the service enforce role; queries restrict `requester_id` to that actor before loading details. Unknown and non-owned IDs receive the same private error. Administrator flags, public calendar visibility, instructor attribution and committee participation do not bypass this owner-only scope.
+Eligibility events and run proofs cannot be rewritten, deleted or truncated. Request/review versions reject stale forms. Existing global CSRF covers all new POSTs. Professors receive no eligibility, allocation, strategy, staff room-review or calendar-publication authority.
 
-List filters are `type` (Exam, OneTime, Recurring, CommitteeMeeting), `status` (Pending, Approved, Rejected), `limit` (1–100; default 50), `offset` (0–2147483647). List order is newest submission first. Status/allocations come only from `ApplicationState.active_run_id` when that run is successful. No current decision means Pending. Previous active results remain visible if a newer run fails; changed inputs produce an explicit warning. Approved means an active engine allocation, never human eligibility approval.
+## Legacy compatibility and migration
 
-Detail includes declared exam metadata, weekly slots, mandatory committee participants/roles, requested resource/constraints, active allocation rooms/counts, request history and explicit academic period bindings. It does not expose global engine snapshots, raw decision payloads, other requests, login records or private peer calendars. Reads use one PostgreSQL repeatable-read, read-only transaction. Responses are private/no-store. Invalid inputs return 400, unavailable/private requests 403, database failures a generic 503. Authentication/session/CSRF internals are unchanged. There is no academic mutation endpoint.
+Migration `0051a` adds `faculty_declaration` and three tables: `request_eligibility`, `eligibility_event`, `allocation_eligibility` (61 application tables). All existing requests become Legacy / Pending Eligibility Review with baseline revision and audit record. None is automatically approved. Allocations, decisions, history, active publication and reservations are preserved.
 
-Dates are never inferred from weekly slots. Calendar projection remains in `UniversityCalendarService` and requires successful active allocations plus explicit academic bindings. Public instructor attribution is display metadata, not ownership or an enrollment/teaching assignment. The current public/relevant calendar behavior is retained; a new private attribution-based schedule entitlement requires separate approval.
+Outstanding legacy reviews in the current published batch block a new run and replacement publication. The administrative queue lists their IDs and explains the block. Rejection excludes a legacy record from future snapshots but preserves its reservation until authorized replacement; the review screen warns about the pending change. Every legacy request requires individual review before future participation, including records outside the current publication.
 
-## Additional limitations
+Rollout requires a maintenance window: stop old workers, back up, apply Alembic through `0051a`, restart matching code. Migration increments input revision to invalidate old in-flight publications. No operational migration was executed. A populated downgrade refuses eligibility/provenance/history loss; archival/rollback needs separate review. Historical fixture replay is restricted to owned random test schemas and is not a production rollback tool.
 
-- Academic ResourceRequest notifications have no supported source: Notification requires an appointment, room, equipment or feedback event. Adding academic notification events, source foreign keys, producers, recipient policy and authorized destinations requires a separately reviewed schema change. UC-PROF-09 academic notifications are deferred; current appointment/room notifications remain supported.
-- Existing hour deletion refuses removal while the Instructor has future confirmed appointments; this conservative compatibility behavior is preserved.
-- Administrative calendar publication, period bindings, allocation strategy and execution remain inaccessible to ordinary Instructors.
-- This increment delivers backend verification and a read API, **not the professor frontend**. See [traceability](../professor-services/traceability.md), [frontend plan](../professor-services/frontend-plan.md) and [acceptance report](../professor-services/acceptance-report.md).
+New imports, repository saves and demo seeds remain pending by default. Local-demo `seed --review-academics` explicitly reviews only newly generated fictional data through the real administrator service; it does not approve existing profiles or legacy databases. Admin save/run shortcuts now lead to review first.
+
+## Existing workflows and remaining scope
+
+UC-PROF-01–05 retain appointment hours/approvals, personal blocks, optional room invitations, calendar and Inbox. Confirmed appointments prevent incompatible blocks/hour removal. Optional attendance grants no faculty approval or custody rights.
+
+UC-PROF-06–08 have minimal shared Jinja intake/revision forms and JSON submission. UC-PROF-09 has owner list/detail filters, allocations, reasons/history and explicit bindings. Reads are private/no-store. Database failures return safe errors; invalid/private/stale operations commit no partial change.
+
+Academic outcome notifications remain deferred: Notification has no ResourceRequest event source. Source/schema, producers and recipient/destination policy need separate approval. Existing notifications remain supported. Full professor visual redesign follows the [frontend sequence](../professor-services/frontend-plan.md).
+
+See [traceability](../professor-services/traceability.md) and [acceptance](../professor-services/acceptance-report.md) for executed evidence and limitations.

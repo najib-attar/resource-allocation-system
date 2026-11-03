@@ -1,0 +1,714 @@
+{
+  "reviewedBase": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+  "professorBranch": "codex/professor-services-v1",
+  "files": [
+    {
+      "status": "A",
+      "path": "Codex-Professor-Handoff.md"
+    },
+    {
+      "status": "M",
+      "path": "README.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/architecture/database-design.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/architecture/database-er-high-level.mmd"
+    },
+    {
+      "status": "M",
+      "path": "docs/architecture/database-er-high-level.svg"
+    },
+    {
+      "status": "M",
+      "path": "docs/architecture/database-er-physical.mmd"
+    },
+    {
+      "status": "M",
+      "path": "docs/architecture/database-er-physical.svg"
+    },
+    {
+      "status": "M",
+      "path": "docs/architecture/database-schema-catalog.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/database-operations.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/acceptance-report.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/accepted-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/approval-gate-evidence.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/backend-artifact.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/academic-calendar-filtered.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/appointment-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/appointment-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/appointments-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/appointments-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/browser-output.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/calendar-day-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/calendar-day-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/calendar-month-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/calendar-month-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/calendar-week-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/calendar-week-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/controls.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/hours-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/hours-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/hours-with-exclusion.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/inbox-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/inbox-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/own-dated-block.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/post-states.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/reschedule-invalidated-approvals.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/room-invitation-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/room-invitation-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/schedule-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/schedule-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/calendar-preservation-recheck/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/calendar-preservation-recheck/tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/changed-files.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/cpp-tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/academic-list-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/academic-list-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/allocated-academic-request.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/browser-output.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/legacy-detail-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/legacy-detail-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/legacy-rejected-reservation-preserved.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/legacy-review-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/legacy-review-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/new-CommitteeMeeting-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/new-Exam-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/new-OneTime-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/new-Recurring-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/post-states.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/review-queue-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/review-queue-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/reviewed-queue-after-publication.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/revision-requires-review.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-compatibility/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-compatibility/tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-contract-review.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-core/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-core/tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-cpp-tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-final-regression/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-final-regression/tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-full-regression/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-full-regression/tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/existing-contracts/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/existing-contracts/tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/frontend-plan.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/gate-verified/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/gate-verified/tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/git-isolation-current.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/git-preparation.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/intake-integration/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/intake-integration/tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/owner-reads-final/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/owner-reads-final/tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/owner-reads/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/owner-reads/tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/protocol-artifact-recheck/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/protocol-artifact-recheck/tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/regression/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/regression/tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/screenshots.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/source-review.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/traceability.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/srs/professor-backend-audit.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/srs/professor-workflows.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-01.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-02.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-03.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-04.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-05.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-06.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-07.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-08.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-09.pdf"
+    },
+    {
+      "status": "A",
+      "path": "migrations/versions/0051a_academic_eligibility.py"
+    },
+    {
+      "status": "A",
+      "path": "reference/Professor-Use-Cases-Combined.pdf"
+    },
+    {
+      "status": "M",
+      "path": "scripts/generate_database_diagrams.py"
+    },
+    {
+      "status": "M",
+      "path": "scripts/seed_demo_database.py"
+    },
+    {
+      "status": "M",
+      "path": "scripts/setup_local_demo.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/academic_fixtures.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/professor/browser_review.cjs"
+    },
+    {
+      "status": "A",
+      "path": "tests/professor/browser_review.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/professor/eligibility_browser.cjs"
+    },
+    {
+      "status": "A",
+      "path": "tests/professor/eligibility_browser.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/professor/review_contracts.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/professor/run_tests.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_academic_eligibility.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_appointments.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_backend_executable.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_calendar_loading.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_cost_policy_persistence.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_database_diagrams.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_eligibility_migration.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_engine_gateway.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_equipment.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_local_demo.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_notifications.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_completion.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_concurrency.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_demo.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_import.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_quality.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_recovery.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_runtime_independence.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_text_contract.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_web.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_workflow.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_professor_existing_workflows.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_professor_intake.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_professor_services.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_recurring_persistence.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_recurring_workflows.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_resource_feedback.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_room_requests.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_save_only_confirmation.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_scheduling_preferences.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_university_calendar.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_waiting_lists.py"
+    },
+    {
+      "status": "M",
+      "path": "web/README.md"
+    },
+    {
+      "status": "A",
+      "path": "web/academic_eligibility.py"
+    },
+    {
+      "status": "M",
+      "path": "web/app.py"
+    },
+    {
+      "status": "A",
+      "path": "web/eligibility_routes.py"
+    },
+    {
+      "status": "M",
+      "path": "web/engine_gateway.py"
+    },
+    {
+      "status": "M",
+      "path": "web/persistence/importer.py"
+    },
+    {
+      "status": "M",
+      "path": "web/persistence/models.py"
+    },
+    {
+      "status": "M",
+      "path": "web/persistence/repository.py"
+    },
+    {
+      "status": "A",
+      "path": "web/professor_routes.py"
+    },
+    {
+      "status": "A",
+      "path": "web/professor_service.py"
+    },
+    {
+      "status": "M",
+      "path": "web/security.py"
+    },
+    {
+      "status": "A",
+      "path": "web/static/calendar.js"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/add_request.html"
+    },
+    {
+      "status": "A",
+      "path": "web/templates/components/_academic_request_fields.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/components/_navigation.html"
+    },
+    {
+      "status": "A",
+      "path": "web/templates/eligibility_queue.html"
+    },
+    {
+      "status": "A",
+      "path": "web/templates/eligibility_review.html"
+    },
+    {
+      "status": "A",
+      "path": "web/templates/professor_request.html"
+    },
+    {
+      "status": "A",
+      "path": "web/templates/professor_request_form.html"
+    },
+    {
+      "status": "A",
+      "path": "web/templates/professor_requests.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/request_added.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/request_detail.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/requests.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/university_calendar.html"
+    }
+  ],
+  "testRetention": {
+    "baselineMethods": 617,
+    "currentMethods": 652,
+    "added": 35,
+    "removed": 0,
+    "consolidated": 0
+  },
+  "deletedFiles": []
+}

@@ -164,7 +164,7 @@ def main():
         env = dict(os.environ, PROFESSOR_INFO_FILE=str(info), PROFESSOR_OUTPUT_DIR=str(OUTPUT))
         result = subprocess.run(['node', str(ROOT/'tests/professor/browser_review.cjs')],
                                 cwd=ROOT,env=env,capture_output=True,text=True,encoding='utf-8',timeout=900)
-        (OUTPUT/'browser-output.txt').write_text(result.stdout+'\n'+result.stderr,encoding='utf-8')
+        (OUTPUT/'browser-output.txt').write_text((result.stdout+'\n'+result.stderr).rstrip()+'\n',encoding='utf-8')
         (OUTPUT/'post-states.json').write_text(json.dumps(operations,default=str,indent=2)+'\n',encoding='utf-8')
         if result.returncode:
             raise RuntimeError('Browser review failed; see browser-output.txt')

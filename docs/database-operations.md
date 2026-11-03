@@ -1,8 +1,24 @@
 # PostgreSQL setup and safe operations
 
-## Current schema (0050b)
+## Current schema (0051a)
 
-The current source migration head is `0050b`: 58 application tables plus Alembic.
+The current source head is `0051a`: 61 application tables plus Alembic. It adds
+academic eligibility/provenance, immutable review history, per-run revision proof
+and a declared faculty-context field. Existing requests become Legacy/Pending
+Eligibility Review; none is approved automatically. Existing published results and
+reservations remain unchanged. Review each legacy request individually; outstanding
+reviews in the current batch block replacement. Rejection preserves the current
+reservation until authorized replacement publication.
+
+Stop old workers, back up, apply `python -m alembic upgrade head`, then restart
+matching code. This is a reviewed rollout procedure, not authorization to migrate
+an operational database. Material unpublished revisions invalidate approval;
+active published inputs are read-only. Populated downgrade refuses audit loss.
+See [Professor contracts](srs/professor-workflows.md) for concurrency and recovery assumptions.
+
+## Institutional cost-policy foundation (0050b)
+
+That revision introduced 58 application tables plus Alembic.
 It creates four empty institutional cost-policy foundation tables, not an active
 policy or an administration interface. No coefficients, authority grants or head
 row are seeded. Downgrade locks all four tables before checking and refuses any
@@ -159,8 +175,9 @@ This iteration performs no destructive migration of an existing application DB.
 ## Workflow and failures
 
 Save Only commits the request, participants and history, without invoking C++.
-Submit and Run commits the request first and then starts allocation. Engine errors,
-timeouts or publication failures leave that request saved/pending and keep the
+Save and review eligibility commits the request before individual administrator
+review. Allocation is a separate authorized action using only Eligible current
+revisions. Engine errors, timeouts or publication failures leave inputs saved and keep the
 previous successful run visible. A lost HTTP response does not undo a committed save.
 Each rendered request form carries a random submission key. An exact retry with
 the same key reuses the existing request ID without another save/history/revision;
@@ -250,7 +267,7 @@ to head. Then seed directly into PostgreSQL, not into the regression CSV fixture
 
 ```powershell
 python scripts/seed_demo_database.py --seed 41 --dry-run
-python scripts/seed_demo_database.py --seed 41 --run-allocation
+python scripts/seed_demo_database.py --seed 41
 python web/app.py
 ```
 
@@ -263,7 +280,10 @@ Only the real C++ engine generates decisions/allocations/suggestions.
 
 `--size large` uses 1,060 users, 200 resources, 1,200 requests and 120 busy slots.
 `--seed` makes input generation reproducible; allocation remains strategy-dependent.
-An empty seed creates pending requests; `--run-allocation` explicitly invokes C++.
+An empty seed creates requests awaiting eligibility review. `--run-allocation`
+requires already reviewed inputs and reports an error when none is eligible.
+For new fictional local-demo profiles only, `seed --review-academics` explicitly
+performs individual synthetic administrator reviews before invoking C++.
 If the engine fails afterward, the seed remains saved and pending, with no partial
 results published. Inspect Users, Spaces, Requests, Allocation Summary and Schedules.
 

@@ -1,0 +1,12 @@
+{
+  "studentRemote": "747c925b14c29368e6cb9bc8b2e2d9d33c494462\trefs/heads/design/student-portal",
+  "number": 24,
+  "state": "open",
+  "draft": true,
+  "merged": false,
+  "head": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+  "base": "main",
+  "url": "https://github.com/najib-attar/resource-allocation-system/pull/24",
+  "reviewedMain": "d9a63f3ef0f5f22b56a79af670c740a13f7bb6ad",
+  "remoteMainMatchesReviewed": true
+}

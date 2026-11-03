@@ -243,4 +243,3 @@ class ProfessorReadTests(ProfessorFixture):
         self.assertEqual(response.status_code, 503)
         self.assertNotIn('PRIVATE SQL', response.get_data(as_text=True))
         self.assertEqual(response.headers['Cache-Control'], 'private, no-store')
-
