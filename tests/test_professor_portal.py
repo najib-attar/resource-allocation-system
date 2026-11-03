@@ -84,3 +84,18 @@ class ProfessorPortalTests(ProfessorFixture):
         with self.database.transaction() as session:session.get(LoginAccount,2).enabled=False
         with self.assertRaises(PermissionError):self.home()
         self.assertEqual(self.client.get('/professor/').status_code,302)
+
+    def test_professor_decision_ui_tracks_own_approval_and_student_reschedule(self):
+        key=self.meeting('Shared approval',professors=(2,3))
+        from test_student_portal_ui import Document
+        def detail():return Document(self.client.get(f'/appointments/{key}').get_data(as_text=True)).root
+        self.assertTrue(detail().find('button',name='decision',value='approve'))
+        self.assertEqual(self.client.post(f'/appointments/{key}/decision',data=dict(revision=1,decision='approve')).status_code,302)
+        self.assertFalse(detail().find('button',name='decision',value='approve'))
+        self.assertTrue(detail().find('button',name='decision',value='decline'))
+        self.assertIn('You approved this revision',detail().text)
+        self.service.reschedule(key,1,1,START+timedelta(hours=2))
+        self.assertTrue(detail().find('button',name='decision',value='approve'))
+        self.assertEqual(self.client.post(f'/appointments/{key}/decision',data=dict(revision=1,decision='approve')).status_code,409)
+        self.assertNotIn('/appointments/new',self.client.get('/appointments/').get_data(as_text=True))
+        self.assertEqual(self.client.client.post(f'/appointments/{key}/decision',data=dict(revision=2,decision='approve')).status_code,400)

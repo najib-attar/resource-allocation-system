@@ -1,0 +1,88 @@
+test_dashboard_pending_decisions_confirmed_meetings_and_owner_requests_are_distinct (test_professor_portal.ProfessorPortalTests.test_dashboard_pending_decisions_confirmed_meetings_and_owner_requests_are_distinct) ... ok
+test_home_reads_only_authorized_real_state_without_engine_or_writes (test_professor_portal.ProfessorPortalTests.test_home_reads_only_authorized_real_state_without_engine_or_writes) ... ok
+test_home_uses_current_academic_outcomes_and_no_inferred_dates (test_professor_portal.ProfessorPortalTests.test_home_uses_current_academic_outcomes_and_no_inferred_dates) ... ok
+test_professor_decision_ui_tracks_own_approval_and_student_reschedule (test_professor_portal.ProfessorPortalTests.test_professor_decision_ui_tracks_own_approval_and_student_reschedule) ... ok
+test_professor_home_role_identity_csrf_and_primary_destinations (test_professor_portal.ProfessorPortalTests.test_professor_home_role_identity_csrf_and_primary_destinations) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 43.123s
+
+OK
+
+test_every_new_view_and_submission_works_without_runtime_csv (test_appointments.AppointmentWebTests.test_every_new_view_and_submission_works_without_runtime_csv) ... ok
+test_invitation_reschedule_approval_and_cancel_routes_preserve_revision_rules (test_appointments.AppointmentWebTests.test_invitation_reschedule_approval_and_cancel_routes_preserve_revision_rules) ... ok
+test_login_csrf_revocation_and_schedule_privacy (test_appointments.AppointmentWebTests.test_login_csrf_revocation_and_schedule_privacy) ... ok
+test_password_login_logout_and_cookie_security_roundtrip (test_appointments.AppointmentWebTests.test_password_login_logout_and_cookie_security_roundtrip) ... ok
+test_time_recommendation_endpoint_and_invalid_selection_explanations (test_appointments.AppointmentWebTests.test_time_recommendation_endpoint_and_invalid_selection_explanations) ... ok
+test_all_four_participant_configurations (test_appointments.AppointmentWorkflowTests.test_all_four_participant_configurations) ... ok
+test_blocks_added_while_pending_are_rechecked_before_confirmation (test_appointments.AppointmentWorkflowTests.test_blocks_added_while_pending_are_rechecked_before_confirmation) ... ok
+test_cancellation_releases_time_and_records_history (test_appointments.AppointmentWorkflowTests.test_cancellation_releases_time_and_records_history) ... ok
+test_confirmation_is_safe_across_two_worker_processes (test_appointments.AppointmentWorkflowTests.test_confirmation_is_safe_across_two_worker_processes) ... ok
+test_confirmed_commitments_cannot_be_invalidated_by_new_blocks_or_removed_hours (test_appointments.AppointmentWorkflowTests.test_confirmed_commitments_cannot_be_invalidated_by_new_blocks_or_removed_hours) ... ok
+test_database_rejects_incomplete_confirmation_and_pending_reservations (test_appointments.AppointmentWorkflowTests.test_database_rejects_incomplete_confirmation_and_pending_reservations) ... ok
+test_dated_university_publication_cannot_conflict_with_confirmed_appointment (test_appointments.AppointmentWorkflowTests.test_dated_university_publication_cannot_conflict_with_confirmed_appointment) ... ok
+test_faculty_roles_and_private_appointment_ownership_are_enforced (test_appointments.AppointmentWorkflowTests.test_faculty_roles_and_private_appointment_ownership_are_enforced) ... ok
+test_failed_engine_does_not_save_a_partial_appointment (test_appointments.AppointmentWorkflowTests.test_failed_engine_does_not_save_a_partial_appointment) ... ok
+test_invitation_decline_and_unanswered_invites_do_not_block (test_appointments.AppointmentWorkflowTests.test_invitation_decline_and_unanswered_invites_do_not_block) ... ok
+test_legacy_calendar_must_be_explicit_and_only_applies_in_its_period (test_appointments.AppointmentWorkflowTests.test_legacy_calendar_must_be_explicit_and_only_applies_in_its_period) ... ok
+test_old_availability_snapshot_cannot_confirm_after_calendar_change (test_appointments.AppointmentWorkflowTests.test_old_availability_snapshot_cannot_confirm_after_calendar_change) ... ok
+test_organizer_and_professor_blocks_are_mandatory_optional_students_are_not (test_appointments.AppointmentWorkflowTests.test_organizer_and_professor_blocks_are_mandatory_optional_students_are_not) ... ok
+test_pending_reserves_nothing_and_unanimous_approval_is_required (test_appointments.AppointmentWorkflowTests.test_pending_reserves_nothing_and_unanimous_approval_is_required) ... ok
+test_professor_rejection_prevents_confirmation (test_appointments.AppointmentWorkflowTests.test_professor_rejection_prevents_confirmation) ... ok
+test_recommendations_are_feasible_and_rank_invitee_then_preference_then_time (test_appointments.AppointmentWorkflowTests.test_recommendations_are_feasible_and_rank_invitee_then_preference_then_time) ... ok
+test_time_change_clears_every_professor_approval (test_appointments.AppointmentWorkflowTests.test_time_change_clears_every_professor_approval) ... ok
+test_istanbul_configuration_and_midnight_half_open_intervals (test_appointments.CalendarRepresentationTests.test_istanbul_configuration_and_midnight_half_open_intervals) ... ok
+test_nonexistent_and_ambiguous_local_times_are_not_guessed (test_appointments.CalendarRepresentationTests.test_nonexistent_and_ambiguous_local_times_are_not_guessed) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 108.428s
+
+OK
+
+test_equipment_actions_have_explicit_canonical_destinations (test_student_portal_ui.EquipmentControlTests.test_equipment_actions_have_explicit_canonical_destinations) ... ok
+test_pending_extension_has_waiting_message_instead_of_duplicate_form (test_student_portal_ui.EquipmentControlTests.test_pending_extension_has_waiting_message_instead_of_duplicate_form) ... ok
+test_recurring_equipment_waiting_action_is_disabled_with_visible_reason (test_student_portal_ui.EquipmentControlTests.test_recurring_equipment_waiting_action_is_disabled_with_visible_reason) ... ok
+test_failed_sign_in_escapes_identity_announces_error_and_never_refills_password (test_student_portal_ui.LoginTemplateTests.test_failed_sign_in_escapes_identity_announces_error_and_never_refills_password) ... ok
+test_login_preserves_fields_csrf_autocomplete_and_no_extra_auth_features (test_student_portal_ui.LoginTemplateTests.test_login_preserves_fields_csrf_autocomplete_and_no_extra_auth_features) ... ok
+test_busy_error_retains_retry_after_and_other_roles_keep_their_response (test_student_portal_ui.StudentFailurePresentationTests.test_busy_error_retains_retry_after_and_other_roles_keep_their_response) ... ok
+test_http_failure_preserves_method_headers_and_escapes_descriptions (test_student_portal_ui.StudentFailurePresentationTests.test_http_failure_preserves_method_headers_and_escapes_descriptions) ... ERROR
+test_student_service_failure_retains_503_and_hides_internal_details (test_student_portal_ui.StudentFailurePresentationTests.test_student_service_failure_retains_503_and_hides_internal_details) ... ok
+test_submission_conflict_retains_409_and_safe_message (test_student_portal_ui.StudentFailurePresentationTests.test_submission_conflict_retains_409_and_safe_message) ... ok
+test_calendar_uses_supplied_entries_once_and_includes_weekend (test_student_portal_ui.StudentPortalTemplateTests.test_calendar_uses_supplied_entries_once_and_includes_weekend) ... ok
+test_empty_dashboard_is_honest_and_has_no_mock_search_or_filters (test_student_portal_ui.StudentPortalTemplateTests.test_empty_dashboard_is_honest_and_has_no_mock_search_or_filters) ... ok
+test_five_service_hubs_link_to_existing_routes (test_student_portal_ui.StudentPortalTemplateTests.test_five_service_hubs_link_to_existing_routes) ... ok
+test_home_has_one_primary_heading_for_student_and_student_administrator (test_student_portal_ui.StudentPortalTemplateTests.test_home_has_one_primary_heading_for_student_and_student_administrator) ... ok
+test_primary_navigation_has_four_cross_service_destinations (test_student_portal_ui.StudentPortalTemplateTests.test_primary_navigation_has_four_cross_service_destinations) ... ok
+test_professor_staff_and_administrator_keep_the_existing_shell (test_student_portal_ui.StudentPortalTemplateTests.test_professor_staff_and_administrator_keep_the_existing_shell) ... ok
+test_shared_account_controls_preserve_real_notifications_and_csrf_logout (test_student_portal_ui.StudentPortalTemplateTests.test_shared_account_controls_preserve_real_notifications_and_csrf_logout) ... ok
+test_statuses_keep_pending_optional_and_partial_reservations_distinct (test_student_portal_ui.StudentPortalTemplateTests.test_statuses_keep_pending_optional_and_partial_reservations_distinct) ... ok
+test_unresolved_dates_remain_a_visible_warning (test_student_portal_ui.StudentPortalTemplateTests.test_unresolved_dates_remain_a_visible_warning) ... ok
+test_untrusted_names_and_titles_are_escaped (test_student_portal_ui.StudentPortalTemplateTests.test_untrusted_names_and_titles_are_escaped) ... ok
+
+======================================================================
+ERROR: test_http_failure_preserves_method_headers_and_escapes_descriptions (test_student_portal_ui.StudentFailurePresentationTests.test_http_failure_preserves_method_headers_and_escapes_descriptions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\najee\.codex\worktrees\professor-services-v1\resource-allocation-frontend\tests\test_student_portal_ui.py", line 311, in test_http_failure_preserves_method_headers_and_escapes_descriptions
+    response = web_app.student_http_error(MethodNotAllowed(valid_methods=['GET'], description='<script>bad()</script>'))
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: module 'web.app' has no attribute 'student_http_error'
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.600s
+
+FAILED (errors=1)
+
+test_authorization_and_invalid_time_still_enforced_by_backend (test_frontend_prototype.FrontendPrototypeWorkflowTests.test_authorization_and_invalid_time_still_enforced_by_backend) ... ok
+test_available_time_feedback_uses_existing_engine_and_safe_empty_state (test_frontend_prototype.FrontendPrototypeWorkflowTests.test_available_time_feedback_uses_existing_engine_and_safe_empty_state) ... ok
+test_dashboard_uses_real_activity_compact_calendar_and_private_links (test_frontend_prototype.FrontendPrototypeWorkflowTests.test_dashboard_uses_real_activity_compact_calendar_and_private_links) ... ok
+test_form_preserves_contract_validation_and_successful_submission (test_frontend_prototype.FrontendPrototypeWorkflowTests.test_form_preserves_contract_validation_and_successful_submission) ... ok
+test_role_navigation_and_private_identity_remain_escaped (test_frontend_prototype.SharedShellTests.test_role_navigation_and_private_identity_remain_escaped) ... ok
+test_shell_has_skip_target_post_logout_and_local_assets (test_frontend_prototype.SharedShellTests.test_shell_has_skip_target_post_logout_and_local_assets) ... ok
+test_student_service_route_and_professor_parent_navigation_remain_distinct (test_frontend_prototype.SharedShellTests.test_student_service_route_and_professor_parent_navigation_remain_distinct) ... ok
+test_ui_components_escape_data_and_preserve_accessible_states (test_frontend_prototype.SharedShellTests.test_ui_components_escape_data_and_preserve_accessible_states) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 26.416s
+
+OK

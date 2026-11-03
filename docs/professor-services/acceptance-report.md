@@ -7,11 +7,16 @@ Reviewed frontend base `5a7f0b0`; Student `747c925` remains unchanged. The appro
 | Phase | Current status and executed evidence |
 |---|---|
 | PROF-UI-01 | Implemented: real scoped Home, shared Campus Space assets, four primary destinations and service discovery. Backend preflight 29/29; initial 56-case phase run had one fixture helper error and one old Instructor redirect expectation. Both corrected: dashboard 4/4 and redirect 1/1 rechecks passed; all other cases passed initially. Browser: 30 views at five widths, 705 keyboard steps, seven actual POSTs including one persisted denial, all five roles, empty/populated Home, no overflow/JS exceptions. |
-| PROF-UI-02–07 | Planned; continue sequentially. |
+| PROF-UI-02 | Implemented: pending/confirmed/history hub, own-decision progress, invitation status, preserved authorized decisions/cancellation/history and shared error recovery. Phase run 56 cases: 55 passed and one renamed error-handler test reference failed; the complete failure-presentation class passed on recheck. Browser: 15 views, 70 keyboard steps, 13 actual POSTs and nine verified domain/rejection outcomes. |
+| PROF-UI-03–07 | Planned; continue sequentially. |
 
 Shared shell/service CSS declarations were verified equivalent to the approved Student rules after neutral selector promotion. The original three Student asset implementations and two Jinja components were renamed, not copied. Role-specific Student classes and contents remain. Instructor default navigation now reaches Professor Home; session/authentication/CSRF behavior is unchanged. Superseded role-ambiguous intermediate screenshots were archived under ignored build storage; final phase screenshots identify each role.
 
 [Preflight](portal-backend-preflight/tests.json), [initial phase results](PROF-UI-01/tests.json), [dashboard recheck](PROF-UI-01-recheck/tests.json), [redirect recheck](PROF-UI-01-redirect-recheck/tests.json), [real browser results](portal/PROF-UI-01/browser-results.json), [persisted state](portal/PROF-UI-01/post-states.json), [independent checks](portal/PROF-UI-01/persistence-verification.json), [cleanup](portal/PROF-UI-01/cleanup.json).
+
+Appointment backend rules were preserved. Professor POST forms now prevent repeat native submissions, preserve named submitter values and reset after browser back navigation. An already approved professor retains the supported decline action while other approvals are pending. Student-only reschedule/invitation-decline controls now match their existing backend role guard, including historical role changes. HTTP errors preserve status/method headers and safe messages for both workspaces.
+
+[Phase 02 tests](PROF-UI-02/tests.json), [error recheck](PROF-UI-02-error-recheck/tests.json), [browser](portal/PROF-UI-02/browser-results.json), [persisted mutations](portal/PROF-UI-02/persistence-verification.json).
 
 ---
 

@@ -9,6 +9,7 @@ from .professor_service import ProfessorRequestError, ProfessorService
 from .input_validation import integer, parse_time_slots
 from .engine_gateway import EngineIntegrationError
 from .professor_dashboard_service import ProfessorDashboardService
+from .calendar_service import CalendarError
 
 
 def create_professor_blueprint(database_provider):
@@ -21,21 +22,31 @@ def create_professor_blueprint(database_provider):
 
     @blueprint.errorhandler(PermissionError)
     def forbidden(error):
-        return jsonify(error=str(error)), 403
+        return failure(str(error),403)
 
     @blueprint.errorhandler(ProfessorRequestError)
     def invalid(error):
-        return jsonify(error=str(error)), 400
+        return failure(str(error),400)
 
     @blueprint.errorhandler(SubmissionConflict)
     def conflict(error):
-        return jsonify(error=str(error)),409
+        return failure(str(error),409)
 
     @blueprint.errorhandler(DatabaseBusy)
     @blueprint.errorhandler(PersistenceError)
     @blueprint.errorhandler(SQLAlchemyError)
     def unavailable(error):
-        return jsonify(error='Academic request data is temporarily unavailable.'), 503
+        return failure('Academic request data is temporarily unavailable.',503)
+
+    def failure(message,status):
+        if request.path.startswith('/professor/academic-requests'):
+            return jsonify(error=message),status
+        return render_template('workspace_error.html',message=message,status=status,
+            recovery=('professor.home','Professor Home') if request.endpoint=='professor.home' else ('professor.pages','academic requests')),status
+
+    @blueprint.errorhandler(CalendarError)
+    def invalid_calendar(error):
+        return failure(str(error),400)
 
     def number(name, default):
         try:

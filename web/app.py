@@ -183,10 +183,10 @@ def pin_database_view():
         current_results()
 
 
-def student_error_response(message, status, headers=None):
-    """Present existing failures to students without changing status or authority."""
+def workspace_error_response(message, status, headers=None):
+    """Present workspace failures without changing status codes or authority."""
     principal = getattr(g, "principal", None) if has_request_context() else None
-    if principal is None or principal.role != "Student" or principal.administrator:
+    if principal is None or principal.role not in {"Student","Instructor"} or principal.administrator:
         return None
     recovery = {
         "appointments": ("appointments.index", "appointments"),
@@ -196,17 +196,18 @@ def student_error_response(message, status, headers=None):
         "feedback": ("feedback.index", "feedback"),
         "calendar": ("calendar.index", "calendar"),
         "notifications": ("notifications.index", "Inbox"),
-    }.get(request.blueprint, ("student.home", "Home"))
+        "professor": (("professor.pages", "academic requests") if principal.role == "Instructor" else ("student.home", "Home")),
+    }.get(request.blueprint, ("professor.home" if principal.role == "Instructor" else "student.home", "Home"))
     if request.endpoint == "appointments.calendar":
         recovery = ("appointments.calendar", "My Schedule")
-    return render_template("student_error.html", message=message, status=status, recovery=recovery), status, {
+    return render_template("workspace_error.html", message=message, status=status, recovery=recovery), status, {
         "Cache-Control": "private, no-store", **(headers or {})}
 
 
 @app.errorhandler(HTTPException)
-def student_http_error(error):
+def workspace_http_error(error):
     if error.code is not None and error.code >= 400:
-        presentation = student_error_response(error.description, error.code)
+        presentation = workspace_error_response(error.description, error.code)
         if presentation is not None:
             response = error.get_response()
             response.set_data(presentation[0])
@@ -218,7 +219,7 @@ def student_http_error(error):
 
 @app.errorhandler(DatabaseBusy)
 def database_busy(error):
-    return student_error_response("This service is busy. Please try again shortly.", 503, {"Retry-After": "2"}) or (str(error), 503, {"Retry-After": "2"})
+    return workspace_error_response("This service is busy. Please try again shortly.", 503, {"Retry-After": "2"}) or (str(error), 503, {"Retry-After": "2"})
 
 
 @app.errorhandler(DatabaseConfigurationError)
@@ -226,18 +227,18 @@ def database_busy(error):
 @app.errorhandler(EngineIntegrationError)
 def application_error(error):
     app.logger.error("Application operation failed: %s", error)
-    return student_error_response("Application operation failed. Please try again shortly.", 503) or (f"Application operation failed: {error}", 503)
+    return workspace_error_response("Application operation failed. Please try again shortly.", 503) or (f"Application operation failed: {error}", 503)
 
 
 @app.errorhandler(SQLAlchemyError)
 def database_error(error):
     app.logger.error("Database operation failed (%s).", type(error).__name__)
-    return student_error_response("Database operation failed. Please try again shortly.", 503) or ("Database operation failed. Check PostgreSQL configuration and migrations; previous results remain active.", 503)
+    return workspace_error_response("Database operation failed. Please try again shortly.", 503) or ("Database operation failed. Check PostgreSQL configuration and migrations; previous results remain active.", 503)
 
 
 @app.errorhandler(SubmissionConflict)
 def submission_conflict(error):
-    return student_error_response(str(error), 409) or (str(error), 409)
+    return workspace_error_response(str(error), 409) or (str(error), 409)
 
 
 def current_strategy():

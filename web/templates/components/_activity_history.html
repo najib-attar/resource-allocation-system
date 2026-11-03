@@ -1,5 +1,5 @@
 <section class="panel">
-    <h2>{{ 'Operational audit log' if item.canAudit else 'My activity' }}</h2>
+    <h2>{{ history_heading|default('Operational audit log' if item.canAudit else 'My activity') }}</h2>
     <p>History is retained after a decision. The request's status above is its current state.</p>
     <ol>
     {% for event in item.history %}

@@ -1,0 +1,16 @@
+{% from 'components/ui.html' import icon %}
+{% from 'components/services.html' import status %}
+{% macro appointment_row(item, professor_view=false) %}
+<article class="service-row">
+  <span class="service-row-icon">{{ icon('meeting',18) }}</span>
+  <div><span class="service-row-kind">{{ 'Your request' if item.organizerId==g.principal.user_id else 'Required professor' if g.principal.user_id in item.professors|map(attribute='id')|list else 'Optional invitation' }}</span>
+    <h3><a href="{{ url_for('appointments.detail',appointment_id=item.id) }}">{{ item.purpose }}</a></h3>
+    <p>{{ item.start|university_time }} &ndash; {{ item.end|university_time }}</p>
+    <p>Organizer: {{ item.organizerName|person_name }} &middot; {{ item.professors|length }} professor(s), {{ item.invitations|length }} invitation(s)</p>
+    {% if professor_view %}
+      {% for person in item.professors if person.id==g.principal.user_id %}<p>Your decision: <strong>{{ person.decision }}</strong>{% if person.decision=='Approved' and item.status=='Pending Approval' %} &middot; Waiting for the other required professors.{% endif %}</p>{% endfor %}
+      <p>{{ item.professors|selectattr('decision','equalto','Approved')|list|length }} of {{ item.professors|length }} required professors approved revision {{ item.revision }}.</p>
+    {% elif item.organizerId!=g.principal.user_id and g.principal.role=='Student' %}<p>Attendance optional; this is not your organizer reservation.</p>{% endif %}
+  </div>{{ status(item.status) }}
+</article>
+{% endmacro %}

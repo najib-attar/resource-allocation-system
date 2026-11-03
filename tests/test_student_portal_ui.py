@@ -308,7 +308,7 @@ class StudentFailurePresentationTests(TestCase):
     def test_http_failure_preserves_method_headers_and_escapes_descriptions(self):
         from werkzeug.exceptions import MethodNotAllowed
         self.context()
-        response = web_app.student_http_error(MethodNotAllowed(valid_methods=['GET'], description='<script>bad()</script>'))
+        response = web_app.workspace_http_error(MethodNotAllowed(valid_methods=['GET'], description='<script>bad()</script>'))
         self.assertEqual(response.status_code, 405)
         self.assertIn('GET', response.headers['Allow'])
         self.assertIn('&lt;script&gt;', response.get_data(as_text=True))

@@ -171,3 +171,5 @@
     .campus-service .timetable-event { margin-top: 12px; }
     .campus-service .calendar-filter-row label { flex: 0 1 auto; }
 }
+
+.service-count { display: inline-block; margin-left: 8px; color: var(--muted); font-size: 13px; font-weight: 500; }

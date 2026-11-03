@@ -1,0 +1,9 @@
+test_busy_error_retains_retry_after_and_other_roles_keep_their_response (test_student_portal_ui.StudentFailurePresentationTests.test_busy_error_retains_retry_after_and_other_roles_keep_their_response) ... ok
+test_http_failure_preserves_method_headers_and_escapes_descriptions (test_student_portal_ui.StudentFailurePresentationTests.test_http_failure_preserves_method_headers_and_escapes_descriptions) ... ok
+test_student_service_failure_retains_503_and_hides_internal_details (test_student_portal_ui.StudentFailurePresentationTests.test_student_service_failure_retains_503_and_hides_internal_details) ... ok
+test_submission_conflict_retains_409_and_safe_message (test_student_portal_ui.StudentFailurePresentationTests.test_submission_conflict_retains_409_and_safe_message) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.098s
+
+OK

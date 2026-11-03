@@ -1,0 +1,769 @@
+{
+  "checks": [
+    "Actual own approval, no duplicate approve control, unanimous confirmation, Student reschedule reset/stale rejection, reapproval, cancellation and decline; private/state persistence independently checked."
+  ],
+  "views": [
+    {
+      "name": "appointments",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointment-detail",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointments",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointment-detail",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointments",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointment-detail",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointments",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointment-detail",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointments",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointment-detail",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "empty-appointments",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "empty-appointments",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "empty-appointments",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "empty-appointments",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "empty-appointments",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    }
+  ],
+  "controls": [
+    {
+      "name": "appointments",
+      "width": 1440,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Office hours",
+          "href": "/appointments/availability",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My schedule",
+          "href": "/appointments/calendar",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Fictional project review",
+          "href": "/appointments/2",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Fictional project review",
+          "href": "/appointments/3",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Fictional project review",
+          "href": "/appointments/1",
+          "action": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "appointment-detail",
+      "width": 1440,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "All appointments",
+          "href": "/appointments/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "decision",
+          "text": "Approve this revision",
+          "href": null,
+          "action": "/appointments/2/decision",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "decision",
+          "text": "Decline request",
+          "href": null,
+          "action": "/appointments/2/decision",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Cancel appointment",
+          "href": null,
+          "action": "/appointments/2/cancel",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "appointments",
+      "width": 1024,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Office hours",
+          "href": "/appointments/availability",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My schedule",
+          "href": "/appointments/calendar",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Fictional project review",
+          "href": "/appointments/2",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Fictional project review",
+          "href": "/appointments/3",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Fictional project review",
+          "href": "/appointments/1",
+          "action": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "appointment-detail",
+      "width": 1024,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "All appointments",
+          "href": "/appointments/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "decision",
+          "text": "Approve this revision",
+          "href": null,
+          "action": "/appointments/2/decision",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "decision",
+          "text": "Decline request",
+          "href": null,
+          "action": "/appointments/2/decision",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Cancel appointment",
+          "href": null,
+          "action": "/appointments/2/cancel",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "appointments",
+      "width": 768,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Office hours",
+          "href": "/appointments/availability",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My schedule",
+          "href": "/appointments/calendar",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Fictional project review",
+          "href": "/appointments/2",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Fictional project review",
+          "href": "/appointments/3",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Fictional project review",
+          "href": "/appointments/1",
+          "action": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "appointment-detail",
+      "width": 768,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "All appointments",
+          "href": "/appointments/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "decision",
+          "text": "Approve this revision",
+          "href": null,
+          "action": "/appointments/2/decision",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "decision",
+          "text": "Decline request",
+          "href": null,
+          "action": "/appointments/2/decision",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Cancel appointment",
+          "href": null,
+          "action": "/appointments/2/cancel",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "appointments",
+      "width": 390,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Office hours",
+          "href": "/appointments/availability",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My schedule",
+          "href": "/appointments/calendar",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Fictional project review",
+          "href": "/appointments/2",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Fictional project review",
+          "href": "/appointments/3",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Fictional project review",
+          "href": "/appointments/1",
+          "action": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "appointment-detail",
+      "width": 390,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "All appointments",
+          "href": "/appointments/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "decision",
+          "text": "Approve this revision",
+          "href": null,
+          "action": "/appointments/2/decision",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "decision",
+          "text": "Decline request",
+          "href": null,
+          "action": "/appointments/2/decision",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Cancel appointment",
+          "href": null,
+          "action": "/appointments/2/cancel",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "appointments",
+      "width": 320,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Office hours",
+          "href": "/appointments/availability",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My schedule",
+          "href": "/appointments/calendar",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Fictional project review",
+          "href": "/appointments/2",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Fictional project review",
+          "href": "/appointments/3",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Fictional project review",
+          "href": "/appointments/1",
+          "action": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "appointment-detail",
+      "width": 320,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "All appointments",
+          "href": "/appointments/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "decision",
+          "text": "Approve this revision",
+          "href": null,
+          "action": "/appointments/2/decision",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "decision",
+          "text": "Decline request",
+          "href": null,
+          "action": "/appointments/2/decision",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Cancel appointment",
+          "href": null,
+          "action": "/appointments/2/cancel",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "empty-appointments",
+      "width": 1440,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Office hours",
+          "href": "/appointments/availability",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My schedule",
+          "href": "/appointments/calendar",
+          "action": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "empty-appointments",
+      "width": 1024,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Office hours",
+          "href": "/appointments/availability",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My schedule",
+          "href": "/appointments/calendar",
+          "action": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "empty-appointments",
+      "width": 768,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Office hours",
+          "href": "/appointments/availability",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My schedule",
+          "href": "/appointments/calendar",
+          "action": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "empty-appointments",
+      "width": 390,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Office hours",
+          "href": "/appointments/availability",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My schedule",
+          "href": "/appointments/calendar",
+          "action": null,
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "empty-appointments",
+      "width": 320,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Office hours",
+          "href": "/appointments/availability",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My schedule",
+          "href": "/appointments/calendar",
+          "action": null,
+          "disabled": false
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "expectedErrors": [],
+  "keyboardSteps": 70,
+  "nativePickerSteps": 0,
+  "phase": "PROF-UI-02"
+}

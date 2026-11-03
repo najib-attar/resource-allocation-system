@@ -114,7 +114,7 @@ def create_appointment_blueprint(database_provider, gateway_provider):
 
     @blueprint.get("/<int:appointment_id>")
     def detail(appointment_id):
-        return render_template("appointment_detail.html", item=service().detail(appointment_id, g.principal.user_id), zone=university_zone().key)
+        return render_template("appointment_detail.html", item=service().detail(appointment_id, g.principal.user_id), zone=university_zone().key, now=datetime.now(timezone.utc))
 
     @blueprint.post("/<int:appointment_id>/decision")
     def decision(appointment_id):

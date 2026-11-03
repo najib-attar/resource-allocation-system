@@ -43,6 +43,7 @@
     {% if g.principal %}
     <script src="{{ url_for('static', filename='shell.js') }}" defer></script>
     <script src="{{ url_for('static', filename='notifications.js') }}" defer></script>
+    {% if professor_shell %}<script src="{{ url_for('static',filename='workspace-forms.js') }}" defer></script>{% endif %}
     {% endif %}
 </body>
 </html>
