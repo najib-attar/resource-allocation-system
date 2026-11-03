@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 import sys
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -20,10 +20,13 @@ from recurring_fixtures import RoomFixture
 from test_appointments import START
 from web import app as web_app
 from web.account_service import AccountService
+from web.allocation_workflow import execute_allocation
 from web.engine_gateway import EngineGateway
 from web.equipment_service import EquipmentService
 from web.feedback_service import FeedbackService
-from web.persistence.models import LoginAccount
+from web.persistence.models import BusySlot, LoginAccount, Role, User
+from web.persistence.repository import Repository
+from web.university_calendar import UniversityCalendarService
 from web.waiting_list_service import WaitingListService, POLICY_VERSION
 
 
@@ -91,10 +94,24 @@ def seed(fixture):
     detail = feedback.detail(report, 7)
     feedback.update(report, 7, detail['revision'], 'Under Review', 'normal',
                      'Fictional response: the faculty desk is arranging inspection.', uuid.uuid4().hex)
+    repository = Repository(fixture.database)
+    academic = repository.save_request(dict(type='OneTime', requesterId=4, spaceId=301,
+        participantCount=5, title='Fictional published seminar', purpose='Synthetic academic activity',
+        slots=[dict(day=2, startMinutes=780, endMinutes=840)]))
+    appointment.bind_legacy('Fictional dated teaching', date(2030,1,7), date(2030,1,31),
+                            request_id=academic, week_start=date(2030,1,7))
+    execute_allocation(repository, EngineGateway(ROOT))
+    UniversityCalendarService(fixture.database).publish(6, academic, True, 3)
+    with fixture.database.transaction() as session:
+        student_role = session.scalar(select(Role.id).where(Role.name == 'Student'))
+        session.add(User(id=8, source_order=8, name='Fictional Calendar Review Student', primary_role_id=student_role))
+        session.flush()
+        session.add(BusySlot(user_id=8, source_order=1, day=3, start_minutes=540,
+                            end_minutes=600, reason='Fictional weekly record awaiting explicit dates'))
     return dict(appointment=confirmed, pending=pending, invitation=invitation, private=private,
                 room=room, roomPending=room_pending, roomSeries=series, roomId=302,
                 loan=loan, borrowPending=borrow_pending, equipmentSeries=equipment_series,
-                equipmentType=type_id, faculty=fixture.faculty, queue=queue, report=report)
+                equipmentType=type_id, faculty=fixture.faculty, queue=queue, report=report, academic=academic)
 
 
 def main():
@@ -106,7 +123,8 @@ def main():
         ids = seed(fixture)
         accounts = AccountService(fixture.database)
         password = 'Fictional-portal-review-password'
-        users = {1:'portal-student', 5:'portal-empty', 2:'portal-professor', 6:'portal-admin', 7:'portal-staff'}
+        users = {1:'portal-student', 5:'portal-empty', 2:'portal-professor', 6:'portal-admin', 7:'portal-staff',
+                 8:'portal-warning'}
         with fixture.database.transaction(read_only=True) as session:
             existing = set(session.scalars(select(LoginAccount.user_id)))
         for actor, username in users.items():

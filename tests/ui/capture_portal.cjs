@@ -30,10 +30,12 @@ const groups = {
     ['feedback-invalid', '/feedback/?status=unsupported', 409]],
   'UI-08': [['calendar-month', '/calendar/?view=month&date=2030-01-07'], ['calendar-week', '/calendar/?view=week&date=2030-01-07'],
     ['calendar-day', '/calendar/?view=day&date=2030-01-07'], ['schedule', '/appointments/calendar?month=2030-01&week=2030-01-07'],
-    ['inbox', '/notifications/']],
+    ['inbox', '/notifications/'], ['calendar-published', '/calendar/?view=day&date=2030-01-08&scope=published'],
+    ['calendar-academic', '/calendar/academic/' + id.academic + '?date=2030-01-08'],
+    ['calendar-invalid', '/calendar/?date=invalid', 400], ['calendar-private', '/calendar/academic/999999999?date=2030-01-08', 403]],
 };
 async function login(page, role = 'student') {
-  const username = role === 'student' ? fixture.users['1'] : role === 'empty' ? fixture.users['5'] :
+  const username = role === 'student' ? fixture.users['1'] : role === 'warning' ? fixture.users['8'] : role === 'empty' ? fixture.users['5'] :
     role === 'professor' ? fixture.users['2'] : role === 'staff' ? fixture.users['7'] : fixture.users['6'];
   await page.goto(fixture.url + '/login');
   await page.locator('[name=username]').fill(username);
@@ -127,15 +129,16 @@ async function loginPhase(browser, errors, results) {
     if (phase === 'UI-02') await loginPhase(browser, errors, results);
     else {
       assert.ok(groups[phase], 'Unknown phase');
-      for (const role of ['student', 'empty']) {
+      for (const role of ['student', 'empty', ...(phase === 'UI-08' ? ['warning'] : [])]) {
         const context = await browser.newContext();
         const page = await context.newPage();
         page.on('pageerror', error => errors.push(error.message));
         await login(page, role);
         const pages = role === 'empty' ? groups[phase].filter(([name]) =>
-          ['appointments','rooms','equipment','waiting','feedback','calendar-month','inbox'].includes(name)) : groups[phase];
+          ['appointments','rooms','equipment','waiting','feedback','calendar-month','inbox'].includes(name)) : role === 'warning' ?
+          groups[phase].filter(([name]) => ['calendar-month','calendar-week','schedule'].includes(name)) : groups[phase];
         for (const [name, url, expected] of pages) {
-          for (const width of widths) await capture(page, (role === 'empty' ? 'empty-' : '') + name, url, width, expected || 200);
+          for (const width of widths) await capture(page, (role === 'student' ? '' : role + '-') + name, url, width, expected || 200);
           const forms = await page.locator('form[method=post]').evaluateAll(forms => forms.map(form => ({
             action:new URL(form.getAttribute('action') || location.href, location.href).href,
             csrf:form.querySelector('[name=csrf_token]')?.value })));

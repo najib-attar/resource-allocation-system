@@ -115,9 +115,42 @@
 .student-service .service-policy { max-width: 960px; }
 .student-service .service-policy h2 { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); }
 .student-service .service-policy p { max-width: 85ch; }
+/* Calendar and Inbox retain their scoped source projections and real read state. */
+.student-service .calendar-intro { margin-top: 0; }
+.student-service .calendar-intro h2 { font-size: 23px; }
+.student-service .calendar-actions { display: none; }
+.student-service .calendar-controls fieldset { border: 0; border-top: 1px solid var(--line); border-radius: 0; padding: 14px 0 0; }
+.student-service .calendar-checkbox { display: inline-flex; align-items: center; gap: 8px; margin: 8px 18px 8px 0; font-weight: 400; }
+.student-service .calendar-filter-row { align-items: end; gap: 16px; }
+.student-service .calendar-filter-row label { flex: 1 1 200px; }
+.student-service .calendar-toolbar [aria-current=page] { background: var(--accent); color: #fff; }
+.student-service .calendar-month { border-color: var(--line); }
+.student-service .calendar-day { border-color: var(--line); }
+.student-service .calendar-day.outside-month { background: #f7f9fa; }
+.student-service .calendar-event { color: #204b69; border-radius: 6px; }
+.student-service .calendar-timetable thead th { background: #f2f6f8; }
+.student-service .calendar-timetable td { height: 90px; }
+.student-service .calendar-agenda, .student-service .personal-agenda { display: none; }
+.student-service .timetable-toolbar form { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; }
+.student-service .timetable-toolbar input { width: auto; }
+.student-service .timetable-weeks a { color: var(--accent); background: #eaf2f7; }
+.student-service .timetable-weeks a[aria-current] { color: #fff; background: var(--accent); }
+.student-service .timetable-scroll { border-color: var(--line); }
+.student-service .personal-block-record { padding-block: 10px; border-bottom: 1px solid var(--line); }
+.student-service .notification-list { margin-top: 15px; }
+.student-service .notification-item { border-bottom: 1px solid var(--line); }
+.student-service .notification-item > a { border-radius: 8px; padding: 18px 16px; }
+.student-service .notification-item.is-unread > a { background: #f0f6fa; }
+.student-service .notification-kind { font-size: 10px; }
+.student-service .notification-read-state { font-weight: 700; margin-left: 10px; }
+.student-service .notification-item strong { color: var(--ink); font-size: 13px; }
+.student-service .notification-item :is(small,time) { color: var(--muted); font-size: 11px; }
+.student-service .notification-item .status-badge { background: #eaf2f7; color: var(--accent); }
 @media (max-width: 800px) {
     /* Native keyboard scrolling must account for the fixed student navigation. */
     html:has(.student-service) { scroll-padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
+    .student-service .calendar-agenda, .student-service .personal-agenda { display: block; }
+    .student-service :is(.calendar-table-scroll,.timetable-scroll) { display: none; }
 }
 @media (max-width: 600px) {
     .service-heading { display: block; margin-bottom: 25px; }
@@ -132,4 +165,9 @@
     .student-service .booking-submit > button { width: 100%; }
     .student-service .service-person { align-items: start; flex-wrap: wrap; }
     .student-service .room-candidate-grid { grid-template-columns: minmax(0,1fr); }
+    .student-service .calendar-agenda .panel { margin-bottom: 14px; }
+    .student-service .personal-agenda-day { border-top: 1px solid var(--line); padding: 8px 0 16px; }
+    .student-service .personal-agenda-day > p { font-size: 12px; color: var(--muted); }
+    .student-service .timetable-event { margin-top: 12px; }
+    .student-service .calendar-filter-row label { flex: 0 1 auto; }
 }

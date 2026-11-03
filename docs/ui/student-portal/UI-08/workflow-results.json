@@ -1,0 +1,7 @@
+{
+  "phase": "UI-08",
+  "results": [
+    "Month/week/day, previous/next and category filters used real routes; confirmed commitments, optional invitations and equipment reminders retained distinct notes; published academic event opened authorized details; personal block created, shown in mobile agenda, removed and persisted; conflicting block rejected with schedule recovery link; individual notification click and mark-all-read persisted; another student could not mark an unowned notification."
+  ],
+  "browserErrors": []
+}

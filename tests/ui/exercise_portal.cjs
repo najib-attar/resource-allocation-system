@@ -324,6 +324,74 @@ async function feedback(page, browser) {
   assert.equal(await page.locator('.service-row').count(), 1);
   results.push('Actual-use resource flags controlled active/completed categories; urgent flag applied only to problem reports; native required validation; real private report escaped HTML, rejected reporter review POST, accepted clarification, displayed authorized staff response and resolution, removed clarification when resolved; unrelated student denied report and list data; status filter returned the authorized resolved report.');
 }
+async function calendarAndInbox(page, browser) {
+  await page.goto(fixture.url + '/calendar/?view=week&date=2030-01-07');
+  const invitation = page.locator('.calendar-event[data-event-id="appointment:' + fixture.ids.invitation + '"]:visible').first();
+  assert.match(await invitation.innerText(), /Optional invitation/);
+  assert.ok(!(await invitation.innerText()).includes('Personal commitment'));
+  const confirmed = page.locator('.calendar-event[data-event-id="appointment:' + fixture.ids.appointment + '"]:visible').first();
+  assert.match(await confirmed.innerText(), /Personal commitment/);
+  for (const view of ['Month','Day','Week']) {
+    await submit(page, page.getByRole('link', {name:view,exact:true}));
+    assert.equal(new URL(page.url()).searchParams.get('view'), view.toLowerCase());
+  }
+  await submit(page, page.locator('a[rel=next]'));
+  assert.equal(new URL(page.url()).searchParams.get('date'), '2030-01-14');
+  await submit(page, page.locator('a[rel=prev]'));
+  assert.equal(new URL(page.url()).searchParams.get('date'), '2030-01-07');
+  for (const checkbox of await page.locator('[name=category]').all()) await checkbox.uncheck();
+  await page.locator('[name=category][value=equipment]').check();
+  await submit(page, page.getByRole('button', {name:'Apply filters',exact:true}));
+  assert.equal(await page.locator('.calendar-event.category-appointment:visible').count(), 0);
+  assert.ok(await page.locator('.calendar-event.category-equipment:visible').count() > 0);
+  assert.match(await page.locator('.calendar-event.category-equipment:visible').first().innerText(), /reminder only/);
+  await screenshot(page, 'calendar-equipment-filter');
+  await page.goto(fixture.url + '/calendar/?view=day&date=2030-01-08&scope=published');
+  assert.match(await page.locator('main').innerText(), /Fictional published seminar/);
+  await page.locator('.calendar-event:visible').first().click();
+  await page.waitForURL('**/calendar/academic/**');
+  assert.match(await page.locator('main').innerText(), /Scheduling information only/);
+  await page.goto(fixture.url + '/appointments/calendar?month=2030-01&week=2030-01-07');
+  const block = page.locator('form:has([name=action][value=block])');
+  await block.locator('[name=start]').fill('2030-01-09T15:00');
+  await block.locator('[name=end]').fill('2030-01-09T16:00');
+  await block.locator('[name=reason]').fill('Fictional browser independent study');
+  await submit(page, block.locator('button'));
+  assert.match(await page.locator('.personal-block-record').filter({hasText:'Fictional browser independent study'}).innerText(), /2030-01-09/);
+  await page.goto(fixture.url + '/appointments/calendar?month=2030-01&week=2030-01-07');
+  assert.match(await page.locator('.personal-agenda').innerText(), /Fictional browser independent study/);
+  await screenshot(page, 'personal-block-added');
+  await submit(page, page.locator('.personal-block-record').filter({hasText:'Fictional browser independent study'}).locator('button'));
+  await page.reload();
+  assert.equal(await page.locator('.personal-block-record').filter({hasText:'Fictional browser independent study'}).count(), 0);
+  const conflict = page.locator('form:has([name=action][value=block])');
+  await conflict.locator('[name=start]').fill('2030-01-07T10:00');
+  await conflict.locator('[name=end]').fill('2030-01-07T11:00');
+  const [invalid] = await Promise.all([page.waitForNavigation(), conflict.locator('button').click()]);
+  assert.equal(invalid.status(), 409);
+  assert.equal(await page.getByRole('link', {name:'Back to My Schedule',exact:true}).count(), 1);
+  await screenshot(page, 'personal-block-conflict');
+  await page.goto(fixture.url + '/notifications/');
+  const unread = page.locator('.notification-inbox .notification-item.is-unread a').first();
+  const notificationId = await unread.getAttribute('data-notification-id');
+  await Promise.all([page.waitForNavigation(), unread.click()]);
+  await page.goto(fixture.url + '/notifications/');
+  assert.ok(!(await page.locator('.notification-inbox [data-notification-id="' + notificationId + '"]').locator('..').getAttribute('class')).includes('is-unread'));
+  await screenshot(page, 'inbox-read-and-unread');
+  const strangerContext = await browser.newContext();
+  const stranger = await strangerContext.newPage();
+  await login(stranger, 5);
+  const strangerCsrf = await stranger.locator('[data-notifications]').getAttribute('data-csrf');
+  assert.equal((await stranger.request.post(fixture.url + '/notifications/read',
+    {form:{csrf_token:strangerCsrf,id:notificationId}})).status(), 403);
+  await strangerContext.close();
+  await submit(page, page.locator('.notification-inbox form button'));
+  await page.reload();
+  assert.equal(await page.locator('.notification-inbox .is-unread').count(), 0);
+  assert.equal((await (await page.request.get(fixture.url + '/notifications/feed')).json()).unreadCount, 0);
+  await screenshot(page, 'inbox-all-read');
+  results.push('Month/week/day, previous/next and category filters used real routes; confirmed commitments, optional invitations and equipment reminders retained distinct notes; published academic event opened authorized details; personal block created, shown in mobile agenda, removed and persisted; conflicting block rejected with schedule recovery link; individual notification click and mark-all-read persisted; another student could not mark an unowned notification.');
+}
 (async () => {
   const browser = await chromium.launch({headless:true, ...(process.env.CHROMIUM_EXECUTABLE ?
     {executablePath:process.env.CHROMIUM_EXECUTABLE} : {channel:'msedge'})});
@@ -338,6 +406,7 @@ async function feedback(page, browser) {
     else if (phase === 'UI-05') await equipment(page);
     else if (phase === 'UI-06') await waiting(page, context, browser);
     else if (phase === 'UI-07') await feedback(page, browser);
+    else if (phase === 'UI-08') await calendarAndInbox(page, browser);
     else throw new Error('Unknown workflow phase ' + phase);
     assert.deepEqual(errors, []);
     fs.writeFileSync(path.join(output, 'workflow-results.json'), JSON.stringify({phase, results, browserErrors:errors}, null, 2) + '\n');

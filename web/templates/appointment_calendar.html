@@ -1,10 +1,14 @@
-{% extends "base.html" %}
+{% extends "student_service_base.html" %}
 {% from "_personal_timetable.html" import timetable with context %}
 {% block title %}My Schedule | University Scheduling{% endblock %}
 {% block page_heading %}My Schedule{% endblock %}
-{% block content %}
-{{ timetable(schedule, 'appointments.calendar') }}
-<section class="panel"><h2>Block a specific interval</h2><p>Personal blocks define organizer availability; professors can block dates or intervals here.</p>
+{% block service_eyebrow %}Calendar / My schedule{% endblock %}
+{% block service_intro %}Your own dated commitments, optional attendance and private availability blocks.{% endblock %}
+{% block service_actions %}<a class="service-button" href="{{ url_for('calendar.index') }}">University calendar</a>{% endblock %}
+{% block service_content %}
+{{ timetable(schedule, 'appointments.calendar', student_shell) }}
+<section class="panel"><h2>Block a specific interval</h2><p>Add an interval when you are unavailable. Personal blocks apply to your own calendar.</p>
 <form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="block">
-<label>Start <input type="datetime-local" name="start" required></label><label>End <input type="datetime-local" name="end" required></label><label>Reason <input name="reason" maxlength="2000"></label><button class="button" type="submit">Add block</button></form>
-{% for row in schedule.blocks %}<p>{{ row.start|university_time }} &ndash; {{ row.end|university_time }} &middot; {{ row.reason }}</p><form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="unblock"><input type="hidden" name="id" value="{{ row.id }}"><button type="submit">Remove block</button></form>{% endfor %}</section>{% endblock %}
+<div class="appointment-grid"><label>Start <input type="datetime-local" name="start" min="1970-01-01T00:00" max="2099-12-31T23:59" required></label><label>End <input type="datetime-local" name="end" min="1970-01-01T00:00" max="2099-12-31T23:59" required></label></div><label>Reason <input name="reason" maxlength="2000"></label><button class="button" type="submit">Add block</button></form>
+</section><section class="panel"><h2>Your personal blocks</h2>
+{% for row in schedule.blocks %}<article class="personal-block-record"><p>{{ row.start|university_time }} &ndash; {{ row.end|university_time }} &middot; {{ row.reason }}</p><form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="unblock"><input type="hidden" name="id" value="{{ row.id }}"><button type="submit" aria-label="Remove block: {{ row.reason or row.start|university_time }}">Remove block</button></form></article>{% else %}<p>No personal blocks yet.</p>{% endfor %}</section>{% endblock %}

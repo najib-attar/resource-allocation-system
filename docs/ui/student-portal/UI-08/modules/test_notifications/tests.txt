@@ -1,0 +1,16 @@
+test_appointment_approval_rejection_and_cancellation_are_not_parsed (test_notifications.NotificationTests.test_appointment_approval_rejection_and_cancellation_are_not_parsed) ... ok
+test_feed_html_is_escaped_private_and_csrf_protected (test_notifications.NotificationTests.test_feed_html_is_escaped_private_and_csrf_protected) ... ok
+test_notification_failure_rolls_back_request_history_and_reservations (test_notifications.NotificationTests.test_notification_failure_rolls_back_request_history_and_reservations) ... ok
+test_notification_sources_and_recipients_are_constrained (test_notifications.NotificationTests.test_notification_sources_and_recipients_are_constrained) ... ok
+test_other_user_cannot_read_notification_and_bad_identifiers_fail_safely (test_notifications.NotificationTests.test_other_user_cannot_read_notification_and_bad_identifiers_fail_safely) ... ok
+test_pending_requests_notify_only_assigned_approver_and_invitees (test_notifications.NotificationTests.test_pending_requests_notify_only_assigned_approver_and_invitees) ... ok
+test_read_state_survives_restart_is_idempotent_and_does_not_read_new_arrivals (test_notifications.NotificationTests.test_read_state_survives_restart_is_idempotent_and_does_not_read_new_arrivals) ... ok
+test_removed_invitees_lose_notification_detail_and_read_access (test_notifications.NotificationTests.test_removed_invitees_lose_notification_detail_and_read_access) ... ok
+test_room_decisions_responses_and_cancel_notify_relevant_people (test_notifications.NotificationTests.test_room_decisions_responses_and_cancel_notify_relevant_people) ... ok
+test_shared_header_is_role_based_without_granting_backend_permissions (test_notifications.NotificationTests.test_shared_header_is_role_based_without_granting_backend_permissions) ... ok
+test_existing_history_is_backfilled_without_duplicate_or_broadcast (test_notifications.NotificationUpgradeTests.test_existing_history_is_backfilled_without_duplicate_or_broadcast) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 138.009s
+
+OK
