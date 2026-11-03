@@ -83,7 +83,7 @@ async function inspect(page,width,name) {
   views.push({name,width,overflow:false,fieldsLabeled:true,keyboardWalk:true});
 }
 
-(async()=>{
+async function main(){
   fs.mkdirSync(out,{recursive:true});
   const browser=await chromium.launch({headless:true,channel:'msedge'});
   try {
@@ -106,7 +106,7 @@ async function inspect(page,width,name) {
     assert.deepEqual(new Set(data.items.map(i=>i.id)),new Set([ids.own,ids.rejected,ids.pending]));
     assert.deepEqual(Object.fromEntries(data.items.map(i=>[i.id,i.status])),
       {[ids.own]:'Approved',[ids.rejected]:'Rejected',[ids.pending]:'Pending'});
-    assert.equal(data.creationEnabled,false);
+    assert.equal(data.creationEnabled,true);
     assert.equal((await p.page.request.get(base+'/professor/academic-requests/'+ids.other)).status(),403);
     assert.equal((await p.page.request.get(base+'/professor/academic-requests?status=Confirmed')).status(),400);
     const detail=await (await p.page.request.get(base+'/professor/academic-requests/'+ids.own)).json();
@@ -115,7 +115,7 @@ async function inspect(page,width,name) {
     for(const url of ['/add-request','/requests','/calendar/publications','/appointments/calendar-setup'])
       assert.equal((await p.page.request.get(base+url)).status(),403);
     await post(p.page,'/run-allocation',{},403);
-    await post(p.page,'/professor/academic-requests',{requesterId:'3'},403);
+    await post(p.page,'/professor/academic-requests',{requesterId:'3'},400);
     checks.push('Owner-only API: actual published, rejected and pending records; private IDs, invalid filters and administrative/intake denials');
 
     await go(p.page,'/appointments/availability');
@@ -204,4 +204,7 @@ async function inspect(page,width,name) {
     fs.writeFileSync(path.join(out,'controls.json'),JSON.stringify(controls,null,2)+'\n');
     console.log(JSON.stringify({checks:checks.length,views:views.length,keyboardSteps,errors}));
   } finally {await browser.close();}
-})().catch(error=>{console.error(error);process.exitCode=1;});
+}
+if(require.main===module)main().catch(error=>{console.error(error);process.exitCode=1;});
+module.exports={go,submit,login,post,shot,inspect,calendar,fixture,base,ids,out,
+  results:()=>({checks,views,controls,errors,expectedErrors,keyboardSteps,nativePickerSteps})};

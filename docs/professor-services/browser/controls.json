@@ -31,7 +31,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=week&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -301,7 +301,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=week&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -579,7 +579,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=week&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -809,7 +809,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=week&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -1063,7 +1063,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=week&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -1571,7 +1571,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=month&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=month&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -2073,7 +2073,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=week&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -2351,7 +2351,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=day&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=day&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -2889,7 +2889,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=month&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=month&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -3391,7 +3391,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=week&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -3669,7 +3669,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=day&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=day&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -4207,7 +4207,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=month&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=month&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -4677,7 +4677,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=week&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -4955,7 +4955,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=day&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=day&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -5493,7 +5493,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=month&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=month&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -5963,7 +5963,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=week&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },
@@ -6241,7 +6241,7 @@
         "tag": "A",
         "name": "",
         "text": "Today",
-        "href": "/calendar/?view=day&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+        "href": "/calendar/?view=day&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
         "action": null,
         "disabled": false
       },

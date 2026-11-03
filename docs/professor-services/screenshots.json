@@ -10,21 +10,21 @@
     "path": "browser/appointment-1440.png",
     "width": 1440,
     "height": 1501,
-    "sha256": "f42ce71169166044195797bb0517cf76d760c28c523de6cb979953a7935a07e8",
+    "sha256": "bc11aeb5abe0e2538f297dccdeca6d30217c1ef8e37945bcfa5ba51a1d9cd935",
     "pngCRC": true
   },
   {
     "path": "browser/appointment-320.png",
     "width": 320,
     "height": 1644,
-    "sha256": "1f65909e38017e653688379010e30ee38dc138c21dcd650e0194ee1672a4da4d",
+    "sha256": "555f66924b73a5bab3a884adb0bdb1d9ba850f5d3343ba4ceca615bb72cd184b",
     "pngCRC": true
   },
   {
     "path": "browser/appointments-1440.png",
     "width": 1440,
     "height": 1035,
-    "sha256": "4973e0fb330b0a0c1db91eace8e0e360dde9ab19f8d50b4d8af6f2de00f36c50",
+    "sha256": "028ea7e3b7f608b80ab4a9d385f778fb244a0bd42a33cd3d4904ce787cde73e7",
     "pngCRC": true
   },
   {
@@ -38,7 +38,7 @@
     "path": "browser/calendar-day-1440.png",
     "width": 1440,
     "height": 1759,
-    "sha256": "1b457f54b883bdb11bbb068f35975749bece704016675563cb6f6a55b5bec0ca",
+    "sha256": "fba5765fefa973e009e2d7e5f44121f5253aac11afa90335857d9b4a02f30e7b",
     "pngCRC": true
   },
   {
@@ -52,7 +52,7 @@
     "path": "browser/calendar-month-1440.png",
     "width": 1440,
     "height": 1968,
-    "sha256": "18cebff3812523c176967f242f4ba964b11af73ca14d1109aca59bd9041993d8",
+    "sha256": "1da9a87292bc71aab50c6856627f364a1a5eb715005389f94052dccff5acb52a",
     "pngCRC": true
   },
   {
@@ -66,7 +66,7 @@
     "path": "browser/calendar-week-1440.png",
     "width": 1440,
     "height": 1922,
-    "sha256": "964bf2fff38749d195b983a563c01651b5ad7b208bec6a980f72d93457313398",
+    "sha256": "f0e27ed8cc5cdc5a4518064459e36dffd6c770cf9d6df1be6ec2bf0bd658c43a",
     "pngCRC": true
   },
   {
@@ -80,7 +80,7 @@
     "path": "browser/hours-1440.png",
     "width": 1440,
     "height": 1281,
-    "sha256": "1d55995e839f2f250671dfbaa119fe116578039f02fab64348e6f149f0928255",
+    "sha256": "9d2e92e1959e82ead3a19bda637bd855281f119805da9693c663a346bce6890f",
     "pngCRC": true
   },
   {
@@ -101,49 +101,49 @@
     "path": "browser/inbox-1440.png",
     "width": 1440,
     "height": 1171,
-    "sha256": "f0ddaf4bddc64fc09dd15331775c5956487b869b2f155fe6201e29687aaf18cd",
+    "sha256": "89a9f63249cb92a23f4192ae08f9fb03b572cbfbada8eaf3190077c02d5b3639",
     "pngCRC": true
   },
   {
     "path": "browser/inbox-320.png",
     "width": 320,
     "height": 1441,
-    "sha256": "dc35147ed273a87f98a2de55d6e785d687a85fa80256117b42cfbe738893ea22",
+    "sha256": "507c1318c2feb9fc3fff8283b346c969bce5b9db57ae5de0f9abf854d9a23549",
     "pngCRC": true
   },
   {
     "path": "browser/own-dated-block.png",
     "width": 390,
     "height": 2290,
-    "sha256": "38e3bbd53c541dbe5391e296ddb6a8045e3f81ac61cf63b1979d87dad212c293",
+    "sha256": "57e174e421e220f215711b6a87f594e6c087efbfa4dff5d3f852884e4654bab5",
     "pngCRC": true
   },
   {
     "path": "browser/reschedule-invalidated-approvals.png",
     "width": 390,
     "height": 2159,
-    "sha256": "ae19fec36f5259346307b7e1c2956ed4d67767f1e8c79290c90fe04dd88bd089",
+    "sha256": "00f5d90325df56be6c731d5947cd9a2e9310c22df2a9d52ea16fd943d339af3c",
     "pngCRC": true
   },
   {
     "path": "browser/room-invitation-1440.png",
     "width": 1440,
     "height": 1247,
-    "sha256": "071a906c2ebf619eefddc9afe4a4718ff3f65a503a320c24471887277d7b89aa",
+    "sha256": "7ab77e7b9d8937a3c62e9f231a863dfc1ef8481bf3d13a57a41d78643d251568",
     "pngCRC": true
   },
   {
     "path": "browser/room-invitation-320.png",
     "width": 320,
     "height": 1689,
-    "sha256": "f51c004bb1fb3220903d094c25b74abcce382d1e5a48d2a6b60f58b45ae42df4",
+    "sha256": "312287844fde5b77c305605dba5a08948e36a6a65ba3c479c6dc911c03f06b60",
     "pngCRC": true
   },
   {
     "path": "browser/schedule-1440.png",
     "width": 1440,
     "height": 1889,
-    "sha256": "2ad99d63835acc0893bfe7deae6689914ad7601c1957c0d34be6db9c80c5acf0",
+    "sha256": "44321273e931c2e46a02dda71c42b7c48a39066cc65f79c550cd4083d4725f84",
     "pngCRC": true
   },
   {
@@ -151,6 +151,118 @@
     "width": 320,
     "height": 2363,
     "sha256": "96d99cbb6723f0a58cfd8e0c4d53e2f01603b6131fa3a0f3dfcf17eedfb5f1f0",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/academic-list-1440.png",
+    "width": 1440,
+    "height": 950,
+    "sha256": "44f443cbe0960c3c8736e71598e8abfc00f2c74fdaf7012f6f6b7064963f4497",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/academic-list-320.png",
+    "width": 320,
+    "height": 1182,
+    "sha256": "e9eb2fef3d32424a35c388fa83810f6ee5b76866fe44d2b51c2c55514eb6d6bf",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/allocated-academic-request.png",
+    "width": 320,
+    "height": 2374,
+    "sha256": "62b89a9b3390953737cab817f0474b8cbd2eefa98b33e9449e136e3fc56dd35a",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/legacy-detail-1440.png",
+    "width": 1440,
+    "height": 1245,
+    "sha256": "2c167e4d12b2f20ec12a3b7fb87dc6fc07609bb5e1792cf71043ae2da7dc7dc2",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/legacy-detail-320.png",
+    "width": 320,
+    "height": 1700,
+    "sha256": "4a1709c1c93bcac2f6db9a94cba4d7d62af629ca82326e1292ac3eb6ef53c2d5",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/legacy-rejected-reservation-preserved.png",
+    "width": 320,
+    "height": 1774,
+    "sha256": "69818f917bfb453576143a985dd5b7935f8f918023960215cf04a2b01ae95792",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/legacy-review-1440.png",
+    "width": 1440,
+    "height": 1072,
+    "sha256": "5fe48b0267604539f2452732f7e6e3be461f4aa82bcd753ba9299d95600e16b0",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/legacy-review-320.png",
+    "width": 320,
+    "height": 1595,
+    "sha256": "e2bcd69f130c00aa2366273065d66637e3c0b24a347bb026808d1e2d3cf00059",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/new-CommitteeMeeting-320.png",
+    "width": 320,
+    "height": 2374,
+    "sha256": "b18d3dbfa7138311211bae364e185d053f02ccc91a564eb9a85979c247cf7242",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/new-Exam-320.png",
+    "width": 320,
+    "height": 1826,
+    "sha256": "c33193adaa23f81dbbcd76b9c12db3de71f58b7081950cb231ab9f4637e85b7d",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/new-OneTime-320.png",
+    "width": 320,
+    "height": 1478,
+    "sha256": "c39198f533e148ef86514f6ab67b09e510c7483ccddb98256ab94b8ab058de5e",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/new-Recurring-320.png",
+    "width": 320,
+    "height": 1306,
+    "sha256": "1e9d48efbe4600b481530526942bfd63b5b582efd857aa2d926844b5c75b20da",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/review-queue-1440.png",
+    "width": 1440,
+    "height": 950,
+    "sha256": "0889f46a7bb4871bde6a229facb6aa86ddf7dd672b87aecc57bd2e08e8b8de38",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/review-queue-320.png",
+    "width": 320,
+    "height": 950,
+    "sha256": "82be07e40a8bd4e191ff797896069fe7bc85051b301275efc7482591a7fb7a48",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/reviewed-queue-after-publication.png",
+    "width": 320,
+    "height": 1483,
+    "sha256": "08217a96601b3c81a135a3ce14e5b37e1f7990338bdc1b5906c80a9be081871a",
+    "pngCRC": true
+  },
+  {
+    "path": "eligibility-browser/revision-requires-review.png",
+    "width": 320,
+    "height": 2373,
+    "sha256": "1911ff671cb6276e54c1331e71239cfb524e2f1fdf108478946c6fd942e37df6",
     "pngCRC": true
   }
 ]

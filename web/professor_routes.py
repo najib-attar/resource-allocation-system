@@ -1,4 +1,4 @@
-"""Read-only professor API, independent of appointments and administrator intake."""
+"""Owner-scoped academic intake and tracking; independent of appointments."""
 import uuid
 from flask import Blueprint, g, jsonify, redirect, render_template, request, url_for
 from sqlalchemy.exc import SQLAlchemyError

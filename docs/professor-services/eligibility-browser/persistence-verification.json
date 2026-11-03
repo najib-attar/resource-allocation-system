@@ -1,0 +1,124 @@
+{
+  "posts": 28,
+  "verified": [
+    {
+      "path": "/academic-eligibility/1",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/academic-eligibility/1",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/academic-eligibility/1",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/academic-eligibility/1",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/run-allocation",
+      "result": "outstanding legacy review blocked replacement without mutation"
+    },
+    {
+      "path": "/professor/requests/new",
+      "result": "self-owned pending submission; no allocation",
+      "id": 2
+    },
+    {
+      "path": "/academic-eligibility/2",
+      "result": "review persisted; current reservation unchanged",
+      "id": 2
+    },
+    {
+      "path": "/professor/requests/new",
+      "result": "self-owned pending submission; no allocation",
+      "id": 3
+    },
+    {
+      "path": "/academic-eligibility/3",
+      "result": "review persisted; current reservation unchanged",
+      "id": 3
+    },
+    {
+      "path": "/professor/requests/new",
+      "result": "self-owned pending submission; no allocation",
+      "id": 4
+    },
+    {
+      "path": "/academic-eligibility/4",
+      "result": "review persisted; current reservation unchanged",
+      "id": 4
+    },
+    {
+      "path": "/professor/requests/new",
+      "result": "self-owned pending submission; no allocation",
+      "id": 5
+    },
+    {
+      "path": "/academic-eligibility/5",
+      "result": "review persisted; current reservation unchanged",
+      "id": 5
+    },
+    {
+      "path": "/professor/requests/3/revise",
+      "result": "material revision invalidated eligibility",
+      "id": 3
+    },
+    {
+      "path": "/academic-eligibility/3",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/academic-eligibility/3",
+      "result": "review persisted; current reservation unchanged",
+      "id": 3
+    },
+    {
+      "path": "/professor/requests/new",
+      "result": "self-owned pending submission; no allocation",
+      "id": 6
+    },
+    {
+      "path": "/run-allocation",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/academic-eligibility/1",
+      "result": "review persisted; current reservation unchanged",
+      "id": 1
+    },
+    {
+      "path": "/professor/requests/1/revise",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/run-allocation",
+      "result": "real engine replacement uses eligible requests only; history retained",
+      "ids": [
+        2,
+        3,
+        4,
+        5
+      ]
+    }
+  ],
+  "engineInputs": [
+    {
+      "requestIds": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "eligibleAtExecution": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "realEngine": true
+    }
+  ]
+}
