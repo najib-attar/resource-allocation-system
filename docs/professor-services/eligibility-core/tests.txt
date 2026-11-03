@@ -1,0 +1,12 @@
+test_changed_eligibility_invalidates_captured_input_and_inflight_publication (test_academic_eligibility.EligibilityGateTests.test_changed_eligibility_invalidates_captured_input_and_inflight_publication) ... ok
+test_direct_invalid_review_and_audit_rewrites_are_rejected_by_database (test_academic_eligibility.EligibilityGateTests.test_direct_invalid_review_and_audit_rewrites_are_rejected_by_database) ... ok
+test_material_parent_and_child_changes_invalidate_approval_at_database_boundary (test_academic_eligibility.EligibilityGateTests.test_material_parent_and_child_changes_invalidate_approval_at_database_boundary) ... ok
+test_pending_and_rejected_requests_never_enter_any_repository_engine_snapshot (test_academic_eligibility.EligibilityGateTests.test_pending_and_rejected_requests_never_enter_any_repository_engine_snapshot) ... ok
+test_presentation_input_and_tampered_allocation_input_cannot_reach_engine (test_academic_eligibility.EligibilityGateTests.test_presentation_input_and_tampered_allocation_input_cannot_reach_engine) ... ok
+test_review_is_not_allocation_and_all_roles_cannot_approve (test_academic_eligibility.EligibilityGateTests.test_review_is_not_allocation_and_all_roles_cannot_approve) ... ok
+test_stale_decisions_concurrent_review_and_reason_validation (test_academic_eligibility.EligibilityGateTests.test_stale_decisions_concurrent_review_and_reason_validation) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 56.650s
+
+OK

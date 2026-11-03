@@ -96,6 +96,9 @@ class EngineGateway:
         self.project_root, self.timeout, self.logger = project_root, timeout, logger
 
     def execute(self, snapshot):
+        guard = getattr(snapshot, 'assert_allocation_ready', None)
+        if guard is not None:
+            guard()
         return self._execute(snapshot, "--json", validate_result)
 
     def execute_appointment(self, snapshot):
