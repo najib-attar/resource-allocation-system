@@ -1,0 +1,10 @@
+test_cpp_runner_cleans_owned_artifacts_and_preserves_compile_failure_status (test_application_entrypoints.ApplicationEntrypointTests.test_cpp_runner_cleans_owned_artifacts_and_preserves_compile_failure_status) ... ok
+test_direct_script_bootstraps_package_outside_repository_directory (test_application_entrypoints.ApplicationEntrypointTests.test_direct_script_bootstraps_package_outside_repository_directory) ... ok
+test_flask_cli_registers_all_workflows_without_database_access (test_application_entrypoints.ApplicationEntrypointTests.test_flask_cli_registers_all_workflows_without_database_access) ... ok
+test_full_ci_launcher_supports_spawn_workers (test_application_entrypoints.ApplicationEntrypointTests.test_full_ci_launcher_supports_spawn_workers) ... ok
+test_policy_ci_gate_rejects_missing_postgresql_discovery_and_skips (test_application_entrypoints.ApplicationEntrypointTests.test_policy_ci_gate_rejects_missing_postgresql_discovery_and_skips) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 19.508s
+
+OK

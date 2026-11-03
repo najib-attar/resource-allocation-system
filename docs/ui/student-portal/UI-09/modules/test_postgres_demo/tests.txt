@@ -1,0 +1,10 @@
+test_large_dataset_stays_within_protocol_limits (test_postgres_demo.DemoGenerationTests.test_large_dataset_stays_within_protocol_limits) ... ok
+test_seed_is_reproducible_and_does_not_create_fake_results (test_postgres_demo.DemoGenerationTests.test_seed_is_reproducible_and_does_not_create_fake_results) ... ok
+test_demo_runs_all_five_real_strategies_and_persists_results (test_postgres_demo.PostgresDemoTests.test_demo_runs_all_five_real_strategies_and_persists_results) ... ok
+test_large_snapshot_uses_bounded_queries_and_returns_connections (test_postgres_demo.PostgresDemoTests.test_large_snapshot_uses_bounded_queries_and_returns_connections) ... ok
+test_seed_preserves_units_identities_and_refuses_populated_target (test_postgres_demo.PostgresDemoTests.test_seed_preserves_units_identities_and_refuses_populated_target) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 49.595s
+
+OK

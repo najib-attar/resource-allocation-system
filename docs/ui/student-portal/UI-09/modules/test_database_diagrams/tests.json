@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_database_diagrams"
+  ],
+  "run": 1,
+  "passed": 1,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 0.34
+}

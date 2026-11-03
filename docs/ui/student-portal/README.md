@@ -31,3 +31,20 @@ own a random test schema and never reset an application schema. Browser checks
 use the real loopback Flask server, real authentication and synthetic records;
 no API response mocking. `PLAYWRIGHT_NODE_MODULE` may point to an installed
 Playwright package. Edge is the default browser.
+
+For the complete rollout, run `python -B tests/ui/portal_preview.py` with the same
+isolated database and backend configuration. It serves synthetic accounts on
+loopback port 5053, enables template reload only in the review process, and writes
+fixture metadata under ignored `build/student-portal/preview.json`. Run
+`node tests/ui/capture_portal.cjs UI-03` (or another phase) for route captures and
+`node tests/ui/exercise_portal.cjs UI-03` for state-changing synthetic acceptance
+flows. Start with a fresh preview schema when replaying a workflow. The final
+browser audit also uses a separate port 5054 instance with an intentionally tiny
+existing engine timeout, `PORTAL_ENGINE_TIMEOUT=0.000001` and a separate
+`PORTAL_INFO_FILE`, to verify real HTTP 503 presentation without mocking responses.
+
+`python -B tests/ui/run_portal_parallel.py UI-09` discovers all root test modules
+and runs independent processes; each test retains its own database schema. Set
+`POSTGRES_TEST_TOOLS_DIR` to matching PostgreSQL binaries for actual recovery
+checks. The [acceptance report](acceptance-report.md) links all phase evidence,
+commit SHAs, file inventory and screenshots.

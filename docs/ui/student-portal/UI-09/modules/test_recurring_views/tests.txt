@@ -1,0 +1,15 @@
+test_calendar_pickups_and_due_dates_are_separate_nonbusy_reminders (test_recurring_views.RecurringEquipmentViewsTests.test_calendar_pickups_and_due_dates_are_separate_nonbusy_reminders) ... ok
+test_extension_occurrence_cannot_reference_another_series (test_recurring_views.RecurringEquipmentViewsTests.test_extension_occurrence_cannot_reference_another_series) ... ok
+test_extensions_cannot_overlap_next_occurrence_and_can_extend_selected_loan (test_recurring_views.RecurringEquipmentViewsTests.test_extensions_cannot_overlap_next_occurrence_and_can_extend_selected_loan) ... ok
+test_flask_preview_complete_approval_and_one_occurrence_cancel (test_recurring_views.RecurringEquipmentViewsTests.test_flask_preview_complete_approval_and_one_occurrence_cancel) ... ok
+test_gateway_rejects_partial_mismatched_and_ambiguous_series_results (test_recurring_views.RecurringEquipmentViewsTests.test_gateway_rejects_partial_mismatched_and_ambiguous_series_results) ... ok
+test_cancelled_first_date_is_not_proof_of_resource_use (test_recurring_views.RecurringRoomViewsTests.test_cancelled_first_date_is_not_proof_of_resource_use) ... ok
+test_flask_preview_submission_review_and_scoped_cancellation (test_recurring_views.RecurringRoomViewsTests.test_flask_preview_submission_review_and_scoped_cancellation) ... ok
+test_gateway_validates_full_occurrence_collection_and_notifications_are_idempotent (test_recurring_views.RecurringRoomViewsTests.test_gateway_validates_full_occurrence_collection_and_notifications_are_idempotent) ... ok
+test_later_week_home_and_calendars_follow_actual_reservations (test_recurring_views.RecurringRoomViewsTests.test_later_week_home_and_calendars_follow_actual_reservations) ... ok
+test_series_rejects_waiting_split_and_database_association (test_recurring_views.RecurringRoomViewsTests.test_series_rejects_waiting_split_and_database_association) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 217.050s
+
+OK

@@ -81,12 +81,15 @@ See the [calendar requirements](docs/srs/unified-calendar-requirements.md),
 [architecture](docs/architecture/unified-calendar-design.md) and
 [Iteration 45 report](docs/iteration-reports/Iteration_45.pdf).
 
-The current frontend design prototype introduces a shared role-aware sidebar,
-compact account/notification header, real-data student dashboard and grouped
-professor-appointment form. Other service pages retain their existing interiors
-while sharing the new shell. The broader visual rollout awaits review; see the
-[frontend audit, design system and rollout plan](docs/architecture/frontend-design.md)
-and the [Iteration 46 prototype report](docs/iteration-reports/Iteration_46.pdf).
+The student portal applies the approved Campus Space design to sign-in, Home,
+appointments, rooms, equipment, waiting lists, private feedback, calendars,
+personal blocks and Inbox. Student navigation remains Home, My Activity (the
+existing Home anchor), Calendar and Inbox. Service and role permissions remain
+authoritative; no new activity aggregate or office-hours browser is introduced.
+See the [implementation, coverage and real-app evidence](docs/ui/student-portal/README.md)
+and [acceptance report](docs/ui/student-portal/acceptance-report.md). The earlier
+[frontend audit](docs/architecture/frontend-design.md) and
+[Iteration 46 report](docs/iteration-reports/Iteration_46.pdf) remain historical references.
 
 ## Current Prototype Features
 

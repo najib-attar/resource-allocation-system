@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_room_foundation"
+  ],
+  "run": 4,
+  "passed": 4,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 30.41
+}

@@ -9,7 +9,7 @@
 .login-intro { color: #596d7b; font-size: 13px; margin: 0 0 28px; }
 .login-container label { display: block; font-size: 12px; font-weight: 600; color: #435969; margin: 16px 0 7px; }
 .login-container :is(input:not([type=checkbox]):not([type=hidden]), button) { width: 100%; min-width: 0; min-height: 44px; font: inherit; border-radius: 8px; }
-.login-container input:not([type=checkbox]):not([type=hidden]) { border: 1px solid #a1b3bf; background: #fff; color: #23313c; padding: 10px 12px; }
+.login-container input:not([type=checkbox]):not([type=hidden]) { border: 1px solid #7d8f9c; background: #fff; color: #23313c; padding: 10px 12px; }
 .login-container .login-show { display: flex; align-items: center; gap: 9px; font-weight: 400; margin: 16px 0 8px; min-height: 36px; cursor: pointer; }
 .login-show input { margin: 0; width: 17px; height: 17px; accent-color: #204b69; }
 .login-container button { padding: 10px 16px; background: #204b69; color: #fff; font-size: 13px; font-weight: 700; border: 1px solid #204b69; cursor: pointer; }

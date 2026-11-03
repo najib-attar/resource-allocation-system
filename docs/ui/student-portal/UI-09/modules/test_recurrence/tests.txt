@@ -1,0 +1,21 @@
+test_adjacent_periods_allowed_and_multiday_returns_previewed (test_recurrence.WeeklyRecurrenceTests.test_adjacent_periods_allowed_and_multiday_returns_previewed) ... ok
+test_browser_mode_and_fields_are_bounded_and_do_not_choose_timezone (test_recurrence.WeeklyRecurrenceTests.test_browser_mode_and_fields_are_bounded_and_do_not_choose_timezone) ... ok
+test_date_bounds_are_inclusive_and_allow_one_occurrence (test_recurrence.WeeklyRecurrenceTests.test_date_bounds_are_inclusive_and_allow_one_occurrence) ... ok
+test_dst_gap_and_fold_fail_without_guessing (test_recurrence.WeeklyRecurrenceTests.test_dst_gap_and_fold_fail_without_guessing) ... ok
+test_eight_separate_wednesdays_do_not_collapse_onto_a_weekday (test_recurrence.WeeklyRecurrenceTests.test_eight_separate_wednesdays_do_not_collapse_onto_a_weekday) ... ok
+test_elapsed_duration_can_cross_a_dst_transition (test_recurrence.WeeklyRecurrenceTests.test_elapsed_duration_can_cross_a_dst_transition) ... ok
+test_empty_pattern_is_rejected (test_recurrence.WeeklyRecurrenceTests.test_empty_pattern_is_rejected) ... ok
+test_execution_count_limit_is_explicit (test_recurrence.WeeklyRecurrenceTests.test_execution_count_limit_is_explicit) ... ok
+test_future_validation_is_optional_for_reloading_history (test_recurrence.WeeklyRecurrenceTests.test_future_validation_is_optional_for_reloading_history) ... ok
+test_invalid_durations_and_unbounded_ranges (test_recurrence.WeeklyRecurrenceTests.test_invalid_durations_and_unbounded_ranges) ... ok
+test_invalid_types_days_times_and_dates (test_recurrence.WeeklyRecurrenceTests.test_invalid_types_days_times_and_dates) ... ok
+test_missing_browser_semester_has_a_configuration_explanation (test_recurrence.WeeklyRecurrenceTests.test_missing_browser_semester_has_a_configuration_explanation) ... ok
+test_multiple_weekdays_are_real_sorted_dated_intervals (test_recurrence.WeeklyRecurrenceTests.test_multiple_weekdays_are_real_sorted_dated_intervals) ... ok
+test_overlapping_equipment_periods_rejected_not_silently_merged (test_recurrence.WeeklyRecurrenceTests.test_overlapping_equipment_periods_rejected_not_silently_merged) ... ok
+test_university_timezone_is_explicit_not_host_timezone (test_recurrence.WeeklyRecurrenceTests.test_university_timezone_is_explicit_not_host_timezone) ... ok
+test_weekly_quota_splits_elapsed_time_at_the_university_week_boundary (test_recurrence.WeeklyRecurrenceTests.test_weekly_quota_splits_elapsed_time_at_the_university_week_boundary) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.165s
+
+OK

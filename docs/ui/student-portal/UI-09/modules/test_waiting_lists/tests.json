@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_waiting_lists"
+  ],
+  "run": 49,
+  "passed": 49,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 577.78
+}

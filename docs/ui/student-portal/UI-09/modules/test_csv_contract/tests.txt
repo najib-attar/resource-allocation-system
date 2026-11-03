@@ -1,0 +1,8 @@
+test_malformed_quotes_reject_request_and_preserve_following_valid_record (test_csv_contract.CsvContractTests.test_malformed_quotes_reject_request_and_preserve_following_valid_record) ... ok
+test_python_quote_all_inputs_roundtrip (test_csv_contract.CsvContractTests.test_python_quote_all_inputs_roundtrip) ... ok
+test_python_written_requests_and_participants_roundtrip (test_csv_contract.CsvContractTests.test_python_written_requests_and_participants_roundtrip) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 1.512s
+
+OK

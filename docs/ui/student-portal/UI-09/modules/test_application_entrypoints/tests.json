@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_application_entrypoints"
+  ],
+  "run": 5,
+  "passed": 5,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 19.53
+}

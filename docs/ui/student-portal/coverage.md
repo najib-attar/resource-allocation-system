@@ -42,7 +42,15 @@ phase `tests.json` files record actual executions.
 | UI-08 Personal timetable | Own explicitly dated commitments, selected month/week, optional invitations, weekend events, unresolved warning | `appointments.calendar`; `PersonalScheduleService` | `appointment_calendar.html`, `_personal_timetable.html` | `test_personal_schedule`, `test_calendar_loading` |
 | UI-08 Personal blocks | Create/remove only own exact-interval blocks; existing conflict validation | `appointments.calendar` POST block/unblock; `AppointmentService.block/unblock` | Existing CSRF forms | `test_appointments`, `test_personal_schedule` |
 | UI-08 Inbox | Own latest 100 updates, authorized destinations, read/unread, per-item/all-through-ID mark read, private feed | `notifications.index/feed/read`; `NotificationService` | `notifications.html`, `_notification_items.html`, `notifications.js` | `test_notifications`, `test_identity_sessions`; real browser persistence |
-| UI-09 Integration/errors | All student routes reachable; escaped data, backend errors, visible focus, scoped CSS, mobile/tablet/desktop, other roles | All above; error templates; original security and services | Shared service components and phase browser reports | Full Python regression; C++ regression; browser route/keyboard/overflow checks |
+| UI-09 Integration/errors | All student routes reachable; escaped data, backend errors, visible focus, scoped CSS, mobile/tablet/desktop, other roles | All above; existing HTTP/error handlers; original security and services | Shared service components, `student_error.html`, safe student error rendering | `test_student_portal_ui.StudentFailurePresentationTests`; full Python and C++ regression; complete browser route/keyboard/overflow checks |
+
+The generated [complete Flask route inventory](UI-09/routes.md) classifies all 68
+rules, including 47 service rules and their staff-only boundaries.
+[Contract audit](UI-09/contracts.json) verifies every original named form control
+remains present and protected service, authentication, persistence, migration,
+C++ and CDMCS paths are unchanged. `web/app.py` changes only error presentation:
+existing statuses, HTTP method headers, CSRF rejection and retry headers remain
+unchanged; other roles retain their original responses.
 
 ## Deliberately deferred
 

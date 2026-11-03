@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_postgres_foundation"
+  ],
+  "run": 8,
+  "passed": 8,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 24.39
+}

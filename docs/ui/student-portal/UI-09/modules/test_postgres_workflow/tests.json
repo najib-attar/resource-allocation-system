@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_postgres_workflow"
+  ],
+  "run": 12,
+  "passed": 12,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 83.28
+}

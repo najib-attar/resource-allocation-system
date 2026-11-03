@@ -1,0 +1,13 @@
+test_database_errors_do_not_expose_sql_credentials_or_sensitive_parameters (test_postgres_web.DatabaseFailureWebTests.test_database_errors_do_not_expose_sql_credentials_or_sensitive_parameters) ... ok
+test_missing_configuration_returns_clear_error_without_file_fallback (test_postgres_web.DatabaseFailureWebTests.test_missing_configuration_returns_clear_error_without_file_fallback) ... ok
+test_alembic_schema_matches_models_and_upgrading_again_is_non_destructive (test_postgres_web.PostgresWebTests.test_alembic_schema_matches_models_and_upgrading_again_is_non_destructive) ... ok
+test_database_and_original_csv_produce_identical_results_for_all_strategies (test_postgres_web.PostgresWebTests.test_database_and_original_csv_produce_identical_results_for_all_strategies) ... ok
+test_invalid_strategy_and_forms_leave_database_inputs_unchanged (test_postgres_web.PostgresWebTests.test_invalid_strategy_and_forms_leave_database_inputs_unchanged) ... ok
+test_normal_views_and_execution_never_use_csv_or_local_result_json (test_postgres_web.PostgresWebTests.test_normal_views_and_execution_never_use_csv_or_local_result_json) ... ok
+test_schedule_events_and_resource_attributes_match_published_allocations (test_postgres_web.PostgresWebTests.test_schedule_events_and_resource_attributes_match_published_allocations) ... ok
+test_structured_suggestions_and_history_survive_database_roundtrip (test_postgres_web.PostgresWebTests.test_structured_suggestions_and_history_survive_database_roundtrip) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 52.171s
+
+OK

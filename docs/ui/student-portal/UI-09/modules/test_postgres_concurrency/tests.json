@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_postgres_concurrency"
+  ],
+  "run": 15,
+  "passed": 15,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 154.92
+}

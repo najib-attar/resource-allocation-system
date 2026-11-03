@@ -236,3 +236,46 @@ class LoginTemplateTests(TestCase):
         self.assertNotIn('value', page.find('input', name='password')[0].attrs)
         for name in ('username', 'password'):
             self.assertEqual(page.find('input', name=name)[0].attrs['aria-describedby'], 'sign-in-error')
+
+
+class StudentFailurePresentationTests(TestCase):
+    def context(self, role='Student'):
+        self.settings = mock.patch.dict(web_app.app.config, {'SECRET_KEY':'isolated-failure-template-test-key-2030'})
+        self.settings.start()
+        self.addCleanup(self.settings.stop)
+        context = web_app.app.test_request_context('/equipment/catalog')
+        context.push()
+        self.addCleanup(context.pop)
+        g.principal = SimpleNamespace(name='Fictional Student', role=role, administrator=False, user_id=1)
+
+    def test_student_service_failure_retains_503_and_hides_internal_details(self):
+        self.context()
+        with self.assertLogs(web_app.app.logger):
+            body, status, headers = web_app.application_error(web_app.EngineIntegrationError('PRIVATE internal path'))
+        self.assertEqual(status, 503)
+        self.assertNotIn('PRIVATE', body)
+        self.assertIn('role="alert"', body)
+        self.assertIn('Back to equipment requests', body)
+        self.assertEqual(headers['Cache-Control'], 'private, no-store')
+
+    def test_busy_error_retains_retry_after_and_other_roles_keep_their_response(self):
+        self.context()
+        _, status, headers = web_app.database_busy(web_app.DatabaseBusy('busy'))
+        self.assertEqual((status, headers['Retry-After']), (503, '2'))
+        g.principal.role = 'Staff'
+        self.assertEqual(web_app.database_busy(web_app.DatabaseBusy('busy')), ('busy', 503, {'Retry-After':'2'}))
+
+    def test_http_failure_preserves_method_headers_and_escapes_descriptions(self):
+        from werkzeug.exceptions import MethodNotAllowed
+        self.context()
+        response = web_app.student_http_error(MethodNotAllowed(valid_methods=['GET'], description='<script>bad()</script>'))
+        self.assertEqual(response.status_code, 405)
+        self.assertIn('GET', response.headers['Allow'])
+        self.assertIn('&lt;script&gt;', response.get_data(as_text=True))
+        self.assertNotIn('<script>bad()', response.get_data(as_text=True))
+
+    def test_submission_conflict_retains_409_and_safe_message(self):
+        self.context()
+        body, status, _ = web_app.submission_conflict(web_app.SubmissionConflict('Refresh this request.'))
+        self.assertEqual(status, 409)
+        self.assertIn('Refresh this request.', body)

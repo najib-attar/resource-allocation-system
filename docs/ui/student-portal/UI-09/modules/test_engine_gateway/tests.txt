@@ -1,0 +1,29 @@
+test_malformed_stdout_is_rejected (test_engine_gateway.GatewayTests.test_malformed_stdout_is_rejected) ... ok
+test_missing_executable_validation_is_not_bypassed (test_engine_gateway.GatewayTests.test_missing_executable_validation_is_not_bypassed) ... ok
+test_nonzero_exit_never_succeeds (test_engine_gateway.GatewayTests.test_nonzero_exit_never_succeeds) ... ok
+test_protocol_mismatch_is_rejected (test_engine_gateway.GatewayTests.test_protocol_mismatch_is_rejected) ... ok
+test_result_collections_and_fields_are_validated (test_engine_gateway.GatewayTests.test_result_collections_and_fields_are_validated) ... ok
+test_run_id_mismatch_is_rejected (test_engine_gateway.GatewayTests.test_run_id_mismatch_is_rejected) ... ok
+test_stale_executable_validation_is_not_bypassed (test_engine_gateway.GatewayTests.test_stale_executable_validation_is_not_bypassed) ... ok
+test_stderr_diagnostics_do_not_contaminate_result (test_engine_gateway.GatewayTests.test_stderr_diagnostics_do_not_contaminate_result) ... ok
+test_strategy_mismatch_is_rejected (test_engine_gateway.GatewayTests.test_strategy_mismatch_is_rejected) ... ok
+test_success_passes_utf8_document_stdin_without_shell (test_engine_gateway.GatewayTests.test_success_passes_utf8_document_stdin_without_shell) ... ok
+test_timeout_is_explicit (test_engine_gateway.GatewayTests.test_timeout_is_explicit) ... ok
+test_zero_exit_with_error_state_is_rejected (test_engine_gateway.GatewayTests.test_zero_exit_with_error_state_is_rejected) ... ok
+test_allocation_and_suggestion_output_shapes_are_checked (test_engine_gateway.JsonEngineIntegrationTests.test_allocation_and_suggestion_output_shapes_are_checked) ... ok
+test_clean_fixture_matches_legacy_for_all_five_strategies (test_engine_gateway.JsonEngineIntegrationTests.test_clean_fixture_matches_legacy_for_all_five_strategies) ... ok
+test_independent_json_strategies_do_not_modify_config (test_engine_gateway.JsonEngineIntegrationTests.test_independent_json_strategies_do_not_modify_config) ... ok
+test_json_needs_no_csv_or_config_and_writes_no_files (test_engine_gateway.JsonEngineIntegrationTests.test_json_needs_no_csv_or_config_and_writes_no_files) ... ok
+test_legacy_best_fit_limits_exit_cleanly_without_replacing_outputs (test_engine_gateway.JsonEngineIntegrationTests.test_legacy_best_fit_limits_exit_cleanly_without_replacing_outputs) ... ok
+test_normal_dataset_matches_legacy_for_all_five_strategies (test_engine_gateway.JsonEngineIntegrationTests.test_normal_dataset_matches_legacy_for_all_five_strategies) ... ok
+test_real_best_fit_limits_are_errors_not_publication_candidates (test_engine_gateway.JsonEngineIntegrationTests.test_real_best_fit_limits_are_errors_not_publication_candidates) ... ok
+test_real_engine_supports_all_four_types_and_utf8 (test_engine_gateway.JsonEngineIntegrationTests.test_real_engine_supports_all_four_types_and_utf8) ... ok
+test_real_protocol_errors_are_one_json_document_with_nonzero_exit (test_engine_gateway.JsonEngineIntegrationTests.test_real_protocol_errors_are_one_json_document_with_nonzero_exit) ... ok
+test_suggestions_render_without_history_parsing (test_engine_gateway.JsonEngineIntegrationTests.test_suggestions_render_without_history_parsing) ... ok
+test_all_operation_envelopes_preserve_rejection_and_error_messages (test_engine_gateway.OperationEnvelopeTests.test_all_operation_envelopes_preserve_rejection_and_error_messages) ... ok
+test_all_operation_envelopes_preserve_valid_results (test_engine_gateway.OperationEnvelopeTests.test_all_operation_envelopes_preserve_valid_results) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 17.201s
+
+OK

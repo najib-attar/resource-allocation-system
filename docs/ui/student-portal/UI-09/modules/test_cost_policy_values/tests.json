@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_cost_policy_values"
+  ],
+  "run": 13,
+  "passed": 13,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 0.23
+}

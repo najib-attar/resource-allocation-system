@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_recurring_views"
+  ],
+  "run": 10,
+  "passed": 10,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 217.08
+}

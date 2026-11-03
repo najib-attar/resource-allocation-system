@@ -1,0 +1,8 @@
+test_new_application_process_reloads_database_results_from_an_empty_working_directory (test_postgres_runtime_independence.PostgresRuntimeIndependenceTests.test_new_application_process_reloads_database_results_from_an_empty_working_directory) ... ok
+test_save_run_strategy_and_all_views_work_with_runtime_file_io_forbidden (test_postgres_runtime_independence.PostgresRuntimeIndependenceTests.test_save_run_strategy_and_all_views_work_with_runtime_file_io_forbidden) ... ok
+test_unreachable_postgresql_returns_503_without_csv_fallback (test_postgres_runtime_independence.PostgresRuntimeIndependenceTests.test_unreachable_postgresql_returns_503_without_csv_fallback) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 47.907s
+
+OK

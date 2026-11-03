@@ -1,0 +1,16 @@
+test_bounded_json_rejects_duplicate_keys_nonfinite_and_nested_overflow (test_preference_values.PreferenceValueTests.test_bounded_json_rejects_duplicate_keys_nonfinite_and_nested_overflow) ... ok
+test_dates_are_local_bounded_and_never_inferred (test_preference_values.PreferenceValueTests.test_dates_are_local_bounded_and_never_inferred) ... ok
+test_every_value_is_required_and_none_is_not_neutral (test_preference_values.PreferenceValueTests.test_every_value_is_required_and_none_is_not_neutral) ... ok
+test_mutation_unknown_fields_and_private_error_messages (test_preference_values.PreferenceValueTests.test_mutation_unknown_fields_and_private_error_messages) ... ok
+test_original_overnight_endpoints_survive_normalization_and_roundtrip (test_preference_values.PreferenceValueTests.test_original_overnight_endpoints_survive_normalization_and_roundtrip) ... ok
+test_overlaps_cross_day_conflicts_and_invalid_clocks_are_rejected (test_preference_values.PreferenceValueTests.test_overlaps_cross_day_conflicts_and_invalid_clocks_are_rejected) ... ok
+test_production_values_never_gain_synthetic_provenance (test_preference_values.PreferenceValueTests.test_production_values_never_gain_synthetic_provenance) ... ok
+test_touching_windows_keep_both_original_endpoints (test_preference_values.PreferenceValueTests.test_touching_windows_keep_both_original_endpoints) ... ok
+test_valid_iana_zones_do_not_imply_dated_dst_eligibility (test_preference_values.PreferenceValueTests.test_valid_iana_zones_do_not_imply_dated_dst_eligibility) ... ok
+test_values_are_explicit_immutable_and_private (test_preference_values.PreferenceValueTests.test_values_are_explicit_immutable_and_private) ... ok
+test_zero_indifference_and_empty_arrays_are_distinct_explicit_values (test_preference_values.PreferenceValueTests.test_zero_indifference_and_empty_arrays_are_distinct_explicit_values) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.346s
+
+OK

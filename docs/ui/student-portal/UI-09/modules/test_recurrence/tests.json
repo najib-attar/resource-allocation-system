@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_recurrence"
+  ],
+  "run": 16,
+  "passed": 16,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 0.19
+}

@@ -131,9 +131,11 @@ def main():
             accounts.provision(actor, username, password, administrator=actor == 6, reset=actor in existing)
         web_app.app.config.update(DATABASE_URL=fixture.url,
             SECRET_KEY='fictional-portal-review-session-key-2030', TESTING=False, PROPAGATE_EXCEPTIONS=True)
+        if os.environ.get('PORTAL_ENGINE_TIMEOUT'):
+            web_app.app.config['BACKEND_TIMEOUT'] = float(os.environ['PORTAL_ENGINE_TIMEOUT'])
         web_app.app.jinja_env.auto_reload = True
         port = int(os.environ.get('PORTAL_PORT', '5053'))
-        output = ROOT / 'build' / 'student-portal' / 'preview.json'
+        output = ROOT / os.environ.get('PORTAL_INFO_FILE', 'build/student-portal/preview.json')
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text(json.dumps(dict(url=f'http://127.0.0.1:{port}', password=password,
             users=users, week='2030-01-07', ids=ids, schema=fixture.schema), indent=2), encoding='utf-8')

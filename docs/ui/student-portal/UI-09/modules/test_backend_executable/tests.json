@@ -1,0 +1,16 @@
+{
+  "modules": [
+    "test_backend_executable"
+  ],
+  "run": 21,
+  "passed": 20,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [
+    {
+      "test": "test_linux_execute_permission_is_checked (test_backend_executable.BackendExecutableTests.test_linux_execute_permission_is_checked)",
+      "reason": "POSIX permission check runs on Linux."
+    }
+  ],
+  "seconds": 17.81
+}

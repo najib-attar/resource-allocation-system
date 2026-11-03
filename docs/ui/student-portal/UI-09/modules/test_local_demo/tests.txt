@@ -1,0 +1,10 @@
+test_configuration_is_private_stable_and_never_reset (test_local_demo.LocalDemoConfigurationTests.test_configuration_is_private_stable_and_never_reset) ... ok
+test_existing_database_name_is_preserved_and_unexpected_names_are_rejected (test_local_demo.LocalDemoConfigurationTests.test_existing_database_name_is_preserved_and_unexpected_names_are_rejected) ... ok
+test_inputs_are_seeded_fictional_and_professor_pair_shares_faculty (test_local_demo.LocalDemoConfigurationTests.test_inputs_are_seeded_fictional_and_professor_pair_shares_faculty) ... ok
+test_demo_has_accounts_published_calendars_and_real_allocations (test_local_demo.LocalDemoDatabaseTests.test_demo_has_accounts_published_calendars_and_real_allocations) ... ok
+test_invalid_period_cannot_partially_seed_database (test_local_demo.LocalDemoDatabaseTests.test_invalid_period_cannot_partially_seed_database) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 140.322s
+
+OK

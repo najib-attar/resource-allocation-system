@@ -1,5 +1,13 @@
 # Frontend Design System and Prototype
 
+The prototype audit below is retained as historical context. The current student
+rollout follows the approved [Campus Space reference](../design/campus-space/README.md)
+and is documented in the [student portal implementation](../ui/student-portal/README.md)
+and [acceptance report](../ui/student-portal/acceptance-report.md). Student service
+pages now opt into `student_service_base.html` and scoped `student-services.css`;
+professor, staff and administrator workflows keep their existing permission guards
+and shell. This rollout adds no frontend framework or scheduling rules.
+
 The frontend remains Flask/Jinja with small, page-specific JavaScript modules.
 One `base.html` composes shared navigation and account controls; it does not own
 scheduling or database queries. No new frontend framework is required.

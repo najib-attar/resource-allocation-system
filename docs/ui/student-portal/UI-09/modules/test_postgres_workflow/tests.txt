@@ -1,0 +1,17 @@
+test_backend_error_and_timeout_preserve_last_successful_results (test_postgres_workflow.PostgresWorkflowTests.test_backend_error_and_timeout_preserve_last_successful_results) ... ok
+test_changed_inputs_reject_publication_and_preserve_saved_request (test_postgres_workflow.PostgresWorkflowTests.test_changed_inputs_reject_publication_and_preserve_saved_request) ... ok
+test_engine_execution_does_not_hold_global_database_lock (test_postgres_workflow.PostgresWorkflowTests.test_engine_execution_does_not_hold_global_database_lock) ... ok
+test_failed_run_record_has_no_active_outputs (test_postgres_workflow.PostgresWorkflowTests.test_failed_run_record_has_no_active_outputs) ... ok
+test_lock_timeout_leaves_inputs_unchanged (test_postgres_workflow.PostgresWorkflowTests.test_lock_timeout_leaves_inputs_unchanged) ... ok
+test_older_run_cannot_replace_a_newer_completed_run (test_postgres_workflow.PostgresWorkflowTests.test_older_run_cannot_replace_a_newer_completed_run) ... ok
+test_partial_database_publication_rolls_back_all_output_records (test_postgres_workflow.PostgresWorkflowTests.test_partial_database_publication_rolls_back_all_output_records) ... ok
+test_real_engine_all_five_strategies_persist_and_round_trip_exact_json (test_postgres_workflow.PostgresWorkflowTests.test_real_engine_all_five_strategies_persist_and_round_trip_exact_json) ... ok
+test_saved_view_remains_coherent_after_later_publication (test_postgres_workflow.PostgresWorkflowTests.test_saved_view_remains_coherent_after_later_publication) ... ok
+test_terminated_worker_releases_postgresql_lock (test_postgres_workflow.PostgresWorkflowTests.test_terminated_worker_releases_postgresql_lock) ... ok
+test_two_processes_save_unique_ids_and_correct_participants (test_postgres_workflow.PostgresWorkflowTests.test_two_processes_save_unique_ids_and_correct_participants) ... ok
+test_two_threads_save_unique_ids_and_correct_participants (test_postgres_workflow.PostgresWorkflowTests.test_two_threads_save_unique_ids_and_correct_participants) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 83.255s
+
+OK

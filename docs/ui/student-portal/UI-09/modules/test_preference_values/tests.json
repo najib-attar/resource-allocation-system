@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_preference_values"
+  ],
+  "run": 11,
+  "passed": 11,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 0.36
+}
