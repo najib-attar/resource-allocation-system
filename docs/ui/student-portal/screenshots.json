@@ -1902,5 +1902,530 @@
     "width": 768,
     "height": 900,
     "sha256": "ff31ca93209787fcf12879e5e63dd25183b93576a3f4690587877f32fbca1d1e"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/actor-5-appointments-320.png",
+    "width": 320,
+    "height": 900,
+    "sha256": "67e872febf3c0cf3370f5c49e6e1578857b91d3de83c70d8e31d14c6a8d0b703"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/actor-5-calendar-320.png",
+    "width": 320,
+    "height": 2812,
+    "sha256": "31fea77ab3ce4284bf9547b89d8837ff44bc0d81f8eff880b352b0e65b6aa6ee"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/actor-5-equipment-320.png",
+    "width": 320,
+    "height": 900,
+    "sha256": "f361fd559a9ad919fc7175e3c299a7e457570bbcc2a73ded8eaa01cd47836912"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/actor-5-feedback-320.png",
+    "width": 320,
+    "height": 1689,
+    "sha256": "33b40737df8b16881230986ba2c24f79ff4ee5f0aca65b70ed65487ff6df7596"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/actor-5-home-320.png",
+    "width": 320,
+    "height": 2009,
+    "sha256": "6855a0df0af13106d21f6641991172f479a488b718774e26903efb99095572c5"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/actor-5-inbox-320.png",
+    "width": 320,
+    "height": 900,
+    "sha256": "d92f8d90206e42cd2afa51084df8f5e9d53c85c250e6218f24a35c079beece47"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/actor-5-rooms-320.png",
+    "width": 320,
+    "height": 900,
+    "sha256": "67abccf738202256eff74cea805e0d80df5272d26baab240bc010b187feb3593"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/actor-5-schedule-320.png",
+    "width": 320,
+    "height": 2419,
+    "sha256": "e7fb645cf3012bc862d85026d7b08570a8a2330afb18701b43e29d22f0026f92"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/actor-5-waiting-320.png",
+    "width": 320,
+    "height": 1046,
+    "sha256": "08e2f799169faac1ad9a701f25db065b7fa26891ebf036a835455be47c2f17a4"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/actor-8-calendar-warning-320.png",
+    "width": 320,
+    "height": 2944,
+    "sha256": "571a8cac05ee6629783124ae58e2e0282c43345851132da5f143c1eb110e5a7b"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/actor-8-schedule-warning-320.png",
+    "width": 320,
+    "height": 2572,
+    "sha256": "e9bb01f7443a96f4994a832299e833805973f29f4ea7b79bdbf20237bcb5f650"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/csrf-error-320.png",
+    "width": 320,
+    "height": 900,
+    "sha256": "e49fd019400837cc9ed373ad328aa4160d1bfe7dbc8f1cc09ed37a282118f3db"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/final-home-1440.png",
+    "width": 1440,
+    "height": 1651,
+    "sha256": "6cf3fa8a4236fabff0f3d20fcfa0101d19915e739cb54d48c5a8719db1a8d876"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/final-home-320.png",
+    "width": 320,
+    "height": 2593,
+    "sha256": "d1674131a4a5a62517ba5ec7e91e1a1e0af69477148a40b17a45c34e4b8ca387"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/final-home-390.png",
+    "width": 390,
+    "height": 2314,
+    "sha256": "32b1a96639ab3eadbf158c585ad5f123511769c7572a9c7791c22b663cad9862"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/final-home-768.png",
+    "width": 768,
+    "height": 1724,
+    "sha256": "6385606a54edc9a22d0a4bacab259ffd4bf621dacd00339060034b60b9a54367"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/final-login-1440.png",
+    "width": 1440,
+    "height": 900,
+    "sha256": "97cdd723299801f7f6bfd9ec70c194e17274c07e7dfebf30655f3f3ccf961651"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/final-login-320.png",
+    "width": 320,
+    "height": 900,
+    "sha256": "82fafd7313383943367c2271ef27b8cea8ee366d7aaa04381f074774f9a32070"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/final-login-390.png",
+    "width": 390,
+    "height": 900,
+    "sha256": "441f3a091a074a4f0f8cff1f2522ec3bfea5a3cf07f05ac2fc9539ed6256f9b2"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/final-login-768.png",
+    "width": 768,
+    "height": 900,
+    "sha256": "361115cb566c86046d66eab0b692d6f0244e0f9ac94b953d4ae9473e4d1334f8"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/final-schedule-1440.png",
+    "width": 1440,
+    "height": 2232,
+    "sha256": "006f173bff2fcbf632a16e75facc8f65e2459be7d221bae3868163f0fe6a3c0b"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/final-schedule-320.png",
+    "width": 320,
+    "height": 2766,
+    "sha256": "78d17cd1e85dd65364ea7541e94332dc7e5ec6beafc5e00a473abe7093bfabeb"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/final-schedule-390.png",
+    "width": 390,
+    "height": 2688,
+    "sha256": "5e5e76265e8c73eb45db93026cf925ba4919bf6e58e2133775a8abd08ea13596"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/final-schedule-768.png",
+    "width": 768,
+    "height": 2035,
+    "sha256": "8d4834b81bd5194f59a306e580b6d181c7370a0ce16ae776b72d4e7f9abe695d"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/role-2-1440.png",
+    "width": 1440,
+    "height": 900,
+    "sha256": "329ec4cfe389f4fa626a40be1105d001c664a44d751d65e40685c131f0e26640"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/role-2-390.png",
+    "width": 390,
+    "height": 973,
+    "sha256": "9c62ffb0d542e777a6fbbff5b4de7029773d558fbf3bf8c85b6c7b81bc4048e4"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/role-6-1440.png",
+    "width": 1440,
+    "height": 900,
+    "sha256": "95f8ac11763d2144d1d9830b14fdb15b97fca25ab8b2e6682ce567209779b345"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/role-6-390.png",
+    "width": 390,
+    "height": 900,
+    "sha256": "d6de685e91bd4a64a7a95756b5fe425e625e2f4a457b623562966855243c74ba"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/role-7-1440.png",
+    "width": 1440,
+    "height": 2284,
+    "sha256": "ff1b14d062d4ba657b64fafb5c08d2d0a1a19289371e5b6b568a73a869d70867"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/role-7-390.png",
+    "width": 390,
+    "height": 2696,
+    "sha256": "2d2321817ecfd64c50ab4af70e079b2355f95e9c98d03eba729b40869624a432"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/role-9-1440.png",
+    "width": 1440,
+    "height": 900,
+    "sha256": "86c3badcf0f3b17f4ee81307d5f2af74da3919aa576eed05b22e4690902b8eda"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/role-9-390.png",
+    "width": 390,
+    "height": 900,
+    "sha256": "174157f813d34d4f40f4e71700649c2b1bf617a0888fabd2630bfbef1bacddc9"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/service-unavailable-1440.png",
+    "width": 1440,
+    "height": 900,
+    "sha256": "984d55dc5e77927702cb515c04d1daa43c29855bfe52aeec58d194d8f1cd8a4e"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/service-unavailable-320.png",
+    "width": 320,
+    "height": 900,
+    "sha256": "6dbd857e095488853554f059c823ca2d46340f104dbb39c54bc9cfafb8119b7f"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/service-unavailable-390.png",
+    "width": 390,
+    "height": 900,
+    "sha256": "98af608d6ed9917e9dd4eec047858c7379ddce21f2cfb90664859e261686a819"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/browser/service-unavailable-768.png",
+    "width": 768,
+    "height": 900,
+    "sha256": "cafca4dcd4ca6d12a3ab81f92aaa4e869f96bbfa57e129166ecb762d109817dc"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/equipment-lifecycles/equipment-assigned-reservation-awaiting-custody.png",
+    "width": 390,
+    "height": 2111,
+    "sha256": "dfe232a6d7a31c324acd7252c62a58a3f2db5176c7b80fad403ae5d6a82c3f83"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/equipment-lifecycles/equipment-queue-assigned.png",
+    "width": 390,
+    "height": 1839,
+    "sha256": "a153dfe0cbd2f46818d9f25b0625882f72557e166528af5ab899c44eaeafaf53"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/equipment-lifecycles/equipment-queue-preapproved-unassigned.png",
+    "width": 390,
+    "height": 1845,
+    "sha256": "7491307674e7b81af171c6a366a46396b3197ee035f38a244dc3a8bbc7e1231d"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/equipment-lifecycles/one-time-approved.png",
+    "width": 390,
+    "height": 1586,
+    "sha256": "ab908cb7e74c9bcc0b9af90e6482e8134d7948a51c293ed4fad5e1afde891823"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/equipment-lifecycles/one-time-rejected.png",
+    "width": 390,
+    "height": 1098,
+    "sha256": "3d39e0da2e1efcd403704a3ef48ff5bcaeaf58e23bb1ac15f10c5eb99eba417f"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/equipment-lifecycles/recurring-complete-preview.png",
+    "width": 390,
+    "height": 3873,
+    "sha256": "86eafba06d60b254e885390a749ca3934f3a01d2599f7322f799e0145e65db96"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/equipment-lifecycles/recurring-rejection-and-occurrence-cancellation.png",
+    "width": 390,
+    "height": 2223,
+    "sha256": "0c55a413f2a9579b7f394a96da4676d3a18faa6ae83c91a39d095cac82822119"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/equipment-lifecycles/recurring-selected-approval.png",
+    "width": 390,
+    "height": 2196,
+    "sha256": "d1870199ee592d1f1439b93e01287caaf890a641d4228671f04c62410bf3605a"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/lifecycles/physical-complete-return.png",
+    "width": 390,
+    "height": 2310,
+    "sha256": "69200359fbfb7a8d5736072eb498b3dfba7bd0b7bf5e3b6c409f44fee98eca6f"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/lifecycles/physical-partial-return.png",
+    "width": 390,
+    "height": 2795,
+    "sha256": "34199d30d0e170938a8b8356cab602efd2af0673b3e212b1d0cad4bf480a5cf3"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/lifecycles/professor-rejection.png",
+    "width": 390,
+    "height": 1701,
+    "sha256": "1a1275761f8720bc0a5c0da0d80c031966e991781fc0db9458a0dfb05017aea2"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/lifecycles/room-approved-participants.png",
+    "width": 390,
+    "height": 2029,
+    "sha256": "60fb7e0067cf3f8339a5906347d7a6c2f9c2ebc2c99f7235dd7b9d88ecf42ed0"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/lifecycles/room-recurring-all.png",
+    "width": 390,
+    "height": 2279,
+    "sha256": "4d809bc4671fe74b14e8051beca8ed1f92c0017204d9ea033289a88e4d6ac84b"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/lifecycles/room-recurring-partial.png",
+    "width": 390,
+    "height": 2310,
+    "sha256": "e752db4fb66a37f810f4d6792a94b14b2e6c88644addef168731a586a7bf40d6"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-03/appointment-submitted-workflow.png",
+    "width": 390,
+    "height": 1945,
+    "sha256": "506cadc2af2c19b5071b7dc63ae0375bdaab1ac7d8849dc81201910710aad086"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-03/availability-offline-workflow.png",
+    "width": 390,
+    "height": 3114,
+    "sha256": "b2fd40472b3734241c7a4736b02c1af2aa091e9fca04996eda1efb34e49f0359"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-03/available-times-workflow.png",
+    "width": 390,
+    "height": 3489,
+    "sha256": "5c3a9cc25c6fd9d489615bd574a351ec5244d65acf4925a12129989f0f507f95"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-04/ranked-room-candidates-workflow.png",
+    "width": 390,
+    "height": 3666,
+    "sha256": "6b52b01292afe14951d1aa98041aeb0569c7049996011055852a90a0b0ea32ad"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-04/room-offline-workflow.png",
+    "width": 390,
+    "height": 3037,
+    "sha256": "491565e8fa1e43d603db508d17785f7740749c012a607bdd56382865bb6db2f0"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-04/room-submitted-workflow.png",
+    "width": 390,
+    "height": 1786,
+    "sha256": "46545340045133e7825e36ff4683c5d8aa22ae044fe3d9f9d51d4dcea01d1150"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-04/room-unavailable-workflow.png",
+    "width": 390,
+    "height": 3052,
+    "sha256": "2119b2f0fda400b8d17d12066a8f633e8c6646802653acae5c596273d93c8641"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-05/equipment-recommendation-workflow.png",
+    "width": 390,
+    "height": 2506,
+    "sha256": "7d431b5b6d0dbb758cf53cf220461d4c3d2f00a1722fe62e7e8891c75b2beff5"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-05/equipment-recurring-preview-workflow.png",
+    "width": 390,
+    "height": 3873,
+    "sha256": "f2d962731057f73a6e8036b408cb1b93a2878e89432bb8fc30f10e0882bdb8b5"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-05/equipment-recurring-submitted-workflow.png",
+    "width": 390,
+    "height": 1729,
+    "sha256": "1a7d8f0a568b5eb5cc62bedfd19d59fc94bd109f23ca8cc201f0fab0dc55238f"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-05/equipment-submitted-workflow.png",
+    "width": 390,
+    "height": 1175,
+    "sha256": "a7142d2cd0f671bd6b4462c9fb7ff20a7db6201b153f2d2a966ab07944066c7c"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-05/partial-return-and-extension-workflow.png",
+    "width": 390,
+    "height": 2743,
+    "sha256": "5c6c05507f780d21b1ccd230a900b7c28e94b5f931440a3827e73b60ee0a1213"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-06/waiting-assigned-1440.png",
+    "width": 1440,
+    "height": 1332,
+    "sha256": "ba4617ab9062d0f53e68fd87594477b406005f8b3aab7bf3ecc7ae7d340f4863"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-06/waiting-assigned-320.png",
+    "width": 320,
+    "height": 1870,
+    "sha256": "0077ef5805d2d711d88a319efcaa96328b4d80453eaa525ad22717c5c114730e"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-06/waiting-assigned-390.png",
+    "width": 390,
+    "height": 1720,
+    "sha256": "4828aaa465f1143fb76810160f3576ac0cd1f84a44e81e60e765b90d3c75060a"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-06/waiting-assigned-768.png",
+    "width": 768,
+    "height": 1386,
+    "sha256": "8eca0014f212d7574b9b427f8a54a9d8d76811d21a0c10dcb5f04a21d9361004"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-06/waiting-withdrawn-workflow.png",
+    "width": 390,
+    "height": 1663,
+    "sha256": "cc0176ee9cd0584723156cbc7df6fa4e012a5b95754fcb8ebc48a593e5427b92"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-07/feedback-resolved-workflow.png",
+    "width": 390,
+    "height": 1800,
+    "sha256": "4ad628c1964a586870f5536bd101d1a5e6cb2b76b43ba3dd5744d11e23595a4b"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-07/feedback-staff-response-workflow.png",
+    "width": 390,
+    "height": 1898,
+    "sha256": "60e06c52423e6ee2095b708b128932ff525e60e7038d42d665f003f6f256f8c1"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-07/feedback-submitted-workflow.png",
+    "width": 390,
+    "height": 1537,
+    "sha256": "93f5289b0cf27e4d1ed54b8c1285b345fae9af3b8d766b41f1d6609e7c7e5e28"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-08/calendar-equipment-filter-workflow.png",
+    "width": 390,
+    "height": 2692,
+    "sha256": "4a7d559c24a67a2d3415d916e1ac8a9d6d096c391d5f9f786cb53660b47f56c0"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-08/inbox-all-read-workflow.png",
+    "width": 390,
+    "height": 4159,
+    "sha256": "8472c2100c921e7b2b5ec9392dee3d19ae2fb51931495902757994c72ae86b13"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-08/inbox-read-and-unread-workflow.png",
+    "width": 390,
+    "height": 4159,
+    "sha256": "118709568c23d2d378d6ee1c6cd6518b2b120d737f6f8bb8335955ce5b27e8a2"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-08/personal-block-added-workflow.png",
+    "width": 390,
+    "height": 2885,
+    "sha256": "76f5c20c46122872f7ae2249f7a60da2d094eb44752d717c250ad3ffb2f87d83"
+  },
+  {
+    "phase": "UI-10",
+    "file": "UI-10/UI-08/personal-block-conflict-workflow.png",
+    "width": 390,
+    "height": 900,
+    "sha256": "b4e4f13cdbe721b4c4a09c1367a7924d1e0c581a65bce51f50945189df4c80aa"
   }
 ]

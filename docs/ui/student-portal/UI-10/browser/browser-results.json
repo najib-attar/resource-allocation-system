@@ -1,0 +1,76 @@
+{
+  "totalViews": 242,
+  "keyboardSteps": 2135,
+  "results": [
+    "Final minimal login at all four widths: complete keyboard walk, form labels, focus and overflow passed",
+    "home: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "appointments: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "appointment-new: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "appointment: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "invitation: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "rooms: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "room-new: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "room: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "room-pending: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "room-revise: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "room-series: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "room-availability: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "equipment: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "equipment-catalog: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "equipment-loan: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "equipment-pending: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "equipment-series: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "waiting: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "waiting-detail: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "waiting-policy: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "feedback: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "feedback-new: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "feedback-detail: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "calendar-month: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "calendar-week: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "calendar-day: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "calendar-published: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "academic: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "schedule: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "inbox: all four widths; complete keyboard walk, labels, focus, navigation, privacy, status and CSRF passed",
+    "Eight staff/administration-only GET boundaries denied; real CSRF rejection retained HTTP 400 and student error presentation",
+    "Actor 5: 9 empty/private or actual unresolved-warning views at all four widths; real labels, focus, keyboard and overflow passed",
+    "Actor 8: 2 empty/private or actual unresolved-warning views at all four widths; real labels, focus, keyboard and overflow passed",
+    "Role 2: 9 existing views at desktop/mobile, original shell, no student stylesheet, no overflow and drawer/Escape focus passed",
+    "Role 6: 7 existing views at desktop/mobile, original shell, no student stylesheet, no overflow and drawer/Escape focus passed",
+    "Role 7: 11 existing views at desktop/mobile, original shell, no student stylesheet, no overflow and drawer/Escape focus passed",
+    "Role 9: 8 existing views at desktop/mobile, original shell, no student stylesheet, no overflow and drawer/Escape focus passed",
+    "Real separate review server with an intentionally tiny existing engine timeout: 503 at four widths, safe private presentation, labels, keyboard and overflow passed; no responses mocked"
+  ],
+  "browserErrors": [],
+  "consoleErrors": [
+    "Failed to load resource: the server responded with a status of 400 (BAD REQUEST)",
+    "Failed to load resource: the server responded with a status of 503 (SERVICE UNAVAILABLE)",
+    "Failed to load resource: the server responded with a status of 503 (SERVICE UNAVAILABLE)",
+    "Failed to load resource: the server responded with a status of 503 (SERVICE UNAVAILABLE)",
+    "Failed to load resource: the server responded with a status of 503 (SERVICE UNAVAILABLE)"
+  ],
+  "httpErrors": [
+    {
+      "url": "/appointments/2/cancel",
+      "status": 400
+    },
+    {
+      "url": "/equipment/catalog",
+      "status": 503
+    },
+    {
+      "url": "/equipment/catalog",
+      "status": 503
+    },
+    {
+      "url": "/equipment/catalog",
+      "status": 503
+    },
+    {
+      "url": "/equipment/catalog",
+      "status": 503
+    }
+  ],
+  "failedRequests": []
+}

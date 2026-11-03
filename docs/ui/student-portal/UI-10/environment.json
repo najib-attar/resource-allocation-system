@@ -1,0 +1,29 @@
+{
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26300-SP0",
+  "postgresql": "PostgreSQL 17.11 on x86_64-windows, compiled by msvc-19.44.35229, 64-bit",
+  "node": "v26.13.0",
+  "packages": {
+    "Flask": "3.1.3",
+    "Jinja2": "3.1.6",
+    "SQLAlchemy": "2.1.4",
+    "psycopg": "3.3.6"
+  },
+  "backendPath": "build/student-portal/allocation_system.exe",
+  "backendManifest": {
+    "schema_version": 1,
+    "source_sha256": "811fb97140ae1ba4e763fb332387bf48b385c6c028fed274fd0203df9aaadb3e",
+    "binary_sha256": "02439bb603adfdea1bdc2558272b5216b57e97e99956fcbd501809ea9f762d1b",
+    "built_at": "2026-11-03T06:37:36.187401+00:00",
+    "compiler": "g++ (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders) 14.3.0"
+  },
+  "database": "Dedicated ui01_test on 127.0.0.1:55461; each integration test owns an independent random schema",
+  "widths": [
+    1440,
+    768,
+    390,
+    320
+  ],
+  "browser": "Installed Microsoft Edge/Chromium, headless",
+  "nodeSyntaxScripts": 18
+}

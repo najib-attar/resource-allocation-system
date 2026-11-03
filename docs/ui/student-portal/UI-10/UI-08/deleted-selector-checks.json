@@ -1,0 +1,32 @@
+[
+  {
+    "actor": 1,
+    "label": "calendar-equipment-filter",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "personal-block-added",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "personal-block-conflict",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "inbox-read-and-unread",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "inbox-all-read",
+    "matched": 0,
+    "selectors": 104
+  }
+]

@@ -2,6 +2,11 @@
 
 The [capability matrix](coverage.md) expands every authorized action. [Route inventory](UI-09/routes.md) accounts for all service rules and staff-only boundaries. The table below maps all 24 design references, including the explicitly proposed aggregate and state gallery. Exact per-screen test modules are in [CSV](screen-coverage.csv).
 
+UI-10 adds an independent [92-control-type traceability matrix](UI-10/traceability.md),
+[current route/form audit](UI-10/contracts/routes.md), and direct PostgreSQL/browser
+evidence linked from the [acceptance report](acceptance-report.md). The screen
+mapping below remains applicable; it does not imply a new route for proposed features.
+
 | Screen | Existing route / service | Frontend | Preserved actions / status |
 |---|---|---|---|
 | Student Home | `/student/` / StudentDashboardService.load | [student_home.html](../../../web/templates/student_home.html) | Five services, own appointment/room progress and compact schedule. **Implemented / preserved** |

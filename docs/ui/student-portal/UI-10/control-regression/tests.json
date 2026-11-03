@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_student_portal_ui"
+  ],
+  "run": 19,
+  "passed": 19,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 1.14
+}

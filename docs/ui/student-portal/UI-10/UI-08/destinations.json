@@ -1,0 +1,194 @@
+[
+  {
+    "actor": 1,
+    "url": "/student/",
+    "status": 200,
+    "endpoint": "student.home"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/notifications/",
+    "status": 200,
+    "endpoint": "notifications.index"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/calendar",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=week&date=2029-12-31&filtered=1&category=equipment&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=week&date=2026-11-03&filtered=1&category=equipment&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=week&date=2030-01-14&filtered=1&category=equipment&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=month&date=2030-01-07&filtered=1&category=equipment&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=week&date=2030-01-07&filtered=1&category=equipment&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-07&filtered=1&category=equipment&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/equipment/2",
+    "status": 200,
+    "endpoint": "equipment.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-08&filtered=1&category=equipment&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-09&filtered=1&category=equipment&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-10&filtered=1&category=equipment&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-11&filtered=1&category=equipment&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-12&filtered=1&category=equipment&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-13&filtered=1&category=equipment&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/calendar?month=2030-01&week=2029-12-31",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-07",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-14",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-21",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-28",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/1",
+    "status": 200,
+    "endpoint": "appointments.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/3",
+    "status": 200,
+    "endpoint": "appointments.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/rooms/1",
+    "status": 200,
+    "endpoint": "rooms.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/equipment/4",
+    "status": 200,
+    "endpoint": "equipment.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/feedback/1",
+    "status": 200,
+    "endpoint": "feedback.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/rooms/5",
+    "status": 200,
+    "endpoint": "rooms.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/equipment/3",
+    "status": 200,
+    "endpoint": "equipment.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/equipment/1",
+    "status": 200,
+    "endpoint": "equipment.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/rooms/3",
+    "status": 200,
+    "endpoint": "rooms.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/2",
+    "status": 200,
+    "endpoint": "appointments.detail"
+  }
+]

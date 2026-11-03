@@ -1,0 +1,26 @@
+[
+  {
+    "actor": 1,
+    "label": "ranked-room-candidates",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-offline",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-submitted",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-unavailable",
+    "matched": 0,
+    "selectors": 104
+  }
+]

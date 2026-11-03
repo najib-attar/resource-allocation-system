@@ -1,0 +1,191 @@
+{
+  "checks": [
+    {
+      "workflow": "One-time approval and cancellation",
+      "request": "/equipment/5",
+      "verified": "Student submitted exact quantity; custodian approved; borrower saw Approved without handover controls; cancellation before collection persisted."
+    },
+    {
+      "workflow": "One-time rejection",
+      "request": "/equipment/6",
+      "verified": "Custodian rejection and explanation appeared in a fresh student detail response and history."
+    },
+    {
+      "workflow": "Recurring partial approval, rejection and occurrence cancellation",
+      "request": "/equipment/7",
+      "occurrences": [
+        "5",
+        "6"
+      ],
+      "verified": "Two dated pickups previewed and submitted with partial consent; custodian selected first approval and second rejection; student cancelled the future approved pickup; each distinct state persisted."
+    },
+    {
+      "workflow": "Equipment waiting-list preapproval and automatic assignment",
+      "blockingRequest": "/equipment/8",
+      "queue": "/waiting-lists/2",
+      "reservation": "/equipment/9",
+      "verified": "Three eligible assets were genuinely reserved; quantity-one request joined with policy consent; preapproval reserved nothing; custodian cancellation released the blocker and automatically assigned the complete queued request; student opened its Approved reservation awaiting physical custody; reminders and notifications reflected it."
+    }
+  ],
+  "formActions": [
+    {
+      "label": "Sign in",
+      "action": "/login",
+      "method": "post",
+      "result": "/student/",
+      "status": 200
+    },
+    {
+      "label": "Sign in",
+      "action": "/login",
+      "method": "post",
+      "result": "/appointments/",
+      "status": 200
+    },
+    {
+      "label": "Check equipment and alternatives",
+      "action": "/equipment/catalog",
+      "method": "post",
+      "result": "/equipment/catalog",
+      "status": 200
+    },
+    {
+      "label": "Submit for custodian approval",
+      "action": "/equipment/catalog",
+      "method": "post",
+      "result": "/equipment/5",
+      "status": 200
+    },
+    {
+      "label": "Approve and reserve",
+      "action": "/equipment/5/approve",
+      "method": "post",
+      "result": "/equipment/5",
+      "status": 200
+    },
+    {
+      "label": "Cancel before collection",
+      "action": "/equipment/5/cancel",
+      "method": "post",
+      "result": "/equipment/5",
+      "status": 200
+    },
+    {
+      "label": "Check equipment and alternatives",
+      "action": "/equipment/catalog",
+      "method": "post",
+      "result": "/equipment/catalog",
+      "status": 200
+    },
+    {
+      "label": "Submit for custodian approval",
+      "action": "/equipment/catalog",
+      "method": "post",
+      "result": "/equipment/6",
+      "status": 200
+    },
+    {
+      "label": "Reject request",
+      "action": "/equipment/6/reject",
+      "method": "post",
+      "result": "/equipment/6",
+      "status": 200
+    },
+    {
+      "label": "Check equipment and alternatives",
+      "action": "/equipment/catalog",
+      "method": "post",
+      "result": "/equipment/catalog",
+      "status": 200
+    },
+    {
+      "label": "Submit for custodian approval",
+      "action": "/equipment/catalog",
+      "method": "post",
+      "result": "/equipment/7",
+      "status": 200
+    },
+    {
+      "label": "Recheck and approve selected dates",
+      "action": "/equipment/7/decision",
+      "method": "post",
+      "result": "/equipment/7",
+      "status": 200
+    },
+    {
+      "label": "Reject selected dates",
+      "action": "/equipment/7/decision",
+      "method": "post",
+      "result": "/equipment/7",
+      "status": 200
+    },
+    {
+      "label": "Cancel this future pickup",
+      "action": "/equipment/7/cancel-occurrence",
+      "method": "post",
+      "result": "/equipment/7",
+      "status": 200
+    },
+    {
+      "label": "Check equipment and alternatives",
+      "action": "/equipment/catalog",
+      "method": "post",
+      "result": "/equipment/catalog",
+      "status": 200
+    },
+    {
+      "label": "Submit for custodian approval",
+      "action": "/equipment/catalog",
+      "method": "post",
+      "result": "/equipment/8",
+      "status": 200
+    },
+    {
+      "label": "Approve and reserve",
+      "action": "/equipment/8/approve",
+      "method": "post",
+      "result": "/equipment/8",
+      "status": 200
+    },
+    {
+      "label": "Check equipment and alternatives",
+      "action": "/equipment/catalog",
+      "method": "post",
+      "result": "/equipment/catalog",
+      "status": 200
+    },
+    {
+      "label": "Join waiting list for this complete request",
+      "action": "/equipment/catalog",
+      "method": "post",
+      "result": "/waiting-lists/2",
+      "status": 200
+    },
+    {
+      "label": "Pre-approve automatic assignment",
+      "action": "/waiting-lists/2/review",
+      "method": "post",
+      "result": "/waiting-lists/2",
+      "status": 200
+    },
+    {
+      "label": "Cancel before collection",
+      "action": "/equipment/8/cancel",
+      "method": "post",
+      "result": "/equipment/8",
+      "status": 200
+    }
+  ],
+  "screenshots": [
+    "one-time-approved.png",
+    "one-time-rejected.png",
+    "recurring-complete-preview.png",
+    "recurring-selected-approval.png",
+    "recurring-rejection-and-occurrence-cancellation.png",
+    "equipment-queue-preapproved-unassigned.png",
+    "equipment-queue-assigned.png",
+    "equipment-assigned-reservation-awaiting-custody.png"
+  ],
+  "browserErrors": [],
+  "httpErrors": []
+}

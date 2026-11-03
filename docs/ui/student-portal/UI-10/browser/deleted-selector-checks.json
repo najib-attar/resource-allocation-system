@@ -1,0 +1,1454 @@
+[
+  {
+    "actor": 1,
+    "label": "final-login",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "final-login",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "final-login",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "final-login",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "home",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "home",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "home",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "home",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "appointments",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "appointments",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "appointments",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "appointments",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "appointment-new",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "appointment-new",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "appointment-new",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "appointment-new",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "appointment",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "appointment",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "appointment",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "appointment",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "invitation",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "invitation",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "invitation",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "invitation",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "rooms",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "rooms",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "rooms",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "rooms",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-new",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-new",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-new",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-new",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-pending",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-pending",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-pending",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-pending",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-revise",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-revise",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-revise",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-revise",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-series",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-series",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-series",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-series",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-availability",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-availability",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-availability",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "room-availability",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-catalog",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-catalog",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-catalog",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-catalog",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-loan",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-loan",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-loan",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-loan",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-pending",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-pending",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-pending",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-pending",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-series",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-series",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-series",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "equipment-series",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "waiting",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "waiting",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "waiting",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "waiting",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "waiting-detail",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "waiting-detail",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "waiting-detail",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "waiting-detail",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "waiting-policy",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "waiting-policy",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "waiting-policy",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "waiting-policy",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "feedback",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "feedback",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "feedback",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "feedback",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "feedback-new",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "feedback-new",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "feedback-new",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "feedback-new",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "feedback-detail",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "feedback-detail",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "feedback-detail",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "feedback-detail",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-month",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-month",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-month",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-month",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-week",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-week",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-week",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-week",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-day",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-day",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-day",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-day",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-published",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-published",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-published",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "calendar-published",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "academic",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "academic",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "academic",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "academic",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "schedule",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "schedule",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "schedule",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "schedule",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "inbox",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "inbox",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "inbox",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "inbox",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-home",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-appointments",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-rooms",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-equipment",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-waiting",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-feedback",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-inbox",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-calendar",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-schedule",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-home",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-appointments",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-rooms",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-equipment",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-waiting",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-feedback",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-inbox",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-calendar",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-schedule",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-home",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-appointments",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-rooms",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-equipment",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-waiting",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-feedback",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-inbox",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-calendar",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-schedule",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-home",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-appointments",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-rooms",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-equipment",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-waiting",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-feedback",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-inbox",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-calendar",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 5,
+    "label": "actor-5-schedule",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 8,
+    "label": "actor-8-calendar-warning",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 8,
+    "label": "actor-8-schedule-warning",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 8,
+    "label": "actor-8-calendar-warning",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 8,
+    "label": "actor-8-schedule-warning",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 8,
+    "label": "actor-8-calendar-warning",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 8,
+    "label": "actor-8-schedule-warning",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 8,
+    "label": "actor-8-calendar-warning",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 8,
+    "label": "actor-8-schedule-warning",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /appointments/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /appointments/availability",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /appointments/calendar?month=2030-01&week=2030-01-07",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /rooms/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /equipment/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /waiting-lists/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /feedback/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /calendar/?date=2030-01-07",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /notifications/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /appointments/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /appointments/availability",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /appointments/calendar?month=2030-01&week=2030-01-07",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /rooms/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /equipment/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /waiting-lists/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /feedback/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /calendar/?date=2030-01-07",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "2",
+    "label": "role-2 /notifications/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "6",
+    "label": "role-6 /",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "6",
+    "label": "role-6 /requests",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "6",
+    "label": "role-6 /rooms/configuration",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "6",
+    "label": "role-6 /equipment/custodians",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "6",
+    "label": "role-6 /waiting-lists/configuration",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "6",
+    "label": "role-6 /calendar/publications",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "6",
+    "label": "role-6 /notifications/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "6",
+    "label": "role-6 /",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "6",
+    "label": "role-6 /requests",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "6",
+    "label": "role-6 /rooms/configuration",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "6",
+    "label": "role-6 /equipment/custodians",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "6",
+    "label": "role-6 /waiting-lists/configuration",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "6",
+    "label": "role-6 /calendar/publications",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "6",
+    "label": "role-6 /notifications/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /appointments/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /rooms/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /rooms/2",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /equipment/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /equipment/1",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /equipment/inventory/1",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /waiting-lists/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /feedback/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /feedback/1",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /calendar/?date=2030-01-07",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /notifications/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /appointments/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /rooms/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /rooms/2",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /equipment/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /equipment/1",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /equipment/inventory/1",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /waiting-lists/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /feedback/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /feedback/1",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /calendar/?date=2030-01-07",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "7",
+    "label": "role-7 /notifications/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /appointments/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /appointments/calendar?month=2030-01&week=2030-01-07",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /rooms/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /equipment/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /waiting-lists/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /feedback/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /calendar/?date=2030-01-07",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /notifications/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /appointments/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /appointments/calendar?month=2030-01&week=2030-01-07",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /rooms/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /equipment/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /waiting-lists/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /feedback/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /calendar/?date=2030-01-07",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": "9",
+    "label": "role-9 /notifications/",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "real-service-unavailable",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "real-service-unavailable",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "real-service-unavailable",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "real-service-unavailable",
+    "matched": 0,
+    "selectors": 104
+  }
+]

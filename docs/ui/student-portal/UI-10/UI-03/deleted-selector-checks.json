@@ -1,0 +1,20 @@
+[
+  {
+    "actor": 1,
+    "label": "available-times",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "availability-offline",
+    "matched": 0,
+    "selectors": 104
+  },
+  {
+    "actor": 1,
+    "label": "appointment-submitted",
+    "matched": 0,
+    "selectors": 104
+  }
+]

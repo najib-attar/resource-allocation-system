@@ -1,0 +1,209 @@
+status,file,kind
+M,docs/architecture/frontend-design.md,reference / documentation / evidence
+M,docs/ui/student-portal/README.md,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/appointment-submitted-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/availability-offline-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/available-times-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/controls.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/deleted-selector-checks.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/destinations.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/persistence.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/post-states.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/controls.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/deleted-selector-checks.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/destinations.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/persistence.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/post-states.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/ranked-room-candidates-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/room-offline-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/room-submitted-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/room-unavailable-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/controls.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/deleted-selector-checks.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/destinations.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/equipment-recommendation-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/equipment-recurring-preview-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/equipment-recurring-submitted-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/equipment-submitted-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/partial-return-and-extension-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/persistence.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/post-states.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/controls.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/deleted-selector-checks.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/destinations.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/persistence.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/post-states.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/waiting-assigned-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/waiting-assigned-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/waiting-assigned-390.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/waiting-assigned-768.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/waiting-withdrawn-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-07/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-07/controls.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-07/deleted-selector-checks.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-07/destinations.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-07/feedback-resolved-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-07/feedback-staff-response-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-07/feedback-submitted-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-07/persistence.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-07/post-states.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-07/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/calendar-equipment-filter-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/controls.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/deleted-selector-checks.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/destinations.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/inbox-all-read-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/inbox-read-and-unread-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/persistence.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/personal-block-added-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/personal-block-conflict-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/post-states.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/acceptance-regression/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/acceptance-regression/tests.txt,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/authorization/authorization-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/authorization/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/authorization/persistence.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/authorization/post-states.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/actor-5-appointments-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/actor-5-calendar-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/actor-5-equipment-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/actor-5-feedback-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/actor-5-home-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/actor-5-inbox-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/actor-5-rooms-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/actor-5-schedule-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/actor-5-waiting-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/actor-8-calendar-warning-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/actor-8-schedule-warning-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/browser-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/controls.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/csrf-error-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/deleted-selector-checks.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/destinations.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/fault-cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-home-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-home-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-home-390.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-home-768.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-login-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-login-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-login-390.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-login-768.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-schedule-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-schedule-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-schedule-390.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-schedule-768.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/persistence.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/post-states.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/role-2-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/role-2-390.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/role-6-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/role-6-390.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/role-7-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/role-7-390.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/role-9-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/role-9-390.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/service-unavailable-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/service-unavailable-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/service-unavailable-390.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/service-unavailable-768.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/changed-files.csv,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/cleanup-regression/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/cleanup-regression/tests.txt,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/cleanup-verification.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/commits.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/concurrency-check/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/concurrency-check/tests.txt,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/concurrency-isolated/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/concurrency-isolated/tests.txt,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/contracts/contracts.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/contracts/routes.csv,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/contracts/routes.md,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/contrast.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/control-regression/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/control-regression/tests.txt,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/cpp-tests.txt,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/dead-code.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/design-integrity.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/environment.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/equipment-assigned-reservation-awaiting-custody.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/equipment-lifecycle-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/equipment-queue-assigned.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/equipment-queue-preapproved-unassigned.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/one-time-approved.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/one-time-rejected.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/persistence.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/post-states.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/recurring-complete-preview.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/recurring-rejection-and-occurrence-cancellation.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/recurring-selected-approval.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/final-regression/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/final-regression/tests.txt,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/controls.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/integration-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/persistence.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/physical-complete-return.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/physical-partial-return.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/post-states.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/professor-rejection.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/room-approved-participants.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/room-recurring-all.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/room-recurring-partial.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/loading/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/loading/loading-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/loading/persistence.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/loading/post-states.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/persistence-verification.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/regression/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/regression/tests.txt,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/report-consolidation.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/run-context.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/screenshot-verification.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/source-audit.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/source-controls.csv,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/traceability.md,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/verified-regression/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/verified-regression/tests.txt,reference / documentation / evidence
+M,docs/ui/student-portal/acceptance-report.md,reference / documentation / evidence
+M,docs/ui/student-portal/acceptance-results.json,reference / documentation / evidence
+M,docs/ui/student-portal/changed-files.csv,reference / documentation / evidence
+M,docs/ui/student-portal/screen-coverage.md,reference / documentation / evidence
+M,docs/ui/student-portal/screenshots.json,reference / documentation / evidence
+M,docs/ui/student-portal/screenshots.md,reference / documentation / evidence
+M,tests/test_frontend_prototype.py,test / verification tool
+M,tests/test_student_portal_ui.py,test / verification tool
+A,tests/ui/audit_authorization.cjs,test / verification tool
+A,tests/ui/audit_equipment_lifecycles.cjs,test / verification tool
+A,tests/ui/audit_integrations.cjs,test / verification tool
+M,tests/ui/audit_portal_browser.cjs,test / verification tool
+A,tests/ui/audit_portal_sources.py,test / verification tool
+M,tests/ui/audit_student_routes.py,test / verification tool
+M,tests/ui/check_loading_states.cjs,test / verification tool
+A,tests/ui/control_audit.cjs,test / verification tool
+M,tests/ui/exercise_portal.cjs,test / verification tool
+A,tests/ui/run_integration_audit.py,test / verification tool
+A,tests/ui/verify_audit_persistence.py,test / verification tool
+M,web/static/equipment.js,application frontend
+M,web/static/prototype.css,application frontend
+M,web/static/recurrence.js,application frontend
+M,web/static/student-home.css,application frontend
+M,web/static/student-services.css,application frontend
+M,web/static/style.css,application frontend
+D,web/templates/_student_appointment_card.html,application frontend
+M,web/templates/components/ui.html,application frontend
+M,web/templates/equipment_catalog.html,application frontend
+M,web/templates/equipment_detail.html,application frontend
+M,web/templates/room_request_new.html,application frontend

@@ -1,0 +1,272 @@
+{
+  "totalRoutes": 68,
+  "accountedServiceRules": 47,
+  "originalFormContractsPreserved": true,
+  "templates": [
+    {
+      "template": "web/templates/_personal_timetable.html",
+      "originalFieldNames": [
+        "month"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/_student_appointment_card.html",
+      "originalFieldNames": [],
+      "missingFieldNames": [],
+      "removedUnused": true,
+      "evidence": "UI-10/dead-code.json"
+    },
+    {
+      "template": "web/templates/appointment_calendar.html",
+      "originalFieldNames": [
+        "action",
+        "csrf_token",
+        "end",
+        "id",
+        "reason",
+        "start"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/appointment_detail.html",
+      "originalFieldNames": [
+        "csrf_token",
+        "decision",
+        "revision",
+        "start"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/appointment_error.html",
+      "originalFieldNames": [],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/appointment_new.html",
+      "originalFieldNames": [
+        "appointmentDate",
+        "csrf_token",
+        "duration",
+        "facultyId",
+        "invitedIds",
+        "professorIds",
+        "purpose",
+        "start"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/appointments.html",
+      "originalFieldNames": [],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/base.html",
+      "originalFieldNames": [],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/calendar_academic_detail.html",
+      "originalFieldNames": [],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/calendar_error.html",
+      "originalFieldNames": [],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/components/_calendar_event.html",
+      "originalFieldNames": [],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/components/_notification_items.html",
+      "originalFieldNames": [],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/components/ui.html",
+      "originalFieldNames": [],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/equipment_catalog.html",
+      "originalFieldNames": [
+        "action",
+        "csrf_token",
+        "due",
+        "faculty",
+        "notes",
+        "previewToken",
+        "purpose",
+        "qty_{{ item.id }}",
+        "spec_{{ item.id }}",
+        "start",
+        "submission_key"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/equipment_detail.html",
+      "originalFieldNames": [
+        "condition",
+        "csrf_token",
+        "due",
+        "extensionId",
+        "notes",
+        "occurrenceId",
+        "reason",
+        "unitIds"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/equipment_error.html",
+      "originalFieldNames": [],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/equipment_requests.html",
+      "originalFieldNames": [],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/feedback_detail.html",
+      "originalFieldNames": [
+        "action",
+        "action_key",
+        "csrf_token",
+        "priority",
+        "response",
+        "revision",
+        "status"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/feedback_list.html",
+      "originalFieldNames": [
+        "category",
+        "kind",
+        "resource",
+        "scope",
+        "status"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/feedback_new.html",
+      "originalFieldNames": [
+        "category",
+        "csrf_token",
+        "description",
+        "resourceId",
+        "submission_key",
+        "urgent"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/login.html",
+      "originalFieldNames": [
+        "csrf_token",
+        "password",
+        "username"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/notifications.html",
+      "originalFieldNames": [
+        "csrf_token",
+        "throughId"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/room_availability.html",
+      "originalFieldNames": [
+        "date"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/room_request_detail.html",
+      "originalFieldNames": [
+        "csrf_token",
+        "decision",
+        "reason",
+        "response",
+        "revision"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/room_request_new.html",
+      "originalFieldNames": [
+        "action",
+        "building",
+        "category",
+        "club",
+        "count",
+        "csrf_token",
+        "description",
+        "duration",
+        "faculty",
+        "features",
+        "participantIds",
+        "professorIds",
+        "purpose",
+        "revision",
+        "roomId",
+        "start",
+        "submission_key",
+        "waitingFaculty"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/room_requests.html",
+      "originalFieldNames": [],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/university_calendar.html",
+      "originalFieldNames": [
+        "category",
+        "date",
+        "filtered",
+        "scope",
+        "state",
+        "view"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/waiting_detail.html",
+      "originalFieldNames": [
+        "csrf_token",
+        "decision",
+        "reason"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/waiting_lists.html",
+      "originalFieldNames": [
+        "csrf_token"
+      ],
+      "missingFieldNames": []
+    },
+    {
+      "template": "web/templates/waiting_policy.html",
+      "originalFieldNames": [],
+      "missingFieldNames": []
+    }
+  ],
+  "protectedBackendAndResearchUnchanged": true
+}

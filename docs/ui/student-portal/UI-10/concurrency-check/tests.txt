@@ -1,0 +1,99 @@
+test_concurrent_identical_equipment_series_submission_is_idempotent (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_concurrent_identical_equipment_series_submission_is_idempotent) ... ERROR
+
+======================================================================
+ERROR: test_concurrent_identical_equipment_series_submission_is_idempotent (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_concurrent_identical_equipment_series_submission_is_idempotent)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1946, in _exec_single_context
+    self.dialect.do_execute(
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\sqlalchemy\engine\default.py", line 1192, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\psycopg\cursor.py", line 117, in execute
+    raise ex.with_traceback(None)
+psycopg.errors.LockNotAvailable: canceling statement due to lock timeout
+CONTEXT:  while locking tuple (0,1) in relation "university_user"
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\najee\Desktop\resource-allocation-frontend\web\persistence\database.py", line 53, in transaction
+    yield session
+  File "C:\Users\najee\Desktop\resource-allocation-frontend\web\equipment_service.py", line 204, in submit
+    session.scalar(select(User).where(User.id == actor).with_for_update())
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2534, in scalar
+    return self._execute_internal(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\sqlalchemy\orm\session.py", line 2363, in _execute_internal
+    compile_state_cls.orm_execute_statement(
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\sqlalchemy\orm\context.py", line 316, in orm_execute_statement
+    result = conn.execute(
+             ^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1451, in execute
+    return meth(
+           ^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 533, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1671, in _execute_clauseelement
+    ret = self._execute_context(
+          ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1825, in _execute_context
+    return self._exec_single_context(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1965, in _exec_single_context
+    self._handle_dbapi_exception(
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2335, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1946, in _exec_single_context
+    self.dialect.do_execute(
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\sqlalchemy\engine\default.py", line 1192, in do_execute
+    cursor.execute(statement, parameters)
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\psycopg\cursor.py", line 117, in execute
+    raise ex.with_traceback(None)
+sqlalchemy.exc.OperationalError: (psycopg.errors.LockNotAvailable) canceling statement due to lock timeout
+CONTEXT:  while locking tuple (0,1) in relation "university_user"
+[SQL: SELECT university_user.id, university_user.source_order, university_user.name, university_user.primary_role_id, university_user.primary_unit_id, university_user.email, university_user.status, university_user.student_no, university_user.program, university_user.year_level, university_user.title, university_user.office_room, university_user.assistant_type, university_user.job_title, university_user.admin_level 
+FROM university_user 
+WHERE university_user.id = %(id_1)s::INTEGER FOR UPDATE]
+[parameters: {'id_1': 1}]
+(Background on this error at: https://sqlalche.me/e/21/e3q8)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\najee\Desktop\resource-allocation-frontend\tests\test_recurring_workflows.py", line 293, in test_concurrent_identical_equipment_series_submission_is_idempotent
+    with ThreadPoolExecutor(2) as workers:keys=list(workers.map(lambda _:self.series(identity=identity),range(2)))
+                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\concurrent\futures\_base.py", line 619, in result_iterator
+    yield _result_or_cancel(fs.pop())
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\concurrent\futures\_base.py", line 317, in _result_or_cancel
+    return fut.result(timeout)
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\concurrent\futures\_base.py", line 449, in result
+    return self.__get_result()
+           ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\concurrent\futures\_base.py", line 401, in __get_result
+    raise self._exception
+  File "C:\Users\najee\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\concurrent\futures\thread.py", line 59, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-frontend\tests\test_recurring_workflows.py", line 293, in <lambda>
+    with ThreadPoolExecutor(2) as workers:keys=list(workers.map(lambda _:self.series(identity=identity),range(2)))
+                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-frontend\tests\test_recurring_workflows.py", line 212, in series
+    return self.service.submit(actor,self.faculty,[{'typeId':self.type_id,'quantity':quantity}],
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-frontend\web\equipment_service.py", line 199, in submit
+    with self.database.transaction() as session:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\contextlib.py", line 158, in __exit__
+    self.gen.throw(value)
+  File "C:\Users\najee\Desktop\resource-allocation-frontend\web\persistence\database.py", line 56, in transaction
+    raise DatabaseBusy("Application data is busy. Retry shortly; no partial changes were saved.") from error
+web.persistence.database.DatabaseBusy: Application data is busy. Retry shortly; no partial changes were saved.
+
+----------------------------------------------------------------------
+Ran 1 test in 21.167s
+
+FAILED (errors=1)

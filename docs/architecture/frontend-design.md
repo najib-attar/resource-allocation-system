@@ -12,7 +12,23 @@ The frontend remains Flask/Jinja with small, page-specific JavaScript modules.
 One `base.html` composes shared navigation and account controls; it does not own
 scheduling or database queries. No new frontend framework is required.
 
-## Scope and Review Boundary
+## Current student component boundaries
+
+| Layer | Responsibility |
+|---|---|
+| `base.html`, navigation/account/notification partials; `shell.js`, `notifications.js` | Shared authenticated shell, existing role-aware links, disclosure/focus behavior, private notification fragments and read receipts. Server authorization remains authoritative for every destination. |
+| `student_home.html`, `student-home.css`, `student-shell.css` | Student service discovery, authorized dashboard summaries and four primary navigation destinations. My Activity is the existing Home anchor. |
+| `student_service_base.html`, `components/student_services.html`, `student-services.css` | Student-only service heading, common status vocabulary, form/list/detail styling and responsive agendas. Other roles keep the original shell/styles and conditional workflow controls. |
+| `prototype.css`, `appointments.js`, `rooms.js`, `equipment.js`, `recurrence.js`, `feedback.js` | Existing form contracts and page-specific interaction state. Recommendation invalidation, recurrence fields and eligibility messages do not replace service validation. `prototype.css` now serves only the appointment form; obsolete Home components were removed in UI-10. |
+| Flask routes → services → PostgreSQL / existing C++ gateway | Session identity, permissions, transactions, revisions, availability and approval rules. No frontend framework, dependency, permission, migration or scheduling behavior was added. |
+
+The [UI-10 control traceability matrix](../ui/student-portal/UI-10/traceability.md)
+records exact parameters, endpoints, persistence/engine boundaries and regression
+evidence. The [acceptance report](../ui/student-portal/acceptance-report.md) records
+executed verification and remaining limitations. The sections below describe the
+earlier prototype checkpoint, not the current rollout status.
+
+## Historical prototype scope and review boundary
 
 The current design checkpoint includes the authenticated application shell,
 student home (`/student/`) and new professor-appointment form
@@ -21,7 +37,7 @@ pages inherit the shell but retain their existing content and workflows.
 This is not a completed application-wide visual migration. Wider rollout requires
 visual review of the prototype first.
 
-## Audit and Priorities
+## Historical prototype audit and priorities
 
 The audit covered all 44 existing Jinja templates, the 1,372-line legacy stylesheet,
 the separate calendar stylesheet, four page scripts, role-specific routes and their
@@ -89,7 +105,7 @@ base.html
   + shell.css / shell.js          authenticated chrome and drawer only
   + components/_navigation.html  role-aware links, existing endpoints
   + components/_account_controls.html
-  + components/ui.html           icons, badges, stats, section headings
+  + components/ui.html           icons and badges (retained in UI-10)
   + page content
       student_home.html          existing StudentDashboardService data
       appointment_new.html       existing appointment endpoints and payload
@@ -98,11 +114,13 @@ base.html
 ```
 
 `style.css` remains the compatibility layer for unmigrated page interiors, loaded
-before the new files. `shell.css` owns only authenticated chrome; `prototype.css`
-is loaded by the two prototype pages and scopes legacy overrides to
+before the new files. `shell.css` owns only authenticated chrome. At this earlier
+checkpoint, both prototype pages loaded `prototype.css`; the current rollout
+loads it only for the appointment form and scopes its rules to
 `.portal-prototype`. Do not restyle unrelated service interiors by adding global
 element overrides. Reuse `.ui-card`, `.ui-button`, `.ui-field`, `.ui-alert`,
-`badge`, `stat_card` and `section_heading` for approved future pages. Existing
+and `badge` for approved future pages. The unused `stat_card` and
+`section_heading` macros were removed after the UI-10 reachability audit. Existing
 table/timetable components are retained, not replaced with a second calendar.
 The mobile navigation drawer is the only new modal surface; a generic dialog
 framework is unnecessary until a real workflow needs one.

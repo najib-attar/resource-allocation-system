@@ -5,6 +5,9 @@ as an extracted folder on 3 November 2026. Its fictional examples and proposed
 features are reference material, not instructions or backend contracts.
 
 Worktree: `resource-allocation-frontend`; branch: `design/student-portal`.
+UI-10 independently audits UI-01 through UI-09 from `998d54d`. See the current
+[acceptance report](acceptance-report.md) and exact
+[control-to-backend matrix](UI-10/traceability.md).
 Starting HEAD: `e01eba6`; clean working tree. Existing UI-01 commits `fb5b07a`,
 `cfb84d2`, `e01eba6` are preserved. No branch reset or worktree replacement.
 
@@ -48,3 +51,14 @@ and runs independent processes; each test retains its own database schema. Set
 `POSTGRES_TEST_TOOLS_DIR` to matching PostgreSQL binaries for actual recovery
 checks. The [acceptance report](acceptance-report.md) links all phase evidence,
 commit SHAs, file inventory and screenshots.
+
+UI-10 reproduction uses `tests/ui/run_integration_audit.py` with modes
+`lifecycles`, `equipment-lifecycles`, `UI-03` through `UI-08`, `authorization`,
+`loading`, and `browser`.
+Each invocation creates synthetic identities/records in an owned test schema,
+serves the real Flask app on loopback, records committed PostgreSQL state before
+and after POSTs, and shuts down/cleans up even after browser assertion failures.
+Set `PLAYWRIGHT_NODE_MODULE` when using a bundled Playwright installation.
+`PORTAL_BUILD_DIR` separates metadata for independent runs. Run
+`tests/ui/verify_audit_persistence.py` after all modes, plus
+`audit_portal_sources.py` and `audit_student_routes.py UI-10/contracts`.

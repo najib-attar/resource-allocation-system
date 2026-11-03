@@ -1,0 +1,40 @@
+{
+  "source": "Configuration of actual invoked UI-10 commands; no per-substep timing trace was collected.",
+  "runs": [
+    {
+      "name": "regression",
+      "moduleWorkers": 6,
+      "overlappingAuditWork": true
+    },
+    {
+      "name": "final-regression",
+      "moduleWorkers": 6,
+      "overlappingAuditWork": true
+    },
+    {
+      "name": "verified-regression",
+      "moduleWorkers": 6,
+      "overlappingAuditWork": true
+    },
+    {
+      "name": "concurrency-check",
+      "moduleWorkers": 1,
+      "overlappingAuditWork": true
+    },
+    {
+      "name": "concurrency-isolated",
+      "moduleWorkers": 1,
+      "overlappingAuditWork": false,
+      "internalConcurrentTestsUnchanged": true
+    },
+    {
+      "name": "acceptance-regression",
+      "moduleWorkers": 4,
+      "overlappingBrowserOrRegressionRun": false
+    }
+  ],
+  "databaseLockTimeoutSeconds": 5,
+  "backendTimeoutSeconds": 30,
+  "policiesAndAssertionsUnchanged": true,
+  "interpretation": "Host contention plausibly contributed to intermediate DatabaseBusy errors. The unchanged isolated recurring module and final complete run passed; this does not establish a production performance SLA."
+}

@@ -1,0 +1,1724 @@
+[
+  {
+    "label": "appointment-pending-0",
+    "url": "http://127.0.0.1:29873/appointments/5",
+    "controls": [
+      {
+        "tag": "A",
+        "text": "Skip to content",
+        "name": "",
+        "value": "",
+        "href": "#main-content",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My Activity",
+        "name": "",
+        "value": "",
+        "href": "/student/#my-activity",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "University Calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Inbox",
+        "name": "",
+        "value": "",
+        "href": "/notifications/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "UCampus Space",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Notifications",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "button",
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Account menu for Student Mira",
+        "name": "",
+        "value": "",
+        "href": null,
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My schedule & blocks",
+        "name": "",
+        "value": "",
+        "href": "/appointments/calendar",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Sign out",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/logout",
+        "method": "post"
+      },
+      {
+        "tag": "A",
+        "text": "Student services",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "All appointments",
+        "name": "",
+        "value": "",
+        "href": "/appointments/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel appointment",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/appointments/5/cancel",
+        "method": "post"
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "name": "start",
+        "value": "",
+        "href": null,
+        "type": "datetime-local",
+        "disabled": false,
+        "action": "/appointments/5/reschedule",
+        "method": "post"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Change time and reset approvals",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/appointments/5/reschedule",
+        "method": "post"
+      }
+    ]
+  },
+  {
+    "label": "appointment-pending-1",
+    "url": "http://127.0.0.1:29873/appointments/6",
+    "controls": [
+      {
+        "tag": "A",
+        "text": "Skip to content",
+        "name": "",
+        "value": "",
+        "href": "#main-content",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My Activity",
+        "name": "",
+        "value": "",
+        "href": "/student/#my-activity",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "University Calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Inbox",
+        "name": "",
+        "value": "",
+        "href": "/notifications/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "UCampus Space",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Notifications",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "button",
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Account menu for Student Mira",
+        "name": "",
+        "value": "",
+        "href": null,
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My schedule & blocks",
+        "name": "",
+        "value": "",
+        "href": "/appointments/calendar",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Sign out",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/logout",
+        "method": "post"
+      },
+      {
+        "tag": "A",
+        "text": "Student services",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "All appointments",
+        "name": "",
+        "value": "",
+        "href": "/appointments/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel appointment",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/appointments/6/cancel",
+        "method": "post"
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "name": "start",
+        "value": "",
+        "href": null,
+        "type": "datetime-local",
+        "disabled": false,
+        "action": "/appointments/6/reschedule",
+        "method": "post"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Change time and reset approvals",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/appointments/6/reschedule",
+        "method": "post"
+      }
+    ]
+  },
+  {
+    "label": "appointment-pending-2",
+    "url": "http://127.0.0.1:29873/appointments/7",
+    "controls": [
+      {
+        "tag": "A",
+        "text": "Skip to content",
+        "name": "",
+        "value": "",
+        "href": "#main-content",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My Activity",
+        "name": "",
+        "value": "",
+        "href": "/student/#my-activity",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "University Calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Inbox",
+        "name": "",
+        "value": "",
+        "href": "/notifications/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "UCampus Space",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Notifications",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "button",
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Account menu for Student Mira",
+        "name": "",
+        "value": "",
+        "href": null,
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My schedule & blocks",
+        "name": "",
+        "value": "",
+        "href": "/appointments/calendar",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Sign out",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/logout",
+        "method": "post"
+      },
+      {
+        "tag": "A",
+        "text": "Student services",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "All appointments",
+        "name": "",
+        "value": "",
+        "href": "/appointments/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel appointment",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/appointments/7/cancel",
+        "method": "post"
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "name": "start",
+        "value": "",
+        "href": null,
+        "type": "datetime-local",
+        "disabled": false,
+        "action": "/appointments/7/reschedule",
+        "method": "post"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Change time and reset approvals",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/appointments/7/reschedule",
+        "method": "post"
+      }
+    ]
+  },
+  {
+    "label": "appointment-pending-3",
+    "url": "http://127.0.0.1:29873/appointments/8",
+    "controls": [
+      {
+        "tag": "A",
+        "text": "Skip to content",
+        "name": "",
+        "value": "",
+        "href": "#main-content",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My Activity",
+        "name": "",
+        "value": "",
+        "href": "/student/#my-activity",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "University Calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Inbox",
+        "name": "",
+        "value": "",
+        "href": "/notifications/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "UCampus Space",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Notifications",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "button",
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Account menu for Student Mira",
+        "name": "",
+        "value": "",
+        "href": null,
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My schedule & blocks",
+        "name": "",
+        "value": "",
+        "href": "/appointments/calendar",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Sign out",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/logout",
+        "method": "post"
+      },
+      {
+        "tag": "A",
+        "text": "Student services",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "All appointments",
+        "name": "",
+        "value": "",
+        "href": "/appointments/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel appointment",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/appointments/8/cancel",
+        "method": "post"
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "name": "start",
+        "value": "",
+        "href": null,
+        "type": "datetime-local",
+        "disabled": false,
+        "action": "/appointments/8/reschedule",
+        "method": "post"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Change time and reset approvals",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/appointments/8/reschedule",
+        "method": "post"
+      }
+    ]
+  },
+  {
+    "label": "appointment-pending-4",
+    "url": "http://127.0.0.1:29873/appointments/9",
+    "controls": [
+      {
+        "tag": "A",
+        "text": "Skip to content",
+        "name": "",
+        "value": "",
+        "href": "#main-content",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My Activity",
+        "name": "",
+        "value": "",
+        "href": "/student/#my-activity",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "University Calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Inbox",
+        "name": "",
+        "value": "",
+        "href": "/notifications/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "UCampus Space",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Notifications",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "button",
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Account menu for Student Mira",
+        "name": "",
+        "value": "",
+        "href": null,
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My schedule & blocks",
+        "name": "",
+        "value": "",
+        "href": "/appointments/calendar",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Sign out",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/logout",
+        "method": "post"
+      },
+      {
+        "tag": "A",
+        "text": "Student services",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "All appointments",
+        "name": "",
+        "value": "",
+        "href": "/appointments/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel appointment",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/appointments/9/cancel",
+        "method": "post"
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "name": "start",
+        "value": "",
+        "href": null,
+        "type": "datetime-local",
+        "disabled": false,
+        "action": "/appointments/9/reschedule",
+        "method": "post"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Change time and reset approvals",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/appointments/9/reschedule",
+        "method": "post"
+      }
+    ]
+  },
+  {
+    "label": "professor-rejection",
+    "url": "http://127.0.0.1:29873/appointments/9",
+    "controls": [
+      {
+        "tag": "A",
+        "text": "Skip to content",
+        "name": "",
+        "value": "",
+        "href": "#main-content",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My Activity",
+        "name": "",
+        "value": "",
+        "href": "/student/#my-activity",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "University Calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Inbox",
+        "name": "",
+        "value": "",
+        "href": "/notifications/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "UCampus Space",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Notifications",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "button",
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Account menu for Student Mira",
+        "name": "",
+        "value": "",
+        "href": null,
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My schedule & blocks",
+        "name": "",
+        "value": "",
+        "href": "/appointments/calendar",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Sign out",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/logout",
+        "method": "post"
+      },
+      {
+        "tag": "A",
+        "text": "Student services",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "All appointments",
+        "name": "",
+        "value": "",
+        "href": "/appointments/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel appointment",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/appointments/9/cancel",
+        "method": "post"
+      }
+    ]
+  },
+  {
+    "label": "physical-partial-return",
+    "url": "http://127.0.0.1:29873/equipment/4",
+    "controls": [
+      {
+        "tag": "A",
+        "text": "Skip to content",
+        "name": "",
+        "value": "",
+        "href": "#main-content",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My Activity",
+        "name": "",
+        "value": "",
+        "href": "/student/#my-activity",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "University Calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Inbox",
+        "name": "",
+        "value": "",
+        "href": "/notifications/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "UCampus Space",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Notifications, 28 unread",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "button",
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Account menu for Student Mira",
+        "name": "",
+        "value": "",
+        "href": null,
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My schedule & blocks",
+        "name": "",
+        "value": "",
+        "href": "/appointments/calendar",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Sign out",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/logout",
+        "method": "post"
+      },
+      {
+        "tag": "A",
+        "text": "Student services",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "All equipment requests",
+        "name": "",
+        "value": "",
+        "href": "/equipment/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Report issue / Give feedback (optional)",
+        "name": "",
+        "value": "",
+        "href": "/feedback/new/equipment/4",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Tell custodian I intend to return",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/equipment/4/intend-return",
+        "method": "post"
+      },
+      {
+        "tag": "INPUT",
+        "text": "",
+        "name": "due",
+        "value": "",
+        "href": null,
+        "type": "datetime-local",
+        "disabled": false,
+        "action": "/equipment/4/extension",
+        "method": "post"
+      },
+      {
+        "tag": "TEXTAREA",
+        "text": "",
+        "name": "reason",
+        "value": "",
+        "href": null,
+        "type": "textarea",
+        "disabled": false,
+        "action": "/equipment/4/extension",
+        "method": "post"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Request extension",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/equipment/4/extension",
+        "method": "post"
+      }
+    ]
+  },
+  {
+    "label": "physical-complete-return",
+    "url": "http://127.0.0.1:29873/equipment/4",
+    "controls": [
+      {
+        "tag": "A",
+        "text": "Skip to content",
+        "name": "",
+        "value": "",
+        "href": "#main-content",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My Activity",
+        "name": "",
+        "value": "",
+        "href": "/student/#my-activity",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "University Calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Inbox",
+        "name": "",
+        "value": "",
+        "href": "/notifications/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "UCampus Space",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Notifications",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "button",
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Account menu for Student Mira",
+        "name": "",
+        "value": "",
+        "href": null,
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My schedule & blocks",
+        "name": "",
+        "value": "",
+        "href": "/appointments/calendar",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Sign out",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/logout",
+        "method": "post"
+      },
+      {
+        "tag": "A",
+        "text": "Student services",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "All equipment requests",
+        "name": "",
+        "value": "",
+        "href": "/equipment/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Report issue / Give feedback (optional)",
+        "name": "",
+        "value": "",
+        "href": "/feedback/new/equipment/4",
+        "type": "",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "room-approved-participants",
+    "url": "http://127.0.0.1:29873/rooms/6",
+    "controls": [
+      {
+        "tag": "A",
+        "text": "Skip to content",
+        "name": "",
+        "value": "",
+        "href": "#main-content",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My Activity",
+        "name": "",
+        "value": "",
+        "href": "/student/#my-activity",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "University Calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Inbox",
+        "name": "",
+        "value": "",
+        "href": "/notifications/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "UCampus Space",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Notifications, 31 unread",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "button",
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Account menu for Student Mira",
+        "name": "",
+        "value": "",
+        "href": null,
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My schedule & blocks",
+        "name": "",
+        "value": "",
+        "href": "/appointments/calendar",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Sign out",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/logout",
+        "method": "post"
+      },
+      {
+        "tag": "A",
+        "text": "Student services",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "All room requests",
+        "name": "",
+        "value": "",
+        "href": "/rooms/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel and release reservation",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/rooms/6/cancel",
+        "method": "post"
+      },
+      {
+        "tag": "A",
+        "text": "Room free/busy calendar",
+        "name": "",
+        "value": "",
+        "href": "/rooms/availability/302?date=2030-01-16",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Back to room requests",
+        "name": "",
+        "value": "",
+        "href": "/rooms/",
+        "type": "",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "room-recurring-partial",
+    "url": "http://127.0.0.1:29873/rooms/7",
+    "controls": [
+      {
+        "tag": "A",
+        "text": "Skip to content",
+        "name": "",
+        "value": "",
+        "href": "#main-content",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My Activity",
+        "name": "",
+        "value": "",
+        "href": "/student/#my-activity",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "University Calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Inbox",
+        "name": "",
+        "value": "",
+        "href": "/notifications/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "UCampus Space",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Notifications",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "button",
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Account menu for Student Mira",
+        "name": "",
+        "value": "",
+        "href": null,
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My schedule & blocks",
+        "name": "",
+        "value": "",
+        "href": "/appointments/calendar",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Sign out",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/logout",
+        "method": "post"
+      },
+      {
+        "tag": "A",
+        "text": "Student services",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "All room requests",
+        "name": "",
+        "value": "",
+        "href": "/rooms/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel this date",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/rooms/7/occurrences/5/cancel",
+        "method": "post"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel remaining future dates",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/rooms/7/cancel",
+        "method": "post"
+      },
+      {
+        "tag": "A",
+        "text": "Room free/busy calendar",
+        "name": "",
+        "value": "",
+        "href": "/rooms/availability/302?date=2030-01-22",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Back to room requests",
+        "name": "",
+        "value": "",
+        "href": "/rooms/",
+        "type": "",
+        "disabled": false
+      }
+    ]
+  },
+  {
+    "label": "room-recurring-all",
+    "url": "http://127.0.0.1:29873/rooms/8",
+    "controls": [
+      {
+        "tag": "A",
+        "text": "Skip to content",
+        "name": "",
+        "value": "",
+        "href": "#main-content",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Home",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My Activity",
+        "name": "",
+        "value": "",
+        "href": "/student/#my-activity",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "University Calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Inbox",
+        "name": "",
+        "value": "",
+        "href": "/notifications/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "UCampus Space",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Notifications",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "button",
+        "disabled": false
+      },
+      {
+        "tag": "SUMMARY",
+        "text": "Account menu for Student Mira",
+        "name": "",
+        "value": "",
+        "href": null,
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My calendar",
+        "name": "",
+        "value": "",
+        "href": "/calendar/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "My schedule & blocks",
+        "name": "",
+        "value": "",
+        "href": "/appointments/calendar",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Sign out",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/logout",
+        "method": "post"
+      },
+      {
+        "tag": "A",
+        "text": "Student services",
+        "name": "",
+        "value": "",
+        "href": "/student/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "All room requests",
+        "name": "",
+        "value": "",
+        "href": "/rooms/",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel this date",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/rooms/8/occurrences/7/cancel",
+        "method": "post"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel this date",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/rooms/8/occurrences/8/cancel",
+        "method": "post"
+      },
+      {
+        "tag": "BUTTON",
+        "text": "Cancel remaining future dates",
+        "name": "",
+        "value": "",
+        "href": null,
+        "type": "submit",
+        "disabled": false,
+        "action": "/rooms/8/cancel",
+        "method": "post"
+      },
+      {
+        "tag": "A",
+        "text": "Room free/busy calendar",
+        "name": "",
+        "value": "",
+        "href": "/rooms/availability/302?date=2030-01-22",
+        "type": "",
+        "disabled": false
+      },
+      {
+        "tag": "A",
+        "text": "Back to room requests",
+        "name": "",
+        "value": "",
+        "href": "/rooms/",
+        "type": "",
+        "disabled": false
+      }
+    ]
+  }
+]
