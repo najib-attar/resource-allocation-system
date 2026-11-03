@@ -1,0 +1,31 @@
+{
+  "requestStatus": "Pending",
+  "includedInAdministrativeEngineSnapshot": true,
+  "activePublication": null,
+  "engineInvoked": false,
+  "resourceRequestColumns": [
+    "id",
+    "submission_order",
+    "type",
+    "requester_id",
+    "resource_id",
+    "participant_count",
+    "title",
+    "purpose",
+    "required_feature",
+    "required_building",
+    "revision",
+    "submission_key",
+    "submission_fingerprint",
+    "calendar_public",
+    "academic_instructor_id"
+  ],
+  "notificationSourceColumns": [
+    "appointment_event_id",
+    "room_event_id",
+    "equipment_event_id",
+    "feedback_event_id"
+  ],
+  "conclusion": "No administrative eligibility gate; professor intake must remain disabled.",
+  "unchangedSourceHash": "73b74ce3ded8e4480e541fd19503ad10ee1bd0113b53d1fec59611bc5f3cf130"
+}

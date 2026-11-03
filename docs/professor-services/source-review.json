@@ -1,0 +1,95 @@
+{
+  "python": [
+    {
+      "path": "web/professor_routes.py",
+      "parsed": true,
+      "unusedImports": []
+    },
+    {
+      "path": "web/professor_service.py",
+      "parsed": true,
+      "unusedImports": []
+    },
+    {
+      "path": "tests/test_professor_services.py",
+      "parsed": true,
+      "unusedImports": []
+    },
+    {
+      "path": "tests/test_professor_existing_workflows.py",
+      "parsed": true,
+      "unusedImports": []
+    },
+    {
+      "path": "tests/professor/browser_review.py",
+      "parsed": true,
+      "unusedImports": []
+    },
+    {
+      "path": "tests/professor/review_contracts.py",
+      "parsed": true,
+      "unusedImports": []
+    },
+    {
+      "path": "tests/professor/run_tests.py",
+      "parsed": true,
+      "unusedImports": []
+    }
+  ],
+  "referencedRegressionMethodsValidated": 25,
+  "missingTestReferences": [],
+  "preservedStudentHead": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+  "studentClean": true,
+  "professorBranch": "codex/professor-services-v1",
+  "unchangedProtectedSources": true,
+  "handoffIntegrity": [
+    {
+      "path": "docs/use-cases/UC-PROF-01.pdf",
+      "sha256": "3d2bda198afd2590b65660ab0a02c1d7c0eec2c5b7d3c5eda4d71ef3f2c9603d"
+    },
+    {
+      "path": "docs/use-cases/UC-PROF-02.pdf",
+      "sha256": "9deafc04a2a0460684ce9d827f62ecf6ca91fed67419e2efc5076b32b44af404"
+    },
+    {
+      "path": "docs/use-cases/UC-PROF-03.pdf",
+      "sha256": "ddfaa2f5828b2920d705e4f4f8d7f4bcba399268365cfb60446cc0b16b514d7b"
+    },
+    {
+      "path": "docs/use-cases/UC-PROF-04.pdf",
+      "sha256": "9f3175e5446db801898000fd8c9bdead9b4042f144acb2b74547f8c752033333"
+    },
+    {
+      "path": "docs/use-cases/UC-PROF-05.pdf",
+      "sha256": "1a2f6100b7f2f1aee265b64f0d3859db58c9fb8faf0ca12541a1baf9ab09db74"
+    },
+    {
+      "path": "docs/use-cases/UC-PROF-06.pdf",
+      "sha256": "367d8dd1050acedf1a92606371454b0f77c189053b9c9a40a88b70466784b536"
+    },
+    {
+      "path": "docs/use-cases/UC-PROF-07.pdf",
+      "sha256": "0f79b890fe8c935eb9c8507b57a5760beed902d9e22adab7e7a0e67b32249db8"
+    },
+    {
+      "path": "docs/use-cases/UC-PROF-08.pdf",
+      "sha256": "161fdc4c43954e3c4ceb556cb9db8e3b1acfa68dbf2cd797538de444cd1f1889"
+    },
+    {
+      "path": "docs/use-cases/UC-PROF-09.pdf",
+      "sha256": "b7da2652f6ce0a9abf1dccc1f86b0b679e162caf144da5d1acfd159770300c93"
+    },
+    {
+      "path": "reference/Professor-Use-Cases-Combined.pdf",
+      "sha256": "b98020a69210ba7121e7966e933d653ffd0455af214110baecc51487304e4ab4"
+    },
+    {
+      "path": "docs/srs/professor-backend-audit.md",
+      "sha256": "34facf18278e984909165796f9d1392eab93320b15da893d196efa5bd3ed6e81"
+    },
+    {
+      "path": "Codex-Professor-Handoff.md",
+      "sha256": "344ef4c1647031e141ded05c5008488259cd25722b5174de44fa316c89e25f8a"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "source": "C:\\Users\\najee\\Desktop\\resource-allocation-frontend\\build\\student-portal\\allocation_system.exe",
+  "local": "C:\\Users\\najee\\.codex\\worktrees\\professor-services-v1\\resource-allocation-frontend\\build\\backend\\allocation_system.exe",
+  "copiedWithoutOverwriting": true,
+  "sourceAndBinaryHashesVerified": true,
+  "metadata": {
+    "schema_version": 1,
+    "source_sha256": "811fb97140ae1ba4e763fb332387bf48b385c6c028fed274fd0203df9aaadb3e",
+    "binary_sha256": "02439bb603adfdea1bdc2558272b5216b57e97e99956fcbd501809ea9f762d1b",
+    "built_at": "2026-11-03T06:37:36.187401+00:00",
+    "compiler": "g++ (MinGW-W64 x86_64-ucrt-posix-seh, built by Brecht Sanders) 14.3.0"
+  }
+}
