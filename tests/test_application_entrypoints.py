@@ -35,7 +35,7 @@ class ProbeRunner:
                 worker.terminate()
                 worker.join(5)
             worker.close()
-        return types.SimpleNamespace(testsRun=598, skipped=[], wasSuccessful=lambda: True)
+        return types.SimpleNamespace(testsRun=656, skipped=[], wasSuccessful=lambda: True)
 unittest.TextTestRunner = ProbeRunner
 unittest.TestLoader = lambda: types.SimpleNamespace(discover=lambda *args, **kwargs: unittest.TestSuite())
 '''
@@ -77,6 +77,45 @@ unittest.TestSuite, unittest.TestLoader, unittest.TextTestRunner = Suite, Loader
                 capture_output=True, text=True, timeout=20, cwd=ROOT, env=environment)
             with self.subTest(scenario=scenario):
                 self.assertEqual(result.returncode == 0, scenario == 'complete', result.stdout + result.stderr)
+
+    def test_governance_ci_gate_requires_postgresql_complete_execution_and_zero_skips(self):
+        workflow = (ROOT / '.github/workflows/backend-postgresql-regression.yml').read_text(encoding='utf-8')
+        step = workflow.split('- name: Require internal policy governance, authorization and revocation tests', 1)[1]
+        gate = textwrap.dedent(step.split("<<'PY'\n", 1)[1].split('          PY', 1)[0])
+        for scenario in ('missing_database', 'incomplete_discovery', 'partial_execution', 'skipped_database',
+                         'failed_test', 'complete'):
+            harness = '''
+import types, unittest
+scenario = %r
+class Loader:
+    def discover(self, path, pattern):
+        assert path == 'tests' and pattern == 'test_cost_policy_governance.py'
+        return types.SimpleNamespace(countTestCases=lambda: 1 if scenario == 'incomplete_discovery' else 56)
+class Runner:
+    def __init__(self, **kwargs): pass
+    def run(self, suite):
+        return types.SimpleNamespace(testsRun=43 if scenario == 'partial_execution' else 56,
+            skipped=[('fixture', 'missing PostgreSQL')] if scenario == 'skipped_database' else [],
+            wasSuccessful=lambda: scenario != 'failed_test')
+unittest.TestLoader, unittest.TextTestRunner = Loader, Runner
+''' % scenario
+            environment = dict(os.environ)
+            environment.pop('TEST_DATABASE_URL', None)
+            if scenario != 'missing_database':
+                environment['TEST_DATABASE_URL'] = 'synthetic-no-connection'
+            result = subprocess.run([sys.executable, '-B', '-c', textwrap.dedent(harness) + '\n' + gate],
+                capture_output=True, text=True, timeout=20, cwd=ROOT, env=environment)
+            with self.subTest(scenario=scenario):
+                self.assertEqual(result.returncode == 0, scenario == 'complete', result.stdout + result.stderr)
+
+    def test_governance_paths_trigger_push_and_pr_research_verification(self):
+        workflow = (ROOT / '.github/workflows/cdmcs-research-verification.yml').read_text(encoding='utf-8')
+        push, rest = workflow.split('  push:', 1)[1].split('  pull_request:', 1)
+        pull = rest.split('  workflow_dispatch:', 1)[0]
+        for path in ('web/cost_policy_service.py', 'tests/test_cost_policy_governance.py'):
+            for trigger in (push, pull):
+                with self.subTest(path=path, trigger=trigger[:20]):
+                    self.assertIn("- '" + path + "'", trigger)
 
     @skipUnless(os.name == 'nt', 'PowerShell runner cleanup is exercised on Windows.')
     def test_cpp_runner_cleans_owned_artifacts_and_preserves_compile_failure_status(self):

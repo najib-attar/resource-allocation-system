@@ -1,17 +1,18 @@
-# Institutional numerical policy foundation (0050b)
+# Institutional numerical policy foundation and internal governance (0050b)
 
-This is an empty, internal schema and pure value contract. There are no policy
-proposal, approval, activation or authority-management commands, routes, UI or
-optimizer consumers. Installing this schema grants nobody authority and activates
-no policy. Personal preferences, published availability and existing bookings are
-unchanged. The existing production appointment scheduler remains the default.
+The schema installs empty ledgers and a pure value contract. An explicitly invoked
+internal service now supports authenticated governance; there are no public routes,
+UI, authority-assignment commands or optimizer consumers. Installing the schema or
+importing the service grants nobody authority and activates no policy. Personal
+preferences, published availability and existing bookings are unchanged. The
+existing production appointment scheduler remains the default.
 
 ## Values and mathematical compatibility
 
 `web/cost_policy_values.py` provides immutable `CostCoefficients` and
 `InstitutionalCostPolicy` values. `parse_institutional_policy(document,
 university_timezone=..., expected_digest=...)` validates values, not an actor.
-The trusted future caller must supply the configured university timezone; an
+The trusted caller must supply the configured university timezone; an
 arbitrary caller-supplied timezone is not university configuration.
 
 Every field is required; unknown fields and numerical defaults are rejected:
@@ -136,44 +137,137 @@ ownership must be separated from normal application access. Authorized erasure
 requires an approved retention decision covering dependent history, audit and
 backups, not merely a digest change or an application DELETE permission.
 
-## D3-C-B2 boundary
+## D3-C-B2 internal service
 
-B2 must establish approved named authorities and authentication/database binding,
-recheck current grants and account status in the decision transaction, serialize
-authority revocation/publication, reject stale expected-head versions, enforce full
-lifecycle transitions and validity, and atomically publish pointer plus audit.
-Approval must remain distinct from activation. Missing, expired, deactivated,
-unsupported and corrupt policies must block optimization without older/zero-cost
-fallback. This foundation implements none of those management operations.
+`CostPolicyService(database, university_timezone=...)` in
+`web/cost_policy_service.py` reuses the pure parser, existing `AccountService`
+identity checks and owned `Database` transactions. It does not import either engine
+or read private preferences/calendars. No new schema, permission framework, grant
+assignment operation or automatic activation is introduced.
 
-The schema supports the following future transaction protocol without another
-ledger or initialization table. B2 must implement and test it, not rely on these
-structural constraints as authorization:
+| Operation | Explicit current capability | Inputs beyond trusted context |
+|---|---|---|
+| propose | propose | expected_head_version, complete institutional document with next revision |
+| approve / reject | approve | expected_head_version, revision, digest, mandatory reason |
+| activate / deactivate | approve | expected_head_version, revision, digest, mandatory reason |
+| current | audit | none |
+| history | audit | limit (1-100, default 20), optional exclusive before_revision cursor |
 
-1. In the existing READ COMMITTED writer transaction, explicitly initialize the
-   absent singleton with `INSERT ... ON CONFLICT DO NOTHING`, then lock it with
-   `SELECT ... FOR UPDATE`. Initialization leaves the active pointer null.
-2. Use head-first locking for all proposal, decision, publication and authority
-   changes, then a consistent identity-lock order. Recheck authenticated session,
-   enabled account, latest grant and its validity in that same transaction.
-   A revocation must take the same head lock to serialize with approval.
-3. Reject a stale expected head version. Allocate bounded revision numbers and
-   the next head version under the lock; write immutable content/history and the
-   matching head update atomically. Unique keys remain a final duplicate guard.
-4. Validate the complete lifecycle and configured timezone/effective interval.
-   A historical Granted row alone does not mean authority is current. A historic
-   Activated event alone does not mean it has not subsequently been deactivated.
-   Raw SQL can satisfy those associations without implementing the B2 workflow.
-5. Roll back the whole operation on error. Bound lock waits and handle retryable
-   conflicts without replaying partial decisions. Direct SQL that ignores the
-   common lock order may deadlock with migration; PostgreSQL rollback must win
-   over availability, never discard committed history. REPEATABLE READ writers
-   would additionally need whole-transaction serialization retries.
+Every application role has the same deny-by-default behavior. A write capability
+does not implicitly grant `audit`; intended capability combinations require
+institutional authorization. There is no caller-supplied actor ID. The trusted
+server principal, signed-session identity/generation and middleware database URL
+must agree with fresh same-session account/user records. Disabled, inactive, stale,
+forged, cross-database/schema and dirty-session contexts are rejected. The service
+pins the configured schema ahead of temporary objects before authoritative SQL.
 
-Schema-only concurrency witnesses cover competing initial heads, proposals and
-decisions, revocation-before-decision ordering and rollback of a flushed event.
-They demonstrate available primitives, not an implemented governance service or
-new authority for any application role.
+The authority selector chooses the highest revision whose `effective_from` has
+begun, then requires `Granted` and `from <= now < until`. It never falls back after
+a selected revocation/expiry. Future revisions do not take effect early. A
+nonblank bounded institutional authorization reference is required, but is not a
+signature or an authority bootstrap. Restricted database custody and an approved
+assignment process are prerequisites for real grants; only disposable fixtures
+create grants in verification.
+
+The per-policy state machine is strictly:
+
+```text
+Proposed -> Approved -> Activated -> Deactivated
+         -> Rejected
+```
+
+The proposer cannot approve their own revision. Approval does not change the
+active pointer. Activation checks the exact immutable revision/digest and its
+half-open effective interval, and requires an empty active pointer. Replacement
+therefore requires an explicit deactivation, including when the prior policy has
+expired. Rejected/deactivated revisions are terminal; a further policy requires a
+new proposal and approval. Dates, coefficients and provenance cannot be edited.
+
+Every successful write increments the global head exactly once. The proposal
+itself records its proposer/grant/time; decisions add immutable events, pinned by
+FK to the complete revision and its verified digest. The event, head and pointer
+commit together. Decision receipts contain head version, revision, digest, status
+and optional event ID. The schema does not store a proposal's historical head
+version; history reports the read snapshot's head version separately rather than
+inventing that information.
+
+`current()` returns a policy only for the exact current, effective, supported and
+integrity-checked activation. Missing, deactivated, expired, not-effective,
+unsupported or unknown state returns no policy, never older or zero-cost values.
+Contradictory active pointers/event chains fail closed. The global activation
+stream must alternate activation/deactivation with matching predecessor IDs, even
+across revisions and after all activations have closed. A SQL window checks this
+metadata without loading the entire ledger into Python; its database work grows
+with activation history, independently of the bounded page size.
+`history()` returns newest
+revisions with immutable policy content, status, proposer/grant/time and bounded
+decision tuples `(id, type, actor, authority_revision, head_version, timestamp,
+reason, predecessor)`. At most 101 revisions and four events per returned revision
+are read; a legal chain has at most three events. A corrupt page raises rather than
+returning a partial successful history. These internal values are not a research
+export or user-visible API. Their representations withhold contents. Calibration
+and provenance references are internal declarations, not fetched evidence. Audit
+readers may inspect those references and decision actors/reasons, not other users'
+personal preferences or calendars. Any future public explanation of approved
+coefficients requires a separately approved sanitized representation, not these
+complete internal views. There is no such public route or serializer here.
+`audit` is an explicit read capability, not a new access-log or retention service:
+these read-only operations do not append governance decision events. Operational
+access logging and its retention still require approved private logging controls.
+
+### Transactions and concurrent authority changes
+
+Writers require the existing READ COMMITTED transaction and use consistent order.
+The service explicitly checks the actual isolation before any head initialization;
+a changed server/engine default of REPEATABLE READ or SERIALIZABLE fails closed.
+It also rejects actual DBAPI autocommit and verifies read-write mode. A logical
+SQLAlchemy transaction and a READ COMMITTED report alone do not prove atomicity:
+an autocommit connection can commit initialization before a later denial.
+Merely waiting for the authority lock under an older transaction snapshot is not
+enough to observe a newly committed revocation. This guard does not change global
+database configuration or the supported coherent read-only snapshot behavior.
+
+1. Initialize an absent head with `INSERT ... ON CONFLICT DO NOTHING`, then lock
+   the singleton `FOR UPDATE`. Initialization and all writes roll back on denial.
+2. Lock the authority table in `SHARE` mode, then lock the actor's login account
+   for update and university user for share. The table lock also blocks raw
+   authority inserts that do not take the head lock. No authority is modified.
+3. Revalidate identity and the current capability using the database clock. Check
+   the expected head, numerical bounds, full policy digest and lifecycle. Flush
+   the event before updating the active pointer, without an intermediate head
+   update that would break B1's exact-increment guard.
+4. Flush all changes; recheck authority revision/validity and any newly activated
+   policy's interval before commit. Failure discards the entire transaction.
+
+If revocation insertion holds its lock first, a decision waits and observes the
+committed revocation. If a decision holds `SHARE` first, it linearizes before
+revocation; subsequent calls are denied. The lock deliberately covers all
+authority inserts, not just the actor's capability. This small administrative
+workload favors conservative integrity over concurrent grant throughput.
+Future authority-management operations must follow head-first ordering; arbitrary
+opposite-order SQL can deadlock. PostgreSQL detects/rolls back the victim, and the
+service returns a sanitized storage failure, with no automatic replay. Existing
+configurable lock timeout bounds waits (default five seconds). Clients refresh
+versions and explicitly retry; stale decisions are never silently reapplied.
+
+Readers require actual non-autocommit REPEATABLE READ, READ ONLY transactions,
+with no autoflush and fresh identity checks. The early database clock query returns
+`transaction_timestamp()` and `clock_timestamp()`, enclosing the transaction's
+snapshot acquisition. The same Granted authority revision must be valid at both
+endpoints. This ensures the identity and grant have a coherent authorized snapshot
+instant, instead of combining an earlier valid session with a later-starting grant.
+`statement_timestamp()` is not a sufficient lower bound because protocol
+preparation can acquire a snapshot before Execute resets that timestamp.
+If authority changes or begins/expires across the interval, the read fails closed;
+the caller may start a fresh transaction, not fall back to older rights. A backward
+clock interval is rejected. Policy effectivity uses the upper endpoint.
+
+A concurrent revocation/deactivation does not retroactively rewrite an already
+authorized read. Dirty ORM state is rejected and PostgreSQL also rejects injected
+Core writes. SQL/lock failures are replaced by generic errors without raw SQL,
+parameters or exception chaining; no new payload logging is added. Caller-supplied
+Connection-bound sessions are not supported as owned service transactions and are
+denied rather than trusted based on matching user IDs.
 
 Institutional values must remain outside synthetic export/execution paths. Real
 calendar access, cost compilation from persisted records, relocation consent,
@@ -181,7 +275,7 @@ additional availability, broader scheduling permissions and activation require
 separate approval. There are no production coefficient values or claims of
 calibrated inconvenience, social fairness or operational readiness.
 
-## Implementation file inventory
+## B1 implementation file inventory
 
 The core files, schema documentation and compatibility assertions are:
 
@@ -216,7 +310,7 @@ web/cost_policy_values.py
 web/persistence/models.py
 ```
 
-## Executed local verification
+## B1 executed local verification
 
 Windows, Python 3.12.14, PostgreSQL 17.11 and GCC 14.3.0, using only owned synthetic
 database schemas and fictional records:
@@ -252,7 +346,7 @@ executions. At this initial foundation checkpoint, Linux CI, independent review
 and operational prerequisites remained outstanding. Tests establish compatibility
 and integrity, not calibrated weights, social fairness or production readiness.
 
-## Independent integrity and CI verification
+## B1 independent integrity and CI verification
 
 The follow-up review reproduced and corrected three defects before publication:
 malformed UTC offsets were normalized instead of rejected; SQL's control-character
@@ -299,7 +393,132 @@ only its known platform-specific skip. Policy paths also trigger existing resear
 Release, sanitizer and offline jobs. Hosted execution remains pending publication;
 these workflows contain no deployment or operational migration steps.
 
-This is ready for publication review as an inactive foundation, not operational
-activation. Current-authority/lifecycle validation remains B2 work. Approved
-retention/erasure, restricted database ownership, private logging and the inherited
-account-lifecycle security correction remain prerequisites for rollout.
+At that B1 checkpoint the inactive foundation was ready for publication review,
+not operational activation, with current-authority/lifecycle validation deferred.
+Approved retention/erasure, restricted database ownership, private logging and the
+inherited account-lifecycle security correction remain prerequisites for rollout.
+
+## Internal governance verification (B2)
+
+The service and `tests/test_cost_policy_governance.py` add no schema or engine
+changes. Local verification used Windows, Python 3.12.14, PostgreSQL 17.11 and
+GCC 14.3.0, with fictional identities, explicit fixture coefficients and authority
+records confined to disposable test schemas in a separate temporary cluster.
+
+| Gate | Actual result |
+|---|---|
+| Internal governance | 43 passed in 117.298 seconds; zero skips |
+| Full application Python/PostgreSQL | 641 run in 2698.256 seconds: 640 passed, one expected POSIX executable-permission skip on Windows; no PostgreSQL skips |
+| Existing foundation and personal preferences | All 44 policy and 51 preference methods executed successfully within that complete application run |
+| Application C++ | Fresh compile: 192 passed; clean-slot and normal-dataset CSV smoke cases passed |
+| I3a / I3b / identity / I3c | 37 / 47 / 8 / 47 passed; zero skips |
+| D1 / D2 | 84 / 56 passed, including native score/equivalence checks; zero skips |
+| Standalone CDMCS Release | 618 differential cases, 7202 arrangements, 2504 moves; ten invalid inputs rejected and one expected unresolved case; 25 safety tests passed |
+| Schema compatibility | All 58 application tables match generated schema documentation; Alembic head remains 0050b; migration, drift, dump/restore, rollback and concurrency checks passed in the full suite |
+
+The explicit governance command was `python -B -m unittest discover -s tests -p
+test_cost_policy_governance.py -v`; the full command used `-p 'test_*.py'` instead.
+Both used an isolated `TEST_DATABASE_URL`. Research groups used their existing
+unittest discovery commands and hash-verified native executables; the application
+C++ check used `tests/run_tests.ps1`. The standalone Release artifact has the same
+SHA-256 recorded in the B1 verification above. No new standalone compilation,
+local ASan/UBSan or hosted B2 CI execution is implied. Python governance is not
+sanitizer-instrumented. Explicit hosted governance discovery/zero-skip gating and
+Linux verification remain follow-up review work before publication.
+
+The tests cover every legal/illegal transition, separate approval and activation,
+self-approval denial, all five roles without implicit grants, stale identity,
+session/database/schema binding, denied dirty sessions, bounded private history,
+digest/pointer corruption, expiry, numerical revision exhaustion and no calendar,
+preference, booking, notification or optimizer side effects. PostgreSQL witnesses
+cover competing initial proposals, duplicate approvals, approval versus rejection,
+activation versus deactivation, both raw-revocation lock orders, a coherent read
+across concurrent deactivation, lock timeouts, an actual deadlock, commit failure
+and late failure after a flushed audit event. Only one concurrent decision wins;
+failure leaves neither a partial head nor an orphan decision.
+
+An independent configuration witness found that a changed writer isolation of
+REPEATABLE READ could authorize an old authority snapshot after waiting for a
+revocation. The focused correction rejects non-READ-COMMITTED writers before head
+initialization. A regression covers both REPEATABLE READ and SERIALIZABLE; normal
+read-only REPEATABLE READ views remain supported. The earlier full run was stopped
+after this finding and is not counted as passing: the table records the complete
+fresh post-correction run. Initial commit-failure fixture scoping errors were also
+corrected and rerun, not treated as successful verification.
+
+This is ready for independent security/CI review, not operational use. Institution-
+approved assignment, revocation and capability combinations still have no
+management implementation. Activation uses B1's existing `approve` capability as
+a separate operation; no additional authority is inferred from a role. Real grants,
+calibrated coefficients, non-owner database privileges (including the required
+authority lock), retention/erasure and private logging require separate approval
+and deployment verification. Privileged database corruption requires a reviewed
+recovery procedure, not silent history repair or fallback. The inherited
+account-lifecycle correction remains mandatory before rollout. Public routes,
+authority bootstrap, persisted-preference compilation, real-calendar execution,
+CDMCS activation and booking changes remain absent.
+
+## Independent governance review (B2.5)
+
+Review preserved B2's three commits and found three concrete gaps. Each was
+reproduced on disposable PostgreSQL before its correction:
+
+| Finding | Correction and evidence |
+|---|---|
+| An AUTOCOMMIT-bound session reported READ COMMITTED but persisted an initialized head after denial; reads could also run without the promised mode | Inspect actual psycopg autocommit and server isolation/read-only state before initialization or policy reads. Regressions reject autocommit, wrong read mode and unsupported Connection-bound contexts |
+| RR identity and a later grant-validity clock could describe no jointly authorized instant | Bound snapshot acquisition by transaction start/current clock and require the same valid grant at both endpoints. Real database witnesses cover revocation before a future grant, already-authorized reads finishing after revocation and the actual stable snapshot/lower clock bound |
+| B1 structural references allowed an out-of-service overlapping activation across revisions to look like valid current/history | Validate the entire activation/deactivation stream with SQL LAG, not just the last revision. The witness also closes both overlapping activations and requires historical corruption to remain rejected |
+
+The normal service state machine and explicit replacement protocol are unchanged.
+No B1 schema correction was necessary: it can represent all required transitions;
+structural FKs alone are not governance authorization. B2.5 neither weakens its
+constraints nor treats digests as privileged-database tamper protection. Both
+engines, nine coefficients/bounds, canonicalization, D1 synthetic provenance,
+negative net costs, fairness and D2 global delay reference remain unchanged.
+
+Real two-connection tests additionally cover approval and activation in both
+revocation lock orders. A revocation that holds its insertion lock first prevents
+the later decision; a decision holding SHARE first commits before revocation and
+later attempts are denied. Writers all require READ COMMITTED/read-write mode;
+no automatic retries or second lock order were introduced. Existing tests still
+cover initial head/proposal races, duplicate decisions, stale versions, timeout,
+deadlock, flushed-event failure and atomic commit failure.
+
+The backend workflow now explicitly requires discovery of at least 56 governance
+tests, execution of every discovered case and zero skips. Missing PostgreSQL,
+incomplete discovery, partial execution and failed tests cannot pass. The full
+Linux application floor is 656 with only its existing known platform skip.
+Governance source/test changes trigger the existing push and PR research jobs,
+including Release, sanitizers and offline comparisons. All evidence remains
+synthetic; no new governance-data upload or deployment step is added.
+
+Final local verification used the same Windows/Python 3.12.14/PostgreSQL 17.11/
+GCC 14.3.0 environment and a new isolated cluster containing only fictional data.
+
+| Gate | Actual result |
+|---|---|
+| Original B2 baseline | 43 passed in 118.784 seconds; zero skips |
+| Actual embedded governance CI gate, executed locally | 56 passed in 284.486 seconds; zero skips |
+| Full application Python/PostgreSQL | 656 run in 3256.696 seconds: 655 passed; one expected Windows POSIX-permission skip, no PostgreSQL skips |
+| Existing policy / personal preferences | All 44 / 51 methods passed in the complete application run |
+| Application C++ | Fresh compile: 192 passed; both CSV smoke cases passed |
+| I3a / I3b / identity / I3c | 37 / 47 / 8 / 47 passed; zero skips |
+| D1 / D2 | 84 / 56 passed; zero skips |
+| Standalone CDMCS Release | Preserved hash-verified artifact: 618 differential cases, 7202 arrangements, 2504 moves, ten invalid inputs rejected and one expected unresolved case; 25 safety methods passed |
+| CI / additional witnesses | Seven entry-point/gate tests passed; both workflows passed actionlint 1.7.12; nine embedded Python blocks parsed; strengthened clock lower-bound assertion separately rerun and passed |
+| Persistence compatibility | 58 tables match generated schema documentation; head 0050b; full migration, drift, rollback, recovery, backup/restore and concurrency tests passed |
+
+The strengthened lower-bound assertion was executed separately after the full
+run had imported its tests; application code was unchanged. Initial red witnesses
+are not counted as passing runs. Hosted Linux/PostgreSQL, Release and ASan/UBSan
+verification remains pending authorized publication. WSL/Linux is not installed
+locally; no fresh local standalone sanitizer build or Python sanitizer coverage
+is claimed. Native checks used the same preserved SHA-256 Release artifact noted
+above, while application C++ was freshly compiled.
+
+The inactive service is ready to publish for review, not operational rollout.
+Authority assignment/revocation governance, calibrated coefficients, restricted
+database roles, retention/authorized erasure, private logging and the inherited
+account-lifecycle correction remain mandatory prerequisites. No public routes,
+management UI, operational grants, production values, operational policy activation,
+real-calendar optimization or booking changes were introduced.

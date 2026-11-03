@@ -5,7 +5,9 @@
 The source schema now has **58 application tables** plus Alembic. Four empty
 institutional cost-policy tables separate immutable values, governance history,
 an optional current pointer and explicit authority history. No numerical defaults,
-authority grants, management commands or optimizer activation are introduced.
+authority grants or optimizer activation are introduced. The internal governance
+service reuses these tables without a schema change; no public management API or
+authority-assignment operation is provided.
 See [institutional policy architecture](institutional-cost-policy-design.md).
 
 ## Private preference persistence (0050a)

@@ -84,6 +84,25 @@ jobs:
               raise SystemExit('Institutional policy verification requires at least 44 tests and zero skips')
           sys.exit(0 if result.wasSuccessful() else 1)
           PY
+      - name: Require internal policy governance, authorization and revocation tests
+        timeout-minutes: 10
+        run: |
+          python -B - <<'PY'
+          import os
+          import sys
+          import unittest
+          if not os.environ.get('TEST_DATABASE_URL'):
+              raise SystemExit('Governance verification requires disposable PostgreSQL')
+          suite = unittest.TestLoader().discover('tests', pattern='test_cost_policy_governance.py')
+          count = suite.countTestCases()
+          print(f'Internal policy governance: {count} tests', flush=True)
+          if count < 56:
+              raise SystemExit('Governance verification requires the complete security and concurrency group')
+          result = unittest.TextTestRunner(verbosity=2).run(suite)
+          if result.skipped or result.testsRun != count:
+              raise SystemExit('Governance verification requires every discovered test and zero skips')
+          sys.exit(0 if result.wasSuccessful() else 1)
+          PY
       - name: Run Python, PostgreSQL, gateway, CLI and Flask tests
         env:
           POSTGRES_TEST_TOOLS_CONTAINER: ${{ job.services.postgres.id }}
@@ -102,8 +121,8 @@ jobs:
                             'PowerShell runner cleanup is exercised on Windows.')}
           unexpected = [(test.id(), reason) for test, reason in result.skipped
                         if (test.id(), reason) not in allowed_skips]
-          if result.testsRun < 598 or unexpected:
-              raise SystemExit('Linux application verification requires at least 598 tests and zero unexpected skips')
+          if result.testsRun < 656 or unexpected:
+              raise SystemExit('Linux application verification requires at least 656 tests and zero unexpected skips')
           sys.exit(0 if result.wasSuccessful() else 1)
           PY
           )"

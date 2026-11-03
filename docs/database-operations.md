@@ -7,6 +7,10 @@ It creates four empty institutional cost-policy foundation tables, not an active
 policy or an administration interface. No coefficients, authority grants or head
 row are seeded. Downgrade locks all four tables before checking and refuses any
 populated state/history. No operational migration is authorized by test execution.
+The internal governance service does not assign authority or invoke an optimizer.
+It requires explicit current capabilities and separate approval/activation; no
+public management interface is installed. A successful governance write initializes
+the singleton, so even that head alone makes the existing safe downgrade refuse.
 See [institutional cost-policy architecture](architecture/institutional-cost-policy-design.md).
 
 ## Private preference foundation (0050a)
