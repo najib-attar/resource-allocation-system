@@ -196,7 +196,7 @@ class StudentPortalTemplateTests(TestCase):
                 self.assertEqual(len(page.find('h1')), 1)
 
     def test_professor_staff_and_administrator_keep_the_existing_shell(self):
-        for role, administrator in [('Instructor', False), ('Staff', False), ('Administrator', True), ('Student', True)]:
+        for role, administrator in [('Instructor', False), ('TeachingAssistant', False), ('Staff', False), ('Administrator', True), ('Student', True)]:
             with self.subTest(role=role, administrator=administrator):
                 _, page = self.render(role, administrator, template='appointments.html')
                 sheets = [node.attrs['href'] for node in page.find('link', rel='stylesheet')]
@@ -236,6 +236,46 @@ class LoginTemplateTests(TestCase):
         self.assertNotIn('value', page.find('input', name='password')[0].attrs)
         for name in ('username', 'password'):
             self.assertEqual(page.find('input', name=name)[0].attrs['aria-describedby'], 'sign-in-error')
+
+
+class EquipmentControlTests(TestCase):
+    def render(self, mode):
+        with mock.patch.dict(web_app.app.config, {'SECRET_KEY':'isolated-equipment-ui-template-test-key'}), \
+                web_app.app.test_request_context('/equipment/catalog', method='POST', data={'reservationMode':mode}):
+            g.principal = SimpleNamespace(name='Fictional Student', role='Student', administrator=False, user_id=1)
+            return Document(render_template('equipment_catalog.html', items=[],
+                directory={'faculties':[], 'periods':[]}, result=None, preview_token=None,
+                waiting_policy={'version':'test', 'noticeMinutes':60}, submission_key='a'*32,
+                start='2030-01-07T10:00', due='2030-01-07T11:00', zone='Europe/Istanbul')).root
+
+    def test_recurring_equipment_waiting_action_is_disabled_with_visible_reason(self):
+        weekly = self.render('weekly')
+        self.assertIn('disabled', weekly.find('button', value='wait')[0].attrs)
+        self.assertEqual(weekly.find('button', value='wait')[0].attrs['aria-describedby'],'equipment-waiting-reason')
+        self.assertNotIn('hidden', weekly.find('p', id='equipment-waiting-reason')[0].attrs)
+        once = self.render('once')
+        self.assertNotIn('disabled', once.find('button', value='wait')[0].attrs)
+        self.assertNotIn('aria-describedby', once.find('button', value='wait')[0].attrs)
+        self.assertIn('hidden', once.find('p', id='equipment-waiting-reason')[0].attrs)
+
+    def test_equipment_actions_have_explicit_canonical_destinations(self):
+        page = self.render('once')
+        self.assertEqual(page.find('form', id='equipment-borrow-form')[0].attrs['action'], '/equipment/catalog')
+        self.assertEqual(page.find('form', method='get')[0].attrs['action'], '/equipment/catalog')
+
+    def test_pending_extension_has_waiting_message_instead_of_duplicate_form(self):
+        now = datetime(2030, 1, 7, 10, tzinfo=ZoneInfo('Europe/Istanbul'))
+        item = dict(id=1,purpose='Fictional loan',status='Borrowed',isBorrower=True,isCustodian=False,
+                    overdue=False,borrower='Fictional Student',faculty='Faculty',start=now,due=now,
+                    notes='',items=[],units=[],recurrence=None,history=[],canAudit=False)
+        with mock.patch.dict(web_app.app.config, {'SECRET_KEY':'isolated-equipment-ui-template-test-key'}), \
+                web_app.app.test_request_context('/equipment/1'):
+            g.principal = SimpleNamespace(name='Fictional Student',role='Student',administrator=False,user_id=1)
+            for state in ['Pending','Approved','Rejected']:
+                item['extensions'] = [dict(id=1,status=state,due=now,reason='Fictional extension')]
+                page = Document(render_template('equipment_detail.html',item=item,waiting=None)).root
+                self.assertEqual(len(page.find('form',action='/equipment/1/extension')),0 if state=='Pending' else 1)
+                self.assertEqual("awaiting the custodian's decision" in page.text,state=='Pending')
 
 
 class StudentFailurePresentationTests(TestCase):

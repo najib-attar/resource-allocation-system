@@ -11,6 +11,18 @@
     };
     faculty.addEventListener('change', update);
     update();
+    const form = document.getElementById('equipment-borrow-form');
+    const waitingButton = form.querySelector('button[value=wait]');
+    const waitingReason = document.getElementById('equipment-waiting-reason');
+    function updateWaiting() {
+        const weekly = form.elements.reservationMode.value === 'weekly';
+        waitingButton.disabled = weekly;
+        waitingReason.hidden = !weekly;
+        if (weekly) waitingButton.setAttribute('aria-describedby', waitingReason.id);
+        else waitingButton.removeAttribute('aria-describedby');
+    }
+    form.elements.reservationMode.addEventListener('change', updateWaiting);
+    updateWaiting();
     // Server-generated recommendations retain entered values and move focus to
     // their real result, including a complete signed recurring preview.
     const result = document.getElementById('equipment-result');
