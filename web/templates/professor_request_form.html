@@ -1,6 +1,21 @@
-{% extends 'base.html' %}{% block page_heading %}{{ 'Revise' if item else 'New' }} {{ kind }} Academic Request{% endblock %}
-{% block content %}<section class="panel"><a href="{{ url_for('professor.pages') }}">My academic requests</a><h2>{{ 'Revise your declaration' if item else 'Submit for eligibility review' }}</h2><p>Submission is Pending Eligibility Review and reserves no resources. Course, faculty and activity details are declarations. Academic requests use weekly weekday/time slots; dated calendar commitments require an explicit administrative period binding.</p>
-{% if error %}<p role="alert">{{ error }}</p>{% endif %}
-{% if not item %}<p>{% for choice in ['Exam','OneTime','Recurring','CommitteeMeeting'] %}<a href="{{ url_for('professor.form',type=choice) }}">{{ choice }}</a> {% endfor %}</p>{% endif %}
-<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="submissionKey" value="{{ submission_key }}"><input type="hidden" name="requestType" value="{{ kind }}">{% if item %}<input type="hidden" name="revision" value="{{ item.revision }}">{% endif %}
-{% include 'components/_academic_request_fields.html' %}<button class="button" type="submit">{{ 'Save revision for review' if item else 'Submit for eligibility review' }}</button></form></section>{% endblock %}
+{% extends 'service_base.html' %}
+{% from 'components/services.html' import academic_type %}
+{% block title %}{{ 'Revise' if item else 'New' }} {{ academic_type(kind) }} | Campus Space{% endblock %}
+{% block page_heading %}{{ 'Revise' if item else 'New' }} {{ academic_type(kind) }}{% endblock %}
+{% block service_eyebrow %}Academic requests / {{ 'Revision' if item else 'New declaration' }}{% endblock %}
+{% block service_intro %}Declare your activity for administrative eligibility review. Submission and eligibility approval do not reserve a resource.{% endblock %}
+{% block service_actions %}<a class="service-button" href="{{ url_for('professor.pages') }}">My academic requests</a>{% endblock %}
+{% block service_content %}
+{% if not item %}<nav class="service-tabs" aria-label="Academic request types">{% for choice in ['Exam','OneTime','Recurring','CommitteeMeeting'] %}<a href="{{ url_for('professor.form',type=choice) }}"{% if choice==kind %} aria-current="page"{% endif %}>{{ academic_type(choice) }}</a>{% endfor %}</nav>{% endif %}
+{% if error %}<section class="panel service-notice" role="alert"><h2>Check your declaration</h2><p>{{ error }}</p></section>{% endif %}
+{% if item %}<p class="service-notice">Saving a revision invalidates the previous eligibility decision and returns this request to Pending Eligibility Review.</p>{% endif %}
+<form method="post" data-academic-form>
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="submissionKey" value="{{ submission_key }}"><input type="hidden" name="requestType" value="{{ kind }}">{% if item %}<input type="hidden" name="revision" value="{{ item.revision }}">{% endif %}
+  {% include 'components/_academic_request_fields.html' %}
+  <section class="panel"><h2>Submit for review</h2><p>Your identity is assigned by your signed-in account. Course, faculty and activity details are declarations, not verified affiliations.</p><p>Administration reviews eligibility before allocation. Calendar dates require a separate explicit academic-period binding.</p>
+    {% if not directory.resources %}<p role="status">No campus resources are configured. Contact university administration before submitting.</p>{% endif %}
+    <button class="button-primary" type="submit"{% if not directory.resources %} disabled{% endif %}>{{ 'Save revision for review' if item else 'Submit for eligibility review' }}</button>
+  </section>
+</form>
+<script src="{{ url_for('static',filename='academic-requests.js') }}" defer></script>
+{% endblock %}

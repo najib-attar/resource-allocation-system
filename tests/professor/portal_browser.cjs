@@ -15,6 +15,23 @@ async function views(page,pages) {
   }
 
 }
+async function fillAcademic(page,kind,index=0) {
+  await go(page,'/professor/requests/new?type='+kind);
+  for(const [field,value] of Object.entries({title:'Synthetic '+kind+' declaration '+index,purpose:'Synthetic academic activity',facultyDeclaration:'Declared faculty, unverified',participantCount:'5'}))await page.locator('[name='+field+']').fill(value);
+  await page.locator('[name=spaceId]').selectOption(kind==='CommitteeMeeting'?'301':'302');
+  assert.match(await page.locator('[data-resource-summary]').innerText(),/Capacity.*not a reservation/);
+  if(kind==='Recurring') {
+    await page.locator('[data-slot-day]').selectOption('5');await page.locator('[data-slot-start]').fill('13:00');await page.locator('[data-slot-end]').fill('14:00');await page.locator('[data-add-slot]').click();
+    await page.locator('[data-slot-day]').selectOption('7');await page.locator('[data-add-slot]').click();
+    assert.equal(await page.locator('[name=timeData]').inputValue(),'5-13:00-14:00;7-13:00-14:00');
+  } else {await page.locator('[name=day]').selectOption(String(index+2));await page.locator('[name=startTime]').fill('13:00');await page.locator('[name=endTime]').fill('14:00');}
+  if(kind==='Exam') {await page.locator('[name=courseCode]').fill('SYN101');await page.locator('[name=courseName]').fill('Declared course');await page.locator('[name=canSplitAcrossRooms]').selectOption('true');}
+  if(kind==='CommitteeMeeting') {
+    await page.locator('[name=requiredParticipantIds][value="2"]').check();await page.locator('[name=requiredParticipantIds][value="3"]').check();await page.locator('[name=participantRole_2]').fill('Chair');
+    await page.locator('[data-participant-search]').fill('no matching unselected person');assert.ok(await page.locator('[name=requiredParticipantIds][value="2"]').isVisible());
+    assert.match(await page.locator('[data-participant-count]').innerText(),/2 selected/);await page.locator('[data-participant-search]').fill('');
+  }
+}
 async function main(){
  const browser=await chromium.launch({headless:true,channel:'msedge'});
  try {
@@ -79,7 +96,22 @@ async function main(){
 
     checks.push('Double native hour submission produced one POST; inclusive/excluded dates persisted, confirmed appointment blocked removal until cancellation, block create/remove, confirmed-appointment conflict rollback and unchanged academic publication under an overlapping personal block verified.');
   }
-  const data=results();assert.equal(data.views.length,{'PROF-UI-01':30,'PROF-UI-02':15,'PROF-UI-03':26}[phase], 'Every planned phase view must execute');assert.deepEqual(data.errors,[]);assert.ok(data.expectedErrors.every(r=>[400,403,409].includes(r.status)));
+  if(phase==='PROF-UI-04') {
+    await views(prof.page,['Exam','OneTime','Recurring','CommitteeMeeting'].map(kind=>['new-'+kind,'/professor/requests/new?type='+kind]));
+    const created=[];
+    for(const [index,kind] of ['Exam','OneTime','Recurring','CommitteeMeeting'].entries()) {
+      await fillAcademic(prof.page,kind,index);
+      if(kind==='OneTime') {const [r]=await Promise.all([prof.page.waitForNavigation(),prof.page.locator('[data-academic-form]').evaluate(el=>{const button=el.querySelector('button[type=submit]');el.requestSubmit(button);el.requestSubmit(button);})]);assert.equal(r.status(),200);}
+      else await submit(prof.page,prof.page.locator('[data-academic-form] button[type=submit]'));
+      assert.match(await prof.page.locator('main').innerText(),/Pending Eligibility Review/);created.push(Number(new URL(prof.page.url()).pathname.split('/').pop()));
+    }
+    assert.equal(new Set(created).size,4);
+    await fillAcademic(prof.page,'OneTime');await prof.page.locator('[name=title]').fill('   ');await submit(prof.page,prof.page.locator('[data-academic-form] button[type=submit]'),400);
+    assert.equal(await prof.page.locator('[name=facultyDeclaration]').inputValue(),'Declared faculty, unverified');
+    for(const width of widths) {await prof.page.setViewportSize({width,height:950});await inspect(prof.page,width,'invalid-academic-form');await shot(prof.page,'invalid-academic-form-'+width);}
+    checks.push('Four real self-owned pending submissions, source resource profile, split declaration, serialized recurring helper, selected participant search/roles, duplicate-submit protection and retained invalid form values; no allocation on submission.');
+  }
+  const data=results();assert.equal(data.views.length,{'PROF-UI-01':30,'PROF-UI-02':15,'PROF-UI-03':26,'PROF-UI-04':25}[phase], 'Every planned phase view must execute');assert.deepEqual(data.errors,[]);assert.ok(data.expectedErrors.every(r=>[400,403,409].includes(r.status)));
   fs.writeFileSync(path.join(out,'browser-results.json'),JSON.stringify({...data,phase,checks},null,2)+'\n');
   console.log(JSON.stringify({phase,views:data.views.length,keyboardSteps:data.keyboardSteps,checks}));
  } finally {await browser.close();}

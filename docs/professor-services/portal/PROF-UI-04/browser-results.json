@@ -1,0 +1,4624 @@
+{
+  "checks": [
+    "Four real self-owned pending submissions, source resource profile, split declaration, serialized recurring helper, selected participant search/roles, duplicate-submit protection and retained invalid form values; no allocation on submission."
+  ],
+  "views": [
+    {
+      "name": "new-Exam",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-OneTime",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-Recurring",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-CommitteeMeeting",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-Exam",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-OneTime",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-Recurring",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-CommitteeMeeting",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-Exam",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-OneTime",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-Recurring",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-CommitteeMeeting",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-Exam",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-OneTime",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-Recurring",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-CommitteeMeeting",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-Exam",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-OneTime",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-Recurring",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "new-CommitteeMeeting",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "invalid-academic-form",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "invalid-academic-form",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "invalid-academic-form",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "invalid-academic-form",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "invalid-academic-form",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    }
+  ],
+  "controls": [
+    {
+      "name": "new-Exam",
+      "width": 1440,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "courseCode",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "courseName",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "examType",
+          "text": "MidtermFinalQuizGeneral",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "canSplitAcrossRooms",
+          "text": "NoYes",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-OneTime",
+      "width": 1440,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-Recurring",
+      "width": 1440,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Add weekly slot",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-CommitteeMeeting",
+      "width": 1440,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "name": "",
+          "text": "Choose participants (0 selected)",
+          "href": null,
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_1",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_2",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_3",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_4",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_5",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_6",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_7",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_9",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_12",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_900001",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-Exam",
+      "width": 1024,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "courseCode",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "courseName",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "examType",
+          "text": "MidtermFinalQuizGeneral",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "canSplitAcrossRooms",
+          "text": "NoYes",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-OneTime",
+      "width": 1024,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-Recurring",
+      "width": 1024,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Add weekly slot",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-CommitteeMeeting",
+      "width": 1024,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "name": "",
+          "text": "Choose participants (0 selected)",
+          "href": null,
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_1",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_2",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_3",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_4",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_5",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_6",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_7",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_9",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_12",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_900001",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-Exam",
+      "width": 768,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "courseCode",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "courseName",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "examType",
+          "text": "MidtermFinalQuizGeneral",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "canSplitAcrossRooms",
+          "text": "NoYes",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-OneTime",
+      "width": 768,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-Recurring",
+      "width": 768,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Add weekly slot",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-CommitteeMeeting",
+      "width": 768,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "name": "",
+          "text": "Choose participants (0 selected)",
+          "href": null,
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_1",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_2",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_3",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_4",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_5",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_6",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_7",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_9",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_12",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_900001",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-Exam",
+      "width": 390,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "courseCode",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "courseName",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "examType",
+          "text": "MidtermFinalQuizGeneral",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "canSplitAcrossRooms",
+          "text": "NoYes",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-OneTime",
+      "width": 390,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-Recurring",
+      "width": 390,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Add weekly slot",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-CommitteeMeeting",
+      "width": 390,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "name": "",
+          "text": "Choose participants (0 selected)",
+          "href": null,
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_1",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_2",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_3",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_4",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_5",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_6",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_7",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_9",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_12",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_900001",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-Exam",
+      "width": 320,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "courseCode",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "courseName",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "examType",
+          "text": "MidtermFinalQuizGeneral",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "canSplitAcrossRooms",
+          "text": "NoYes",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-OneTime",
+      "width": 320,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-Recurring",
+      "width": 320,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Add weekly slot",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "new-CommitteeMeeting",
+      "width": 320,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "name": "",
+          "text": "Choose participants (0 selected)",
+          "href": null,
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_1",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_2",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_3",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_4",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_5",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_6",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_7",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_9",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_12",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredParticipantIds",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantRole_900001",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "invalid-academic-form",
+      "width": 1440,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "invalid-academic-form",
+      "width": 1024,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "invalid-academic-form",
+      "width": 768,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "invalid-academic-form",
+      "width": 390,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "invalid-academic-form",
+      "width": 320,
+      "items": [
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "name": "",
+          "text": "Submit for eligibility review",
+          "href": null,
+          "action": "/professor/requests/new",
+          "disabled": false
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "expectedErrors": [
+    {
+      "url": "/professor/requests/new",
+      "status": 400
+    }
+  ],
+  "keyboardSteps": 590,
+  "nativePickerSteps": 25,
+  "phase": "PROF-UI-04"
+}

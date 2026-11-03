@@ -1,5 +1,6 @@
 """Professor presentation against real disposable PostgreSQL; no business mocks."""
 from datetime import timedelta
+import uuid
 from unittest import mock
 
 from sqlalchemy import event, select
@@ -111,3 +112,28 @@ class ProfessorPortalTests(ProfessorFixture):
         self.assertEqual(page.find('input',name='excludedDates')[0].attrs['value'],'2030-01-15')
         schedule=Document(self.client.get('/appointments/calendar?month=2030-01&week=2030-01-07').get_data(as_text=True)).root
         self.assertTrue(schedule.find('div',**{'class':'personal-agenda'}))
+
+    def test_academic_form_preserves_midnight_and_declared_fields_on_unpublished_revision(self):
+        data=dict(requestType='OneTime',submissionKey=uuid.uuid4().hex,title='End of day teaching',purpose='Declared activity',
+            facultyDeclaration='Unverified faculty declaration',spaceId=302,participantCount=5,day=2,startTime='23:00',endTime='24:00')
+        response=self.client.post('/professor/requests/new',data=data)
+        self.assertEqual(response.status_code,302,response.data)
+        key=int(response.location.rsplit('/',1)[-1])
+        self.assertEqual(self.professors.detail(2,key)['item']['slots'][0]['endMinutes'],1440)
+        from test_student_portal_ui import Document
+        page=Document(self.client.get(f'/professor/requests/{key}/revise').get_data(as_text=True)).root
+        self.assertEqual(page.find('input',name='endTime')[0].attrs['value'],'24:00')
+        self.assertEqual(page.find('input',name='facultyDeclaration')[0].attrs['value'],data['facultyDeclaration'])
+        self.assertNotIn('run-allocation',self.client.get(response.location).get_data(as_text=True))
+
+    def test_invalid_committee_form_retains_required_people_and_roles(self):
+        data=dict(requestType='CommitteeMeeting',submissionKey=uuid.uuid4().hex,title='',purpose='Declared committee',
+            spaceId=301,participantCount=5,day=2,startTime='13:00',endTime='14:00',
+            requiredParticipantIds=['2','3'],participantRole_2='Chair',participantRole_3='Secretary')
+        response=self.client.post('/professor/requests/new',data=data)
+        self.assertEqual(response.status_code,400)
+        from test_student_portal_ui import Document
+        page=Document(response.get_data(as_text=True)).root
+        self.assertTrue(page.find(role='alert'))
+        self.assertEqual(len([node for node in page.find('input',name='requiredParticipantIds') if 'checked' in node.attrs]),2)
+        self.assertEqual(page.find('input',name='participantRole_2')[0].attrs['value'],'Chair')

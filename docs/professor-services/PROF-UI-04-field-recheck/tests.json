@@ -1,0 +1,12 @@
+{
+  "modules": [
+    "test_professor_portal.ProfessorPortalTests.test_invalid_committee_form_retains_required_people_and_roles"
+  ],
+  "expected": 1,
+  "run": 1,
+  "passed": 1,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 5.55
+}

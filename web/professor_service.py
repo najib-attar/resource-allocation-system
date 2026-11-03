@@ -139,7 +139,9 @@ class ProfessorService:
         with self.database.transaction(read_only=True) as session:
             self._instructor(session,actor)
             return dict(resources=[dict(id=r.id,name=r.name,type=r.type,capacity=r.capacity,building=r.building,
-                available=r.available) for r in session.scalars(select(Resource).order_by(Resource.source_order))],
+                available=r.available,features=[label for key,label in [('projector','Projector'),
+                    ('whiteboard','Whiteboard'),('computers','Computers')] if getattr(r,key)])
+                for r in session.scalars(select(Resource).order_by(Resource.source_order))],
                 participants=[dict(id=u.id,name=u.name) for u in session.scalars(select(User).where(
                     func.lower(User.status)=='active').order_by(User.source_order))])
 

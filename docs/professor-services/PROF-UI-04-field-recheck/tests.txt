@@ -1,0 +1,6 @@
+test_invalid_committee_form_retains_required_people_and_roles (test_professor_portal.ProfessorPortalTests.test_invalid_committee_form_retains_required_people_and_roles) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 5.543s
+
+OK
