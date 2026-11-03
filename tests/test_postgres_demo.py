@@ -2,7 +2,7 @@ from unittest import TestCase
 from sqlalchemy import event, select
 
 from postgres_fixtures import PostgresTestCase, ROOT
-from web.allocation_workflow import execute_allocation
+from academic_fixtures import execute_reviewed_allocation as execute_allocation
 from web.engine_gateway import EngineGateway
 from web.persistence.demo import demo_snapshot, seed_demo_database
 from web.persistence.importer import ImportValidationError
@@ -52,7 +52,7 @@ class PostgresDemoTests(PostgresTestCase):
             self.assertEqual(sum(item.unit_type == "Department" and item.parent_id is not None for item in units), 4)
         with self.assertRaisesRegex(ImportValidationError, "already contains"):
             seed_demo_database(self.database)
-        item = dict(repository.snapshot()["requests"][0])
+        item = dict(repository.read_view()[0]["requests"][0])
         item.pop("id")
         self.assertGreater(repository.save_request(item), 120)
 

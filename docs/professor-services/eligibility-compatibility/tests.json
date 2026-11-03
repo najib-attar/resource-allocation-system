@@ -1,0 +1,16 @@
+{
+  "modules": [
+    "test_professor_services",
+    "test_room_requests",
+    "test_university_calendar",
+    "test_save_only_confirmation",
+    "test_postgres_web"
+  ],
+  "expected": 71,
+  "run": 71,
+  "passed": 67,
+  "failures": 4,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 491.16
+}

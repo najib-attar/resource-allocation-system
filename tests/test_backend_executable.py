@@ -155,8 +155,12 @@ class BackendExecutionTests(BackendFixture, TestCase):
         data = self.root / "data"
         data.mkdir()
         self.repository = mock.Mock()
-        self.repository.start_run.return_value = (1, {"protocolVersion": 1, "runId": "verified-artifact",
-                                                     "strategy": "greedy", "users": [], "spaces": [], "busySlots": [], "requests": []})
+        class VerifiedFixture(dict):
+            # This unit fixture mocks the repository; database guard behavior is
+            # tested against PostgreSQL in test_academic_eligibility.
+            assert_allocation_ready = mock.Mock()
+        self.repository.start_run.return_value = (1, VerifiedFixture({"protocolVersion": 1, "runId": "verified-artifact",
+                                                     "strategy": "greedy", "users": [], "spaces": [], "busySlots": [], "requests": []}))
         patch = mock.patch.object(web_app, "get_repository", return_value=self.repository)
         patch.start()
         self.addCleanup(patch.stop)

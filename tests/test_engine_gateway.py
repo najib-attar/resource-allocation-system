@@ -36,7 +36,7 @@ class GatewayTests(TestCase):
     def setUp(self):
         self.snapshot = input_fixture()
         self.result = fake_result(self.snapshot)
-        self.gateway = EngineGateway(ROOT)
+        self.gateway = EngineGateway(ROOT,allow_unbound_allocations=True)
         patch = mock.patch("web.engine_gateway.resolve_backend_executable", return_value=BackendExecutable(Path("engine.exe"), {}))
         patch.start(); self.addCleanup(patch.stop)
 
@@ -155,7 +155,7 @@ class OperationEnvelopeTests(TestCase):
 class JsonEngineIntegrationTests(TestCase):
     def setUp(self):
         self.backend = resolve_backend_executable(ROOT)  # Required, not a skipped verification.
-        self.gateway = EngineGateway(ROOT)
+        self.gateway = EngineGateway(ROOT,allow_unbound_allocations=True)
 
     def test_real_engine_supports_all_four_types_and_utf8(self):
         for kind in ("OneTime", "Recurring", "Exam", "CommitteeMeeting"):
@@ -308,7 +308,8 @@ class JsonEngineIntegrationTests(TestCase):
         repository = mock.Mock()
         repository.read_view.return_value = (snapshot, {"snapshot": snapshot, "result": result, "build": {}}, 1)
         from auth_fixtures import authorized_client, mocked_administrator
-        with mock.patch.object(web_app, "get_repository", return_value=repository), mocked_administrator():
+        with mock.patch.object(web_app, "get_repository", return_value=repository), mocked_administrator(), \
+                mock.patch('web.academic_eligibility.EligibilityService.detail',return_value={'status':'Eligible'}):
             response = authorized_client(web_app.app).get("/request/1")
             self.assertEqual(response.status_code, 200)
             self.assertIn("Suggested least-change", response.get_data(as_text=True))

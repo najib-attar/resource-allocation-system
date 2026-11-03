@@ -1,7 +1,6 @@
 """Self-owned submissions, administrative review and full real-engine results."""
 import uuid
 from concurrent.futures import ThreadPoolExecutor
-from sqlalchemy import select
 from auth_fixtures import authorized_client
 from test_professor_services import ProfessorFixture
 from web import app as web_app
@@ -118,25 +117,43 @@ class ProfessorIntakeTests(ProfessorFixture):
         self.assertEqual(self.client.post('/professor/requests/new',data=self.form('CommitteeMeeting')).status_code,400)
 
     def test_active_published_requests_are_read_only_after_eligibility_rejection(self):
+        from datetime import date
+        from sqlalchemy import text
+        from sqlalchemy.exc import IntegrityError
+        from test_appointments import START
+        from web.university_calendar import UniversityCalendarService
         response=self.client.post('/professor/requests/new',data=self.form())
         key=int(response.location.rsplit('/',1)[-1])
         item=self.professors.detail(2,key)['item']
         reviewer=EligibilityService(self.database)
         reviewer.decide(6,key,1,item['reviewVersion'],True,'Eligible declaration')
+        self.service.bind_legacy('Explicit academic test week',date(2030,1,7),date(2030,1,13),
+            request_id=key,week_start=date(2030,1,7))
         from web.allocation_workflow import execute_allocation
         from web.engine_gateway import EngineGateway
         from postgres_fixtures import ROOT
         execute_allocation(self.repository,EngineGateway(ROOT))
+        calendar=UniversityCalendarService(self.database)
+        def events():
+            return calendar.load(2,view='week',day='2030-01-07',now=START,categories=['academic'])['events']
+        published_events=events()
+        self.assertTrue(published_events)
         item=self.professors.detail(2,key)['item']
         reviewer.decide(6,key,1,item['reviewVersion'],False,'Rejected for the next publication')
         self.assertFalse(self.professors.detail(2,key)['item']['canRevise'])
         self.assertEqual(self.client.get(f'/professor/requests/{key}/revise').status_code,400)
         self.assertEqual(self.client.post(f'/professor/requests/{key}/revise',data=self.form(revision='1',title='Forbidden change')).status_code,400)
+        with self.assertRaises(IntegrityError),self.database.transaction() as session:
+            session.get(ResourceRequest,key).title='Forbidden direct material change'
+        with self.assertRaises(IntegrityError),self.database.transaction() as session:
+            session.execute(text('UPDATE request_slot SET start_minutes=start_minutes+15 WHERE request_id=:key'),dict(key=key))
         with self.database.transaction(read_only=True) as session:
             self.assertEqual(session.get(ResourceRequest,key).revision,1)
         self.assertEqual(self.professors.detail(2,key)['item']['status'],'Approved')
+        self.assertEqual(events(),published_events)
         execute_allocation(self.repository,EngineGateway(ROOT))
         self.assertTrue(self.professors.detail(2,key)['item']['canRevise'])
+        self.assertEqual(events(),[])
 
     def test_published_rejection_is_read_only_and_concurrent_unpublished_revisions_are_checked(self):
         response=self.client.post('/professor/requests/new',data=self.form(participantCount='999'))

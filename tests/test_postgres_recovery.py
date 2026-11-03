@@ -17,7 +17,7 @@ from sqlalchemy.exc import IntegrityError
 from postgres_fixtures import PostgresTestCase, ROOT
 from test_postgres_import import copy_inputs
 from test_postgres_workflow import new_request
-from web.allocation_workflow import execute_allocation
+from academic_fixtures import execute_reviewed_allocation as execute_allocation
 from web.engine_gateway import EngineGateway
 from web.persistence.database import Database, database_url
 from web.persistence.importer import import_csv
@@ -37,13 +37,15 @@ class PostgresUpgradeTests(PostgresTestCase):
 
     def test_additive_upgrade_preserves_inputs_results_and_identity_sequences(self):
         before = execute_allocation(self.repository, EngineGateway(ROOT))
-        snapshot = self.repository.snapshot()
+        snapshot = self.repository.read_view()[0]
         with mock.patch.dict(os.environ, {"DATABASE_URL": self.url}):
             # Only this owned disposable schema is downgraded. Current ORM fields
             # cannot initialize a historical schema missing the newer columns.
+            from academic_fixtures import prepare_historical_gate_replay
+            prepare_historical_gate_replay(self.database)
             command.downgrade(Config(str(ROOT / "alembic.ini")), "0041a")
             command.upgrade(Config(str(ROOT / "alembic.ini")), "head")
-        after = self.repository.snapshot()
+        after = self.repository.read_view()[0]
         snapshot.pop("runId"); after.pop("runId")
         self.assertEqual(after, snapshot)
         self.assertEqual(self.repository.read_view()[1]["result"], before)
@@ -51,6 +53,8 @@ class PostgresUpgradeTests(PostgresTestCase):
 
     def test_invalid_old_rows_abort_upgrade_without_deleting_or_partially_migrating(self):
         with mock.patch.dict(os.environ, {"DATABASE_URL": self.url}):
+            from academic_fixtures import prepare_historical_gate_replay
+            prepare_historical_gate_replay(self.database)
             command.downgrade(Config(str(ROOT / "alembic.ini")), "0041a")
         with self.database.transaction() as session:
             session.add(RequestSlot(request_id=1, ordinal=-1, day=1, start_minutes=540, end_minutes=600))
@@ -63,6 +67,8 @@ class PostgresUpgradeTests(PostgresTestCase):
 
     def test_incomplete_historical_subtype_aborts_upgrade_without_deleting_data(self):
         with mock.patch.dict(os.environ, {"DATABASE_URL": self.url}):
+            from academic_fixtures import prepare_historical_gate_replay
+            prepare_historical_gate_replay(self.database)
             command.downgrade(Config(str(ROOT / "alembic.ini")), "0041c")
         with self.database.transaction() as session:
             session.execute(delete(RequestSlot).where(RequestSlot.request_id == 1))

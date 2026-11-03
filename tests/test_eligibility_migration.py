@@ -38,7 +38,7 @@ class LegacyEligibilityMigrationTests(PostgresTestCase):
                          features=dict(projector=False,whiteboard=False,computers=False))],
             requests=[dict(id=1,type='OneTime',requesterId=2,spaceId=301,participantCount=5,
                 title='Legacy published teaching',purpose='Historical declaration',slots=[dict(day=1,startMinutes=600,endMinutes=660)])])
-        result,build=EngineGateway(ROOT).execute(snapshot)
+        result,build=EngineGateway(ROOT,allow_unbound_allocations=True).execute(snapshot)
         self.assertEqual(result['requestResults'][0]['status'],'Approved')
         with self.database.transaction() as session:
             run=AllocationRun(correlation_id=snapshot['runId'],input_revision=1,strategy='greedy',status='success',

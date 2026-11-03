@@ -13,7 +13,7 @@ from sqlalchemy.exc import IntegrityError
 from engine_json_fixtures import fake_result
 from postgres_fixtures import PostgresTestCase, ROOT
 from test_postgres_import import copy_inputs
-from web.allocation_workflow import execute_allocation
+from academic_fixtures import execute_reviewed_allocation as execute_allocation
 from web.engine_gateway import EngineGateway, EngineIntegrationError
 from web.persistence.database import Database, DatabaseBusy
 from web.persistence.importer import import_csv
@@ -58,6 +58,8 @@ class PostgresWorkflowTests(PostgresTestCase):
         copy_inputs(self.data)
         import_csv(self.database, self.data)
         self.repository = Repository(self.database)
+        from academic_fixtures import review_requests
+        review_requests(self.database)
 
     def publish_fake(self, marker="old"):
         run_id, snapshot = self.repository.start_run()
@@ -85,7 +87,7 @@ class PostgresWorkflowTests(PostgresTestCase):
         with ThreadPoolExecutor(2) as pool:
             ids = list(pool.map(save, ["Thread A", "Thread B"]))
         self.assertEqual(len(set(ids)), 2)
-        snapshot = self.repository.snapshot()
+        snapshot = self.repository.read_view()[0]
         for item in snapshot["requests"][-2:]:
             self.assertEqual(item["participants"], [{"userId": 2, "role": item["title"]}])
 
@@ -105,7 +107,7 @@ class PostgresWorkflowTests(PostgresTestCase):
             for process in processes:
                 process.join(10)
                 self.assertEqual(process.exitcode, 0)
-            for item in self.repository.snapshot()["requests"][-2:]:
+            for item in self.repository.read_view()[0]["requests"][-2:]:
                 self.assertEqual(item["participants"][0]["role"], item["title"])
         finally:
             for process in processes:
@@ -143,7 +145,7 @@ class PostgresWorkflowTests(PostgresTestCase):
                 with self.assertRaisesRegex(EngineIntegrationError, message):
                     execute_allocation(self.repository, gateway)
                 self.assertEqual(self.repository.read_view()[2], previous)
-        self.assertIn(saved, [item["id"] for item in self.repository.snapshot()["requests"]])
+        self.assertIn(saved, [item["id"] for item in self.repository.read_view()[0]["requests"]])
 
     def test_partial_database_publication_rolls_back_all_output_records(self):
         previous, _ = self.publish_fake()
@@ -175,7 +177,7 @@ class PostgresWorkflowTests(PostgresTestCase):
                 future = pool.submit(Repository(short_database).save_request, new_request())
                 with self.assertRaisesRegex(DatabaseBusy, "busy"):
                     future.result(5)
-        self.assertEqual(len(self.repository.snapshot()["requests"]), 14)
+        self.assertEqual(len(self.repository.read_view()[0]["requests"]), 14)
 
     def test_terminated_worker_releases_postgresql_lock(self):
         context = multiprocessing.get_context("spawn")
@@ -207,7 +209,7 @@ class PostgresWorkflowTests(PostgresTestCase):
             future = pool.submit(execute_allocation, self.repository, gateway)
             self.assertTrue(started.wait(5))
             self.repository.set_strategy("priority")
-            self.assertEqual(self.repository.snapshot()["strategy"], "priority")
+            self.assertEqual(self.repository.read_view()[0]["strategy"], "priority")
             release.set()
             with self.assertRaises(StaleRun):
                 future.result(10)

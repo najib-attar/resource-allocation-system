@@ -133,6 +133,8 @@ class NotificationUpgradeTests(RoomFixture):
         from postgres_fixtures import ROOT
         import os
         # Only this owned test schema is downgraded; its inbox is still empty.
+        from academic_fixtures import prepare_historical_gate_replay
+        prepare_historical_gate_replay(self.database)
         with mock.patch.dict(os.environ,{'DATABASE_URL':self.url}):
             command.downgrade(Config(str(ROOT/'alembic.ini')),'0043b')
         with self.database.transaction() as session:

@@ -394,9 +394,9 @@ class WaitingRoomTests(RoomFixture):
         self.assertFalse(any('position one' in row['message'] for row in NotificationService(self.database).inbox(2)['items']))
 
     def test_academic_publication_rechecks_newly_freed_rooms(self):
-        from web.allocation_workflow import execute_allocation
-        from web.persistence.models import RoomClosure, RequestSlot
-        from web.persistence.repository import state_row
+        from academic_fixtures import execute_reviewed_allocation as execute_allocation
+        from web.persistence.models import RoomClosure, RequestEligibility, ResourceRequest
+        from web.academic_eligibility import EligibilityService
         with self.database.transaction() as session:
             session.delete(session.scalar(select(RoomClosure).where(RoomClosure.resource_id == 302)))
         repository = self.academic(room=302)
@@ -404,9 +404,15 @@ class WaitingRoomTests(RoomFixture):
         key = self.join()
         self.waiting.review(key, 7, True)
         self.assertEqual(self.waiting.detail(key, 1)['status'], 'Preapproved')
-        with self.database.transaction() as session:
-            session.scalar(select(RequestSlot)).day = 2  # Explicit fixture move to Tuesday.
-            state_row(session, True).input_revision += 1
+        # Published inputs remain immutable. Rejection changes eligibility only;
+        # the authorized replacement publication releases the reservation.
+        with self.database.transaction(read_only=True) as session:
+            request = session.get(ResourceRequest, 1)
+            meta = session.get(RequestEligibility, 1)
+            revision, version = request.revision, meta.version
+        EligibilityService(self.database).decide(900001, 1, revision, version, False,
+            'Synthetic academic activity no longer eligible for replacement publication.')
+        self.assertEqual(self.waiting.detail(key, 1)['status'], 'Preapproved')
         execute_allocation(repository, EngineGateway(ROOT))
         self.assertEqual(self.waiting.detail(key, 1)['status'], 'Assigned')
         self.assertEqual(self.totals(), (1, 1))
@@ -827,7 +833,7 @@ class WaitingEquipmentTests(EquipmentFixture):
     def test_migration_keeps_single_queue_and_can_upgrade_from_previous_head(self):
         self.assertIn('waiting_list_entry', inspect(self.database.engine).get_table_names())
         with self.database.transaction(read_only=True) as session:
-            self.assertEqual(session.scalar(text('select version_num from alembic_version')), '0050b')
+            self.assertEqual(session.scalar(text('select version_num from alembic_version')), '0051a')
 
     def test_equipment_flask_submission_and_staff_review_reuse_existing_forms(self):
         from web import app as web_app

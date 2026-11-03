@@ -1,5 +1,6 @@
 """PostgreSQL web concurrency, atomic publication and request-saving regressions."""
 
+from academic_fixtures import submit_reviewed
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -41,6 +42,8 @@ class DatabaseWebConcurrencyTests(PostgresTestCase):
         self.data = Path(temporary.name)
         seed_web_database(self.database)
         self.repository = Repository(self.database)
+        from academic_fixtures import review_requests
+        review_requests(self.database)
         self.client = self.configure_web()
         self.context = multiprocessing.get_context("spawn")
 
@@ -73,7 +76,7 @@ class DatabaseWebConcurrencyTests(PostgresTestCase):
         start = threading.Barrier(2)
         def submit(title):
             start.wait(5)
-            return authorized_client(web_app.app).post("/add-request", data=form(title))
+            return submit_reviewed(authorized_client(web_app.app),self.database,"/add-request", data=form(title))
         with ThreadPoolExecutor(2) as pool:
             responses = list(pool.map(submit, ["Thread A", "Thread B"]))
         self.assertEqual([response.status_code for response in responses], [302, 302])
@@ -124,12 +127,12 @@ class DatabaseWebConcurrencyTests(PostgresTestCase):
         self.assertEqual([item["strategy"] for item in snapshots], ["greedy", "priority"])
         self.assertNotEqual(snapshots[0]["runId"], snapshots[1]["runId"])
         self.assertEqual(self.repository.read_view()[1]["snapshot"]["strategy"], "priority")
-        self.assertEqual(self.repository.snapshot()["strategy"], "priority")
+        self.assertEqual(self.repository.read_view()[0]["strategy"], "priority")
 
     def test_reader_pins_all_results_and_inputs_across_publication(self):
         old = self.publish_fixture()
         pinned = self.adapter
-        self.client.post("/add-request", data=form("Later request"))
+        submit_reviewed(self.client,self.database,"/add-request", data=form("Later request"))
         self.publish_fixture("new")
         self.assertEqual(pinned.run_id, old)
         self.assertEqual(pinned.get_table("request_results")["rows"][0]["rejectionReason"], "old")
@@ -167,7 +170,7 @@ class DatabaseWebConcurrencyTests(PostgresTestCase):
     def assert_failed_submit_remains_pending(self, executor, expected):
         old = self.publish_fixture()
         with mock.patch("web.engine_gateway.subprocess.run", side_effect=executor):
-            response = self.client.post("/add-request", data=form("Failure saved", "save_run"))
+            response = submit_reviewed(self.client,self.database,"/add-request", data=form("Failure saved", "save_run"))
         self.assertEqual(response.status_code, 302)
         self.assertIn(expected, parse_qs(urlparse(response.location).query)["run_message"][0])
         self.assertEqual(self.adapter.run_id, old)
@@ -222,7 +225,7 @@ class DatabaseWebConcurrencyTests(PostgresTestCase):
     def test_save_only_does_not_execute_or_replace_active_run(self):
         old = self.publish_fixture()
         with mock.patch("web.engine_gateway.subprocess.run") as execute:
-            response = self.client.post("/add-request", data=form("Save only"))
+            response = submit_reviewed(self.client,self.database,"/add-request", data=form("Save only"))
         execute.assert_not_called()
         self.assertEqual(self.adapter.run_id, old)
         self.assertEqual(self.client.get(response.location).status_code, 200)
@@ -230,7 +233,7 @@ class DatabaseWebConcurrencyTests(PostgresTestCase):
 
     def test_submit_and_run_publishes_and_existing_views_use_it(self):
         with mock.patch("web.engine_gateway.subprocess.run", side_effect=self.fake_execution):
-            response = self.client.post("/add-request", data=form("Submit and run", "save_run"))
+            response = submit_reviewed(self.client,self.database,"/add-request", data=form("Submit and run", "save_run"))
         self.assertEqual(parse_qs(urlparse(response.location).query)["run_status"], ["success"])
         self.assertEqual(len(self.repository.read_view()[1]["result"]["requestResults"]), 2)
         for route in (response.location, "/", "/allocation-summary", "/requests", "/schedules",
@@ -257,7 +260,7 @@ class DatabaseRealSubmitTests(PostgresTestCase):
         repository = Repository(self.database)
         client = self.configure_web()
         with mock.patch.dict(os.environ, {"RESOURCE_ALLOCATION_BACKEND": str(backend.path)}):
-            response = client.post("/add-request", data={
+            response = submit_reviewed(client,self.database,"/add-request", data={
                 "requestType": "OneTime", "userId": "1", "spaceId": "101",
                 "participantCount": "5", "day": "1", "startTime": "12:00", "endTime": "13:00",
                 "title": "Live submit and run", "purpose": "Meeting", "requiredFeature": "None",

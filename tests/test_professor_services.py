@@ -9,7 +9,7 @@ from postgres_fixtures import ROOT
 from test_room_requests import RoomFixture
 from web import app as web_app
 from web.account_service import AccountService
-from web.allocation_workflow import execute_allocation
+from academic_fixtures import execute_reviewed_allocation as execute_allocation
 from web.engine_gateway import EngineGateway
 from web.persistence.database import DatabaseBusy
 from web.persistence.models import (Allocation, ApplicationState, Appointment, LoginAccount,
@@ -46,15 +46,16 @@ class ProfessorFixture(RoomFixture):
 
 
 class ProfessorReadTests(ProfessorFixture):
-    def test_empty_list_is_private_and_explains_blocked_intake(self):
+    def test_empty_list_is_private_and_explains_separate_eligibility(self):
         response = self.client.get('/professor/academic-requests')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.headers['Cache-Control'], 'private, no-store')
         data = response.get_json()
         self.assertEqual((data['items'], data['total'], data['publicationId']), ([], 0, None))
-        for flag in ('creationEnabled', 'eligibilityReviewSupported', 'academicNotificationsSupported'):
-            self.assertIs(data[flag], False)
-        self.assertIn('not eligibility approval', ' '.join(data['warnings']))
+        self.assertIs(data['creationEnabled'], True)
+        self.assertIs(data['eligibilityReviewSupported'], True)
+        self.assertIs(data['academicNotificationsSupported'], False)
+        self.assertIn('Eligibility approval does not reserve', ' '.join(data['warnings']))
 
     def test_all_four_types_are_owned_pending_with_validated_filters_and_pagination(self):
         keys = [self.academic_request(kind, day=day) for kind, day in
@@ -179,13 +180,13 @@ class ProfessorReadTests(ProfessorFixture):
 
     def test_unsupported_writes_csrf_and_spoofed_identity_never_mutate(self):
         key = self.academic_request()
-        before = self.repository.snapshot()
+        before = self.repository.read_view()[0]
         response = self.client.get('/professor/academic-requests?userId=3&requesterId=3')
         self.assertEqual([i['id'] for i in response.get_json()['items']], [key])
         for url in ('/professor/academic-requests', f'/professor/academic-requests/{key}'):
             self.assertEqual(self.client.client.post(url, json={'requesterId': 3}).status_code, 400)
-            self.assertIn(self.client.post(url, json={'requesterId': 3}).status_code, (403, 405))
-        self.assertEqual(self.repository.snapshot()['requests'], before['requests'])
+            self.assertIn(self.client.post(url, json={'requesterId': 3}).status_code, (400, 403, 405))
+        self.assertEqual(self.repository.read_view()[0]['requests'], before['requests'])
         with self.database.transaction(read_only=True) as session:
             self.assertIsNone(session.get(ApplicationState, 1).active_run_id)
 

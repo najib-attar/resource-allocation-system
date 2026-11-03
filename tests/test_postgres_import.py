@@ -43,7 +43,7 @@ class PostgresImportTests(PostgresTestCase):
     def test_normal_data_round_trips_all_engine_fields_and_order(self):
         expected = CsvInputs(self.data).snapshot()
         report = import_csv(self.database, self.data)
-        actual = self.repository.snapshot()
+        actual = self.repository.read_view()[0]
         expected.pop("runId"); actual.pop("runId")
         self.assertEqual(actual, expected)
         self.assertEqual(report["counts"], {"users": 9, "spaces": 9, "requests": 14, "busySlots": 6})
@@ -60,10 +60,10 @@ class PostgresImportTests(PostgresTestCase):
 
     def test_second_import_refuses_to_overwrite_existing_data(self):
         import_csv(self.database, self.data)
-        before = self.repository.snapshot()
+        before = self.repository.read_view()[0]
         with self.assertRaisesRegex(ImportValidationError, "already contains"):
             import_csv(self.database, self.data)
-        after = self.repository.snapshot()
+        after = self.repository.read_view()[0]
         before.pop("runId"); after.pop("runId")
         self.assertEqual(before, after)
 
@@ -74,7 +74,7 @@ class PostgresImportTests(PostgresTestCase):
             return rows
         rewrite_csv(self.data / "requests.csv", change)
         import_csv(self.database, self.data)
-        request = self.repository.snapshot()["requests"][0]
+        request = self.repository.read_view()[0]["requests"][0]
         self.assertEqual(request["title"], title)
         self.assertEqual(request["purpose"], "")
         self.assertEqual(request["requiredBuilding"], "")
@@ -86,7 +86,7 @@ class PostgresImportTests(PostgresTestCase):
         rewrite_csv(self.data / "request_participants.csv", change)
         with self.assertRaisesRegex(ImportValidationError, "participant reference"):
             import_csv(self.database, self.data)
-        self.assertEqual(self.repository.snapshot()["users"], [])
+        self.assertEqual(self.repository.read_view()[0]["users"], [])
 
     def test_duplicate_ids_unknown_types_and_invalid_numeric_values_are_reported(self):
         original = (self.data / "spaces.csv").read_bytes()
@@ -100,7 +100,7 @@ class PostgresImportTests(PostgresTestCase):
                 rewrite_csv(self.data / "spaces.csv", change)
                 with self.assertRaisesRegex(ImportValidationError, message):
                     import_csv(self.database, self.data)
-                self.assertEqual(self.repository.snapshot()["spaces"], [])
+                self.assertEqual(self.repository.read_view()[0]["spaces"], [])
 
     def test_failure_after_inserts_rolls_back_the_entire_import(self):
         with mock.patch("web.persistence.importer.advance_identity", side_effect=RuntimeError("abort import")):
@@ -118,11 +118,11 @@ class PostgresImportTests(PostgresTestCase):
         rewrite_csv(self.data / "requests.csv", change)
         rewrite_csv(self.data / "request_participants.csv", lambda rows: [])
         import_csv(self.database, self.data)
-        self.assertEqual([item["id"] for item in self.repository.snapshot()["requests"]], [20, 10])
+        self.assertEqual([item["id"] for item in self.repository.read_view()[0]["requests"]], [20, 10])
         item = {"type": "OneTime", "requesterId": 2, "spaceId": 301, "participantCount": 5,
                 "slots": [{"day": 1, "startMinutes": 600, "endMinutes": 660}]}
         self.assertEqual(self.repository.save_request(item), 21)
-        self.assertEqual([row["id"] for row in self.repository.snapshot()["requests"]], [20, 10, 21])
+        self.assertEqual([row["id"] for row in self.repository.read_view()[0]["requests"]], [20, 10, 21])
 
     def test_missing_required_file_and_malformed_row_fail_clearly(self):
         (self.data / "users.csv").unlink()

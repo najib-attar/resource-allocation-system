@@ -12,7 +12,7 @@ from test_appointments import AppointmentFixture, START
 from runtime_file_guard import forbid_runtime_files
 from web import app as web_app
 from web.account_service import AccountService
-from web.allocation_workflow import execute_allocation
+from academic_fixtures import execute_reviewed_allocation as execute_allocation
 from web.calendar_service import CalendarError
 from web.engine_gateway import EngineGateway, EngineIntegrationError, validate_room_result
 from web.personal_schedule_service import PersonalScheduleService

@@ -160,10 +160,10 @@ class RecurringRoomWorkflowTests(RoomFixture):
 
     def test_explicit_academic_binding_blocks_only_its_actual_late_occurrence(self):
         from datetime import date
-        from web.allocation_workflow import execute_allocation
+        from academic_fixtures import execute_reviewed_allocation as execute_allocation
         series=self.series()
         repo=self.academic(room=302,bound=False)
-        key=repo.snapshot()['requests'][0]['id']
+        key=repo.read_view()[0]['requests'][0]['id']
         self.service.bind_legacy('Explicit fictional second week',date(2030,1,14),date(2030,1,14),request_id=key,week_start=date(2030,1,14))
         execute_allocation(repo,self.rooms.gateway)
         self.assertEqual(self.rooms.decide(series,7,1,True),'Needs Revision')

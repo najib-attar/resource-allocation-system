@@ -1,0 +1,33 @@
+{
+  "requestStatus": "Pending",
+  "includedInAdministrativeEngineSnapshot": false,
+  "activePublication": null,
+  "engineInvoked": false,
+  "resourceRequestColumns": [
+    "id",
+    "submission_order",
+    "type",
+    "requester_id",
+    "resource_id",
+    "participant_count",
+    "title",
+    "purpose",
+    "required_feature",
+    "required_building",
+    "revision",
+    "submission_key",
+    "submission_fingerprint",
+    "calendar_public",
+    "academic_instructor_id",
+    "faculty_declaration"
+  ],
+  "notificationSourceColumns": [
+    "appointment_event_id",
+    "room_event_id",
+    "equipment_event_id",
+    "feedback_event_id"
+  ],
+  "includedAfterExplicitReview": true,
+  "conclusion": "Pending inputs excluded; explicit current-revision administrative review permits allocation input without reserving resources.",
+  "repositorySourceHash": "eb3f5fb5e5b59da4216fe4d396da4394aaf9b552729c305b2cfefb1402f05e5d"
+}

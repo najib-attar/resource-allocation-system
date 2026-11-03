@@ -1,5 +1,6 @@
 """Cold-start and operational workflows need PostgreSQL, never runtime CSV files."""
 
+from academic_fixtures import submit_reviewed
 import json
 import os
 import socket
@@ -14,7 +15,7 @@ from postgres_fixtures import PostgresTestCase, ROOT
 from postgres_web_fixtures import form, seed_web_database
 from runtime_file_guard import forbid_runtime_files
 from web import app as web_app
-from web.allocation_workflow import execute_allocation
+from academic_fixtures import execute_reviewed_allocation as execute_allocation
 from web.engine_gateway import EngineGateway
 from web.persistence.repository import Repository
 
@@ -24,19 +25,21 @@ class PostgresRuntimeIndependenceTests(PostgresTestCase):
         super().setUp()
         seed_web_database(self.database)
         self.repository = Repository(self.database)
+        from academic_fixtures import review_requests
+        review_requests(self.database)
         self.client = self.configure_web()
 
     def test_save_run_strategy_and_all_views_work_with_runtime_file_io_forbidden(self):
         with forbid_runtime_files():
             with mock.patch("web.engine_gateway.subprocess.run") as engine:
-                saved = self.client.post("/add-request", data=form("Save only"))
+                saved = submit_reviewed(self.client,self.database,"/add-request", data=form("Save only"))
                 self.assertEqual(saved.status_code, 302)
                 engine.assert_not_called()
             self.assertEqual(self.client.get(saved.location).status_code, 200)
             self.assertIsNone(self.repository.read_view()[1])
             self.assertEqual(self.client.post("/set-strategy", data={"strategy": "priority"}).status_code, 302)
             data = form("Submit and run", "save_run") | {"day": "2"}
-            submitted = self.client.post("/add-request", data=data)
+            submitted = submit_reviewed(self.client,self.database,"/add-request", data=data)
             self.assertEqual(submitted.status_code, 302)
             self.assertIn("run_status=success", submitted.location)
             self.assertEqual(self.client.get(submitted.location).status_code, 200)
@@ -78,7 +81,7 @@ with forbid_runtime_files():
                                            cwd=directory, env=environment, capture_output=True, text=True, encoding="utf-8", timeout=30)
                 self.assertEqual(completed.returncode, 0, completed.stderr)
                 self.assertEqual(json.loads(completed.stdout), result)
-        self.assertEqual(len(self.repository.snapshot()["requests"]), 3)
+        self.assertEqual(len(self.repository.read_view()[0]["requests"]), 3)
 
     def test_unreachable_postgresql_returns_503_without_csv_fallback(self):
         # Own an unlistening port rather than stopping any existing PostgreSQL server.
@@ -93,4 +96,4 @@ with forbid_runtime_files():
                 cached[1].dispose()
         self.assertEqual(response.status_code, 503)
         self.assertIn("Database operation failed", response.get_data(as_text=True))
-        self.assertEqual(len(self.repository.snapshot()["requests"]), 1)
+        self.assertEqual(len(self.repository.read_view()[0]["requests"]), 1)

@@ -1,5 +1,6 @@
 """Final hierarchy, subtype, retry and retained-result integrity regressions."""
 
+from academic_fixtures import submit_reviewed
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -15,7 +16,7 @@ from sqlalchemy.exc import DBAPIError, IntegrityError
 from postgres_fixtures import PostgresTestCase, ROOT
 from test_postgres_import import copy_inputs
 from test_postgres_workflow import new_request
-from web.allocation_workflow import execute_allocation
+from academic_fixtures import execute_reviewed_allocation as execute_allocation
 from web.engine_gateway import EngineGateway
 from web.persistence.demo import demo_snapshot
 from web.persistence.database import Database
@@ -64,6 +65,8 @@ class PostgresCompletionTests(PostgresTestCase):
             copy_inputs(Path(directory))
             import_csv(self.database, directory)
         self.repository = Repository(self.database)
+        from academic_fixtures import review_requests
+        review_requests(self.database)
 
     def test_corrupt_hierarchy_is_rejected_before_snapshot_or_engine_execution(self):
         with self.database.transaction() as session:
@@ -78,7 +81,7 @@ class PostgresCompletionTests(PostgresTestCase):
         with self.assertRaises(IntegrityError):
             with self.database.transaction() as session:
                 session.execute(delete(RequestSlot).where(RequestSlot.request_id == 1))
-        self.assertTrue(self.repository.snapshot()["requests"][0]["slots"])
+        self.assertTrue(self.repository.read_view()[0]["requests"][0]["slots"])
 
     def test_multiple_slots_on_nonrecurring_request_are_rejected(self):
         with self.assertRaises(IntegrityError):
@@ -86,7 +89,7 @@ class PostgresCompletionTests(PostgresTestCase):
                 session.add(RequestSlot(request_id=1, ordinal=2, day=2, start_minutes=540, end_minutes=600))
 
     def test_exam_details_are_required_only_for_exams(self):
-        exam_id = next(item["id"] for item in self.repository.snapshot()["requests"] if item["type"] == "Exam")
+        exam_id = next(item["id"] for item in self.repository.read_view()[0]["requests"] if item["type"] == "Exam")
         with self.assertRaises(IntegrityError):
             with self.database.transaction() as session:
                 session.execute(delete(ExamDetails).where(ExamDetails.request_id == exam_id))
@@ -95,12 +98,12 @@ class PostgresCompletionTests(PostgresTestCase):
                 session.add(ExamDetails(request_id=1))
 
     def test_snapshot_rejects_missing_exam_before_deferred_commit_validation(self):
-        exam_id = next(item['id'] for item in self.repository.snapshot()['requests'] if item['type'] == 'Exam')
+        exam_id = next(item['id'] for item in self.repository.read_view()[0]['requests'] if item['type'] == 'Exam')
         with self.assertRaisesRegex(PersistenceError, 'inconsistent subtype records'):
             with self.database.transaction() as session:
                 session.execute(delete(ExamDetails).where(ExamDetails.request_id == exam_id))
-                snapshot_from_session(session, 'greedy')
-        self.assertIn('exam', next(item for item in self.repository.snapshot()['requests'] if item['id'] == exam_id))
+                snapshot_from_session(session, 'greedy', for_allocation=False)
+        self.assertIn('exam', next(item for item in self.repository.read_view()[0]['requests'] if item['id'] == exam_id))
 
     def test_participants_cannot_be_attached_to_noncommittee_requests(self):
         with self.assertRaises(IntegrityError):
@@ -112,17 +115,17 @@ class PostgresCompletionTests(PostgresTestCase):
             session.execute(delete(RequestSlot).where(RequestSlot.request_id == 1))
             session.flush()
             session.add(RequestSlot(request_id=1, ordinal=1, day=5, start_minutes=540, end_minutes=600))
-        self.assertEqual(self.repository.snapshot()["requests"][0]["slots"][0]["day"], 5)
+        self.assertEqual(self.repository.read_view()[0]["requests"][0]["slots"][0]["day"], 5)
 
     def test_atomic_subtype_transition_preserves_completeness(self):
         with self.database.transaction() as session:
             session.execute(update(ResourceRequest).where(ResourceRequest.id == 1).values(type="Exam"))
             session.add(ExamDetails(request_id=1, course_code="DEMO", can_split=False))
-        self.assertEqual(self.repository.snapshot()["requests"][0]["exam"]["courseCode"], "DEMO")
+        self.assertEqual(self.repository.read_view()[0]["requests"][0]["exam"]["courseCode"], "DEMO")
         with self.database.transaction() as session:
             session.execute(update(ResourceRequest).where(ResourceRequest.id == 1).values(type="OneTime"))
             session.execute(delete(ExamDetails).where(ExamDetails.request_id == 1))
-        self.assertNotIn("exam", self.repository.snapshot()["requests"][0])
+        self.assertNotIn("exam", self.repository.read_view()[0]["requests"][0])
 
     def test_all_migration_owned_subtype_triggers_are_installed(self):
         with self.database.transaction(read_only=True) as session:
@@ -159,10 +162,16 @@ class PostgresCompletionTests(PostgresTestCase):
             'cost_head_validate', 'cost_authority_timestamp', 'cost_authority_immutable', 'cost_authority_no_truncate',
             'cost_revision_immutable', 'cost_revision_no_truncate', 'cost_event_immutable', 'cost_event_no_truncate',
             'cost_head_no_delete', 'cost_head_no_truncate')})
+        expected.update({name: (False, False) for name in ('eligibility_guard', 'eligibility_audit',
+            'eligibility_event_immutable', 'eligibility_no_delete', 'eligibility_no_truncate',
+            'eligibility_event_no_truncate', 'allocation_eligibility_immutable',
+            'allocation_eligibility_no_truncate', 'request_eligibility', 'request_material_revision',
+            'allocation_eligibility_start', 'allocation_eligibility_publish',
+            'request_slot_eligibility', 'exam_details_eligibility', 'request_participant_eligibility')})
         self.assertEqual({row[0]: (row[1], row[2]) for row in rows}, expected)
 
     def test_concurrent_child_deletions_cannot_leave_empty_recurring_request(self):
-        item = next(item for item in self.repository.snapshot()["requests"] if item["type"] == "Recurring" and len(item["slots"]) == 2)
+        item = next(item for item in self.repository.read_view()[0]["requests"] if item["type"] == "Recurring" and len(item["slots"]) == 2)
         for isolation in ("READ COMMITTED", "REPEATABLE READ"):
             barrier = threading.Barrier(2)
             def remove_slot(ordinal):
@@ -190,12 +199,12 @@ class PostgresCompletionTests(PostgresTestCase):
         first = self.repository.save_request(new_request(), submission_key=key)
         with self.database.transaction(read_only=True) as session:
             revision = session.get(ApplicationState, 1).input_revision
-        before = self.repository.snapshot()
+        before = self.repository.read_view()[0]
         self.assertEqual(self.repository.save_request(new_request(), submission_key=key), first)
         with self.database.transaction(read_only=True) as session:
             self.assertEqual(session.scalar(select(func.count()).select_from(RequestHistory).where(RequestHistory.request_id == first)), 1)
             self.assertEqual(session.get(ApplicationState, 1).input_revision, revision)
-        after = self.repository.snapshot()
+        after = self.repository.read_view()[0]
         before.pop("runId"); after.pop("runId")
         self.assertEqual(after, before)
 
@@ -204,7 +213,7 @@ class PostgresCompletionTests(PostgresTestCase):
         with ThreadPoolExecutor(max_workers=2) as pool:
             ids = list(pool.map(lambda _: self.repository.save_request(new_request(), submission_key=key), range(2)))
         self.assertEqual(ids[0], ids[1])
-        self.assertEqual(len(self.repository.snapshot()["requests"]), 15)
+        self.assertEqual(len(self.repository.read_view()[0]["requests"]), 15)
 
     def test_identical_retries_across_processes_create_only_one_request(self):
         context = multiprocessing.get_context("spawn")
@@ -234,7 +243,7 @@ class PostgresCompletionTests(PostgresTestCase):
         self.repository.save_request(new_request(), submission_key=key)
         with self.assertRaisesRegex(PersistenceError, "different"):
             self.repository.save_request(new_request("Changed"), submission_key=key)
-        self.assertEqual(len(self.repository.snapshot()["requests"]), 15)
+        self.assertEqual(len(self.repository.read_view()[0]["requests"]), 15)
 
     def test_failed_save_does_not_consume_retry_key(self):
         key = uuid.uuid4().hex
@@ -247,7 +256,7 @@ class PostgresCompletionTests(PostgresTestCase):
         for key in ("bad", "A" * 32, 123):
             with self.subTest(key=key), self.assertRaisesRegex(PersistenceError, "Invalid submission key"):
                 self.repository.save_request(new_request(), submission_key=key)
-        self.assertEqual(len(self.repository.snapshot()["requests"]), 14)
+        self.assertEqual(len(self.repository.read_view()[0]["requests"]), 14)
 
     def test_web_form_retry_preserves_one_saved_request(self):
         client = self.configure_web()
@@ -256,13 +265,13 @@ class PostgresCompletionTests(PostgresTestCase):
         form = {"requestType": "OneTime", "userId": "1", "spaceId": "101", "participantCount": "5",
                 "day": "5", "startTime": "15:00", "endTime": "16:00", "title": "Retry",
                 "purpose": "Meeting", "submitAction": "save", "submissionKey": key}
-        first = client.post("/add-request", data=form)
-        second = client.post("/add-request", data=form)
+        first = submit_reviewed(client,self.database,"/add-request", data=form)
+        second = submit_reviewed(client,self.database,"/add-request", data=form)
         self.assertEqual(first.status_code, 302)
         self.assertEqual(second.location, first.location)
-        self.assertEqual(len(self.repository.snapshot()["requests"]), 15)
+        self.assertEqual(len(self.repository.read_view()[0]["requests"]), 15)
         form["title"] = "Different"
-        self.assertEqual(client.post("/add-request", data=form).status_code, 409)
+        self.assertEqual(submit_reviewed(client,self.database,"/add-request", data=form).status_code, 409)
 
     def test_failed_run_retry_does_not_save_twice(self):
         client = self.configure_web()
@@ -270,10 +279,10 @@ class PostgresCompletionTests(PostgresTestCase):
                 "day": "5", "startTime": "15:00", "endTime": "16:00", "title": "Retry run",
                 "purpose": "Meeting", "submitAction": "save_run", "submissionKey": uuid.uuid4().hex}
         with mock.patch("web.app.run_backend_allocation", return_value={"status": "error", "message": "Engine timeout"}):
-            self.assertEqual(client.post("/add-request", data=form).status_code, 302)
-        response = client.post("/add-request", data=form)
+            self.assertEqual(submit_reviewed(client,self.database,"/add-request", data=form).status_code, 302)
+        response = submit_reviewed(client,self.database,"/add-request", data=form)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(len(self.repository.snapshot()["requests"]), 15)
+        self.assertEqual(len(self.repository.read_view()[0]["requests"]), 15)
         self.assertIsNotNone(self.repository.read_view()[2])
 
     def test_abandoned_run_and_new_publication_do_not_delete_history(self):

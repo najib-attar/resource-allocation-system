@@ -22,6 +22,8 @@ class PostgresQualityTests(PostgresTestCase):
             copy_inputs(Path(directory))
             import_csv(self.database, directory)
         self.repository = Repository(self.database)
+        from academic_fixtures import review_requests
+        review_requests(self.database)
 
     def test_negative_occurrence_ordinal_is_rejected(self):
         with self.assertRaises(IntegrityError):
@@ -97,14 +99,14 @@ class PostgresQualityTests(PostgresTestCase):
             self.assertEqual(self.database.engine.pool.checkedout(), 0)
 
     def test_malformed_request_metadata_rolls_back_without_python_attribute_errors(self):
-        original = self.repository.snapshot()["requests"][0]
+        original = self.repository.read_view()[0]["requests"][0]
         for changes in ({"slots": [None]}, {"title": []}, {"type": "CommitteeMeeting", "participants": [None]},
                         {"type": "Exam", "exam": {"canSplitAcrossRooms": True, "courseCode": []}}):
             item = deepcopy(original) | changes
             item.pop("id")
             with self.subTest(changes=changes), self.assertRaises(ImportValidationError):
                 self.repository.save_request(item)
-        self.assertEqual(len(self.repository.snapshot()["requests"]), 14)
+        self.assertEqual(len(self.repository.read_view()[0]["requests"]), 14)
 
     def test_modified_duplicate_decision_projection_is_detected_on_read(self):
         run_id, snapshot = self.repository.start_run()
