@@ -25,7 +25,9 @@ const groups = {
     ['equipment-forbidden', '/equipment/inventory/' + id.faculty, 403]],
   'UI-06': [['waiting', '/waiting-lists/'], ['waiting-detail', '/waiting-lists/' + id.queue], ['waiting-policy', '/waiting-lists/policy'],
     ['waiting-inaccessible', '/waiting-lists/999999999', 403], ['waiting-forbidden', '/waiting-lists/configuration', 403]],
-  'UI-07': [['feedback', '/feedback/'], ['feedback-new', '/feedback/new/equipment/' + id.loan], ['feedback-detail', '/feedback/' + id.report]],
+  'UI-07': [['feedback', '/feedback/'], ['feedback-new', '/feedback/new/equipment/' + id.loan], ['feedback-detail', '/feedback/' + id.report],
+    ['feedback-ineligible', '/feedback/new/room/' + id.room, 409], ['feedback-private', '/feedback/999999999', 403],
+    ['feedback-invalid', '/feedback/?status=unsupported', 409]],
   'UI-08': [['calendar-month', '/calendar/?view=month&date=2030-01-07'], ['calendar-week', '/calendar/?view=week&date=2030-01-07'],
     ['calendar-day', '/calendar/?view=day&date=2030-01-07'], ['schedule', '/appointments/calendar?month=2030-01&week=2030-01-07'],
     ['inbox', '/notifications/']],
@@ -51,8 +53,12 @@ async function geometry(page, width, name) {
       const target = document.activeElement;
       const box = target.getBoundingClientRect();
       const fragments = Array.from(target.getClientRects());
-      return { tag: target.tagName, text: target.textContent.trim().slice(0, 70), x:box.x, w:box.width, h:box.height,
+      return { tag: target.tagName, text: target.textContent.trim().slice(0, 70), x:box.x, y:box.y, w:box.width, h:box.height,
         outline: getComputedStyle(target).outlineStyle,
+        hit:fragments.map(fragment => {
+          const hit = document.elementFromPoint(fragment.x + fragment.width/2, fragment.y + fragment.height/2);
+          return hit?.tagName + '.' + hit?.className;
+        }),
         visible: fragments.every(fragment => {
           const hit = document.elementFromPoint(fragment.x + fragment.width/2, fragment.y + fragment.height/2);
           return hit === target || target.contains(hit);

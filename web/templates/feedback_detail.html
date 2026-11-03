@@ -1,8 +1,12 @@
-{% extends 'base.html' %}
+{% extends 'student_service_base.html' %}
+{% from 'components/student_services.html' import status %}
 {% block title %}Private Resource Report{% endblock %}
 {% block page_heading %}{{ item.resource }}{% endblock %}
-{% block content %}<div class="feedback-content"><section class="panel"><a href="{{ url_for('feedback.index') }}">Back to feedback</a><p class="eyebrow">{{ item.kind }} &middot; {{ item.category|capitalize }} &middot; {{ item.priority|capitalize }} priority</p>
-<h2>{{ item.status }}</h2><p>Reporter: {{ item.reporter|person_name }} &middot; Responsible staff: {{ item.staff|person_name }}</p>
+{% block service_eyebrow %}Feedback / Private report{% endblock %}
+{% block service_intro %}Your report, responsible staff response and status history.{% endblock %}
+{% block service_actions %}<a class="service-button" href="{{ url_for('feedback.index') }}">All feedback</a>{% endblock %}
+{% block service_content %}<div class="feedback-content"><section class="panel"><p class="eyebrow">{{ item.kind }} &middot; {{ item.category|capitalize }} &middot; {{ item.priority|capitalize }} priority</p>
+<h2>Report status</h2>{{ status(item.status) }}<p>Reporter: {{ item.reporter|person_name }} &middot; Responsible staff: {{ item.staff|person_name }}</p>
 <p>Submitted {{ item.created|university_time(seconds=true) }} &middot; Updated {{ item.updated|university_time(seconds=true) }}</p>
 <h3>Original report</h3><p class="feedback-text">{{ item.description }}</p>{% if item.response %}<h3>Latest staff response</h3><p class="feedback-text">{{ item.response }}</p>{% endif %}
 <p>Private: not shared with other participants. Availability changes require a separate authorized resource-management decision.</p>

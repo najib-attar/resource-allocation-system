@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_resource_feedback.FeedbackEquipmentTests"
+  ],
+  "run": 9,
+  "passed": 9,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 86.92
+}

@@ -259,6 +259,71 @@ async function waiting(page, context, browser) {
   await staffContext.close();
   results.push('Preapproved queue displayed contextual position without promising a reservation; student review control absent and direct review POST forbidden; authorized recheck, actual 60-minute policy and withdrawal persisted. A new eligible unavailable room joined through the real form; responsible staff preapproved; releasing the occupied room triggered real assignment; assigned link opened the confirmed reservation. Assignment captures at all four widths passed overflow checks.');
 }
+async function feedback(page, browser) {
+  await page.goto(fixture.url + '/feedback/new/equipment/' + fixture.ids.loan);
+  const resource = page.locator('[name=resourceId]');
+  const active = await resource.locator('option[data-completed=false]').first().getAttribute('value');
+  const completed = await resource.locator('option[data-completed=true]').first().getAttribute('value');
+  await resource.selectOption(completed);
+  await page.locator('[name=category]').selectOption('general');
+  assert.ok(await page.locator('[name=urgent]').isDisabled());
+  await resource.selectOption(active);
+  assert.equal(await page.locator('[name=category]').inputValue(), 'problem');
+  assert.ok(await page.locator('[name=category] option[value=general]').evaluate(option => option.disabled));
+  await page.locator('#feedback-form button.button-primary').click();
+  assert.ok(await page.locator('[name=description]').evaluate(el => !el.validity.valid));
+  await page.locator('[name=description]').fill('Fictional browser safety report <img src=x onerror=alert(1)>');
+  await page.locator('[name=urgent]').check();
+  await submit(page, page.locator('#feedback-form button.button-primary'));
+  assert.match(await page.locator('main').innerText(), /Submitted/);
+  assert.match(await page.locator('main').innerText(), /urgent priority/i);
+  assert.equal(await page.locator('img[src=x]').count(), 0);
+  assert.equal(await page.locator('form:has([name=action][value=review])').count(), 0);
+  await screenshot(page, 'feedback-submitted');
+  const reportUrl = page.url();
+  const clarification = page.locator('form:has([name=action][value=reply])');
+  const csrf = await clarification.locator('[name=csrf_token]').inputValue();
+  const revision = await clarification.locator('[name=revision]').inputValue();
+  const actionKey = await clarification.locator('[name=action_key]').inputValue();
+  assert.equal((await page.request.post(new URL(reportUrl).origin + new URL(reportUrl).pathname + '/update',
+    {form:{csrf_token:csrf,revision:revision,action_key:actionKey,action:'review',status:'Resolved',
+      priority:'normal',response:'Synthetic unauthorized review attempt'}})).status(), 403);
+  await clarification.locator('[name=response]').fill('Fictional reporter clarification: the cable is disconnected.');
+  await submit(page, clarification.locator('button'));
+  assert.match(await page.locator('main').innerText(), /Fictional reporter clarification/);
+  const staffContext = await browser.newContext();
+  const staff = await staffContext.newPage();
+  await login(staff, 7);
+  await staff.goto(reportUrl);
+  const review = staff.locator('form:has([name=action][value=review])');
+  await review.locator('[name=status]').selectOption('Under Review');
+  await review.locator('[name=response]').fill('Fictional staff response: inspection arranged.');
+  await submit(staff, review.locator('button'));
+  await page.reload();
+  assert.match(await page.locator('main').innerText(), /Fictional staff response: inspection arranged/);
+  await screenshot(page, 'feedback-staff-response');
+  const resolve = staff.locator('form:has([name=action][value=review])');
+  await resolve.locator('[name=status]').selectOption('Resolved');
+  await resolve.locator('[name=response]').fill('Fictional inspection completed and response recorded.');
+  await submit(staff, resolve.locator('button'));
+  await page.reload();
+  assert.match(await page.locator('main').innerText(), /Resolved/);
+  assert.equal(await page.locator('form:has([name=action][value=reply])').count(), 0);
+  await screenshot(page, 'feedback-resolved');
+  const strangerContext = await browser.newContext();
+  const stranger = await strangerContext.newPage();
+  await login(stranger, 5);
+  assert.equal((await stranger.request.get(reportUrl)).status(), 403);
+  await stranger.goto(fixture.url + '/feedback/');
+  assert.ok(!(await stranger.locator('main').innerText()).includes('Fictional browser safety report'));
+  await strangerContext.close();
+  await staffContext.close();
+  await page.goto(fixture.url + '/feedback/');
+  await page.locator('select[name=status]').selectOption('Resolved');
+  await submit(page, page.getByRole('button', {name:'Apply filters',exact:true}));
+  assert.equal(await page.locator('.service-row').count(), 1);
+  results.push('Actual-use resource flags controlled active/completed categories; urgent flag applied only to problem reports; native required validation; real private report escaped HTML, rejected reporter review POST, accepted clarification, displayed authorized staff response and resolution, removed clarification when resolved; unrelated student denied report and list data; status filter returned the authorized resolved report.');
+}
 (async () => {
   const browser = await chromium.launch({headless:true, ...(process.env.CHROMIUM_EXECUTABLE ?
     {executablePath:process.env.CHROMIUM_EXECUTABLE} : {channel:'msedge'})});
@@ -272,6 +337,7 @@ async function waiting(page, context, browser) {
     else if (phase === 'UI-04') await rooms(page, context);
     else if (phase === 'UI-05') await equipment(page);
     else if (phase === 'UI-06') await waiting(page, context, browser);
+    else if (phase === 'UI-07') await feedback(page, browser);
     else throw new Error('Unknown workflow phase ' + phase);
     assert.deepEqual(errors, []);
     fs.writeFileSync(path.join(output, 'workflow-results.json'), JSON.stringify({phase, results, browserErrors:errors}, null, 2) + '\n');

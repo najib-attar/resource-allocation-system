@@ -29,6 +29,7 @@
 .student-service p { overflow-wrap: anywhere; }
 .student-service :is(.panel,.ui-card) > p { color: var(--muted); }
 .student-service .panel form { display: block; margin: 18px 0; }
+.student-service .panel form.appointment-grid { display: grid; }
 .student-service :is(label,.ui-field-label) { display: block; color: #435969; font-size: 12px; font-weight: 600; margin: 16px 0 7px; }
 .student-service :is(input:not([type=checkbox]):not([type=hidden]),select,textarea) { display: block; min-width: 0; width: 100%; max-width: 100%; min-height: 44px; border: 1px solid var(--ui-control-line); border-radius: 7px; background: #fff; color: var(--ink); font: inherit; padding: 10px 12px; margin-top: 7px; }
 .student-service textarea { resize: vertical; }
@@ -114,6 +115,10 @@
 .student-service .service-policy { max-width: 960px; }
 .student-service .service-policy h2 { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); }
 .student-service .service-policy p { max-width: 85ch; }
+@media (max-width: 800px) {
+    /* Native keyboard scrolling must account for the fixed student navigation. */
+    html:has(.student-service) { scroll-padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
+}
 @media (max-width: 600px) {
     .service-heading { display: block; margin-bottom: 25px; }
     .service-heading-actions { margin-top: 18px; }

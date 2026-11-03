@@ -1,0 +1,41 @@
+{
+  "modules": [
+    "test_resource_feedback.FeedbackRoomTests",
+    "test_resource_feedback.FeedbackEquipmentTests"
+  ],
+  "expected": 31,
+  "run": 31,
+  "passed": 31,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 207.73,
+  "results": {
+    "test_resource_feedback.FeedbackEquipmentTests": {
+      "modules": [
+        "test_resource_feedback.FeedbackEquipmentTests"
+      ],
+      "run": 9,
+      "passed": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 86.92,
+      "exitCode": 0,
+      "expected": 9
+    },
+    "test_resource_feedback.FeedbackRoomTests": {
+      "modules": [
+        "test_resource_feedback.FeedbackRoomTests"
+      ],
+      "run": 22,
+      "passed": 22,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 204.52,
+      "exitCode": 0,
+      "expected": 22
+    }
+  }
+}
