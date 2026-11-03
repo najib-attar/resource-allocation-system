@@ -53,7 +53,33 @@ async function main(){
     checks.push('Actual own approval, no duplicate approve control, unanimous confirmation, Student reschedule reset/stale rejection, reapproval, cancellation and decline; private/state persistence independently checked.');
     await peer.context.close();await student.context.close();
   }
-  const data=results();assert.equal(data.views.length,{'PROF-UI-01':30,'PROF-UI-02':15}[phase], 'Every planned phase view must execute');assert.deepEqual(data.errors,[]);assert.ok(data.expectedErrors.every(r=>[400,403,409].includes(r.status)));
+  if(phase==='PROF-UI-03') {
+    await views(prof.page,[['office-hours','/appointments/availability'],['schedule','/appointments/calendar?month=2030-01&week=2030-01-07']]);
+    const empty=await login(browser,12);await views(empty.page,[['empty-office-hours','/appointments/availability'],['empty-schedule','/appointments/calendar?month=2030-01&week=2030-01-07']]);await empty.context.close();
+    await go(prof.page,'/appointments/availability');
+    const form=prof.page.locator('form').filter({has:prof.page.locator('[name=action][value=hours]')});
+    for(const [name,value] of Object.entries({startTime:'09:00',endTime:'12:00',validFrom:'2030-01-01',validUntil:'2030-01-31',excludedDates:'2030-01-15'}))await form.locator('[name='+name+']').fill(value);
+    await form.locator('[name=day]').selectOption('2');
+    const [published]=await Promise.all([prof.page.waitForNavigation(),form.evaluate(el=>{const button=el.querySelector('button[type=submit]');el.requestSubmit(button);el.requestSubmit(button);})]);assert.equal(published.status(),200);
+    let removal=prof.page.locator('form').filter({has:prof.page.locator('[name=action][value=remove-hours]')}).last();
+    const pattern=await removal.locator('[name=id]').inputValue();await submit(prof.page,removal.locator('button'),409);
+    assert.match(await prof.page.locator('[role=alert]').innerText(),/future confirmed appointments/);await inspect(prof.page,320,'protected-hours-removal');await shot(prof.page,'protected-hours-removal-320');
+    await go(prof.page,'/appointments/calendar?month=2030-01&week=2030-01-07');
+    const confirmedConflict=prof.page.locator('form').filter({has:prof.page.locator('[name=action][value=block]')});
+    await confirmedConflict.locator('[name=start]').fill('2030-01-07T10:00');await confirmedConflict.locator('[name=end]').fill('2030-01-07T11:00');await confirmedConflict.locator('[name=reason]').fill('Conflict with confirmed appointment');await submit(prof.page,confirmedConflict.locator('button'),409);
+    for(const width of widths) {await prof.page.setViewportSize({width,height:950});await inspect(prof.page,width,'block-conflict');await shot(prof.page,'block-conflict-'+width);}
+    await go(prof.page,'/appointments/'+ids.confirmed);await submit(prof.page,prof.page.locator('form[action$="/cancel"] button'));
+    await go(prof.page,'/appointments/availability');removal=prof.page.locator('form').filter({has:prof.page.locator('[name=action][value=remove-hours]')}).filter({has:prof.page.locator('[name=id][value="'+pattern+'"]')});await submit(prof.page,removal.locator('button'));
+    await go(prof.page,'/appointments/calendar?month=2030-01&week=2030-01-07');
+    const block=prof.page.locator('form').filter({has:prof.page.locator('[name=action][value=block]')});
+    await block.locator('[name=start]').fill('2030-01-08T12:00');await block.locator('[name=end]').fill('2030-01-08T13:00');await block.locator('[name=reason]').fill('Professor review private block');await submit(prof.page,block.locator('button'));
+    await submit(prof.page,prof.page.getByRole('button',{name:'Remove block: Professor review private block'}));
+    const conflict=prof.page.locator('form').filter({has:prof.page.locator('[name=action][value=block]')});
+    await conflict.locator('[name=start]').fill('2030-01-08T10:00');await conflict.locator('[name=end]').fill('2030-01-08T11:00');await conflict.locator('[name=reason]').fill('Personal preference during academic allocation');await submit(prof.page,conflict.locator('button'));
+
+    checks.push('Double native hour submission produced one POST; inclusive/excluded dates persisted, confirmed appointment blocked removal until cancellation, block create/remove, confirmed-appointment conflict rollback and unchanged academic publication under an overlapping personal block verified.');
+  }
+  const data=results();assert.equal(data.views.length,{'PROF-UI-01':30,'PROF-UI-02':15,'PROF-UI-03':26}[phase], 'Every planned phase view must execute');assert.deepEqual(data.errors,[]);assert.ok(data.expectedErrors.every(r=>[400,403,409].includes(r.status)));
   fs.writeFileSync(path.join(out,'browser-results.json'),JSON.stringify({...data,phase,checks},null,2)+'\n');
   console.log(JSON.stringify({phase,views:data.views.length,keyboardSteps:data.keyboardSteps,checks}));
  } finally {await browser.close();}

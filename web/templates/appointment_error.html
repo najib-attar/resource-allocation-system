@@ -1,6 +1,6 @@
 {% extends "service_base.html" %}
 {% set schedule_error = request.endpoint == 'appointments.calendar' %}
-{% set recovery = ('appointments.calendar','My Schedule') if schedule_error else {'rooms':('rooms.index','room requests'),'waiting':('waiting.index','waiting lists'),'feedback':('feedback.index','feedback')}.get(request.blueprint, ('appointments.index','appointments')) %}
+{% set recovery = ('appointments.calendar','My Schedule') if schedule_error else ('appointments.availability','office hours') if request.endpoint=='appointments.availability' else {'rooms':('rooms.index','room requests'),'waiting':('waiting.index','waiting lists'),'feedback':('feedback.index','feedback')}.get(request.blueprint, ('appointments.index','appointments')) %}
 {% block page_heading %}{{ 'Schedule unavailable' if schedule_error else 'Appointment unavailable' if request.blueprint == 'appointments' else 'Request unavailable' }}{% endblock %}
 {% block service_eyebrow %}Request / Check details{% endblock %}
 {% block service_content %}<section class="panel"><h2>Please check your request</h2><p role="alert">{{ message }}</p><p>Your request could not be completed. Review the current details and try again.</p><a class="button" href="{{ url_for(recovery[0]) }}">Back to {{ recovery[1] }}</a></section>{% endblock %}

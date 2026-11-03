@@ -99,3 +99,15 @@ class ProfessorPortalTests(ProfessorFixture):
         self.assertEqual(self.client.post(f'/appointments/{key}/decision',data=dict(revision=1,decision='approve')).status_code,409)
         self.assertNotIn('/appointments/new',self.client.get('/appointments/').get_data(as_text=True))
         self.assertEqual(self.client.client.post(f'/appointments/{key}/decision',data=dict(revision=2,decision='approve')).status_code,400)
+
+    def test_office_hour_validation_retains_fields_and_personal_schedule_has_mobile_agenda(self):
+        from test_student_portal_ui import Document
+        response=self.client.post('/appointments/availability',data=dict(action='hours',day=2,
+            startTime='12:00',endTime='09:00',validFrom='2030-01-01',validUntil='2030-01-31',excludedDates='2030-01-15'))
+        self.assertEqual(response.status_code,409)
+        page=Document(response.get_data(as_text=True)).root
+        self.assertTrue(page.find(role='alert'))
+        self.assertEqual(page.find('input',name='validFrom')[0].attrs['value'],'2030-01-01')
+        self.assertEqual(page.find('input',name='excludedDates')[0].attrs['value'],'2030-01-15')
+        schedule=Document(self.client.get('/appointments/calendar?month=2030-01&week=2030-01-07').get_data(as_text=True)).root
+        self.assertTrue(schedule.find('div',**{'class':'personal-agenda'}))

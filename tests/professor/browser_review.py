@@ -63,7 +63,8 @@ def verify(operations):
             checked.append(dict(path=path, result='own availability mutation persisted'))
         elif path == '/appointments/calendar':
             if action == 'block':
-                assert any(r['reason'] == 'Professor review private block' and r['user_id'] == 2 for r in after['blocks'])
+                added=[r for r in after['blocks'] if r['id'] not in {b['id'] for b in before['blocks']}]
+                assert len(added)==1 and added[0]['reason']==form.get('reason','') and added[0]['user_id']==2
             else:
                 assert not any(r['id'] == int(form['id']) for r in after['blocks'])
             checked.append(dict(path=path, result='own block mutation persisted'))

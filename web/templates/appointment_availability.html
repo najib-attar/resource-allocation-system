@@ -1,10 +1,27 @@
-{% extends "base.html" %}
-{% block page_heading %}Published Appointment Hours{% endblock %}
-{% block content %}<section class="panel"><p>Publication requires explicit validity dates. All times are in {{ zone }}; dates are inclusive.</p>
-<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="hours">
-<div class="appointment-grid"><label>Weekday <select name="day">{% for name in ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] %}<option value="{{ loop.index }}">{{ name }}</option>{% endfor %}</select></label>
-<label>Start <input type="time" name="startTime" required></label><label>End <input type="time" name="endTime" required></label>
-<label>Valid from <input type="date" name="validFrom" required></label><label>Valid through <input type="date" name="validUntil" required></label>
-<label>Excluded dates (comma-separated YYYY-MM-DD) <input name="excludedDates"></label></div><button class="button" type="submit">Publish hours</button></form></section>
-<section class="panel"><h2>Current patterns</h2>{% for row in values.hours %}<article><p>Weekday {{ row.day }} &middot; {{ '%02d:%02d'|format(row.start_minutes//60,row.start_minutes%60) }} &ndash; {{ '%02d:%02d'|format(row.end_minutes//60,row.end_minutes%60) }} &middot; {{ row.valid_from }} to {{ row.valid_until }} &middot; Exclusions: {{ row.excluded_dates|join(', ') or 'None' }}</p>
-<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="remove-hours"><input type="hidden" name="id" value="{{ row.id }}"><button type="submit">Remove pattern</button></form></article>{% else %}<p>No hours published yet.</p>{% endfor %}</section>{% endblock %}
+{% extends 'service_base.html' %}
+{% from 'components/services.html' import weekly_slot %}
+{% block title %}Office hours | Campus Space{% endblock %}
+{% block page_heading %}Office hours{% endblock %}
+{% block service_eyebrow %}Availability / Appointment hours{% endblock %}
+{% block service_intro %}Publish when students may request appointments. Validity dates are inclusive and all times use {{ zone }}.{% endblock %}
+{% block service_actions %}<a class="service-button" href="{{ url_for('appointments.calendar') }}">My schedule &amp; blocks</a><a class="service-button" href="{{ url_for('appointments.index') }}">Appointments</a>{% endblock %}
+{% block service_content %}
+{% if error %}<section class="panel service-notice" role="alert"><h2>Hours were not changed</h2><p>{{ error }}</p></section>{% endif %}
+<div class="service-split">
+  <section class="panel"><h2>Publish a weekly pattern</h2><p>Choose an explicit date range of at most two years. Published hours do not reserve time or override confirmed commitments and personal blocks.</p>
+    <form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="hours">
+      <label>Weekday <select name="day">{% for name in ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'] %}<option value="{{ loop.index }}"{% if (form|default({})).get('day','1')==loop.index|string %} selected{% endif %}>{{ name }}</option>{% endfor %}</select></label>
+      <div class="appointment-grid"><label>Start time <input type="time" name="startTime" required value="{{ (form|default({})).get('startTime','') }}"></label><label>End time <input type="time" name="endTime" required value="{{ (form|default({})).get('endTime','') }}"></label></div>
+      <div class="appointment-grid"><label>Valid from <input type="date" name="validFrom" min="1970-01-01" max="2099-12-31" required value="{{ (form|default({})).get('validFrom','') }}"></label><label>Valid through <input type="date" name="validUntil" min="1970-01-01" max="2099-12-31" required value="{{ (form|default({})).get('validUntil','') }}"></label></div>
+      <label>Excluded dates <input name="excludedDates" aria-describedby="excluded-dates-help" placeholder="YYYY-MM-DD, YYYY-MM-DD" value="{{ (form|default({})).get('excludedDates','') }}"></label><p class="student-card-note" id="excluded-dates-help">Optional, comma-separated YYYY-MM-DD dates. These dates are excluded from this pattern.</p>
+      <button class="button-primary" type="submit">Publish hours</button>
+    </form>
+  </section>
+  <section class="panel"><h2>Published patterns <span class="service-count">{{ values.hours|length }}</span></h2><p>These are your own appointment hours. Personal blocks remain in <a href="{{ url_for('appointments.calendar') }}">My schedule</a>.</p>
+    <div class="service-list">{% for row in values.hours %}<article class="service-person"><div><h3>{{ weekly_slot(row.day,row.start_minutes,row.end_minutes) }}</h3><p>{{ row.valid_from }} through {{ row.valid_until }}</p><p class="student-card-note">Excluded dates: {{ row.excluded_dates|join(', ') or 'None' }}</p></div>
+      <form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="remove-hours"><input type="hidden" name="id" value="{{ row.id }}"><button type="submit" class="service-danger" aria-label="Remove pattern {{ row.id }}: {{ row.valid_from }} through {{ row.valid_until }}">Remove pattern</button></form>
+    </article>{% else %}<div class="service-empty"><h3>No hours published yet.</h3><p>Publish a pattern so students can request a meeting during your available hours.</p></div>{% endfor %}</div>
+    <p class="service-notice">Hours cannot be removed while you have future confirmed appointments. Publishing hours never overrides a confirmed meeting.</p>
+  </section>
+</div>
+{% endblock %}

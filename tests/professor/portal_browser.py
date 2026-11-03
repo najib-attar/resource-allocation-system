@@ -73,6 +73,12 @@ def main():
         (output/'browser-output.txt').write_text((result.stdout+'\n'+result.stderr).rstrip()+'\n',encoding='utf-8')
         (output/'post-states.json').write_text(json.dumps(posts,indent=2,default=str)+'\n',encoding='utf-8')
         if result.returncode:raise RuntimeError('Browser phase failed: '+phase)
+        if phase=='PROF-UI-03':
+            assert len([p for p in posts if p['path']=='/appointments/availability'
+                and p['form'].get('action')=='hours' and p['status']<400])==1, 'Duplicate native submission reached Flask'
+            overlap=next(p for p in posts if p['form'].get('reason')=='Personal preference during academic allocation')
+            assert overlap['before']['academic']['allocations']==overlap['after']['academic']['allocations']
+            assert overlap['before']['academic']['state'][0]['active_run_id']==overlap['after']['academic']['state'][0]['active_run_id']
         original=[];academic_posts=[]
         for post in posts:
             if post['status']>=400:assert post['before']==post['after'],post['path']
