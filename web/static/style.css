@@ -1136,18 +1136,9 @@ tr:nth-child(even) td {
 .appointment-choice { border-radius: 12px !important; width: 100%; }
 
 /* Card fragments still used by the current student portal. */
-.student-text-link:hover { text-decoration: underline; }
 .student-section-heading { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; }
 .student-section-heading h2 { margin: .3rem 0; font-size: 1.35rem; }
-.student-card-note, .student-empty-copy { color: var(--muted); line-height: 1.6; font-size: .85rem; }
-.student-empty-copy { margin: 1.5rem 0; }
-.student-appointment { border-top: 1px solid var(--line); padding: 1rem 0; overflow-wrap: anywhere; }
-.student-appointment h3 { font-size: 1rem; margin: .65rem 0; }
-.student-appointment h3 a, .student-text-link { color: var(--accent-dark); text-decoration: none; }
-.student-appointment > p { font-size: .85rem; }
-.student-appointment-top { display: flex; flex-wrap: wrap; gap: .4rem; align-items: center; }
-.student-expired { color: var(--danger); font-size: .72rem; }
-.student-text-link { font-size: .85rem; font-weight: 800; }
+.student-card-note { color: var(--muted); line-height: 1.6; font-size: .85rem; }
 .student-calendar-warning { border-left: 4px solid var(--warning); border-radius: 12px; padding: 1rem; background: var(--soft-amber); line-height: 1.7; }
 
 /* Shared hourly timetable and bounded, searchable participant selectors. */

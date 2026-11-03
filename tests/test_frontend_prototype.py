@@ -72,10 +72,10 @@ class SharedShellTests(TestCase):
 
     def test_ui_components_escape_data_and_preserve_accessible_states(self):
         with web_app.app.test_request_context('/'):
-            html = render_template_string('{% from "components/ui.html" import badge, stat_card %}{{ badge(label, "warning") }}{{ stat_card(label, 0, "No requests", "/appointments/") }}', label='<img src=x>')
+            html = render_template_string('{% from "components/ui.html" import badge, icon %}{{ badge(label, "warning") }}{{ icon("calendar") }}', label='<img src=x>')
         self.assertNotIn('<img', html)
         self.assertIn('&lt;img src=x&gt;', html)
-        self.assertIn('No requests', html)
+        self.assertTrue(Document(html).select('svg', aria_hidden='true', focusable='false'))
         css = (Path(__file__).resolve().parents[1] / 'web/static/tokens.css').read_text()
         tokens = dict(re.findall(r'--(ui-[\w-]+):\s*(#[\da-fA-F]+)', css))
         def luminance(value):

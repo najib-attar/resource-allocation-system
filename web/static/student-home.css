@@ -98,7 +98,6 @@
     .student-section-heading h2 { font-size: 18px; }
     .student-section-heading { margin-bottom: 18px; }
     .student-service-copy { padding: 23px 18px 18px; }
-    .student-service-copy h3 { font-size: 20px; }
     .student-service-copy p:not(.student-eyebrow) { font-size: 11px; }
     .student-service-art { flex-basis: 73px; width: 73px; height: 73px; margin-right: 9px; }
     .student-service-pair { gap: 11px; }
