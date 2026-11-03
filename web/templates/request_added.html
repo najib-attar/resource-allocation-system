@@ -8,10 +8,10 @@
     <p class="eyebrow">Pending Request</p>
     <h2>Request {{ request_id }} was added successfully.</h2>
     <p>
-        It is pending until allocation is run. The request already appears in
-        the database, but approval or rejection will appear
-        only after the C++ backend runs and its results are published.
+        It is Pending Eligibility Review. Eligibility approval reserves no resources and is
+        separate from allocation approval or rejection. Only eligible revisions enter allocation.
     </p>
+    <p><a href="{{ url_for('eligibility.detail',request_id=request_id) }}">Review academic eligibility</a></p>
 
     {% if request_row %}
     {% set is_committee = request_row.get("requestType") == "CommitteeMeeting" %}
@@ -92,7 +92,7 @@
         <a href="{{ url_for('requests', highlight=request_id) }}">View Requests</a>
         <form method="post" action="{{ url_for('run_allocation_now', request_id=request_id) }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-            <button type="submit">Run Allocation Now</button>
+            <button type="submit">Review eligibility before allocation</button>
         </form>
     </div>
 </section>

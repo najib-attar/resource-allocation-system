@@ -1,0 +1,14 @@
+{
+  "modules": [
+    "test_academic_eligibility",
+    "test_professor_intake",
+    "test_eligibility_migration"
+  ],
+  "expected": 15,
+  "run": 15,
+  "passed": 15,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 98.03
+}

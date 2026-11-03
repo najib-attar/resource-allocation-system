@@ -150,6 +150,8 @@ app.register_blueprint(create_student_blueprint(lambda: get_repository().databas
 
 from web.professor_routes import create_professor_blueprint
 app.register_blueprint(create_professor_blueprint(lambda: get_repository().database))
+from web.eligibility_routes import create_eligibility_blueprint
+app.register_blueprint(create_eligibility_blueprint(lambda: get_repository().database))
 
 from web.room_request_routes import create_room_blueprint
 app.config['ROOM_SELECTION_STRATEGY'] = os.environ.get('RESOURCE_ALLOCATION_ROOM_STRATEGY', 'best_fit')
@@ -177,7 +179,7 @@ app.register_blueprint(create_feedback_blueprint(lambda: get_repository().databa
 
 @app.before_request
 def pin_database_view():
-    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "professor.", "rooms.", "notifications.", "equipment.", "calendar.", "waiting.", "feedback.")):
+    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "professor.", "eligibility.", "rooms.", "notifications.", "equipment.", "calendar.", "waiting.", "feedback.")):
         current_results()
 
 
@@ -870,11 +872,9 @@ def add_request():
         row, participant_rows, errors = validate_request_form(form_data, users, spaces)
         if not errors:
             request_id = get_repository().save_request(request_record(row, participant_rows),
-                                                       submission_key=request.form.get("submissionKey") or None)
-            if request.form.get("submitAction") == "save_run":
-                run_result = run_backend_allocation()
-                return redirect(url_for("request_detail", request_id=request_id,
-                                        run_status=run_result["status"], run_message=run_result["message"]))
+                                                       submission_key=request.form.get("submissionKey") or None,actor=g.principal.user_id)
+            if request.form.get("submitAction") in {"save_run", "save_review"}:
+                return redirect(url_for('eligibility.detail',request_id=request_id))
             return redirect(url_for("request_added", request_id=request_id))
 
     return render_template(
@@ -926,6 +926,10 @@ def request_added(request_id):
 
 @app.post("/run-allocation-now/<request_id>")
 def run_allocation_now(request_id):
+    from .academic_eligibility import EligibilityService
+    item=EligibilityService(get_repository().database).detail(g.principal.user_id,safe_int(request_id))
+    if item['status']!='Eligible':
+        return redirect(url_for('eligibility.detail',request_id=item['id']))
     run_result = run_backend_allocation()
 
     return redirect(
@@ -951,10 +955,13 @@ def request_detail(request_id):
         }
 
     item, summary_context = get_request_summary(request_id)
+    from .academic_eligibility import EligibilityService
+    eligibility=EligibilityService(get_repository().database).detail(g.principal.user_id,safe_int(request_id)) if item else None
 
     return render_template(
         "request_detail.html",
         item=item,
+        eligibility=eligibility,
         request_id=str(request_id),
         run_message=run_message,
         requests_available=summary_context["requests_available"],

@@ -23,11 +23,13 @@
     <p class="app-nav-label">My planning</p>
     {{ nav_link('appointments.calendar', 'My Schedule', 'clock') }}
     {% if g.principal.role == 'Instructor' %}{{ nav_link('appointments.availability', 'Office Hours', 'calendar') }}{% endif %}
+    {% if g.principal.role == 'Instructor' %}{{ nav_link('professor.pages', 'Academic Requests', 'book', 'professor.') }}{% endif %}
     {% if g.principal.administrator %}
     <details class="app-admin-navigation"{% if request.endpoint in ['index','add_request','requests','allocation_summary','schedules','users','spaces','raw_data','appointments.bindings','rooms.configuration','calendar.publications','equipment.custodians','waiting.configuration'] %} open{% endif %}>
         <summary>{{ icon('settings', 19) }}<span>Administration</span>{{ icon('chevron', 14) }}</summary>
         <div class="app-admin-links">
             {{ nav_link('index', 'Dashboard', 'home') }}{{ nav_link('add_request', 'Add Request', 'plus') }}
+            {{ nav_link('eligibility.index', 'Academic Eligibility Review', 'check', 'eligibility.') }}
             {{ nav_link('requests', 'Requests', 'meeting') }}{{ nav_link('allocation_summary', 'Allocation Summary', 'check') }}
             {{ nav_link('schedules', 'Schedules', 'clock') }}{{ nav_link('users', 'Users', 'users') }}
             {{ nav_link('spaces', 'Spaces', 'room') }}{{ nav_link('raw_data', 'Raw Data', 'book') }}

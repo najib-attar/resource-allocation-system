@@ -31,10 +31,13 @@
     </div>
 
     <div class="detail-actions">
+        <a class="button-secondary" href="{{ url_for('eligibility.detail',request_id=item.request_id) }}">Review eligibility: {{ eligibility.status }}</a>
+        {% if eligibility.status=='Eligible' %}
         <form method="post" action="{{ url_for('run_allocation_now', request_id=item.request_id) }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button class="button-primary" type="submit">Run Allocation Now</button>
         </form>
+        {% else %}<p>Eligibility review is required before this request can enter allocation.</p>{% endif %}
         <a class="button-secondary" href="{{ url_for('allocation_summary', highlight=item.request_id) }}">Open in Allocation Summary</a>
         <a class="button-secondary" href="{{ url_for('requests', highlight=item.request_id) }}">Back to Requests</a>
     </div>

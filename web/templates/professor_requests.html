@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block title %}Academic Requests | Campus Space{% endblock %}
+{% block page_heading %}My Academic Requests{% endblock %}
+{% block content %}
+<section class="panel"><h2>Academic resource requests</h2><p>Requests are submitted under your identity. Eligibility review, allocation and calendar publication are separate steps. Submission and eligibility approval reserve no resources.</p>
+<p>{% for kind in ['Exam','OneTime','Recurring','CommitteeMeeting'] %}<a class="button-secondary" href="{{ url_for('professor.form',type=kind) }}">New {{ kind }} request</a> {% endfor %}</p>
+<form method="get"><div class="form-grid"><label>Request type <select name="type"><option value="">All types</option>{% for kind in ['Exam','OneTime','Recurring','CommitteeMeeting'] %}<option value="{{ kind }}"{% if request.args.get('type')==kind %} selected{% endif %}>{{ kind }}</option>{% endfor %}</select></label><label>Allocation state <select name="status"><option value="">All states</option>{% for state in ['Pending','Approved','Rejected'] %}<option{% if request.args.get('status')==state %} selected{% endif %}>{{ state }}</option>{% endfor %}</select></label></div><button>Apply filters</button></form></section>
+<section class="panel"><h2>Your requests ({{ data.total }})</h2>{% for item in data['items'] %}<article><h3><a href="{{ url_for('professor.page',request_id=item.id) }}">{{ item.title }}</a></h3><p>{{ item.type }} آ· Eligibility: <strong>{{ item.eligibilityStatus }}</strong> آ· Allocation: {{ item.status }}</p><p>{{ item.eligibilityReason }}</p></article>{% else %}<p>No academic requests match these filters.</p>{% endfor %}
+<nav aria-label="Request pages">{% if data.offset %}<a href="{{ url_for('professor.pages',type=request.args.get('type',''),status=request.args.get('status',''),limit=data.limit,offset=[0,data.offset-data.limit]|max) }}">Previous page</a>{% endif %}{% if data.offset+data.limit<data.total %}<a href="{{ url_for('professor.pages',type=request.args.get('type',''),status=request.args.get('status',''),limit=data.limit,offset=data.offset+data.limit) }}">Next page</a>{% endif %}</nav></section>
+{% endblock %}
