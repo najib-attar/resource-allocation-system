@@ -59,7 +59,7 @@ class LocalDemoConfigurationTests(TestCase):
 class LocalDemoDatabaseTests(PostgresTestCase):
     def test_demo_has_accounts_published_calendars_and_real_allocations(self):
         password = 'Isolated-demo-password-42'
-        summary = seed_local_demo(self.database, password, date(2030, 1, 7), date(2030, 1, 31))
+        summary = seed_local_demo(self.database, password, date(2030, 1, 7), date(2030, 1, 31),review_academics=True)
         self.assertEqual(summary['counts'], {'users': 106, 'spaces': 20, 'requests': 120, 'busySlots': 12})
         self.assertEqual(len(summary['accounts']), 94)
         with self.database.transaction(read_only=True) as session:
