@@ -41,9 +41,9 @@
 .student-service legend { color: var(--ink); font-size: 14px; font-weight: 650; max-width: 100%; padding-inline: 5px; }
 .student-service .check-label { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 400; margin: 8px 16px 8px 0; }
 .student-service :is(button,.button,.button-primary,.button-secondary,.ui-button,.service-button) { display: inline-flex; align-items: center; justify-content: center; gap: 7px; max-width: 100%; min-height: 44px; border: 1px solid var(--ui-control-line); border-radius: 7px; background: #fff; color: var(--accent); padding: 10px 14px; font: inherit; font-size: 12px; line-height: 1.5; font-weight: 650; text-align: center; text-decoration: none; cursor: pointer; box-shadow: none; white-space: normal; }
-.student-service :is(.button-primary,.ui-button--primary,.service-button-primary) { background: var(--accent); border-color: var(--accent); color: #fff; }
+.student-service :is(.button-primary,.ui-button--primary) { background: var(--accent); border-color: var(--accent); color: #fff; }
 .student-service :is(button,.service-button,.button-secondary):hover { background: #eaf2f7; color: #163c56; }
-.student-service :is(.button-primary,.ui-button--primary,.service-button-primary):hover { background: #163c56; color: #fff; }
+.student-service :is(.button-primary,.ui-button--primary):hover { background: #163c56; color: #fff; }
 .student-service button:disabled { opacity: .6; cursor: not-allowed; }
 .student-service .service-danger { color: #972b36; border-color: #dfb6ba; }
 .student-service :focus-visible { outline: 3px solid #176fbd; outline-offset: 3px; }

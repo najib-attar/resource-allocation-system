@@ -1081,7 +1081,6 @@ tr:nth-child(even) td {
 /* Appointment forms reuse the dashboard's established visual language. */
 .appointment-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1rem; }
 .appointment-grid label, #appointment-form label { display: block; margin: .6rem 0; }
-.appointment-card { border-bottom: 1px solid #d6dce4; padding: .8rem 0; }
 .appointment-choice { display: block; margin: .5rem 0; padding: .7rem; text-align: left; width: 100%; }
 .professor-option[hidden] { display: none !important; }
 .panel {
@@ -1176,10 +1175,7 @@ tr:nth-child(even) td {
 .timetable-event.is-continuation { border-left-style: dashed; }
 .timetable-weekend { margin-top: 1rem; }
 .timetable-weekend summary { cursor: pointer; color: var(--accent-dark); font-weight: 700; }
-.appointment-booking { max-width: 1000px; margin-inline: auto; }
-.booking-intro { font-size: 1.1rem; line-height: 1.7; }
 .participant-picker-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.3rem 0; }
-.picker-label { display: block; font-weight: 800; color: var(--accent-dark); margin-bottom: .6rem; }
 .participant-picker { border: 1px solid var(--line); border-radius: 12px; background: white; }
 .participant-picker summary { cursor: pointer; padding: 1rem; color: var(--accent-dark); font-weight: 700; }
 .picker-count { float: right; color: var(--muted); font-size: .8rem; font-weight: 400; }
@@ -1192,8 +1188,6 @@ tr:nth-child(even) td {
 .picker-option small { color: var(--muted); font-size: .75rem; margin-top: .2rem; }
 .selected-participants { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .6rem; }
 .panel button.participant-chip { border-radius: 7px; padding: .45rem .6rem; font-size: .75rem; }
-.appointment-time-panel { background: #f6f9f8; border: 1px solid var(--line); border-radius: 15px; padding: 1.2rem; margin: 1rem 0; }
-.appointment-time-panel h2 { font-size: 1.2rem; }
 .time-slot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: .6rem; max-height: 320px; overflow-y: auto; }
 .panel button.appointment-choice { padding: .8rem .4rem; margin: 0; font-size: .85rem; }
 .panel button.appointment-choice[aria-pressed="true"] { background: var(--accent-dark); color: white; border-color: var(--accent-dark); }
@@ -1211,7 +1205,6 @@ tr:nth-child(even) td {
 .panel button.room-candidate { display: flex; flex-direction: column; gap: 8px; padding: 18px; text-align: left; background: #f5f7f2; color: #20382f; border: 1px solid #bdcdbf; border-radius: 12px; }
 .panel button.room-candidate[aria-pressed="true"] { border: 2px solid #2b6149; background: #e9f1e4; }
 .room-candidate span, .room-candidate small { line-height: 1.5; }
-.room-request-list { display: grid; gap: 12px; margin-top: 20px; }
 .event-room-booking { background: #eaf1dd; border-left-color: #59762d; }
 .timetable-legend .legend-room { border-color: #59762d; }
 #room-request-form { display: block; }

@@ -110,5 +110,28 @@
     "cleanup-regression/tests.json",
     "browser/deleted-selector-checks.json",
     "browser/browser-results.json"
+  ],
+  "additionalLegacyRules": [
+    ".appointment-card { border-bottom: 1px solid #d6dce4; padding: .8rem 0; }",
+    ".appointment-booking { max-width: 1000px; margin-inline: auto; }",
+    ".booking-intro { font-size: 1.1rem; line-height: 1.7; }",
+    ".picker-label { display: block; font-weight: 800; color: var(--accent-dark); margin-bottom: .6rem; }",
+    ".appointment-time-panel { background: #f6f9f8; border: 1px solid var(--line); border-radius: 15px; padding: 1.2rem; margin: 1rem 0; }",
+    ".appointment-time-panel h2 { font-size: 1.2rem; }",
+    ".room-request-list { display: grid; gap: 12px; margin-top: 20px; }"
+  ],
+  "unusedSelectorArms": [
+    ".student-service :is(.button-primary,.ui-button--primary,.service-button-primary) -> removed only .service-button-primary",
+    ".student-service :is(.button-primary,.ui-button--primary,.service-button-primary):hover -> removed only .service-button-primary"
+  ],
+  "retainedDynamicFamilies": [
+    "calendar category-/state-",
+    "ui-badge-- tone",
+    "service-status tone",
+    "badge status_class",
+    "timetable event-kind",
+    "page-message status",
+    "schedule-slot cell.class_name",
+    "stat-card tone"
   ]
 }
