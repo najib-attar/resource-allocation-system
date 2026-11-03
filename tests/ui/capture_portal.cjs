@@ -16,7 +16,8 @@ const groups = {
     ['appointment-private', '/appointments/' + id.private, 403], ['appointment-invalid', '/appointments/999999999', 409]],
   'UI-04': [['rooms', '/rooms/'], ['room-new', '/rooms/new'], ['room-detail', '/rooms/' + id.room],
     ['room-pending', '/rooms/' + id.roomPending], ['room-revise', '/rooms/' + id.roomPending + '/revise'],
-    ['room-series', '/rooms/' + id.roomSeries], ['room-availability', '/rooms/availability/302?date=2030-01-08']],
+    ['room-series', '/rooms/' + id.roomSeries], ['room-availability', '/rooms/availability/302?date=2030-01-08'],
+    ['room-invalid', '/rooms/availability/302?date=invalid', 409], ['room-forbidden', '/rooms/configuration', 403]],
   'UI-05': [['equipment', '/equipment/'], ['equipment-catalog', '/equipment/catalog?start=2030-01-07T10:00&due=2030-01-09T10:00'],
     ['equipment-loan', '/equipment/' + id.loan], ['equipment-request', '/equipment/' + id.borrowPending],
     ['equipment-series', '/equipment/' + id.equipmentSeries]],
@@ -127,7 +128,8 @@ async function loginPhase(browser, errors, results) {
         for (const [name, url, expected] of pages) {
           for (const width of widths) await capture(page, (role === 'empty' ? 'empty-' : '') + name, url, width, expected || 200);
           const forms = await page.locator('form[method=post]').evaluateAll(forms => forms.map(form => ({
-            action:form.action, csrf:form.querySelector('[name=csrf_token]')?.value })));
+            action:new URL(form.getAttribute('action') || location.href, location.href).href,
+            csrf:form.querySelector('[name=csrf_token]')?.value })));
           for (const form of forms) {
             assert.ok(form.csrf, name + ': missing CSRF input');
             assert.equal((await page.request.post(form.action)).status(), 400, name + ': missing CSRF rejected');

@@ -1,0 +1,8 @@
+{
+  "phase": "UI-04",
+  "results": [
+    "Real ranked-room form with actual registered student and optional professor; busy/free link; changed input cleared candidate; offline error blocked stale submission; submit/revise/cancel preserved review and revision; unavailable capacity blocked submission; future recurring occurrence cancelled through authorized form.",
+    "Synthetic browser-created room request: /rooms/7"
+  ],
+  "browserErrors": []
+}

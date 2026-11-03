@@ -88,6 +88,16 @@
 .student-service .appointment-choice { width: 100%; border-radius: 7px; }
 .student-service .appointment-choice[aria-pressed=true] { background: var(--accent); color: #fff; }
 .student-service .booking-times-state { background: #f6f9fa; border-color: var(--line); }
+/* Rooms: ranked choices remain explicit and date-specific. */
+.student-service .service-icon-room { background: #f7f1e7; color: #795733; }
+.student-service .room-candidate-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+.student-service .room-candidate-option { min-width: 0; }
+.student-service .room-candidate { display: flex; flex-direction: column; align-items: start; text-align: left; width: 100%; height: auto; padding: 18px; background: #fbfcfc; border-radius: 9px; }
+.student-service .room-candidate[aria-pressed=true] { border-color: #2b6282; background: #eaf2f7; box-shadow: inset 0 0 0 1px #2b6282; }
+.student-service .room-candidate :is(span,small) { color: var(--muted); font-weight: 400; }
+.student-service .room-candidate-option > a { display: inline-block; font-size: 11px; margin: 9px 0; padding-block: 6px; }
+.student-service #room-alternatives button { margin: 5px 8px 5px 0; }
+.student-service #room-message[role=alert] { color: #972b36; }
 @media (max-width: 600px) {
     .service-heading { display: block; margin-bottom: 25px; }
     .service-heading-actions { margin-top: 18px; }
@@ -99,4 +109,5 @@
     .student-service .booking-guide ol { display: block; }
     .student-service .booking-submit > button { width: 100%; }
     .student-service .service-person { align-items: start; flex-wrap: wrap; }
+    .student-service .room-candidate-grid { grid-template-columns: minmax(0,1fr); }
 }

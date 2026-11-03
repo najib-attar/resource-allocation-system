@@ -1,4 +1,5 @@
 {% extends "student_service_base.html" %}
-{% block page_heading %}Appointment unavailable{% endblock %}
+{% set recovery = {'rooms':('rooms.index','room requests'),'waiting':('waiting.index','waiting lists'),'feedback':('feedback.index','feedback')}.get(request.blueprint, ('appointments.index','appointments')) %}
+{% block page_heading %}{{ 'Appointment unavailable' if request.blueprint == 'appointments' else 'Request unavailable' }}{% endblock %}
 {% block service_eyebrow %}Request / Check details{% endblock %}
-{% block service_content %}<section class="panel"><h2>Please check your request</h2><p role="alert">{{ message }}</p><p>Your request could not be completed. Review the current details and try again.</p><a class="button" href="{{ url_for('appointments.index') }}">Back to appointments</a></section>{% endblock %}
+{% block service_content %}<section class="panel"><h2>Please check your request</h2><p role="alert">{{ message }}</p><p>Your request could not be completed. Review the current details and try again.</p><a class="button" href="{{ url_for(recovery[0]) }}">Back to {{ recovery[1] }}</a></section>{% endblock %}

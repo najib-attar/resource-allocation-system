@@ -81,6 +81,64 @@ async function appointments(page, context) {
   results.push('Multiple professors and optional student invitation submitted through real form; recommendations loaded; changed input cleared selection; offline error disabled submission; manual proposal accepted; reschedule reset approvals; cancellation persisted; invitee decline preserved organizer controls; mandatory office hours and private availability access enforced.');
   results.push('Synthetic browser-created appointment: ' + new URL(appointmentUrl).pathname);
 }
+async function rooms(page, context) {
+  await page.goto(fixture.url + '/rooms/new');
+  await page.locator('[name=purpose]').fill('Fictional browser room acceptance');
+  await page.locator('[name=start]').fill('2030-01-09T13:00');
+  await page.locator('details summary').filter({hasText:'Register student participants'}).click();
+  await page.locator('[name=participantIds][value="4"]').check();
+  await page.locator('details summary').filter({hasText:'Invite professors'}).click();
+  await page.locator('[name=professorIds][value="2"]').check();
+  await page.locator('.room-candidate').first().waitFor();
+  await page.locator('[name=count]').fill('6');
+  assert.equal(await page.locator('[name=roomId]').inputValue(), '');
+  assert.ok(await page.locator('#submit-room').isDisabled());
+  await page.locator('.room-candidate').first().waitFor();
+  const calendarUrl = await page.locator('.room-candidate-option > a').first().getAttribute('href');
+  const availability = await page.request.get(calendarUrl);
+  assert.equal(availability.status(), 200);
+  assert.ok(!(await availability.text()).includes('PRIVATE unrelated'));
+  await screenshot(page, 'ranked-room-candidates');
+  await context.setOffline(true);
+  await page.locator('#find-rooms').click();
+  await page.locator('#room-message[role=alert]').waitFor();
+  assert.equal(await page.locator('[name=roomId]').inputValue(), '');
+  assert.ok(await page.locator('#submit-room').isDisabled());
+  await screenshot(page, 'room-offline');
+  await context.setOffline(false);
+  await page.locator('#find-rooms').click();
+  await page.locator('.room-candidate').first().waitFor();
+  await submit(page, page.locator('#submit-room'));
+  assert.match(await page.locator('main').innerText(), /Pending Faculty Approval/);
+  assert.match(await page.locator('main').innerText(), /Student Noor/);
+  assert.match(await page.locator('main').innerText(), /Professor Ada/);
+  assert.equal(await page.locator('form[action$="/decision"]').count(), 0);
+  await screenshot(page, 'room-submitted');
+  const requestUrl = page.url();
+  await page.locator('a[href$="/revise"]').click();
+  await page.locator('[name=purpose]').fill('Fictional browser room revised');
+  await page.locator('.room-candidate').first().waitFor();
+  await submit(page, page.locator('#submit-room'));
+  assert.match(await page.locator('main').innerText(), /Revision 2/i);
+  await submit(page, page.locator('form[action$="/cancel"] button'));
+  assert.match(await page.locator('main').innerText(), /Cancelled/);
+  await page.goto(fixture.url + '/rooms/new');
+  await page.locator('[name=purpose]').fill('Fictional impossible room size');
+  await page.locator('[name=start]').fill('2030-01-09T15:00');
+  await page.locator('[name=count]').fill('1000');
+  await page.locator('#find-rooms').click();
+  await page.waitForFunction(() => document.querySelector('#room-candidates').getAttribute('aria-busy') === 'false' &&
+    !document.querySelector('#room-message').textContent.includes('Checking'));
+  assert.equal(await page.locator('.room-candidate').count(), 0);
+  assert.ok(await page.locator('#submit-room').isDisabled());
+  await screenshot(page, 'room-unavailable');
+  await page.goto(fixture.url + '/rooms/' + fixture.ids.roomSeries);
+  const occurrenceForm = page.locator('form[action*="/occurrences/"]').last();
+  await submit(page, occurrenceForm.locator('button'));
+  assert.match(await page.locator('main').innerText(), /Cancelled/);
+  results.push('Real ranked-room form with actual registered student and optional professor; busy/free link; changed input cleared candidate; offline error blocked stale submission; submit/revise/cancel preserved review and revision; unavailable capacity blocked submission; future recurring occurrence cancelled through authorized form.');
+  results.push('Synthetic browser-created room request: ' + new URL(requestUrl).pathname);
+}
 (async () => {
   const browser = await chromium.launch({headless:true, ...(process.env.CHROMIUM_EXECUTABLE ?
     {executablePath:process.env.CHROMIUM_EXECUTABLE} : {channel:'msedge'})});
@@ -91,6 +149,7 @@ async function appointments(page, context) {
     page.on('pageerror', error => errors.push(error.message));
     await login(page);
     if (phase === 'UI-03') await appointments(page, context);
+    else if (phase === 'UI-04') await rooms(page, context);
     else throw new Error('Unknown workflow phase ' + phase);
     assert.deepEqual(errors, []);
     fs.writeFileSync(path.join(output, 'workflow-results.json'), JSON.stringify({phase, results, browserErrors:errors}, null, 2) + '\n');
