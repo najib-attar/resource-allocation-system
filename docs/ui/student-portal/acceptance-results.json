@@ -1,0 +1,281 @@
+{
+  "status": "READY FOR STUDENT PORTAL ACCEPTANCE REVIEW",
+  "date": "2026-11-03T11:38:57.767923+03:00",
+  "branch": "design/student-portal",
+  "testedCodeCommit": "d060c7a350dc9bdd4b045b399043693d12bb2042",
+  "phases": [
+    {
+      "phase": "UI-01",
+      "name": "Home and navigation",
+      "status": "Complete",
+      "commit": "548d69c26a4aa1758a14c2302e51db333d5e4241",
+      "testsRun": 32,
+      "passed": 32,
+      "skipped": 0,
+      "modules": [
+        "test_student_portal_ui",
+        "test_student_dashboard",
+        "test_frontend_prototype"
+      ]
+    },
+    {
+      "phase": "UI-02",
+      "name": "Minimal Login",
+      "status": "Complete",
+      "commit": "42f3a926e7627f51af5e89d3c7c80e30c06a03e8",
+      "testsRun": 31,
+      "passed": 31,
+      "skipped": 0,
+      "modules": [
+        "test_student_portal_ui",
+        "test_appointment_foundation",
+        "test_identity_sessions",
+        "test_appointments.AppointmentWebTests"
+      ]
+    },
+    {
+      "phase": "UI-03",
+      "name": "Appointments",
+      "status": "Complete",
+      "commit": "caf972b94b8f3d653cf3fef7466eb70f2c9ef0fd",
+      "testsRun": 49,
+      "passed": 49,
+      "skipped": 0,
+      "modules": [
+        "test_appointments",
+        "test_appointment_protocol",
+        "test_frontend_prototype",
+        "test_student_portal_ui"
+      ]
+    },
+    {
+      "phase": "UI-04",
+      "name": "Rooms",
+      "status": "Complete",
+      "commit": "581e9b08ec4753d0be32cbe9f50a60eca2e240e8",
+      "testsRun": 68,
+      "passed": 68,
+      "skipped": 0,
+      "modules": [
+        "test_room_requests",
+        "test_recurrence",
+        "test_recurring_workflows.RecurringRoomWorkflowTests",
+        "test_recurring_views.RecurringRoomViewsTests",
+        "test_recurring_policy.RecurringRoomPolicyTests"
+      ]
+    },
+    {
+      "phase": "UI-05",
+      "name": "Equipment",
+      "status": "Complete",
+      "commit": "e7c5aad4df1cdce12da3b6593a8b597d466d5fef",
+      "testsRun": 52,
+      "passed": 52,
+      "skipped": 0,
+      "modules": [
+        "test_equipment",
+        "test_equipment_web",
+        "test_recurring_workflows.RecurringEquipmentWorkflowTests",
+        "test_recurring_views.RecurringEquipmentViewsTests",
+        "test_recurring_policy.RecurringEquipmentPolicyTests"
+      ]
+    },
+    {
+      "phase": "UI-06",
+      "name": "Waiting Lists",
+      "status": "Complete",
+      "commit": "84d649ba19c0037b0c9b7106e197934b080091e6",
+      "testsRun": 49,
+      "passed": 49,
+      "skipped": 0,
+      "modules": [
+        "test_waiting_lists.WaitingRoomTests",
+        "test_waiting_lists.WaitingEquipmentTests"
+      ]
+    },
+    {
+      "phase": "UI-07",
+      "name": "Feedback and Issues",
+      "status": "Complete",
+      "commit": "cad6b8d8411d1993d8f13de27d3bdd076300e6ff",
+      "testsRun": 31,
+      "passed": 31,
+      "skipped": 0,
+      "modules": [
+        "test_resource_feedback.FeedbackRoomTests",
+        "test_resource_feedback.FeedbackEquipmentTests"
+      ]
+    },
+    {
+      "phase": "UI-08",
+      "name": "Calendar, My Schedule and Inbox",
+      "status": "Complete",
+      "commit": "2d745fadf9f16dde5dfc40137e042e36de654be8",
+      "testsRun": 50,
+      "passed": 50,
+      "skipped": 0,
+      "modules": [
+        "test_university_calendar",
+        "test_personal_schedule",
+        "test_calendar_loading",
+        "test_notifications"
+      ]
+    },
+    {
+      "phase": "UI-09",
+      "name": "Final integration",
+      "status": "Complete",
+      "commit": "d060c7a350dc9bdd4b045b399043693d12bb2042",
+      "testsRun": 614,
+      "passed": 613,
+      "skipped": 1,
+      "modules": [
+        "test_application_entrypoints",
+        "test_appointment_foundation",
+        "test_appointment_protocol",
+        "test_appointments",
+        "test_backend_executable",
+        "test_calendar_loading",
+        "test_cost_policy_persistence",
+        "test_cost_policy_values",
+        "test_csv_cli",
+        "test_csv_contract",
+        "test_database_diagrams",
+        "test_engine_gateway",
+        "test_equipment",
+        "test_equipment_web",
+        "test_frontend_prototype",
+        "test_identity_sessions",
+        "test_local_demo",
+        "test_notifications",
+        "test_persistence_boundaries",
+        "test_personal_schedule",
+        "test_postgres_completion",
+        "test_postgres_concurrency",
+        "test_postgres_demo",
+        "test_postgres_foundation",
+        "test_postgres_import",
+        "test_postgres_quality",
+        "test_postgres_recovery",
+        "test_postgres_runtime_independence",
+        "test_postgres_text_contract",
+        "test_postgres_web",
+        "test_postgres_workflow",
+        "test_preference_values",
+        "test_recurrence",
+        "test_recurring_persistence",
+        "test_recurring_policy",
+        "test_recurring_views",
+        "test_recurring_workflows",
+        "test_resource_feedback",
+        "test_room_foundation",
+        "test_room_requests",
+        "test_save_only_confirmation",
+        "test_scheduling_preferences",
+        "test_service_examples",
+        "test_student_dashboard",
+        "test_student_portal_ui",
+        "test_university_calendar",
+        "test_waiting_lists"
+      ]
+    }
+  ],
+  "fullRegression": {
+    "modules": [
+      "test_application_entrypoints",
+      "test_appointment_foundation",
+      "test_appointment_protocol",
+      "test_appointments",
+      "test_backend_executable",
+      "test_calendar_loading",
+      "test_cost_policy_persistence",
+      "test_cost_policy_values",
+      "test_csv_cli",
+      "test_csv_contract",
+      "test_database_diagrams",
+      "test_engine_gateway",
+      "test_equipment",
+      "test_equipment_web",
+      "test_frontend_prototype",
+      "test_identity_sessions",
+      "test_local_demo",
+      "test_notifications",
+      "test_persistence_boundaries",
+      "test_personal_schedule",
+      "test_postgres_completion",
+      "test_postgres_concurrency",
+      "test_postgres_demo",
+      "test_postgres_foundation",
+      "test_postgres_import",
+      "test_postgres_quality",
+      "test_postgres_recovery",
+      "test_postgres_runtime_independence",
+      "test_postgres_text_contract",
+      "test_postgres_web",
+      "test_postgres_workflow",
+      "test_preference_values",
+      "test_recurrence",
+      "test_recurring_persistence",
+      "test_recurring_policy",
+      "test_recurring_views",
+      "test_recurring_workflows",
+      "test_resource_feedback",
+      "test_room_foundation",
+      "test_room_requests",
+      "test_save_only_confirmation",
+      "test_scheduling_preferences",
+      "test_service_examples",
+      "test_student_dashboard",
+      "test_student_portal_ui",
+      "test_university_calendar",
+      "test_waiting_lists"
+    ],
+    "expected": 614,
+    "run": 614,
+    "passed": 613,
+    "failures": 0,
+    "errors": 0,
+    "skipped": [
+      {
+        "test": "test_linux_execute_permission_is_checked (test_backend_executable.BackendExecutableTests.test_linux_execute_permission_is_checked)",
+        "reason": "POSIX permission check runs on Linux."
+      }
+    ],
+    "seconds": 1551.08
+  },
+  "browser": {
+    "totalViews": 182,
+    "keyboardSteps": 1611,
+    "browserErrors": []
+  },
+  "cpp": {
+    "passed": 192,
+    "failed": 0,
+    "runtimeSmokesPassed": 2
+  },
+  "screenshots": 272,
+  "routes": 68,
+  "serviceRules": 47,
+  "originalFormContractsPreserved": true,
+  "protectedBackendAndResearchUnchanged": true,
+  "loadingVerified": true,
+  "reviewCleanup": {
+    "reviewServersStopped": true,
+    "isolatedTestDatabase": "127.0.0.1:55461/ui01_test",
+    "removedOwnedReviewSchemas": [
+      "ras_test_c805176dd29b462ab69d09339151ca59",
+      "ras_test_4a0049e00f38454e9e98d54e49d3bd49",
+      "ras_test_3f97f11611844637be30c2543ea1b8f9",
+      "ras_test_e24d8a0f66954831b1ef3fdd5444b58e",
+      "ras_test_551edffedf1045828457e80bb1646b08",
+      "ras_test_5b27588255fc482f97ba3a975fb33ca6",
+      "ras_test_982e052bd015435180fa8b8ad4a1e086",
+      "ras_test_c2e01d25bbd140cd87f242d38dad07cf"
+    ],
+    "remainingCurrentReviewSchemas": [],
+    "ownershipEvidence": "Current task metadata or complete unique portal-* synthetic account roster, guarded ras_test UUID namespace, exact isolated test database.",
+    "unrelatedSchemasPreserved": true,
+    "operationalDatabaseTouched": false
+  },
+  "changedFiles": 528
+}

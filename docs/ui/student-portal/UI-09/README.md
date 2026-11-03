@@ -38,11 +38,19 @@ changed. Four explicit presentation/error-contract tests accompany the change.
 - Actual missing-CSRF browser submission retained 400. A separate isolated review
   server with a tiny existing engine timeout produced actual 503 pages at four
   widths; no API responses or browser screenshots were mocked.
+- Final live loading observation confirmed busy state, disabled submission and
+  cleared selection at the native fetch boundary, followed by 31 real appointment
+  choices and 3 real room candidates. Notification loading was also observed.
+  Requests and responses were not delayed or replaced; see `loading-results.json`.
 
 The phase screenshots include current Login, Home, My Schedule, role views and
 CSRF/service-failure states. Earlier phase directories retain each group's empty,
 populated, invalid, private and workflow captures. The acceptance report links the
 complete feature matrix, commit and file inventories and screenshot index.
+
+Review servers were stopped and all eight uniquely identified synthetic review
+schemas created during this task were removed. Unrelated schemas and operational
+databases were preserved; see `cleanup.json`.
 
 Student Services v1 is ready for final user acceptance review. This is not a merge
 or deployment. Target-device and assistive-technology user testing remain part of
