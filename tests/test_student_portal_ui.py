@@ -209,3 +209,30 @@ class StudentPortalTemplateTests(TestCase):
                     self.assertIn('/appointments/availability', [a.attrs['href'] for a in navigation.find('a')])
                 if administrator:
                     self.assertIn('Administration', navigation.text)
+
+
+class LoginTemplateTests(TestCase):
+    def render(self, error=None, username=''):
+        with mock.patch.dict(web_app.app.config, {'SECRET_KEY':'isolated-login-template-test-key-2030'}), \
+                web_app.app.test_request_context('/login', method='POST', data={'username': username}):
+            return render_template('login.html', error=error)
+
+    def test_login_preserves_fields_csrf_autocomplete_and_no_extra_auth_features(self):
+        page = Document(self.render()).root
+        self.assertEqual(len(page.find('h1')), 1)
+        form = page.find('form')[0]
+        self.assertEqual(form.attrs['method'], 'post')
+        self.assertTrue(form.find('input', name='csrf_token')[0].attrs['value'])
+        self.assertEqual(form.find('input', name='username')[0].attrs['autocomplete'], 'username')
+        self.assertEqual(form.find('input', name='password')[0].attrs['autocomplete'], 'current-password')
+        self.assertEqual(form.find('input', name='password')[0].attrs['type'], 'password')
+        self.assertEqual([a.attrs['href'] for a in page.find('a')], ['#main-content'])
+
+    def test_failed_sign_in_escapes_identity_announces_error_and_never_refills_password(self):
+        source = self.render('Credentials rejected', '<script>identity()</script>')
+        page = Document(source).root
+        self.assertIn('&lt;script&gt;', source)
+        self.assertTrue(page.find('div', role='alert'))
+        self.assertNotIn('value', page.find('input', name='password')[0].attrs)
+        for name in ('username', 'password'):
+            self.assertEqual(page.find('input', name=name)[0].attrs['aria-describedby'], 'sign-in-error')

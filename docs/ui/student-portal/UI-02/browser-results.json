@@ -1,0 +1,24 @@
+{
+  "phase": "UI-02",
+  "results": [
+    "1440px: empty/invalid/server-error, show password, escaped values, CSRF, keyboard focus and overflow passed",
+    "768px: empty/invalid/server-error, show password, escaped values, CSRF, keyboard focus and overflow passed",
+    "390px: empty/invalid/server-error, show password, escaped values, CSRF, keyboard focus and overflow passed",
+    "320px: empty/invalid/server-error, show password, escaped values, CSRF, keyboard focus and overflow passed",
+    "student: real authentication, role redirect, protected CSRF logout and session cleared",
+    "professor: real authentication, role redirect, protected CSRF logout and session cleared",
+    "staff: real authentication, role redirect, protected CSRF logout and session cleared",
+    "admin: real authentication, role redirect, protected CSRF logout and session cleared"
+  ],
+  "browserErrors": [],
+  "screenshots": [
+    "login-1440.png",
+    "login-320.png",
+    "login-390.png",
+    "login-768.png",
+    "login-error-1440.png",
+    "login-error-320.png",
+    "login-error-390.png",
+    "login-error-768.png"
+  ]
+}
