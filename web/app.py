@@ -148,6 +148,9 @@ app.register_blueprint(create_appointment_blueprint(lambda: get_repository().dat
 from web.student_routes import create_student_blueprint
 app.register_blueprint(create_student_blueprint(lambda: get_repository().database))
 
+from web.professor_routes import create_professor_blueprint
+app.register_blueprint(create_professor_blueprint(lambda: get_repository().database))
+
 from web.room_request_routes import create_room_blueprint
 app.config['ROOM_SELECTION_STRATEGY'] = os.environ.get('RESOURCE_ALLOCATION_ROOM_STRATEGY', 'best_fit')
 app.register_blueprint(create_room_blueprint(lambda: get_repository().database,
@@ -174,7 +177,7 @@ app.register_blueprint(create_feedback_blueprint(lambda: get_repository().databa
 
 @app.before_request
 def pin_database_view():
-    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "rooms.", "notifications.", "equipment.", "calendar.", "waiting.", "feedback.")):
+    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "professor.", "rooms.", "notifications.", "equipment.", "calendar.", "waiting.", "feedback.")):
         current_results()
 
 

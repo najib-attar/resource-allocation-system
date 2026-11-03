@@ -57,6 +57,10 @@ def init_security(app, database_provider):
             if g.principal.role != "Student":
                 abort(403, description="Student access required.")
             return None
+        if request.endpoint and request.endpoint.startswith("professor."):
+            if g.principal.role != "Instructor":
+                abort(403, description="Instructor access required.")
+            return None
         if request.endpoint and request.endpoint.startswith("appointments."):
             return None
         if request.endpoint and request.endpoint.startswith("rooms."):
