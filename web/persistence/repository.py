@@ -261,7 +261,7 @@ class Repository:
             if run is None or run.status != "running":
                 raise PersistenceError("Allocation run is missing or already completed.")
             if state.input_revision != run.input_revision:
-                raise StaleRun("Inputs or eligibility changed during allocation; retry. Previous results remain active.")
+                raise StaleRun("Inputs changed, including eligibility decisions. Retry allocation; previous results remain active.")
             from ..academic_eligibility import assert_legacy_reviewed
             assert_legacy_reviewed(session)
             current = snapshot_from_session(session, run.strategy, run.correlation_id)

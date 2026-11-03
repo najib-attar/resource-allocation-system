@@ -8,7 +8,7 @@ from postgres_fixtures import ROOT
 from test_professor_services import ProfessorFixture
 from web.academic_eligibility import EligibilityError, EligibilityService
 from web.allocation_workflow import execute_allocation
-from web.engine_gateway import EngineGateway
+from web.engine_gateway import EngineGateway, EngineIntegrationError
 from web.persistence.models import (Allocation, ApplicationState, EligibilityEvent, RequestEligibility,
     RequestSlot, ResourceRequest)
 from web.persistence.repository import StaleRun, snapshot_from_session
@@ -102,6 +102,9 @@ class EligibilityGateTests(ProfessorFixture):
         key=self.academic_request()
         raw,_,_=self.repository.read_view()
         with self.assertRaises(EligibilityError):EngineGateway(ROOT).execute(raw)
+        with mock.patch('web.engine_gateway.subprocess.run') as process:
+            with self.assertRaises(EngineIntegrationError):EngineGateway(ROOT).execute(dict(raw))
+            process.assert_not_called()
         snapshot=self.repository.snapshot()
         snapshot['requests']=raw['requests']
         with self.assertRaises(StaleRun):EngineGateway(ROOT).execute(snapshot)
@@ -113,3 +116,33 @@ class EligibilityGateTests(ProfessorFixture):
                 status='Eligible',version=1,reviewed_revision=1,reviewer_id=2,reason='Self review',decided_at=text('now()')))
         with self.assertRaises(IntegrityError),self.database.transaction() as session:
             session.execute(text('UPDATE eligibility_event SET reason=:reason'),dict(reason='rewritten'))
+        for table in ('request_eligibility','eligibility_event','allocation_eligibility'):
+            with self.subTest(table=table),self.assertRaises(IntegrityError),self.database.transaction() as session:
+                session.execute(text('TRUNCATE '+table))
+
+    def test_publication_and_owner_revision_race_cannot_change_published_inputs(self):
+        key=self.academic_request()
+        self.decision(key)
+        run,snapshot=self.repository.start_run()
+        result,build=EngineGateway(ROOT).execute(snapshot)
+        values=dict(type='OneTime',spaceId=302,participantCount=5,title='Concurrent revised declaration',purpose='Synthetic revision',
+                    slots=[dict(day=1,startMinutes=600,endMinutes=660)])
+        def publish():
+            try:self.repository.publish_run(run,result,build);return 'published'
+            except StaleRun:return 'stale'
+        def revise():
+            from web.professor_service import ProfessorRequestError
+            try:self.professors.submit(2,values,'a'*32,key,1);return 'revised'
+            except ProfessorRequestError:return 'blocked'
+        with ThreadPoolExecutor(2) as pool:
+            publishing=pool.submit(publish);revising=pool.submit(revise)
+            outcome=(publishing.result(),revising.result())
+        self.assertIn(outcome,(('published','blocked'),('stale','revised')))
+        with self.database.transaction(read_only=True) as session:
+            row=session.get(ResourceRequest,key)
+            if outcome[0]=='published':
+                self.assertEqual(row.revision,1)
+                self.assertEqual(session.get(ApplicationState,1).active_run_id,run)
+            else:
+                self.assertEqual(row.revision,2)
+                self.assertIsNone(session.get(ApplicationState,1).active_run_id)

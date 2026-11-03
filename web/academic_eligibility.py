@@ -1,5 +1,6 @@
 """Human eligibility review, separate from engine decisions and publication."""
 from datetime import datetime, timezone
+from copy import deepcopy
 import hashlib
 import json
 
@@ -42,6 +43,9 @@ class PresentationInput(dict):
     def assert_allocation_ready(self):
         raise EligibilityError('Presentation data includes unreviewed requests and cannot be sent to the allocation engine.')
 
+    def copy(self):
+        return PresentationInput(self)
+
 
 class AllocationInput(dict):
     """Unchanged wire JSON plus a process-local stale/tamper check for DB callers."""
@@ -60,6 +64,15 @@ class AllocationInput(dict):
             if state_row(session).input_revision != self.input_revision:
                 raise StaleRun('Eligibility or inputs changed before engine execution; retry.')
             assert_legacy_reviewed(session)
+            from .persistence.repository import snapshot_from_session
+            if snapshot_from_session(session,self['strategy'],self['runId']) != self:
+                raise StaleRun('Allocation payload does not match current eligible database revisions.')
+
+    def copy(self):
+        return AllocationInput(self,self.database,self.input_revision)
+
+    def __deepcopy__(self,memo):
+        return AllocationInput(deepcopy(dict(self),memo),self.database,self.input_revision)
 
 
 class EligibilityService:

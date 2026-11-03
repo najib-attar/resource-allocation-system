@@ -98,6 +98,14 @@ def upgrade():
         FOR EACH ROW EXECUTE FUNCTION ras_eligibility_immutable();
     CREATE TRIGGER eligibility_no_delete BEFORE DELETE ON request_eligibility
         FOR EACH ROW EXECUTE FUNCTION ras_eligibility_immutable();
+    CREATE TRIGGER eligibility_no_truncate BEFORE TRUNCATE ON request_eligibility
+        FOR EACH STATEMENT EXECUTE FUNCTION ras_eligibility_immutable();
+    CREATE TRIGGER eligibility_event_no_truncate BEFORE TRUNCATE ON eligibility_event
+        FOR EACH STATEMENT EXECUTE FUNCTION ras_eligibility_immutable();
+    CREATE TRIGGER allocation_eligibility_immutable BEFORE UPDATE OR DELETE ON allocation_eligibility
+        FOR EACH ROW EXECUTE FUNCTION ras_eligibility_immutable();
+    CREATE TRIGGER allocation_eligibility_no_truncate BEFORE TRUNCATE ON allocation_eligibility
+        FOR EACH STATEMENT EXECUTE FUNCTION ras_eligibility_immutable();
     CREATE FUNCTION ras_request_eligibility() RETURNS trigger LANGUAGE plpgsql AS $$
     BEGIN
         IF TG_OP='INSERT' THEN
@@ -122,7 +130,7 @@ def upgrade():
                 SELECT 1 FROM request_eligibility WHERE request_id=OLD.id AND origin='Professor') THEN
                 RAISE EXCEPTION 'Professor request ownership is immutable' USING ERRCODE='23514';
             END IF;
-            IF EXISTS (SELECT 1 FROM allocation a JOIN application_state s ON s.active_run_id=a.run_id
+            IF EXISTS (SELECT 1 FROM request_decision a JOIN application_state s ON s.active_run_id=a.run_id
                        WHERE a.request_id=OLD.id) THEN
                 RAISE EXCEPTION 'Published reservations are read-only; a replacement workflow is required' USING ERRCODE='23514';
             END IF;
@@ -138,7 +146,7 @@ def upgrade():
         FOR key IN SELECT DISTINCT x FROM unnest(CASE WHEN TG_OP='INSERT' THEN ARRAY[NEW.request_id]
             WHEN TG_OP='DELETE' THEN ARRAY[OLD.request_id] ELSE ARRAY[OLD.request_id,NEW.request_id] END) x ORDER BY x LOOP
             PERFORM id FROM application_state WHERE id=1 FOR UPDATE;
-            IF EXISTS (SELECT 1 FROM allocation a JOIN application_state s ON s.active_run_id=a.run_id WHERE a.request_id=key) THEN
+            IF EXISTS (SELECT 1 FROM request_decision a JOIN application_state s ON s.active_run_id=a.run_id WHERE a.request_id=key) THEN
                 RAISE EXCEPTION 'Published reservation inputs are read-only' USING ERRCODE='23514';
             END IF;
             -- Service revisions always bump the parent. Also invalidate direct child-table edits of reviewed inputs.
@@ -208,10 +216,14 @@ def upgrade():
 
 
 def downgrade():
+    op.execute('LOCK TABLE application_state, resource_request, request_slot, exam_details, request_participant, '
+               'request_eligibility, eligibility_event, allocation_eligibility, allocation_run IN ACCESS EXCLUSIVE MODE')
     if op.get_bind().exec_driver_sql('SELECT EXISTS(SELECT 1 FROM request_eligibility)').scalar_one():
         raise RuntimeError('Eligibility downgrade with request/audit data requires a separately reviewed archival and rollback procedure.')
     for table,name in (('request_eligibility','eligibility_guard'),('request_eligibility','eligibility_audit'),
             ('request_eligibility','eligibility_no_delete'),('eligibility_event','eligibility_event_immutable'),
+            ('request_eligibility','eligibility_no_truncate'),('eligibility_event','eligibility_event_no_truncate'),
+            ('allocation_eligibility','allocation_eligibility_immutable'),('allocation_eligibility','allocation_eligibility_no_truncate'),
             ('resource_request','request_material_revision'),('resource_request','request_eligibility'),
             ('allocation_run','allocation_eligibility_start'),('application_state','allocation_eligibility_publish')):
         op.execute(f'DROP TRIGGER {name} ON {table}')

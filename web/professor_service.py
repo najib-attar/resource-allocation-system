@@ -1,4 +1,4 @@
-"""Instructor-owned academic reads; no intake, review or allocation authority."""
+"""Instructor-owned reads, submissions and revisions; no allocation authority."""
 import re
 from sqlalchemy import delete, exists, func, or_, select
 
@@ -125,8 +125,8 @@ class ProfessorService:
                     .join(AcademicPeriod, AcademicPeriod.id == LegacyCalendarBinding.period_id)
                     .where(LegacyCalendarBinding.request_id == key).order_by(LegacyCalendarBinding.id))]
             item['calendarPublic'] = row.calendar_public
-            item['canRevise'] = session.scalar(select(Allocation.id).where(Allocation.run_id == run_id,
-                Allocation.request_id == key).limit(1)) is None
+            item['canRevise'] = session.scalar(select(RequestDecision.request_id).where(RequestDecision.run_id == run_id,
+                RequestDecision.request_id == key).limit(1)) is None
             item['eligibilityHistory'] = [dict(version=e.version,revision=e.request_revision,status=e.status,
                 reason=e.reason,actorId=e.actor_id,createdAt=e.created_at.isoformat()) for e in session.scalars(
                     select(EligibilityEvent).where(EligibilityEvent.request_id == key).order_by(EligibilityEvent.version))]
@@ -190,9 +190,9 @@ class ProfessorService:
                 raise PermissionError('This academic request is unavailable or private.')
             if row.revision!=revision:
                 raise ProfessorRequestError('The request changed. Refresh before revising.')
-            if session.scalar(select(Allocation.id).where(Allocation.run_id==state_row(session).active_run_id,
-                    Allocation.request_id==key).limit(1)) is not None:
-                raise ProfessorRequestError('Published reservations are read-only. A separately approved replacement workflow is required.')
+            if session.scalar(select(RequestDecision.request_id).where(RequestDecision.run_id==state_row(session).active_run_id,
+                    RequestDecision.request_id==key).limit(1)) is not None:
+                raise ProfessorRequestError('Requests included in the active publication are read-only, even after eligibility changes. An authorized replacement publication must occur before revision.')
             for field,attribute in (('type','type'),('spaceId','resource_id'),('participantCount','participant_count'),
                     ('title','title'),('purpose','purpose'),('facultyDeclaration','faculty_declaration'),
                     ('requiredFeature','required_feature'),('requiredBuilding','required_building')):
