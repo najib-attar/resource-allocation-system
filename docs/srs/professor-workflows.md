@@ -33,6 +33,8 @@ Separate authorization/design review is required for:
 
 These require schema and scheduling-input policy changes. They are **documented, not implemented**. Existing explicit `spaceId`, weekday/minute slots, ExamDetails and CommitteeMeeting participant contracts remain authoritative. Recurring academic requests are not the separate student recurring-reservation workflow. CommitteeMeeting is not a student-professor appointment.
 
+The legacy repository validator also accepts empty exam description strings and validates committee participant references/duplicates without requiring active accounts or a nonempty participant list at save time (the existing C++ participant rule rejects empty committees at allocation). It is a persistence contract, not a professor intake authorization/eligibility validator. Once the review gate is approved, new intake must separately enforce the approved UC requirements: active session owner, nonempty course declarations for exams, and at least one active required committee participant. Do not tighten historical administrator/import contracts or C++ behavior silently.
+
 ## Safe implementation: UC-PROF-09 owner-only reads
 
 `GET /professor/academic-requests` and `GET /professor/academic-requests/<id>` require a signed-in active, enabled Instructor account. Both the HTTP guard and the service enforce role; queries restrict `requester_id` to that actor before loading details. Unknown and non-owned IDs receive the same private error. Administrator flags, public calendar visibility, instructor attribution and committee participation do not bypass this owner-only scope.

@@ -1,0 +1,551 @@
+test_duration_and_reservation_interval_checks_reject_invalid_rows (test_appointment_foundation.AppointmentFoundationTests.test_duration_and_reservation_interval_checks_reject_invalid_rows) ... ok
+test_failed_logins_are_throttled_across_service_instances (test_appointment_foundation.AppointmentFoundationTests.test_failed_logins_are_throttled_across_service_instances) ... ok
+test_half_open_reservations_allow_adjacency_and_reject_overlap (test_appointment_foundation.AppointmentFoundationTests.test_half_open_reservations_allow_adjacency_and_reject_overlap) ... ok
+test_password_is_hashed_and_identity_cannot_be_self_assigned (test_appointment_foundation.AppointmentFoundationTests.test_password_is_hashed_and_identity_cannot_be_self_assigned) ... ok
+test_provision_refuses_unknown_user_and_unapproved_overwrite (test_appointment_foundation.AppointmentFoundationTests.test_provision_refuses_unknown_user_and_unapproved_overwrite) ... ok
+test_sessions_are_revocable_and_inactive_users_cannot_sign_in (test_appointment_foundation.AppointmentFoundationTests.test_sessions_are_revocable_and_inactive_users_cannot_sign_in) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 37.678s
+
+OK
+
+test_gateway_rejects_malformed_or_mismatched_appointment_output (test_appointment_protocol.AppointmentProtocolTests.test_gateway_rejects_malformed_or_mismatched_appointment_output) ... ok
+test_gateway_timeout_and_nonzero_exit_cannot_be_accepted (test_appointment_protocol.AppointmentProtocolTests.test_gateway_timeout_and_nonzero_exit_cannot_be_accepted) ... ok
+test_real_protocol_accepts_manual_non_grid_times_and_empty_optional_participants (test_appointment_protocol.AppointmentProtocolTests.test_real_protocol_accepts_manual_non_grid_times_and_empty_optional_participants) ... ok
+test_real_protocol_rejects_invalid_version_identifiers_intervals_and_shapes (test_appointment_protocol.AppointmentProtocolTests.test_real_protocol_rejects_invalid_version_identifiers_intervals_and_shapes) ... ERROR
+test_result_invitee_partition_and_duration_are_verified (test_appointment_protocol.AppointmentProtocolTests.test_result_invitee_partition_and_duration_are_verified) ... ok
+
+======================================================================
+ERROR: test_real_protocol_rejects_invalid_version_identifiers_intervals_and_shapes (test_appointment_protocol.AppointmentProtocolTests.test_real_protocol_rejects_invalid_version_identifiers_intervals_and_shapes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\najee\.codex\worktrees\professor-services-v1\resource-allocation-frontend\tests\test_appointment_protocol.py", line 26, in test_real_protocol_rejects_invalid_version_identifiers_intervals_and_shapes
+    backend = resolve_backend_executable(ROOT)
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\.codex\worktrees\professor-services-v1\resource-allocation-frontend\web\backend_executable.py", line 69, in resolve_backend_executable
+    raise BackendExecutableError(f"Configured backend executable is missing: {path}. {rebuild}")
+web.backend_executable.BackendExecutableError: Configured backend executable is missing: C:\Users\najee\.codex\worktrees\professor-services-v1\resource-allocation-frontend\build\backend\allocation_system.exe. Rebuild with python scripts/build_backend.py.
+
+----------------------------------------------------------------------
+Ran 5 tests in 3.943s
+
+FAILED (errors=1)
+
+test_every_new_view_and_submission_works_without_runtime_csv (test_appointments.AppointmentWebTests.test_every_new_view_and_submission_works_without_runtime_csv) ... ok
+test_invitation_reschedule_approval_and_cancel_routes_preserve_revision_rules (test_appointments.AppointmentWebTests.test_invitation_reschedule_approval_and_cancel_routes_preserve_revision_rules) ... ok
+test_login_csrf_revocation_and_schedule_privacy (test_appointments.AppointmentWebTests.test_login_csrf_revocation_and_schedule_privacy) ... ok
+test_password_login_logout_and_cookie_security_roundtrip (test_appointments.AppointmentWebTests.test_password_login_logout_and_cookie_security_roundtrip) ... ok
+test_time_recommendation_endpoint_and_invalid_selection_explanations (test_appointments.AppointmentWebTests.test_time_recommendation_endpoint_and_invalid_selection_explanations) ... ok
+test_all_four_participant_configurations (test_appointments.AppointmentWorkflowTests.test_all_four_participant_configurations) ... ok
+test_blocks_added_while_pending_are_rechecked_before_confirmation (test_appointments.AppointmentWorkflowTests.test_blocks_added_while_pending_are_rechecked_before_confirmation) ... ok
+test_cancellation_releases_time_and_records_history (test_appointments.AppointmentWorkflowTests.test_cancellation_releases_time_and_records_history) ... ok
+test_confirmation_is_safe_across_two_worker_processes (test_appointments.AppointmentWorkflowTests.test_confirmation_is_safe_across_two_worker_processes) ... ok
+test_confirmed_commitments_cannot_be_invalidated_by_new_blocks_or_removed_hours (test_appointments.AppointmentWorkflowTests.test_confirmed_commitments_cannot_be_invalidated_by_new_blocks_or_removed_hours) ... ok
+test_database_rejects_incomplete_confirmation_and_pending_reservations (test_appointments.AppointmentWorkflowTests.test_database_rejects_incomplete_confirmation_and_pending_reservations) ... ok
+test_dated_university_publication_cannot_conflict_with_confirmed_appointment (test_appointments.AppointmentWorkflowTests.test_dated_university_publication_cannot_conflict_with_confirmed_appointment) ... ok
+test_faculty_roles_and_private_appointment_ownership_are_enforced (test_appointments.AppointmentWorkflowTests.test_faculty_roles_and_private_appointment_ownership_are_enforced) ... ok
+test_failed_engine_does_not_save_a_partial_appointment (test_appointments.AppointmentWorkflowTests.test_failed_engine_does_not_save_a_partial_appointment) ... ok
+test_invitation_decline_and_unanswered_invites_do_not_block (test_appointments.AppointmentWorkflowTests.test_invitation_decline_and_unanswered_invites_do_not_block) ... ok
+test_legacy_calendar_must_be_explicit_and_only_applies_in_its_period (test_appointments.AppointmentWorkflowTests.test_legacy_calendar_must_be_explicit_and_only_applies_in_its_period) ... ok
+test_old_availability_snapshot_cannot_confirm_after_calendar_change (test_appointments.AppointmentWorkflowTests.test_old_availability_snapshot_cannot_confirm_after_calendar_change) ... ok
+test_organizer_and_professor_blocks_are_mandatory_optional_students_are_not (test_appointments.AppointmentWorkflowTests.test_organizer_and_professor_blocks_are_mandatory_optional_students_are_not) ... ok
+test_pending_reserves_nothing_and_unanimous_approval_is_required (test_appointments.AppointmentWorkflowTests.test_pending_reserves_nothing_and_unanimous_approval_is_required) ... ok
+test_professor_rejection_prevents_confirmation (test_appointments.AppointmentWorkflowTests.test_professor_rejection_prevents_confirmation) ... ok
+test_recommendations_are_feasible_and_rank_invitee_then_preference_then_time (test_appointments.AppointmentWorkflowTests.test_recommendations_are_feasible_and_rank_invitee_then_preference_then_time) ... ok
+test_time_change_clears_every_professor_approval (test_appointments.AppointmentWorkflowTests.test_time_change_clears_every_professor_approval) ... ok
+test_istanbul_configuration_and_midnight_half_open_intervals (test_appointments.CalendarRepresentationTests.test_istanbul_configuration_and_midnight_half_open_intervals) ... ok
+test_nonexistent_and_ambiguous_local_times_are_not_guessed (test_appointments.CalendarRepresentationTests.test_nonexistent_and_ambiguous_local_times_are_not_guessed) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 180.071s
+
+OK
+
+test_empty_people_does_not_load_unrelated_calendars (test_calendar_loading.CalendarLoadingTests.test_empty_people_does_not_load_unrelated_calendars) ... ok
+test_projection_loads_only_relevant_rows_with_bounded_queries (test_calendar_loading.CalendarLoadingTests.test_projection_loads_only_relevant_rows_with_bounded_queries) ... ok
+test_required_members_active_run_and_bound_outside_horizon_remain_correct (test_calendar_loading.CalendarLoadingTests.test_required_members_active_run_and_bound_outside_horizon_remain_correct) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 12.511s
+
+OK
+
+test_clean_identity_cache_from_an_earlier_transaction_does_not_hide_revocation (test_identity_sessions.IdentitySessionTests.test_clean_identity_cache_from_an_earlier_transaction_does_not_hide_revocation) ... ok
+test_clean_role_cache_is_refreshed_from_the_current_transaction (test_identity_sessions.IdentitySessionTests.test_clean_role_cache_is_refreshed_from_the_current_transaction) ... ok
+test_clean_user_cache_from_an_earlier_transaction_does_not_hide_inactivation (test_identity_sessions.IdentitySessionTests.test_clean_user_cache_from_an_earlier_transaction_does_not_hide_inactivation) ... ok
+test_dirty_privilege_cannot_become_a_principal_or_flush_to_database (test_identity_sessions.IdentitySessionTests.test_dirty_privilege_cannot_become_a_principal_or_flush_to_database) ... ok
+test_invalid_identity_keys_do_not_open_an_owned_transaction (test_identity_sessions.IdentitySessionTests.test_invalid_identity_keys_do_not_open_an_owned_transaction) ... ok
+test_owned_and_supplied_session_resolve_the_same_identity_without_nested_transaction (test_identity_sessions.IdentitySessionTests.test_owned_and_supplied_session_resolve_the_same_identity_without_nested_transaction) ... ok
+test_pending_insert_and_delete_are_denied_without_flush_or_transaction_ownership (test_identity_sessions.IdentitySessionTests.test_pending_insert_and_delete_are_denied_without_flush_or_transaction_ownership) ... ok
+test_refresh_respects_the_supplied_repeatable_read_snapshot (test_identity_sessions.IdentitySessionTests.test_refresh_respects_the_supplied_repeatable_read_snapshot) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 36.090s
+
+OK
+
+test_additive_schema_has_no_automatic_bookable_rooms_or_reservations (test_room_foundation.RoomFoundationTests.test_additive_schema_has_no_automatic_bookable_rooms_or_reservations) ... ok
+test_confirmed_request_requires_exact_approval_and_commitments (test_room_foundation.RoomFoundationTests.test_confirmed_request_requires_exact_approval_and_commitments) ... ok
+test_faculty_ownership_and_categories_are_constrained (test_room_foundation.RoomFoundationTests.test_faculty_ownership_and_categories_are_constrained) ... ok
+test_pending_requests_reserve_nothing_and_cannot_have_reservations (test_room_foundation.RoomFoundationTests.test_pending_requests_reserve_nothing_and_cannot_have_reservations) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 19.035s
+
+OK
+
+test_academic_allocations_need_explicit_dates_and_block_only_applicable_week (test_room_requests.RoomWorkflowTests.test_academic_allocations_need_explicit_dates_and_block_only_applicable_week) ... ok
+test_all_five_future_strategy_publications_cannot_overwrite_booking (test_room_requests.RoomWorkflowTests.test_all_five_future_strategy_publications_cannot_overwrite_booking) ... ok
+test_closures_adjacent_intervals_and_failed_engine_do_not_publish (test_room_requests.RoomWorkflowTests.test_closures_adjacent_intervals_and_failed_engine_do_not_publish) ... ok
+test_competing_thread_and_process_confirmations_never_double_book (test_room_requests.RoomWorkflowTests.test_competing_thread_and_process_confirmations_never_double_book) ... ok
+test_free_busy_calendar_never_leaks_private_event_details (test_room_requests.RoomWorkflowTests.test_free_busy_calendar_never_leaks_private_event_details) ... ok
+test_gateway_rejects_wrong_correlation_room_and_capacity (test_room_requests.RoomWorkflowTests.test_gateway_rejects_wrong_correlation_room_and_capacity) ... ok
+test_invitation_acceptance_cannot_override_professor_appointment (test_room_requests.RoomWorkflowTests.test_invitation_acceptance_cannot_override_professor_appointment) ... ok
+test_malformed_requirements_and_foreign_identifiers_do_not_save (test_room_requests.RoomWorkflowTests.test_malformed_requirements_and_foreign_identifiers_do_not_save) ... ok
+test_missing_approver_capacity_features_and_whitelist_are_enforced (test_room_requests.RoomWorkflowTests.test_missing_approver_capacity_features_and_whitelist_are_enforced) ... ok
+test_optional_professor_responses_never_veto_room_approval (test_room_requests.RoomWorkflowTests.test_optional_professor_responses_never_veto_room_approval) ... ok
+test_organizer_appointments_and_room_bookings_conflict_both_directions (test_room_requests.RoomWorkflowTests.test_organizer_appointments_and_room_bookings_conflict_both_directions) ... ok
+test_recommendation_uses_needs_and_routes_across_faculties (test_room_requests.RoomWorkflowTests.test_recommendation_uses_needs_and_routes_across_faculties) ... ok
+test_rejection_stale_selection_revision_and_cancellation_keep_history (test_room_requests.RoomWorkflowTests.test_rejection_stale_selection_revision_and_cancellation_keep_history) ... ok
+test_revision_is_checked_before_approval_or_invitation_evaluation (test_room_requests.RoomWorkflowTests.test_revision_is_checked_before_approval_or_invitation_evaluation) ... ok
+test_room_schedule_and_cancellation_are_private_and_persist_after_restart (test_room_requests.RoomWorkflowTests.test_room_schedule_and_cancellation_are_private_and_persist_after_restart) ... ok
+test_supported_categories_share_one_lifecycle_and_club_is_declared (test_room_requests.RoomWorkflowTests.test_supported_categories_share_one_lifecycle_and_club_is_declared) ... ok
+test_web_student_faculty_invitation_csrf_and_privacy_flow (test_room_requests.RoomWorkflowTests.test_web_student_faculty_invitation_csrf_and_privacy_flow) ... ok
+test_wrong_faculty_student_and_unrelated_users_cannot_approve_or_view (test_room_requests.RoomWorkflowTests.test_wrong_faculty_student_and_unrelated_users_cannot_approve_or_view) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 255.693s
+
+OK
+
+test_changed_calendar_rejects_a_previously_shown_slot_and_different_date (test_personal_schedule.AppointmentSelectionWebTests.test_changed_calendar_rejects_a_previously_shown_slot_and_different_date) ... ok
+test_form_has_separate_compact_lists_and_only_one_date_control (test_personal_schedule.AppointmentSelectionWebTests.test_form_has_separate_compact_lists_and_only_one_date_control) ... ok
+test_month_views_are_private_and_work_for_professor_and_student (test_personal_schedule.AppointmentSelectionWebTests.test_month_views_are_private_and_work_for_professor_and_student) ... ok
+test_single_date_returns_feasible_slots_on_that_date_including_late_slots (test_personal_schedule.AppointmentSelectionWebTests.test_single_date_returns_feasible_slots_on_that_date_including_late_slots) ... ok
+test_boundary_month_padding_does_not_weaken_booking_date_validation (test_personal_schedule.CalendarSelectionTests.test_boundary_month_padding_does_not_weaken_booking_date_validation) ... ok
+test_default_month_and_week_follow_university_timezone (test_personal_schedule.CalendarSelectionTests.test_default_month_and_week_follow_university_timezone) ... ok
+test_legacy_week_links_and_invalid_months_are_handled_explicitly (test_personal_schedule.CalendarSelectionTests.test_legacy_week_links_and_invalid_months_are_handled_explicitly) ... ok
+test_month_navigation_has_every_week_and_leap_day (test_personal_schedule.CalendarSelectionTests.test_month_navigation_has_every_week_and_leap_day) ... ok
+test_only_known_demo_suffixes_are_hidden_without_changing_real_names (test_personal_schedule.CalendarSelectionTests.test_only_known_demo_suffixes_are_hidden_without_changing_real_names) ... ok
+test_all_user_roles_have_own_timetables_without_peer_schedule_access (test_personal_schedule.PersonalScheduleTests.test_all_user_roles_have_own_timetables_without_peer_schedule_access) ... ok
+test_confirmed_meetings_fill_exact_hour_cells_for_students_and_professors (test_personal_schedule.PersonalScheduleTests.test_confirmed_meetings_fill_exact_hour_cells_for_students_and_professors) ... ok
+test_optional_overlaps_are_visible_without_false_reservations_and_declines_hide_them (test_personal_schedule.PersonalScheduleTests.test_optional_overlaps_are_visible_without_false_reservations_and_declines_hide_them) ... ok
+test_pending_cancelled_and_declined_requests_never_occupy_the_table (test_personal_schedule.PersonalScheduleTests.test_pending_cancelled_and_declined_requests_never_occupy_the_table) ... ok
+test_unresolved_and_bound_university_entries_do_not_change_engine_projection (test_personal_schedule.PersonalScheduleTests.test_unresolved_and_bound_university_entries_do_not_change_engine_projection) ... ok
+test_weekends_early_hours_and_midnight_are_not_silently_lost (test_personal_schedule.PersonalScheduleTests.test_weekends_early_hours_and_midnight_are_not_silently_lost) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 65.052s
+
+OK
+
+test_invalid_input_and_boundary_padding (test_university_calendar.UnifiedCalendarSelectionTests.test_invalid_input_and_boundary_padding) ... ok
+test_timezone_month_week_day_and_navigation (test_university_calendar.UnifiedCalendarSelectionTests.test_timezone_month_week_day_and_navigation) ... ok
+test_appointment_participants_have_access_but_admin_has_no_private_override (test_university_calendar.UnifiedCalendarTests.test_appointment_participants_have_access_but_admin_has_no_private_override) ... ok
+test_calendar_retrieval_stays_on_one_snapshot_during_concurrent_cancellation (test_university_calendar.UnifiedCalendarTests.test_calendar_retrieval_stays_on_one_snapshot_during_concurrent_cancellation) ... ok
+test_categories_states_scopes_invalid_inputs_and_disabled_accounts (test_university_calendar.UnifiedCalendarTests.test_categories_states_scopes_invalid_inputs_and_disabled_accounts) ... ok
+test_committee_cannot_be_published_even_by_direct_database_write (test_university_calendar.UnifiedCalendarTests.test_committee_cannot_be_published_even_by_direct_database_write) ... ok
+test_confirmation_optional_decline_reschedule_and_cancellation_follow_source (test_university_calendar.UnifiedCalendarTests.test_confirmation_optional_decline_reschedule_and_cancellation_follow_source) ... ok
+test_equipment_reminders_private_and_custodian_scoped_never_busy (test_university_calendar.UnifiedCalendarTests.test_equipment_reminders_private_and_custodian_scoped_never_busy) ... ok
+test_flask_all_roles_navigation_filters_privacy_csrf_and_escaping (test_university_calendar.UnifiedCalendarTests.test_flask_all_roles_navigation_filters_privacy_csrf_and_escaping) ... ok
+test_half_open_boundaries_and_cross_midnight_local_dates (test_university_calendar.UnifiedCalendarTests.test_half_open_boundaries_and_cross_midnight_local_dates) ... ok
+test_hourly_grid_preserves_partial_hours_and_adjacent_half_open_cells (test_university_calendar.UnifiedCalendarTests.test_hourly_grid_preserves_partial_hours_and_adjacent_half_open_cells) ... ok
+test_migration_columns_have_safe_defaults_and_no_duplicate_calendar_tables (test_university_calendar.UnifiedCalendarTests.test_migration_columns_have_safe_defaults_and_no_duplicate_calendar_tables) ... ok
+test_multi_room_academic_allocations_group_without_an_invented_enrollment (test_university_calendar.UnifiedCalendarTests.test_multi_room_academic_allocations_group_without_an_invented_enrollment) ... ok
+test_one_repeatable_read_snapshot_without_csv_or_result_file_dependencies (test_university_calendar.UnifiedCalendarTests.test_one_repeatable_read_snapshot_without_csv_or_result_file_dependencies) ... ok
+test_opt_in_public_academic_details_do_not_expose_private_request_data (test_university_calendar.UnifiedCalendarTests.test_opt_in_public_academic_details_do_not_expose_private_request_data) ... ok
+test_pending_reschedule_moves_event_and_revises_approval_progress (test_university_calendar.UnifiedCalendarTests.test_pending_reschedule_moves_event_and_revises_approval_progress) ... ok
+test_publication_requires_admin_and_valid_instructor_and_is_audited (test_university_calendar.UnifiedCalendarTests.test_publication_requires_admin_and_valid_instructor_and_is_audited) ... ok
+test_recorded_handover_partial_return_and_overdue_follow_physical_records (test_university_calendar.UnifiedCalendarTests.test_recorded_handover_partial_return_and_overdue_follow_physical_records) ... ok
+test_replaced_or_disabled_reviewer_does_not_retain_calendar_scope (test_university_calendar.UnifiedCalendarTests.test_replaced_or_disabled_reviewer_does_not_retain_calendar_scope) ... ok
+test_room_organizer_invitee_and_current_faculty_reviewer_only (test_university_calendar.UnifiedCalendarTests.test_room_organizer_invitee_and_current_faculty_reviewer_only) ... ok
+test_unresolved_and_explicit_periods_exceptions_and_weeks (test_university_calendar.UnifiedCalendarTests.test_unresolved_and_explicit_periods_exceptions_and_weeks) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 257.088s
+
+OK
+
+test_appointment_approval_rejection_and_cancellation_are_not_parsed (test_notifications.NotificationTests.test_appointment_approval_rejection_and_cancellation_are_not_parsed) ... ok
+test_feed_html_is_escaped_private_and_csrf_protected (test_notifications.NotificationTests.test_feed_html_is_escaped_private_and_csrf_protected) ... ok
+test_notification_failure_rolls_back_request_history_and_reservations (test_notifications.NotificationTests.test_notification_failure_rolls_back_request_history_and_reservations) ... ok
+test_notification_sources_and_recipients_are_constrained (test_notifications.NotificationTests.test_notification_sources_and_recipients_are_constrained) ... ok
+test_other_user_cannot_read_notification_and_bad_identifiers_fail_safely (test_notifications.NotificationTests.test_other_user_cannot_read_notification_and_bad_identifiers_fail_safely) ... ok
+test_pending_requests_notify_only_assigned_approver_and_invitees (test_notifications.NotificationTests.test_pending_requests_notify_only_assigned_approver_and_invitees) ... ok
+test_read_state_survives_restart_is_idempotent_and_does_not_read_new_arrivals (test_notifications.NotificationTests.test_read_state_survives_restart_is_idempotent_and_does_not_read_new_arrivals) ... ok
+test_removed_invitees_lose_notification_detail_and_read_access (test_notifications.NotificationTests.test_removed_invitees_lose_notification_detail_and_read_access) ... ok
+test_room_decisions_responses_and_cancel_notify_relevant_people (test_notifications.NotificationTests.test_room_decisions_responses_and_cancel_notify_relevant_people) ... ok
+test_shared_header_is_role_based_without_granting_backend_permissions (test_notifications.NotificationTests.test_shared_header_is_role_based_without_granting_backend_permissions) ... ok
+test_existing_history_is_backfilled_without_duplicate_or_broadcast (test_notifications.NotificationUpgradeTests.test_existing_history_is_backfilled_without_duplicate_or_broadcast) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 139.969s
+
+OK
+
+test_authorization_and_invalid_time_still_enforced_by_backend (test_frontend_prototype.FrontendPrototypeWorkflowTests.test_authorization_and_invalid_time_still_enforced_by_backend) ... ok
+test_available_time_feedback_uses_existing_engine_and_safe_empty_state (test_frontend_prototype.FrontendPrototypeWorkflowTests.test_available_time_feedback_uses_existing_engine_and_safe_empty_state) ... ok
+test_dashboard_uses_real_activity_compact_calendar_and_private_links (test_frontend_prototype.FrontendPrototypeWorkflowTests.test_dashboard_uses_real_activity_compact_calendar_and_private_links) ... ok
+test_form_preserves_contract_validation_and_successful_submission (test_frontend_prototype.FrontendPrototypeWorkflowTests.test_form_preserves_contract_validation_and_successful_submission) ... ok
+test_role_navigation_and_private_identity_remain_escaped (test_frontend_prototype.SharedShellTests.test_role_navigation_and_private_identity_remain_escaped) ... ok
+test_shell_has_skip_target_post_logout_and_local_assets (test_frontend_prototype.SharedShellTests.test_shell_has_skip_target_post_logout_and_local_assets) ... ok
+test_student_service_route_and_professor_parent_navigation_remain_distinct (test_frontend_prototype.SharedShellTests.test_student_service_route_and_professor_parent_navigation_remain_distinct) ... ok
+test_ui_components_escape_data_and_preserve_accessible_states (test_frontend_prototype.SharedShellTests.test_ui_components_escape_data_and_preserve_accessible_states) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 37.952s
+
+OK
+
+test_equipment_actions_have_explicit_canonical_destinations (test_student_portal_ui.EquipmentControlTests.test_equipment_actions_have_explicit_canonical_destinations) ... ok
+test_pending_extension_has_waiting_message_instead_of_duplicate_form (test_student_portal_ui.EquipmentControlTests.test_pending_extension_has_waiting_message_instead_of_duplicate_form) ... ok
+test_recurring_equipment_waiting_action_is_disabled_with_visible_reason (test_student_portal_ui.EquipmentControlTests.test_recurring_equipment_waiting_action_is_disabled_with_visible_reason) ... ok
+test_failed_sign_in_escapes_identity_announces_error_and_never_refills_password (test_student_portal_ui.LoginTemplateTests.test_failed_sign_in_escapes_identity_announces_error_and_never_refills_password) ... ok
+test_login_preserves_fields_csrf_autocomplete_and_no_extra_auth_features (test_student_portal_ui.LoginTemplateTests.test_login_preserves_fields_csrf_autocomplete_and_no_extra_auth_features) ... ok
+test_busy_error_retains_retry_after_and_other_roles_keep_their_response (test_student_portal_ui.StudentFailurePresentationTests.test_busy_error_retains_retry_after_and_other_roles_keep_their_response) ... ok
+test_http_failure_preserves_method_headers_and_escapes_descriptions (test_student_portal_ui.StudentFailurePresentationTests.test_http_failure_preserves_method_headers_and_escapes_descriptions) ... ok
+test_student_service_failure_retains_503_and_hides_internal_details (test_student_portal_ui.StudentFailurePresentationTests.test_student_service_failure_retains_503_and_hides_internal_details) ... ok
+test_submission_conflict_retains_409_and_safe_message (test_student_portal_ui.StudentFailurePresentationTests.test_submission_conflict_retains_409_and_safe_message) ... ok
+test_calendar_uses_supplied_entries_once_and_includes_weekend (test_student_portal_ui.StudentPortalTemplateTests.test_calendar_uses_supplied_entries_once_and_includes_weekend) ... ok
+test_empty_dashboard_is_honest_and_has_no_mock_search_or_filters (test_student_portal_ui.StudentPortalTemplateTests.test_empty_dashboard_is_honest_and_has_no_mock_search_or_filters) ... ok
+test_five_service_hubs_link_to_existing_routes (test_student_portal_ui.StudentPortalTemplateTests.test_five_service_hubs_link_to_existing_routes) ... ok
+test_home_has_one_primary_heading_for_student_and_student_administrator (test_student_portal_ui.StudentPortalTemplateTests.test_home_has_one_primary_heading_for_student_and_student_administrator) ... ok
+test_primary_navigation_has_four_cross_service_destinations (test_student_portal_ui.StudentPortalTemplateTests.test_primary_navigation_has_four_cross_service_destinations) ... ok
+test_professor_staff_and_administrator_keep_the_existing_shell (test_student_portal_ui.StudentPortalTemplateTests.test_professor_staff_and_administrator_keep_the_existing_shell) ... ok
+test_shared_account_controls_preserve_real_notifications_and_csrf_logout (test_student_portal_ui.StudentPortalTemplateTests.test_shared_account_controls_preserve_real_notifications_and_csrf_logout) ... ok
+test_statuses_keep_pending_optional_and_partial_reservations_distinct (test_student_portal_ui.StudentPortalTemplateTests.test_statuses_keep_pending_optional_and_partial_reservations_distinct) ... ok
+test_unresolved_dates_remain_a_visible_warning (test_student_portal_ui.StudentPortalTemplateTests.test_unresolved_dates_remain_a_visible_warning) ... ok
+test_untrusted_names_and_titles_are_escaped (test_student_portal_ui.StudentPortalTemplateTests.test_untrusted_names_and_titles_are_escaped) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.751s
+
+OK
+
+test_all_sections_pin_one_snapshot_during_concurrent_cancellation (test_student_dashboard.StudentDashboardTests.test_all_sections_pin_one_snapshot_during_concurrent_cancellation) ... ok
+test_calendar_uses_explicit_bindings_own_blocks_and_university_timezone (test_student_dashboard.StudentDashboardTests.test_calendar_uses_explicit_bindings_own_blocks_and_university_timezone) ... ok
+test_cancelled_or_professor_declined_invitations_are_not_open_actions (test_student_dashboard.StudentDashboardTests.test_cancelled_or_professor_declined_invitations_are_not_open_actions) ... ok
+test_card_lists_are_bounded_without_losing_totals_or_n_plus_one_queries (test_student_dashboard.StudentDashboardTests.test_card_lists_are_bounded_without_losing_totals_or_n_plus_one_queries) ... ok
+test_empty_home_is_read_only_and_does_not_invoke_engine_or_runtime_files (test_student_dashboard.StudentDashboardTests.test_empty_home_is_read_only_and_does_not_invoke_engine_or_runtime_files) ... ok
+test_expired_pending_request_remains_actionable_without_reserving_time (test_student_dashboard.StudentDashboardTests.test_expired_pending_request_remains_actionable_without_reserving_time) ... ok
+test_ongoing_meeting_and_exact_end_boundary_use_half_open_intervals (test_student_dashboard.StudentDashboardTests.test_ongoing_meeting_and_exact_end_boundary_use_half_open_intervals) ... ok
+test_optional_invitation_is_visible_but_never_counted_as_my_reservation (test_student_dashboard.StudentDashboardTests.test_optional_invitation_is_visible_but_never_counted_as_my_reservation) ... ok
+test_summaries_exclude_past_cancelled_declined_and_other_students (test_student_dashboard.StudentDashboardTests.test_summaries_exclude_past_cancelled_declined_and_other_students) ... ok
+test_bad_week_and_escaped_content_fail_safely_without_fake_services (test_student_dashboard.StudentDashboardWebTests.test_bad_week_and_escaped_content_fail_safely_without_fake_services) ... ok
+test_cancellation_and_rescheduling_update_home_counts_and_private_detail_links (test_student_dashboard.StudentDashboardWebTests.test_cancellation_and_rescheduling_update_home_counts_and_private_detail_links) ... ok
+test_database_failure_has_no_file_fallback_or_sensitive_error_details (test_student_dashboard.StudentDashboardWebTests.test_database_failure_has_no_file_fallback_or_sensitive_error_details) ... ok
+test_login_and_root_choose_student_home_without_changing_other_roles (test_student_dashboard.StudentDashboardWebTests.test_login_and_root_choose_student_home_without_changing_other_roles) ... ok
+test_student_scope_is_enforced_and_actor_query_parameters_cannot_override_identity (test_student_dashboard.StudentDashboardWebTests.test_student_scope_is_enforced_and_actor_query_parameters_cannot_override_identity) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 100.623s
+
+OK
+
+test_active_real_engine_decisions_and_allocations_round_trip (test_professor_services.ProfessorReadTests.test_active_real_engine_decisions_and_allocations_round_trip) ... ok
+test_all_four_types_are_owned_pending_with_validated_filters_and_pagination (test_professor_services.ProfessorReadTests.test_all_four_types_are_owned_pending_with_validated_filters_and_pagination) ... ok
+test_changed_inputs_and_failed_run_keep_previous_active_results (test_professor_services.ProfessorReadTests.test_changed_inputs_and_failed_run_keep_previous_active_results) ... ok
+test_cross_user_unknown_public_and_attributed_records_do_not_grant_ownership (test_professor_services.ProfessorReadTests.test_cross_user_unknown_public_and_attributed_records_do_not_grant_ownership) ... ok
+test_database_busy_is_generic_retryable_error (test_professor_services.ProfessorReadTests.test_database_busy_is_generic_retryable_error) ... ok
+test_detail_keeps_declarations_and_committee_separate_from_appointments (test_professor_services.ProfessorReadTests.test_detail_keeps_declarations_and_committee_separate_from_appointments) ... ok
+test_disabled_inactive_and_revoked_accounts_fail_closed (test_professor_services.ProfessorReadTests.test_disabled_inactive_and_revoked_accounts_fail_closed) ... ok
+test_empty_list_is_private_and_explains_blocked_intake (test_professor_services.ProfessorReadTests.test_empty_list_is_private_and_explains_blocked_intake) ... ok
+test_explicit_calendar_bindings_are_metadata_without_invented_dates (test_professor_services.ProfessorReadTests.test_explicit_calendar_bindings_are_metadata_without_invented_dates) ... ok
+test_five_role_boundaries_leave_administrator_interfaces_unchanged (test_professor_services.ProfessorReadTests.test_five_role_boundaries_leave_administrator_interfaces_unchanged) ... ok
+test_invalid_filters_pagination_ids_and_actor_types (test_professor_services.ProfessorReadTests.test_invalid_filters_pagination_ids_and_actor_types) ... ok
+test_reads_never_write_or_load_global_engine_snapshots_or_raw_decision_payloads (test_professor_services.ProfessorReadTests.test_reads_never_write_or_load_global_engine_snapshots_or_raw_decision_payloads) ... ok
+test_real_engine_results_for_exam_teaching_recurrence_and_committee (test_professor_services.ProfessorReadTests.test_real_engine_results_for_exam_teaching_recurrence_and_committee) ... ok
+test_unsupported_writes_csrf_and_spoofed_identity_never_mutate (test_professor_services.ProfessorReadTests.test_unsupported_writes_csrf_and_spoofed_identity_never_mutate) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 152.810s
+
+OK
+
+test_cross_user_hours_and_block_deletions_are_forbidden_and_private (test_professor_existing_workflows.ProfessorExistingContractTests.test_cross_user_hours_and_block_deletions_are_forbidden_and_private) ... ok
+test_hour_publication_role_guard_and_session_ownership_for_all_five_roles (test_professor_existing_workflows.ProfessorExistingContractTests.test_hour_publication_role_guard_and_session_ownership_for_all_five_roles) ... ok
+test_invalid_hours_boundaries_and_exclusions_never_persist (test_professor_existing_workflows.ProfessorExistingContractTests.test_invalid_hours_boundaries_and_exclusions_never_persist) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 31.013s
+
+OK
+
+test_committee_save_only_preserves_participants_and_renders_confirmation (test_save_only_confirmation.SaveOnlyConfirmationTests.test_committee_save_only_preserves_participants_and_renders_confirmation) ... ok
+test_confirmation_run_button_keeps_explicit_run_and_detail_navigation (test_save_only_confirmation.SaveOnlyConfirmationTests.test_confirmation_run_button_keeps_explicit_run_and_detail_navigation) ... ok
+test_exam_save_only_uses_shared_validation_and_preserves_course_fields (test_save_only_confirmation.SaveOnlyConfirmationTests.test_exam_save_only_uses_shared_validation_and_preserves_course_fields) ... ok
+test_existing_committee_confirmation_and_detail_routes_render (test_save_only_confirmation.SaveOnlyConfirmationTests.test_existing_committee_confirmation_and_detail_routes_render) ... ok
+test_existing_normal_confirmation_and_detail_routes_render (test_save_only_confirmation.SaveOnlyConfirmationTests.test_existing_normal_confirmation_and_detail_routes_render) ... ok
+test_helper_is_available_for_package_and_standalone_imports (test_save_only_confirmation.SaveOnlyConfirmationTests.test_helper_is_available_for_package_and_standalone_imports) ... ok
+test_invalid_normal_and_exam_forms_do_not_persist_or_execute (test_save_only_confirmation.SaveOnlyConfirmationTests.test_invalid_normal_and_exam_forms_do_not_persist_or_execute) ... ok
+test_legacy_result_urls_redirect_to_working_raw_data_views (test_save_only_confirmation.SaveOnlyConfirmationTests.test_legacy_result_urls_redirect_to_working_raw_data_views) ... ok
+test_normal_save_only_writes_one_request_and_renders_confirmation (test_save_only_confirmation.SaveOnlyConfirmationTests.test_normal_save_only_writes_one_request_and_renders_confirmation) ... ok
+test_recurring_save_preserves_ordered_occurrences_and_runs_through_real_engine (test_save_only_confirmation.SaveOnlyConfirmationTests.test_recurring_save_preserves_ordered_occurrences_and_runs_through_real_engine) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 56.379s
+
+OK
+
+test_empty_schema_roundtrip_and_drift (test_equipment_web.EquipmentMigrationDemoTests.test_empty_schema_roundtrip_and_drift) ... ok
+test_fictional_moderate_and_large_inventory_never_overwrite_existing (test_equipment_web.EquipmentMigrationDemoTests.test_fictional_moderate_and_large_inventory_never_overwrite_existing) ... ok
+test_large_fictional_inventory_matches_real_engine (test_equipment_web.EquipmentMigrationDemoTests.test_large_fictional_inventory_matches_real_engine) ... ok
+test_csrf_and_unauthorized_faculty_actions_are_denied (test_equipment_web.EquipmentWebTests.test_csrf_and_unauthorized_faculty_actions_are_denied) ... ok
+test_invalid_dates_quantities_and_unknown_operations_fail_safely (test_equipment_web.EquipmentWebTests.test_invalid_dates_quantities_and_unknown_operations_fail_safely) ... ok
+test_inventory_management_and_recommendations_render_without_ids_in_names (test_equipment_web.EquipmentWebTests.test_inventory_management_and_recommendations_render_without_ids_in_names) ... ok
+test_student_catalog_submit_custodian_approval_handover_and_return (test_equipment_web.EquipmentWebTests.test_student_catalog_submit_custodian_approval_handover_and_return) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 74.242s
+
+OK
+
+test_backend_failure_rolls_back_decision_and_notifications (test_equipment.EquipmentWorkflowTests.test_backend_failure_rolls_back_decision_and_notifications) ... ok
+test_concurrent_duplicate_submissions_create_one_request (test_equipment.EquipmentWorkflowTests.test_concurrent_duplicate_submissions_create_one_request) ... ok
+test_database_exclusion_blocks_overlapping_unit_even_without_service (test_equipment.EquipmentWorkflowTests.test_database_exclusion_blocks_overlapping_unit_even_without_service) ... ok
+test_database_prevents_incomplete_approval_and_cross_type_reservations (test_equipment.EquipmentWorkflowTests.test_database_prevents_incomplete_approval_and_cross_type_reservations) ... ok
+test_extensions_respect_future_reservations_and_policy (test_equipment.EquipmentWorkflowTests.test_extensions_respect_future_reservations_and_policy) ... ok
+test_faculty_eligibility_and_disabled_policy_are_enforced_by_engine (test_equipment.EquipmentWorkflowTests.test_faculty_eligibility_and_disabled_policy_are_enforced_by_engine) ... ok
+test_gateway_rejects_duplicate_or_foreign_engine_assets (test_equipment.EquipmentWorkflowTests.test_gateway_rejects_duplicate_or_foreign_engine_assets) ... ok
+test_handover_return_intent_partial_return_and_damage (test_equipment.EquipmentWorkflowTests.test_handover_return_intent_partial_return_and_damage) ... ok
+test_idempotent_submission_returns_same_request_and_rejects_mutation (test_equipment.EquipmentWorkflowTests.test_idempotent_submission_returns_same_request_and_rejects_mutation) ... ok
+test_invalid_fields_and_unavailable_condition_fail_safely (test_equipment.EquipmentWorkflowTests.test_invalid_fields_and_unavailable_condition_fail_safely) ... ok
+test_missing_custodian_blocks_submission_without_partial_data (test_equipment.EquipmentWorkflowTests.test_missing_custodian_blocks_submission_without_partial_data) ... ok
+test_missing_unit_is_not_a_physical_return (test_equipment.EquipmentWorkflowTests.test_missing_unit_is_not_a_physical_return) ... ok
+test_multi_item_request_and_same_faculty_constraint (test_equipment.EquipmentWorkflowTests.test_multi_item_request_and_same_faculty_constraint) ... ok
+test_no_partial_approval_after_competing_request (test_equipment.EquipmentWorkflowTests.test_no_partial_approval_after_competing_request) ... ok
+test_overdue_alert_is_durable_once_per_due_date (test_equipment.EquipmentWorkflowTests.test_overdue_alert_is_durable_once_per_due_date) ... ok
+test_overdue_held_loan_blocks_future_and_staff_sees_affected_reservation (test_equipment.EquipmentWorkflowTests.test_overdue_held_loan_blocks_future_and_staff_sees_affected_reservation) ... ok
+test_overlap_and_adjacent_reservations (test_equipment.EquipmentWorkflowTests.test_overlap_and_adjacent_reservations) ... ok
+test_pending_then_approval_reserves_exact_quantity_and_notifies (test_equipment.EquipmentWorkflowTests.test_pending_then_approval_reserves_exact_quantity_and_notifies) ... ok
+test_permissions_custodian_replacement_and_private_catalog (test_equipment.EquipmentWorkflowTests.test_permissions_custodian_replacement_and_private_catalog) ... ok
+test_reject_cancel_release_and_borrowed_cannot_cancel (test_equipment.EquipmentWorkflowTests.test_reject_cancel_release_and_borrowed_cannot_cancel) ... ok
+test_simultaneous_process_approvals_cannot_share_last_units (test_equipment.EquipmentWorkflowTests.test_simultaneous_process_approvals_cannot_share_last_units) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 259.922s
+
+OK
+
+test_active_loan_problem_and_verified_return_feedback (test_resource_feedback.FeedbackEquipmentTests.test_active_loan_problem_and_verified_return_feedback) ... ok
+test_approved_but_not_collected_cannot_report (test_resource_feedback.FeedbackEquipmentTests.test_approved_but_not_collected_cannot_report) ... ok
+test_custodian_replies_resolves_and_report_survives_restart (test_resource_feedback.FeedbackEquipmentTests.test_custodian_replies_resolves_and_report_survives_restart) ... ok
+test_equipment_form_and_condition_audit_are_private (test_resource_feedback.FeedbackEquipmentTests.test_equipment_form_and_condition_audit_are_private) ... ok
+test_failed_condition_notification_rolls_back_inventory_and_report_history (test_resource_feedback.FeedbackEquipmentTests.test_failed_condition_notification_rolls_back_inventory_and_report_history) ... ok
+test_other_faculty_custodian_cannot_read_or_modify_private_reports (test_resource_feedback.FeedbackEquipmentTests.test_other_faculty_custodian_cannot_read_or_modify_private_reports) ... ok
+test_partial_return_is_checked_per_actual_unit (test_resource_feedback.FeedbackEquipmentTests.test_partial_return_is_checked_per_actual_unit) ... ok
+test_reporting_is_not_inventory_mutation_or_automatic_return (test_resource_feedback.FeedbackEquipmentTests.test_reporting_is_not_inventory_mutation_or_automatic_return) ... ok
+test_unrelated_borrower_and_foreign_unit_rejected (test_resource_feedback.FeedbackEquipmentTests.test_unrelated_borrower_and_foreign_unit_rejected) ... ok
+test_accepted_professor_can_report_but_unanswered_invitation_cannot (test_resource_feedback.FeedbackRoomTests.test_accepted_professor_can_report_but_unanswered_invitation_cannot) ... ok
+test_booking_mutation_and_feedback_do_not_invert_parent_user_locks (test_resource_feedback.FeedbackRoomTests.test_booking_mutation_and_feedback_do_not_invert_parent_user_locks) ... ok
+test_bounded_validated_inputs_and_skip_create_no_feedback (test_resource_feedback.FeedbackRoomTests.test_bounded_validated_inputs_and_skip_create_no_feedback) ... ok
+test_current_staff_replacement_revokes_old_report_and_receipt_access (test_resource_feedback.FeedbackRoomTests.test_current_staff_replacement_revokes_old_report_and_receipt_access) ... ok
+test_database_attendee_count_includes_explicit_group_members (test_resource_feedback.FeedbackRoomTests.test_database_attendee_count_includes_explicit_group_members) ... ok
+test_database_rejects_fabricated_associations_and_mutation (test_resource_feedback.FeedbackRoomTests.test_database_rejects_fabricated_associations_and_mutation) ... ok
+test_explicit_group_members_can_report_privately_not_estimated_attendees (test_resource_feedback.FeedbackRoomTests.test_explicit_group_members_can_report_privately_not_estimated_attendees) ... ok
+test_flask_form_csrf_privacy_escaping_and_notifications (test_resource_feedback.FeedbackRoomTests.test_flask_form_csrf_privacy_escaping_and_notifications) ... ok
+test_maintenance_notes_are_not_rebroadcast_between_group_reporters (test_resource_feedback.FeedbackRoomTests.test_maintenance_notes_are_not_rebroadcast_between_group_reporters) ... ok
+test_migration_drift_and_safe_empty_downgrade (test_resource_feedback.FeedbackRoomTests.test_migration_drift_and_safe_empty_downgrade) ... ok
+test_no_pending_future_cancelled_or_fabricated_booking (test_resource_feedback.FeedbackRoomTests.test_no_pending_future_cancelled_or_fabricated_booking) ... ok
+test_nonempty_feedback_downgrade_is_refused_without_losing_data (test_resource_feedback.FeedbackRoomTests.test_nonempty_feedback_downgrade_is_refused_without_losing_data) ... ok
+test_notification_failure_rolls_back_entire_report (test_resource_feedback.FeedbackRoomTests.test_notification_failure_rolls_back_entire_report) ... ok
+test_optional_active_issue_and_completed_general_feedback (test_resource_feedback.FeedbackRoomTests.test_optional_active_issue_and_completed_general_feedback) ... ok
+test_participant_validation_and_revision_preserve_professor_flow (test_resource_feedback.FeedbackRoomTests.test_participant_validation_and_revision_preserve_professor_flow) ... ok
+test_private_notifications_reassignment_and_missing_staff_history (test_resource_feedback.FeedbackRoomTests.test_private_notifications_reassignment_and_missing_staff_history) ... ok
+test_reporter_unrelated_student_and_other_faculty_cannot_manage (test_resource_feedback.FeedbackRoomTests.test_reporter_unrelated_student_and_other_faculty_cannot_manage) ... ok
+test_retries_and_competing_updates_are_serialized (test_resource_feedback.FeedbackRoomTests.test_retries_and_competing_updates_are_serialized) ... ok
+test_room_manager_closure_scope_and_resource_history_are_preserved (test_resource_feedback.FeedbackRoomTests.test_room_manager_closure_scope_and_resource_history_are_preserved) ... ok
+test_staff_response_notification_failure_rolls_back_update (test_resource_feedback.FeedbackRoomTests.test_staff_response_notification_failure_rolls_back_update) ... ok
+test_staff_review_resolution_reopen_clarification_and_full_history (test_resource_feedback.FeedbackRoomTests.test_staff_review_resolution_reopen_clarification_and_full_history) ... ok
+test_two_worker_processes_reuse_one_unchanged_submission (test_resource_feedback.FeedbackRoomTests.test_two_worker_processes_reuse_one_unchanged_submission) ... ok
+
+----------------------------------------------------------------------
+Ran 31 tests in 381.131s
+
+OK
+
+test_additive_migration_downgrade_and_reupgrade_preserve_existing_loans (test_waiting_lists.WaitingEquipmentTests.test_additive_migration_downgrade_and_reupgrade_preserve_existing_loans) ... ok
+test_changed_equipment_specifications_cannot_fulfill_original_mandatory_needs (test_waiting_lists.WaitingEquipmentTests.test_changed_equipment_specifications_cannot_fulfill_original_mandatory_needs) ... ok
+test_custodian_rejection_privacy_and_normal_approval_guard (test_waiting_lists.WaitingEquipmentTests.test_custodian_rejection_privacy_and_normal_approval_guard) ... ok
+test_damaged_return_does_not_allocate_and_repair_triggers_recheck (test_waiting_lists.WaitingEquipmentTests.test_damaged_return_does_not_allocate_and_repair_triggers_recheck) ... ok
+test_database_rejects_parent_mismatch_and_active_direct_publication (test_waiting_lists.WaitingEquipmentTests.test_database_rejects_parent_mismatch_and_active_direct_publication) ... ok
+test_duplicate_submissions_threads_and_process_refresh_are_idempotent (test_waiting_lists.WaitingEquipmentTests.test_duplicate_submissions_threads_and_process_refresh_are_idempotent) ... ok
+test_equipment_assignment_notification_failure_rolls_back_all_units (test_waiting_lists.WaitingEquipmentTests.test_equipment_assignment_notification_failure_rolls_back_all_units) ... ok
+test_equipment_availability_does_not_bypass_pending_review (test_waiting_lists.WaitingEquipmentTests.test_equipment_availability_does_not_bypass_pending_review) ... ok
+test_equipment_cancellation_stays_committed_during_engine_outage (test_waiting_lists.WaitingEquipmentTests.test_equipment_cancellation_stays_committed_during_engine_outage) ... ok
+test_equipment_flask_submission_and_staff_review_reuse_existing_forms (test_waiting_lists.WaitingEquipmentTests.test_equipment_flask_submission_and_staff_review_reuse_existing_forms) ... ok
+test_equipment_normal_approval_competes_with_queue_for_same_units (test_waiting_lists.WaitingEquipmentTests.test_equipment_normal_approval_competes_with_queue_for_same_units) ... ok
+test_equipment_release_promotes_one_full_fcfs_request_and_keeps_handover_separate (test_waiting_lists.WaitingEquipmentTests.test_equipment_release_promotes_one_full_fcfs_request_and_keeps_handover_separate) ... ok
+test_equipment_waiter_expiry_does_not_release_an_existing_physical_loan (test_waiting_lists.WaitingEquipmentTests.test_equipment_waiter_expiry_does_not_release_an_existing_physical_loan) ... ok
+test_existing_custodian_authorization_is_not_replaced_with_a_new_role_policy (test_waiting_lists.WaitingEquipmentTests.test_existing_custodian_authorization_is_not_replaced_with_a_new_role_policy) ... ok
+test_migration_keeps_single_queue_and_can_upgrade_from_previous_head (test_waiting_lists.WaitingEquipmentTests.test_migration_keeps_single_queue_and_can_upgrade_from_previous_head) ... ok
+test_notice_change_cannot_overtake_in_flight_equipment_assignment (test_waiting_lists.WaitingEquipmentTests.test_notice_change_cannot_overtake_in_flight_equipment_assignment) ... ok
+test_other_faculty_custodian_is_denied_and_replacement_requires_new_review (test_waiting_lists.WaitingEquipmentTests.test_other_faculty_custodian_is_denied_and_replacement_requires_new_review) ... ok
+test_partial_availability_never_silently_reduces_requested_quantity (test_waiting_lists.WaitingEquipmentTests.test_partial_availability_never_silently_reduces_requested_quantity) ... ok
+test_pending_and_preapproved_equipment_cancellation_remove_active_eligibility (test_waiting_lists.WaitingEquipmentTests.test_pending_and_preapproved_equipment_cancellation_remove_active_eligibility) ... ok
+test_verified_return_not_intent_or_due_date_releases_equipment (test_waiting_lists.WaitingEquipmentTests.test_verified_return_not_intent_or_due_date_releases_equipment) ... ok
+test_academic_publication_rechecks_newly_freed_rooms (test_waiting_lists.WaitingRoomTests.test_academic_publication_rechecks_newly_freed_rooms) ... ok
+test_adjacent_intervals_can_use_same_room_without_overlapping (test_waiting_lists.WaitingRoomTests.test_adjacent_intervals_can_use_same_room_without_overlapping) ... ok
+test_assignment_notification_failure_rolls_back_then_retries_without_duplicates (test_waiting_lists.WaitingRoomTests.test_assignment_notification_failure_rolls_back_then_retries_without_duplicates) ... ok
+test_available_or_intrinsically_ineligible_room_requests_cannot_join (test_waiting_lists.WaitingRoomTests.test_available_or_intrinsically_ineligible_room_requests_cannot_join) ... ok
+test_cancellation_racing_with_assignment_cannot_erase_confirmed_reservation (test_waiting_lists.WaitingRoomTests.test_cancellation_racing_with_assignment_cannot_erase_confirmed_reservation) ... ok
+test_cancellation_stays_committed_when_remaining_queue_engine_is_unavailable (test_waiting_lists.WaitingRoomTests.test_cancellation_stays_committed_when_remaining_queue_engine_is_unavailable) ... ok
+test_consent_required_and_no_unexplained_defaults (test_waiting_lists.WaitingRoomTests.test_consent_required_and_no_unexplained_defaults) ... ok
+test_direct_approval_and_revision_cannot_bypass_waiting_review (test_waiting_lists.WaitingRoomTests.test_direct_approval_and_revision_cannot_bypass_waiting_review) ... ok
+test_eligibility_change_and_staff_replacement_cannot_use_old_authority (test_waiting_lists.WaitingRoomTests.test_eligibility_change_and_staff_replacement_cannot_use_old_authority) ... ok
+test_engine_failure_rolls_back_publication_and_keeps_release_committed (test_waiting_lists.WaitingRoomTests.test_engine_failure_rolls_back_publication_and_keeps_release_committed) ... ok
+test_exact_notice_boundary_and_equivalent_timezones_keep_correct_queue (test_waiting_lists.WaitingRoomTests.test_exact_notice_boundary_and_equivalent_timezones_keep_correct_queue) ... ok
+test_flask_join_review_privacy_csrf_and_existing_calendar (test_waiting_lists.WaitingRoomTests.test_flask_join_review_privacy_csrf_and_existing_calendar) ... ok
+test_fourth_entry_is_notified_once_when_entering_top_three (test_waiting_lists.WaitingRoomTests.test_fourth_entry_is_notified_once_when_entering_top_three) ... ok
+test_incompatible_requirements_have_contextual_not_global_positions (test_waiting_lists.WaitingRoomTests.test_incompatible_requirements_have_contextual_not_global_positions) ... ok
+test_join_is_idempotent_and_preapproval_holds_nothing (test_waiting_lists.WaitingRoomTests.test_join_is_idempotent_and_preapproval_holds_nothing) ... ok
+test_lowering_current_notice_does_not_reduce_already_recorded_minimum (test_waiting_lists.WaitingRoomTests.test_lowering_current_notice_does_not_reduce_already_recorded_minimum) ... ok
+test_missing_notice_or_late_availability_never_confirms (test_waiting_lists.WaitingRoomTests.test_missing_notice_or_late_availability_never_confirms) ... ok
+test_normal_approval_competing_with_queue_promotion_reserves_only_once (test_waiting_lists.WaitingRoomTests.test_normal_approval_competing_with_queue_promotion_reserves_only_once) ... ok
+test_only_current_owning_faculty_can_review_or_inspect (test_waiting_lists.WaitingRoomTests.test_only_current_owning_faculty_can_review_or_inspect) ... ok
+test_optional_professor_gets_assignment_not_private_queue_positions (test_waiting_lists.WaitingRoomTests.test_optional_professor_gets_assignment_not_private_queue_positions) ... ok
+test_pending_and_preapproved_cancellation_remove_active_eligibility_not_history (test_waiting_lists.WaitingRoomTests.test_pending_and_preapproved_cancellation_remove_active_eligibility_not_history) ... ok
+test_queue_cancellation_updates_positions_and_milestones_once (test_waiting_lists.WaitingRoomTests.test_queue_cancellation_updates_positions_and_milestones_once) ... ok
+test_real_sign_in_and_sign_out_preserve_waiting_review_notification_status (test_waiting_lists.WaitingRoomTests.test_real_sign_in_and_sign_out_preserve_waiting_review_notification_status) ... ok
+test_registered_student_group_survives_review_and_automatic_assignment (test_waiting_lists.WaitingRoomTests.test_registered_student_group_survives_review_and_automatic_assignment) ... ok
+test_rejection_is_durable_when_other_waiters_cannot_be_rechecked (test_waiting_lists.WaitingRoomTests.test_rejection_is_durable_when_other_waiters_cannot_be_rechecked) ... ok
+test_revoked_consent_or_disabled_student_cannot_be_automatically_booked (test_waiting_lists.WaitingRoomTests.test_revoked_consent_or_disabled_student_cannot_be_automatically_booked) ... ok
+test_room_availability_does_not_bypass_pending_review (test_waiting_lists.WaitingRoomTests.test_room_availability_does_not_bypass_pending_review) ... ok
+test_room_competing_processes_assign_only_once (test_waiting_lists.WaitingRoomTests.test_room_competing_processes_assign_only_once) ... ok
+test_room_reopening_automatically_confirms_fcfs_without_second_acceptance (test_waiting_lists.WaitingRoomTests.test_room_reopening_automatically_confirms_fcfs_without_second_acceptance) ... ok
+
+----------------------------------------------------------------------
+Ran 49 tests in 606.888s
+
+OK
+
+test_partial_start_failure_cleans_only_started_workers (test_recurring_workflows.ProcessTestCleanupTests.test_partial_start_failure_cleans_only_started_workers) ... ok
+test_queue_timeout_releases_workers_and_queue_without_hiding_failure (test_recurring_workflows.ProcessTestCleanupTests.test_queue_timeout_releases_workers_and_queue_without_hiding_failure) ... ok
+test_concurrent_identical_equipment_series_submission_is_idempotent (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_concurrent_identical_equipment_series_submission_is_idempotent) ... ok
+test_each_pickup_and_verified_return_is_independent (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_each_pickup_and_verified_return_is_independent) ... ok
+test_existing_preapproved_equipment_queue_keeps_its_reservation (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_existing_preapproved_equipment_queue_keeps_its_reservation) ... ok
+test_future_series_cancellation_never_releases_current_borrowed_units (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_future_series_cancellation_never_releases_current_borrowed_units) ... ok
+test_one_time_and_recurring_periods_compete_under_existing_inventory_locks (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_one_time_and_recurring_periods_compete_under_existing_inventory_locks) ... ok
+test_one_unavailable_period_never_causes_partial_approval (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_one_unavailable_period_never_causes_partial_approval) ... ok
+test_partial_and_damaged_returns_do_not_complete_the_series (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_partial_and_damaged_returns_do_not_complete_the_series) ... ok
+test_series_reserves_all_quantities_without_duplicate_parent_requests (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_series_reserves_all_quantities_without_duplicate_parent_requests) ... ok
+test_unchanged_series_retries_reuse_the_parent_and_changed_payload_fails (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_unchanged_series_retries_reuse_the_parent_and_changed_payload_fails) ... ok
+test_unreturned_previous_occurrence_blocks_same_units_at_later_pickup (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_unreturned_previous_occurrence_blocks_same_units_at_later_pickup) ... ok
+test_cancel_one_then_future_series_retains_occurrence_history (test_recurring_workflows.RecurringRoomWorkflowTests.test_cancel_one_then_future_series_retains_occurrence_history) ... ok
+test_cancellation_never_erases_past_use (test_recurring_workflows.RecurringRoomWorkflowTests.test_cancellation_never_erases_past_use) ... ok
+test_competing_series_confirm_only_one_complete_set (test_recurring_workflows.RecurringRoomWorkflowTests.test_competing_series_confirm_only_one_complete_set) ... ok
+test_concurrent_identical_series_submissions_share_one_parent (test_recurring_workflows.RecurringRoomWorkflowTests.test_concurrent_identical_series_submissions_share_one_parent) ... ok
+test_existing_eligible_room_queue_is_not_bypassed (test_recurring_workflows.RecurringRoomWorkflowTests.test_existing_eligible_room_queue_is_not_bypassed) ... ok
+test_explicit_academic_binding_blocks_only_its_actual_late_occurrence (test_recurring_workflows.RecurringRoomWorkflowTests.test_explicit_academic_binding_blocks_only_its_actual_late_occurrence) ... ok
+test_foreign_actors_cannot_cancel_or_approve_series (test_recurring_workflows.RecurringRoomWorkflowTests.test_foreign_actors_cannot_cancel_or_approve_series) ... ok
+test_independent_processes_cannot_double_book_the_series (test_recurring_workflows.RecurringRoomWorkflowTests.test_independent_processes_cannot_double_book_the_series) ... ok
+test_one_late_conflict_prevents_all_series_confirmation (test_recurring_workflows.RecurringRoomWorkflowTests.test_one_late_conflict_prevents_all_series_confirmation) ... ok
+test_optional_professor_checks_remaining_dates_after_first_cancellation (test_recurring_workflows.RecurringRoomWorkflowTests.test_optional_professor_checks_remaining_dates_after_first_cancellation) ... ok
+test_same_room_all_dates_one_approval_and_idempotent_submission (test_recurring_workflows.RecurringRoomWorkflowTests.test_same_room_all_dates_one_approval_and_idempotent_submission) ... ok
+test_shifted_pattern_recommendations_never_start_in_the_past (test_recurring_workflows.RecurringRoomWorkflowTests.test_shifted_pattern_recommendations_never_start_in_the_past) ... ok
+test_unavailable_date_is_explained_without_silent_room_substitution (test_recurring_workflows.RecurringRoomWorkflowTests.test_unavailable_date_is_explained_without_silent_room_substitution) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 299.898s
+
+OK
+
+test_all_required_cannot_be_silently_reduced_to_one_date (test_recurring_policy.RecurringEquipmentPolicyTests.test_all_required_cannot_be_silently_reduced_to_one_date) ... ok
+test_database_cannot_partially_confirm_an_all_required_series (test_recurring_policy.RecurringEquipmentPolicyTests.test_database_cannot_partially_confirm_an_all_required_series) ... ok
+test_extensions_recheck_semester_and_configured_weekly_quota (test_recurring_policy.RecurringEquipmentPolicyTests.test_extensions_recheck_semester_and_configured_weekly_quota) ... ok
+test_late_stock_conflict_marks_only_unavailable_occurrence (test_recurring_policy.RecurringEquipmentPolicyTests.test_late_stock_conflict_marks_only_unavailable_occurrence) ... ok
+test_overdue_physical_possession_still_counts_as_an_active_series (test_recurring_policy.RecurringEquipmentPolicyTests.test_overdue_physical_possession_still_counts_as_an_active_series) ... ok
+test_partial_equipment_decision_form_and_private_summary (test_recurring_policy.RecurringEquipmentPolicyTests.test_partial_equipment_decision_form_and_private_summary) ... ok
+test_partial_equipment_preview_persists_unavailable_dates_without_reserving (test_recurring_policy.RecurringEquipmentPolicyTests.test_partial_equipment_preview_persists_unavailable_dates_without_reserving) ... ok
+test_returned_partial_occurrence_does_not_prevent_later_approval (test_recurring_policy.RecurringEquipmentPolicyTests.test_returned_partial_occurrence_does_not_prevent_later_approval) ... ok
+test_selected_approval_and_rejection_keep_exact_quantities (test_recurring_policy.RecurringEquipmentPolicyTests.test_selected_approval_and_rejection_keep_exact_quantities) ... ok
+test_all_required_mode_rejects_selected_date_approval (test_recurring_policy.RecurringRoomPolicyTests.test_all_required_mode_rejects_selected_date_approval) ... ok
+test_cancel_last_confirmed_date_preserves_rejected_outcome (test_recurring_policy.RecurringRoomPolicyTests.test_cancel_last_confirmed_date_preserves_rejected_outcome) ... ok
+test_changed_policy_is_rechecked_at_final_approval (test_recurring_policy.RecurringRoomPolicyTests.test_changed_policy_is_rechecked_at_final_approval) ... ok
+test_concurrent_creations_cannot_exceed_active_series_quota (test_recurring_policy.RecurringRoomPolicyTests.test_concurrent_creations_cannot_exceed_active_series_quota) ... ok
+test_concurrent_partial_confirmation_reserves_exactly_one (test_recurring_policy.RecurringRoomPolicyTests.test_concurrent_partial_confirmation_reserves_exactly_one) ... ok
+test_configured_override_reorders_shared_queue_without_changing_eligibility (test_recurring_policy.RecurringRoomPolicyTests.test_configured_override_reorders_shared_queue_without_changing_eligibility) ... ok
+test_configured_quota_and_active_limit_are_enforced (test_recurring_policy.RecurringRoomPolicyTests.test_configured_quota_and_active_limit_are_enforced) ... ok
+test_late_conflict_is_unavailable_and_does_not_prevent_other_date (test_recurring_policy.RecurringRoomPolicyTests.test_late_conflict_is_unavailable_and_does_not_prevent_other_date) ... ok
+test_missing_semester_blocks_only_recurrence (test_recurring_policy.RecurringRoomPolicyTests.test_missing_semester_blocks_only_recurrence) ... ok
+test_partial_approval_retains_pending_date_then_rejects_only_that_date (test_recurring_policy.RecurringRoomPolicyTests.test_partial_approval_retains_pending_date_then_rejects_only_that_date) ... ok
+test_partial_submission_persists_known_unavailable_date (test_recurring_policy.RecurringRoomPolicyTests.test_partial_submission_persists_known_unavailable_date) ... ok
+test_priority_requires_authority_configured_level_reason_and_audit (test_recurring_policy.RecurringRoomPolicyTests.test_priority_requires_authority_configured_level_reason_and_audit) ... ok
+test_reservation_policy_configuration_is_admin_only (test_recurring_policy.RecurringRoomPolicyTests.test_reservation_policy_configuration_is_admin_only) ... ok
+test_selected_date_form_authorization_notifications_and_csrf (test_recurring_policy.RecurringRoomPolicyTests.test_selected_date_form_authorization_notifications_and_csrf) ... ok
+test_series_cannot_cross_semester_or_rewrite_bound_dates (test_recurring_policy.RecurringRoomPolicyTests.test_series_cannot_cross_semester_or_rewrite_bound_dates) ... ok
+test_unapproved_date_is_not_a_confirmed_calendar_commitment (test_recurring_policy.RecurringRoomPolicyTests.test_unapproved_date_is_not_a_confirmed_calendar_commitment) ... ok
+
+----------------------------------------------------------------------
+Ran 25 tests in 275.810s
+
+OK
+
+test_malformed_stdout_is_rejected (test_engine_gateway.GatewayTests.test_malformed_stdout_is_rejected) ... ok
+test_missing_executable_validation_is_not_bypassed (test_engine_gateway.GatewayTests.test_missing_executable_validation_is_not_bypassed) ... ok
+test_nonzero_exit_never_succeeds (test_engine_gateway.GatewayTests.test_nonzero_exit_never_succeeds) ... ok
+test_protocol_mismatch_is_rejected (test_engine_gateway.GatewayTests.test_protocol_mismatch_is_rejected) ... ok
+test_result_collections_and_fields_are_validated (test_engine_gateway.GatewayTests.test_result_collections_and_fields_are_validated) ... ok
+test_run_id_mismatch_is_rejected (test_engine_gateway.GatewayTests.test_run_id_mismatch_is_rejected) ... ok
+test_stale_executable_validation_is_not_bypassed (test_engine_gateway.GatewayTests.test_stale_executable_validation_is_not_bypassed) ... ok
+test_stderr_diagnostics_do_not_contaminate_result (test_engine_gateway.GatewayTests.test_stderr_diagnostics_do_not_contaminate_result) ... ok
+test_strategy_mismatch_is_rejected (test_engine_gateway.GatewayTests.test_strategy_mismatch_is_rejected) ... ok
+test_success_passes_utf8_document_stdin_without_shell (test_engine_gateway.GatewayTests.test_success_passes_utf8_document_stdin_without_shell) ... ok
+test_timeout_is_explicit (test_engine_gateway.GatewayTests.test_timeout_is_explicit) ... ok
+test_zero_exit_with_error_state_is_rejected (test_engine_gateway.GatewayTests.test_zero_exit_with_error_state_is_rejected) ... ok
+test_allocation_and_suggestion_output_shapes_are_checked (test_engine_gateway.JsonEngineIntegrationTests.test_allocation_and_suggestion_output_shapes_are_checked) ... ok
+test_clean_fixture_matches_legacy_for_all_five_strategies (test_engine_gateway.JsonEngineIntegrationTests.test_clean_fixture_matches_legacy_for_all_five_strategies) ... ok
+test_independent_json_strategies_do_not_modify_config (test_engine_gateway.JsonEngineIntegrationTests.test_independent_json_strategies_do_not_modify_config) ... ok
+test_json_needs_no_csv_or_config_and_writes_no_files (test_engine_gateway.JsonEngineIntegrationTests.test_json_needs_no_csv_or_config_and_writes_no_files) ... ok
+test_legacy_best_fit_limits_exit_cleanly_without_replacing_outputs (test_engine_gateway.JsonEngineIntegrationTests.test_legacy_best_fit_limits_exit_cleanly_without_replacing_outputs) ... ok
+test_normal_dataset_matches_legacy_for_all_five_strategies (test_engine_gateway.JsonEngineIntegrationTests.test_normal_dataset_matches_legacy_for_all_five_strategies) ... ok
+test_real_best_fit_limits_are_errors_not_publication_candidates (test_engine_gateway.JsonEngineIntegrationTests.test_real_best_fit_limits_are_errors_not_publication_candidates) ... ok
+test_real_engine_supports_all_four_types_and_utf8 (test_engine_gateway.JsonEngineIntegrationTests.test_real_engine_supports_all_four_types_and_utf8) ... ok
+test_real_protocol_errors_are_one_json_document_with_nonzero_exit (test_engine_gateway.JsonEngineIntegrationTests.test_real_protocol_errors_are_one_json_document_with_nonzero_exit) ... ok
+test_suggestions_render_without_history_parsing (test_engine_gateway.JsonEngineIntegrationTests.test_suggestions_render_without_history_parsing) ... ok
+test_all_operation_envelopes_preserve_rejection_and_error_messages (test_engine_gateway.OperationEnvelopeTests.test_all_operation_envelopes_preserve_rejection_and_error_messages) ... ok
+test_all_operation_envelopes_preserve_valid_results (test_engine_gateway.OperationEnvelopeTests.test_all_operation_envelopes_preserve_valid_results) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 14.105s
+
+OK
+
+test_absolute_configured_path_with_spaces (test_backend_executable.BackendExecutableTests.test_absolute_configured_path_with_spaces) ... ok
+test_changed_source_fails_even_with_preserved_timestamp (test_backend_executable.BackendExecutableTests.test_changed_source_fails_even_with_preserved_timestamp) ... ok
+test_default_is_authoritative_build_artifact (test_backend_executable.BackendExecutableTests.test_default_is_authoritative_build_artifact) ... ok
+test_directory_is_not_an_executable (test_backend_executable.BackendExecutableTests.test_directory_is_not_an_executable) ... ok
+test_empty_configuration_is_not_a_fallback (test_backend_executable.BackendExecutableTests.test_empty_configuration_is_not_a_fallback) ... ok
+test_empty_source_directory_is_not_treated_as_packaged_deployment (test_backend_executable.BackendExecutableTests.test_empty_source_directory_is_not_treated_as_packaged_deployment) ... ok
+test_invalid_build_manifest_fails (test_backend_executable.BackendExecutableTests.test_invalid_build_manifest_fails) ... ok
+test_linux_execute_permission_is_checked (test_backend_executable.BackendExecutableTests.test_linux_execute_permission_is_checked) ... skipped 'POSIX permission check runs on Linux.'
+test_missing_build_manifest_fails (test_backend_executable.BackendExecutableTests.test_missing_build_manifest_fails) ... ok
+test_missing_configured_path_does_not_fall_back_to_valid_default (test_backend_executable.BackendExecutableTests.test_missing_configured_path_does_not_fall_back_to_valid_default) ... ok
+test_new_header_invalidates_build (test_backend_executable.BackendExecutableTests.test_new_header_invalidates_build) ... ok
+test_old_root_binaries_are_not_fallbacks (test_backend_executable.BackendExecutableTests.test_old_root_binaries_are_not_fallbacks) ... ok
+test_packaged_build_without_sources_still_checks_binary (test_backend_executable.BackendExecutableTests.test_packaged_build_without_sources_still_checks_binary) ... ok
+test_relative_configuration_is_project_relative_not_working_directory (test_backend_executable.BackendExecutableTests.test_relative_configuration_is_project_relative_not_working_directory) ... ok
+test_replaced_binary_fails (test_backend_executable.BackendExecutableTests.test_replaced_binary_fails) ... ok
+test_invalid_artifact_is_never_executed (test_backend_executable.BackendExecutionTests.test_invalid_artifact_is_never_executed) ... ok
+test_os_loader_failure_is_reported (test_backend_executable.BackendExecutionTests.test_os_loader_failure_is_reported) ... ok
+test_run_route_redirects_to_clear_validation_error (test_backend_executable.BackendExecutionTests.test_run_route_redirects_to_clear_validation_error) ... ok
+test_stale_artifact_is_never_executed (test_backend_executable.BackendExecutionTests.test_stale_artifact_is_never_executed) ... ok
+test_verified_absolute_path_is_executed_and_logged (test_backend_executable.BackendExecutionTests.test_verified_absolute_path_is_executed_and_logged) ... ok
+test_real_backend_and_dashboard_use_isolated_outputs (test_backend_executable.BackendWebSmokeTests.test_real_backend_and_dashboard_use_isolated_outputs) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 13.464s
+
+OK (skipped=1)
+
+test_cpp_runner_cleans_owned_artifacts_and_preserves_compile_failure_status (test_application_entrypoints.ApplicationEntrypointTests.test_cpp_runner_cleans_owned_artifacts_and_preserves_compile_failure_status) ... ok
+test_direct_script_bootstraps_package_outside_repository_directory (test_application_entrypoints.ApplicationEntrypointTests.test_direct_script_bootstraps_package_outside_repository_directory) ... ok
+test_flask_cli_registers_all_workflows_without_database_access (test_application_entrypoints.ApplicationEntrypointTests.test_flask_cli_registers_all_workflows_without_database_access) ... ok
+test_full_ci_launcher_supports_spawn_workers (test_application_entrypoints.ApplicationEntrypointTests.test_full_ci_launcher_supports_spawn_workers) ... ok
+test_policy_ci_gate_rejects_missing_postgresql_discovery_and_skips (test_application_entrypoints.ApplicationEntrypointTests.test_policy_ci_gate_rejects_missing_postgresql_discovery_and_skips) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 11.906s
+
+OK

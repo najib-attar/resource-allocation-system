@@ -1,0 +1,156 @@
+[
+  {
+    "path": "browser/academic-calendar-filtered.png",
+    "width": 320,
+    "height": 2341,
+    "sha256": "157b0af6d739bdeb75d3e3f6b99c2f1794c5b4cdc247a7fbd2d80a30921c0637",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/appointment-1440.png",
+    "width": 1440,
+    "height": 1501,
+    "sha256": "f42ce71169166044195797bb0517cf76d760c28c523de6cb979953a7935a07e8",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/appointment-320.png",
+    "width": 320,
+    "height": 1644,
+    "sha256": "1f65909e38017e653688379010e30ee38dc138c21dcd650e0194ee1672a4da4d",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/appointments-1440.png",
+    "width": 1440,
+    "height": 1035,
+    "sha256": "4973e0fb330b0a0c1db91eace8e0e360dde9ab19f8d50b4d8af6f2de00f36c50",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/appointments-320.png",
+    "width": 320,
+    "height": 1070,
+    "sha256": "cf793342db2f7cfc58fbae0cfbdaea5a325add03463335eedcd21c9366c21323",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/calendar-day-1440.png",
+    "width": 1440,
+    "height": 1759,
+    "sha256": "1b457f54b883bdb11bbb068f35975749bece704016675563cb6f6a55b5bec0ca",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/calendar-day-320.png",
+    "width": 320,
+    "height": 2348,
+    "sha256": "ce0c797806b9485395e0c1d17f3d63dee9626ab5645dae8f31eec939d891ff1b",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/calendar-month-1440.png",
+    "width": 1440,
+    "height": 1968,
+    "sha256": "18cebff3812523c176967f242f4ba964b11af73ca14d1109aca59bd9041993d8",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/calendar-month-320.png",
+    "width": 320,
+    "height": 4382,
+    "sha256": "c9226ac5861be7118b9214f78a484a323755fdf8dfdaf473063ace6a83c749a7",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/calendar-week-1440.png",
+    "width": 1440,
+    "height": 1922,
+    "sha256": "964bf2fff38749d195b983a563c01651b5ad7b208bec6a980f72d93457313398",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/calendar-week-320.png",
+    "width": 320,
+    "height": 2580,
+    "sha256": "6c231f854e538adeeee863f49650581316b4b772b47b7770bf774b25baad49c4",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/hours-1440.png",
+    "width": 1440,
+    "height": 1281,
+    "sha256": "1d55995e839f2f250671dfbaa119fe116578039f02fab64348e6f149f0928255",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/hours-320.png",
+    "width": 320,
+    "height": 1395,
+    "sha256": "9d7ca0619d1c596b215d75a4c023b611f18e0501f18eb53d69102a5ab286be2d",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/hours-with-exclusion.png",
+    "width": 390,
+    "height": 1363,
+    "sha256": "e7a7ad0dccb614a8b0e43461cc5722621332482637fa67091cfb6b7a04b1beac",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/inbox-1440.png",
+    "width": 1440,
+    "height": 1171,
+    "sha256": "f0ddaf4bddc64fc09dd15331775c5956487b869b2f155fe6201e29687aaf18cd",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/inbox-320.png",
+    "width": 320,
+    "height": 1441,
+    "sha256": "dc35147ed273a87f98a2de55d6e785d687a85fa80256117b42cfbe738893ea22",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/own-dated-block.png",
+    "width": 390,
+    "height": 2290,
+    "sha256": "38e3bbd53c541dbe5391e296ddb6a8045e3f81ac61cf63b1979d87dad212c293",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/reschedule-invalidated-approvals.png",
+    "width": 390,
+    "height": 2159,
+    "sha256": "ae19fec36f5259346307b7e1c2956ed4d67767f1e8c79290c90fe04dd88bd089",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/room-invitation-1440.png",
+    "width": 1440,
+    "height": 1247,
+    "sha256": "071a906c2ebf619eefddc9afe4a4718ff3f65a503a320c24471887277d7b89aa",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/room-invitation-320.png",
+    "width": 320,
+    "height": 1689,
+    "sha256": "f51c004bb1fb3220903d094c25b74abcce382d1e5a48d2a6b60f58b45ae42df4",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/schedule-1440.png",
+    "width": 1440,
+    "height": 1889,
+    "sha256": "2ad99d63835acc0893bfe7deae6689914ad7601c1957c0d34be6db9c80c5acf0",
+    "pngCRC": true
+  },
+  {
+    "path": "browser/schedule-320.png",
+    "width": 320,
+    "height": 2363,
+    "sha256": "96d99cbb6723f0a58cfd8e0c4d53e2f01603b6131fa3a0f3dfcf17eedfb5f1f0",
+    "pngCRC": true
+  }
+]

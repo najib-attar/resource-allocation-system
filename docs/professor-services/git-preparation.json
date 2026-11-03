@@ -1,0 +1,69 @@
+{
+  "studentHead": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+  "remoteHead": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+  "latestMain": "d9a63f3ef0f5f22b56a79af670c740a13f7bb6ad",
+  "professorBase": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+  "professorBranch": "codex/professor-services-v1",
+  "studentPR": {
+    "url": "https://github.com/najib-attar/resource-allocation-system/pull/24",
+    "draft": true,
+    "merged": false,
+    "base": "main",
+    "head": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+    "commits": [
+      "fb5b07a2ba547aa20ac7ff3065491d0e0da52c57",
+      "cfb84d2ffb574eb0536172034a021926f642599d",
+      "e01eba693c1d8c4a19e6e8a6cf8c271596ebe7a5",
+      "548d69c26a4aa1758a14c2302e51db333d5e4241",
+      "42f3a926e7627f51af5e89d3c7c80e30c06a03e8",
+      "caf972b94b8f3d653cf3fef7466eb70f2c9ef0fd",
+      "581e9b08ec4753d0be32cbe9f50a60eca2e240e8",
+      "e7c5aad4df1cdce12da3b6593a8b597d466d5fef",
+      "84d649ba19c0037b0c9b7106e197934b080091e6",
+      "cad6b8d8411d1993d8f13de27d3bdd076300e6ff",
+      "2d745fadf9f16dde5dfc40137e042e36de654be8",
+      "d060c7a350dc9bdd4b045b399043693d12bb2042",
+      "998d54dc60207c2fea5434cda0fe68235a566187",
+      "5a9c376126e980e18eb79fbab562e42717b9a87f",
+      "6bf2b3c431ea021546a16f4dd3622bdfaf86675f",
+      "0a1017f180f53c7bf502845ea207d912a757067c",
+      "09a02c87ca0e3071f25439cfcac4c4605af72685",
+      "747c925b14c29368e6cb9bc8b2e2d9d33c494462"
+    ],
+    "mergeable": true,
+    "mergeableState": "clean"
+  },
+  "checks": [
+    {
+      "name": "regression",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/najib-attar/resource-allocation-system/actions/runs/41683129612/job/126081734373"
+    },
+    {
+      "name": "I3b authorized read-only PostgreSQL projection",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/najib-attar/resource-allocation-system/actions/runs/41683129612/job/126081734274"
+    },
+    {
+      "name": "regression",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/najib-attar/resource-allocation-system/actions/runs/41682895426/job/126080909076"
+    },
+    {
+      "name": "I3b authorized read-only PostgreSQL projection",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/najib-attar/resource-allocation-system/actions/runs/41682895426/job/126080908503"
+    }
+  ],
+  "combinedStatus": "pending",
+  "finalRemoteVerification": {
+    "studentHead": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+    "mainHead": "d9a63f3ef0f5f22b56a79af670c740a13f7bb6ad",
+    "professorRemoteBranchPresent": false,
+    "studentWorkingTreeClean": true
+  }
+}

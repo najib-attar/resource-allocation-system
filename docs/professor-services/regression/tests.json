@@ -1,0 +1,373 @@
+{
+  "modules": [
+    "test_appointment_foundation",
+    "test_appointment_protocol",
+    "test_appointments",
+    "test_calendar_loading",
+    "test_identity_sessions",
+    "test_room_foundation",
+    "test_room_requests",
+    "test_personal_schedule",
+    "test_university_calendar",
+    "test_notifications",
+    "test_frontend_prototype",
+    "test_student_portal_ui",
+    "test_student_dashboard",
+    "test_professor_services",
+    "test_professor_existing_workflows",
+    "test_save_only_confirmation",
+    "test_equipment_web",
+    "test_equipment",
+    "test_resource_feedback",
+    "test_waiting_lists",
+    "test_recurring_workflows",
+    "test_recurring_policy",
+    "test_engine_gateway",
+    "test_backend_executable",
+    "test_application_entrypoints"
+  ],
+  "expected": 391,
+  "run": 391,
+  "passed": 389,
+  "failures": 0,
+  "errors": 1,
+  "skipped": [
+    {
+      "test": "test_linux_execute_permission_is_checked (test_backend_executable.BackendExecutableTests.test_linux_execute_permission_is_checked)",
+      "reason": "POSIX permission check runs on Linux."
+    }
+  ],
+  "seconds": 1024.56,
+  "results": {
+    "test_appointment_protocol": {
+      "modules": [
+        "test_appointment_protocol"
+      ],
+      "expected": 5,
+      "run": 5,
+      "passed": 4,
+      "failures": 0,
+      "errors": 1,
+      "skipped": [],
+      "seconds": 3.94,
+      "exitCode": 1
+    },
+    "test_calendar_loading": {
+      "modules": [
+        "test_calendar_loading"
+      ],
+      "expected": 3,
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 12.52,
+      "exitCode": 0
+    },
+    "test_room_foundation": {
+      "modules": [
+        "test_room_foundation"
+      ],
+      "expected": 4,
+      "run": 4,
+      "passed": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 19.05,
+      "exitCode": 0
+    },
+    "test_appointment_foundation": {
+      "modules": [
+        "test_appointment_foundation"
+      ],
+      "expected": 6,
+      "run": 6,
+      "passed": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 37.69,
+      "exitCode": 0
+    },
+    "test_identity_sessions": {
+      "modules": [
+        "test_identity_sessions"
+      ],
+      "expected": 8,
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 36.08,
+      "exitCode": 0
+    },
+    "test_personal_schedule": {
+      "modules": [
+        "test_personal_schedule"
+      ],
+      "expected": 15,
+      "run": 15,
+      "passed": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 65.06,
+      "exitCode": 0
+    },
+    "test_appointments": {
+      "modules": [
+        "test_appointments"
+      ],
+      "expected": 24,
+      "run": 24,
+      "passed": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 180.06,
+      "exitCode": 0
+    },
+    "test_frontend_prototype": {
+      "modules": [
+        "test_frontend_prototype"
+      ],
+      "expected": 8,
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 37.95,
+      "exitCode": 0
+    },
+    "test_student_portal_ui": {
+      "modules": [
+        "test_student_portal_ui"
+      ],
+      "expected": 19,
+      "run": 19,
+      "passed": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 0.75,
+      "exitCode": 0
+    },
+    "test_notifications": {
+      "modules": [
+        "test_notifications"
+      ],
+      "expected": 11,
+      "run": 11,
+      "passed": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 139.97,
+      "exitCode": 0
+    },
+    "test_room_requests": {
+      "modules": [
+        "test_room_requests"
+      ],
+      "expected": 18,
+      "run": 18,
+      "passed": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 255.7,
+      "exitCode": 0
+    },
+    "test_university_calendar": {
+      "modules": [
+        "test_university_calendar"
+      ],
+      "expected": 21,
+      "run": 21,
+      "passed": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 257.08,
+      "exitCode": 0
+    },
+    "test_professor_existing_workflows": {
+      "modules": [
+        "test_professor_existing_workflows"
+      ],
+      "expected": 3,
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 31.02,
+      "exitCode": 0
+    },
+    "test_student_dashboard": {
+      "modules": [
+        "test_student_dashboard"
+      ],
+      "expected": 14,
+      "run": 14,
+      "passed": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 100.62,
+      "exitCode": 0
+    },
+    "test_save_only_confirmation": {
+      "modules": [
+        "test_save_only_confirmation"
+      ],
+      "expected": 10,
+      "run": 10,
+      "passed": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 56.38,
+      "exitCode": 0
+    },
+    "test_equipment_web": {
+      "modules": [
+        "test_equipment_web"
+      ],
+      "expected": 7,
+      "run": 7,
+      "passed": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 74.23,
+      "exitCode": 0
+    },
+    "test_professor_services": {
+      "modules": [
+        "test_professor_services"
+      ],
+      "expected": 14,
+      "run": 14,
+      "passed": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 152.81,
+      "exitCode": 0
+    },
+    "test_equipment": {
+      "modules": [
+        "test_equipment"
+      ],
+      "expected": 21,
+      "run": 21,
+      "passed": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 259.92,
+      "exitCode": 0
+    },
+    "test_recurring_workflows": {
+      "modules": [
+        "test_recurring_workflows"
+      ],
+      "expected": 25,
+      "run": 25,
+      "passed": 25,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 299.89,
+      "exitCode": 0
+    },
+    "test_engine_gateway": {
+      "modules": [
+        "test_engine_gateway"
+      ],
+      "expected": 24,
+      "run": 24,
+      "passed": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 14.11,
+      "exitCode": 0
+    },
+    "test_resource_feedback": {
+      "modules": [
+        "test_resource_feedback"
+      ],
+      "expected": 31,
+      "run": 31,
+      "passed": 31,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 381.14,
+      "exitCode": 0
+    },
+    "test_backend_executable": {
+      "modules": [
+        "test_backend_executable"
+      ],
+      "expected": 21,
+      "run": 21,
+      "passed": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [
+        {
+          "test": "test_linux_execute_permission_is_checked (test_backend_executable.BackendExecutableTests.test_linux_execute_permission_is_checked)",
+          "reason": "POSIX permission check runs on Linux."
+        }
+      ],
+      "seconds": 13.45,
+      "exitCode": 0
+    },
+    "test_application_entrypoints": {
+      "modules": [
+        "test_application_entrypoints"
+      ],
+      "expected": 5,
+      "run": 5,
+      "passed": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 11.91,
+      "exitCode": 0
+    },
+    "test_recurring_policy": {
+      "modules": [
+        "test_recurring_policy"
+      ],
+      "expected": 25,
+      "run": 25,
+      "passed": 25,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 275.81,
+      "exitCode": 0
+    },
+    "test_waiting_lists": {
+      "modules": [
+        "test_waiting_lists"
+      ],
+      "expected": 49,
+      "run": 49,
+      "passed": 49,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 606.89,
+      "exitCode": 0
+    }
+  }
+}

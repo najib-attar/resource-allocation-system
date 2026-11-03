@@ -1,6 +1,6 @@
 # Professor frontend sequence — plan only
 
-Prerequisite: review the backend acceptance report, merge/review dependent Student Draft PR #24, and resolve the eligibility gate before enabling academic intake. Reuse the Campus Space system in `base.html`, `components/student_ui.html`, existing icons, status badges, panels, form patterns, `student-portal.css` and page-specific scripts. Keep shared design corrections small; do not copy student services into a professor dashboard.
+Prerequisite: review the backend acceptance report, merge/review dependent Student Draft PR #24, and resolve the eligibility gate before enabling academic intake. Reuse the Campus Space system in `base.html`, `components/ui.html`, `components/student_services.html`, existing icons, status badges, panels, form patterns, `tokens.css`, `shell.css` and page-specific scripts. Extract shared presentation where needed from the existing student styles without granting a professor the student shell or its services. Keep shared design corrections small; do not copy student services into a professor dashboard.
 
 | Group | Scope and actual backend contract | Acceptance boundary |
 |---|---|---|
