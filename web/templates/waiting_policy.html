@@ -1,7 +1,10 @@
-{% extends 'base.html' %}
+{% extends 'student_service_base.html' %}
 {% block title %}Waiting-list Policy{% endblock %}
 {% block page_heading %}Waiting-list policy{% endblock %}
-{% block content %}<section class="panel"><p class="eyebrow">Version {{ policy.version }}</p>
+{% block service_eyebrow %}Waiting lists / Policy{% endblock %}
+{% block service_intro %}Understand eligibility, review, queue positions and automatic assignment before joining.{% endblock %}
+{% block service_actions %}<a class="service-button" href="{{ url_for('waiting.index') }}">Back to waiting lists</a>{% endblock %}
+{% block service_content %}<section class="panel service-policy"><p class="eyebrow">Version {{ policy.version }}</p>
 <h2>Before you join</h2><p>Join only for an eligible request that cannot currently be fulfilled. Joining and pre-approval reserve nothing. You may withdraw freely while waiting.</p>
 <h2>Automatic assignment and approval</h2><p>The room-owning faculty approver or equipment custodian must pre-approve. We then recheck current eligibility, staff authority, availability and minimum advance notice before reserving the complete request. Your consent replaces a second offer acceptance. Your requested interval, quantities and mandatory requirements never change automatically. Rooms must remain within the faculty you selected for review. Equipment pickup still requires physical handover.</p>
 <p>{% if policy.noticeMinutes %}Current minimum advance notice is {{ policy.noticeMinutes }} minutes. A larger minimum already recorded for your entry is not reduced.{% else %}No minimum advance notice has been configured. Automatic assignment is disabled until an administrator explicitly sets it.{% endif %} Late availability is not automatically booked. Entries expire at their requested start if still unassigned.</p>

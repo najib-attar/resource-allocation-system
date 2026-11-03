@@ -204,6 +204,61 @@ async function equipment(page) {
   assert.match(await page.locator('main').innerText(), /Cancelled/);
   results.push('Catalog selection, real recommendation, changed-selection warning, normal submit/cancel; overdue partial-return detail, return intent without inventory release, extension request and hidden custodian controls; unauthorized physical handover/return rejected with CSRF present; signed complete recurring preview invalidated on edits, rechecked before submission, recurring request/cancellation persisted.');
 }
+async function waiting(page, context, browser) {
+  await page.goto(fixture.url + '/waiting-lists/' + fixture.ids.queue);
+  assert.match(await page.locator('main').innerText(), /Preapproved/);
+  assert.match(await page.locator('main').innerText(), /Preapproval does not reserve/);
+  assert.equal(await page.locator('form[action$="/review"]').count(), 0);
+  const csrf = await page.locator('[name=csrf_token]').first().inputValue();
+  assert.equal((await page.request.post(fixture.url + '/waiting-lists/' + fixture.ids.queue + '/review',
+    {form:{csrf_token:csrf,decision:'approve'}})).status(), 403);
+  await page.goto(fixture.url + '/waiting-lists/');
+  await submit(page, page.locator('form[action$="/refresh"] button'));
+  assert.match(await page.locator('main').innerText(), /Preapproved/);
+  await page.goto(fixture.url + '/waiting-lists/policy');
+  assert.match(await page.locator('main').innerText(), /60 minutes/);
+  assert.match(await page.locator('main').innerText(), /not a promise of availability/);
+  await page.goto(fixture.url + '/waiting-lists/' + fixture.ids.queue);
+  await submit(page, page.locator('form[action$="/cancel"] button'));
+  assert.match(await page.locator('main').innerText(), /Cancelled/);
+  assert.equal(await page.locator('form[action$="/cancel"]').count(), 0);
+  await screenshot(page, 'waiting-withdrawn');
+  await page.goto(fixture.url + '/rooms/new');
+  await page.locator('[name=purpose]').fill('Fictional browser queue assignment');
+  await page.locator('[name=start]').fill('2030-01-11T10:00');
+  await page.locator('[name=count]').fill('8');
+  await page.locator('#find-rooms').click();
+  await page.locator('#room-waiting-option').waitFor();
+  await page.locator('[name=waitingFaculty]').selectOption({label:'Fictional Arts Faculty'});
+  await page.locator('[name=acceptWaiting]').check();
+  await submit(page, page.locator('button[value=wait]'));
+  assert.match(await page.locator('main').innerText(), /Pending Review/);
+  const queueUrl = page.url();
+  const staffContext = await browser.newContext();
+  const staff = await staffContext.newPage();
+  await login(staff, 7);
+  await staff.goto(queueUrl);
+  await submit(staff, staff.locator('button[value=approve]'));
+  await page.reload();
+  assert.match(await page.locator('main').innerText(), /Preapproved/);
+  await staff.goto(fixture.url + '/rooms/');
+  await staff.getByRole('link', {name:'Private study activity', exact:true}).click();
+  await submit(staff, staff.locator('form[action$="/cancel"] button'));
+  await page.reload();
+  assert.match(await page.locator('main').innerText(), /Assigned/);
+  const assigned = page.getByRole('link', {name:'Open assigned reservation', exact:true});
+  assert.ok(await assigned.isVisible());
+  for (const width of [1440,768,390,320]) {
+    await page.setViewportSize({width,height:900});
+    assert.equal(await page.evaluate(() => document.documentElement.scrollWidth), width);
+    await page.screenshot({path:path.join(output, `waiting-assigned-${width}.png`), fullPage:true});
+  }
+  await assigned.click();
+  assert.match(await page.locator('main').innerText(), /Confirmed/);
+  assert.match(await page.locator('main').innerText(), /Fictional browser queue assignment/);
+  await staffContext.close();
+  results.push('Preapproved queue displayed contextual position without promising a reservation; student review control absent and direct review POST forbidden; authorized recheck, actual 60-minute policy and withdrawal persisted. A new eligible unavailable room joined through the real form; responsible staff preapproved; releasing the occupied room triggered real assignment; assigned link opened the confirmed reservation. Assignment captures at all four widths passed overflow checks.');
+}
 (async () => {
   const browser = await chromium.launch({headless:true, ...(process.env.CHROMIUM_EXECUTABLE ?
     {executablePath:process.env.CHROMIUM_EXECUTABLE} : {channel:'msedge'})});
@@ -216,6 +271,7 @@ async function equipment(page) {
     if (phase === 'UI-03') await appointments(page, context);
     else if (phase === 'UI-04') await rooms(page, context);
     else if (phase === 'UI-05') await equipment(page);
+    else if (phase === 'UI-06') await waiting(page, context, browser);
     else throw new Error('Unknown workflow phase ' + phase);
     assert.deepEqual(errors, []);
     fs.writeFileSync(path.join(output, 'workflow-results.json'), JSON.stringify({phase, results, browserErrors:errors}, null, 2) + '\n');

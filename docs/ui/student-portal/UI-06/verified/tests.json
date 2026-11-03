@@ -1,0 +1,41 @@
+{
+  "modules": [
+    "test_waiting_lists.WaitingRoomTests",
+    "test_waiting_lists.WaitingEquipmentTests"
+  ],
+  "expected": 49,
+  "run": 49,
+  "passed": 49,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 390.86,
+  "results": {
+    "test_waiting_lists.WaitingEquipmentTests": {
+      "modules": [
+        "test_waiting_lists.WaitingEquipmentTests"
+      ],
+      "run": 20,
+      "passed": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 277.8,
+      "exitCode": 0,
+      "expected": 20
+    },
+    "test_waiting_lists.WaitingRoomTests": {
+      "modules": [
+        "test_waiting_lists.WaitingRoomTests"
+      ],
+      "run": 29,
+      "passed": 29,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 386.45,
+      "exitCode": 0,
+      "expected": 29
+    }
+  }
+}

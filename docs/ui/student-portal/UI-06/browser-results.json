@@ -1,0 +1,38 @@
+{
+  "phase": "UI-06",
+  "results": [
+    "student/waiting: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "student/waiting-detail: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "student/waiting-policy: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "student/waiting-inaccessible: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "student/waiting-forbidden: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "empty/waiting: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed"
+  ],
+  "browserErrors": [],
+  "screenshots": [
+    "empty-waiting-1440.png",
+    "empty-waiting-320.png",
+    "empty-waiting-390.png",
+    "empty-waiting-768.png",
+    "waiting-1440.png",
+    "waiting-320.png",
+    "waiting-390.png",
+    "waiting-768.png",
+    "waiting-detail-1440.png",
+    "waiting-detail-320.png",
+    "waiting-detail-390.png",
+    "waiting-detail-768.png",
+    "waiting-forbidden-1440.png",
+    "waiting-forbidden-320.png",
+    "waiting-forbidden-390.png",
+    "waiting-forbidden-768.png",
+    "waiting-inaccessible-1440.png",
+    "waiting-inaccessible-320.png",
+    "waiting-inaccessible-390.png",
+    "waiting-inaccessible-768.png",
+    "waiting-policy-1440.png",
+    "waiting-policy-320.png",
+    "waiting-policy-390.png",
+    "waiting-policy-768.png"
+  ]
+}
