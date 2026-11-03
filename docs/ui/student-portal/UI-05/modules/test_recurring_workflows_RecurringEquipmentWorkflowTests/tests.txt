@@ -1,0 +1,15 @@
+test_concurrent_identical_equipment_series_submission_is_idempotent (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_concurrent_identical_equipment_series_submission_is_idempotent) ... ok
+test_each_pickup_and_verified_return_is_independent (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_each_pickup_and_verified_return_is_independent) ... ok
+test_existing_preapproved_equipment_queue_keeps_its_reservation (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_existing_preapproved_equipment_queue_keeps_its_reservation) ... ok
+test_future_series_cancellation_never_releases_current_borrowed_units (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_future_series_cancellation_never_releases_current_borrowed_units) ... ok
+test_one_time_and_recurring_periods_compete_under_existing_inventory_locks (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_one_time_and_recurring_periods_compete_under_existing_inventory_locks) ... ok
+test_one_unavailable_period_never_causes_partial_approval (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_one_unavailable_period_never_causes_partial_approval) ... ok
+test_partial_and_damaged_returns_do_not_complete_the_series (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_partial_and_damaged_returns_do_not_complete_the_series) ... ok
+test_series_reserves_all_quantities_without_duplicate_parent_requests (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_series_reserves_all_quantities_without_duplicate_parent_requests) ... ok
+test_unchanged_series_retries_reuse_the_parent_and_changed_payload_fails (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_unchanged_series_retries_reuse_the_parent_and_changed_payload_fails) ... ok
+test_unreturned_previous_occurrence_blocks_same_units_at_later_pickup (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_unreturned_previous_occurrence_blocks_same_units_at_later_pickup) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 161.582s
+
+OK

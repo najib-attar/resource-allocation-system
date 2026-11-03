@@ -1,0 +1,10 @@
+test_calendar_pickups_and_due_dates_are_separate_nonbusy_reminders (test_recurring_views.RecurringEquipmentViewsTests.test_calendar_pickups_and_due_dates_are_separate_nonbusy_reminders) ... ok
+test_extension_occurrence_cannot_reference_another_series (test_recurring_views.RecurringEquipmentViewsTests.test_extension_occurrence_cannot_reference_another_series) ... ok
+test_extensions_cannot_overlap_next_occurrence_and_can_extend_selected_loan (test_recurring_views.RecurringEquipmentViewsTests.test_extensions_cannot_overlap_next_occurrence_and_can_extend_selected_loan) ... ok
+test_flask_preview_complete_approval_and_one_occurrence_cancel (test_recurring_views.RecurringEquipmentViewsTests.test_flask_preview_complete_approval_and_one_occurrence_cancel) ... ok
+test_gateway_rejects_partial_mismatched_and_ambiguous_series_results (test_recurring_views.RecurringEquipmentViewsTests.test_gateway_rejects_partial_mismatched_and_ambiguous_series_results) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 92.791s
+
+OK

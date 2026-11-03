@@ -98,6 +98,18 @@
 .student-service .room-candidate-option > a { display: inline-block; font-size: 11px; margin: 9px 0; padding-block: 6px; }
 .student-service #room-alternatives button { margin: 5px 8px 5px 0; }
 .student-service #room-message[role=alert] { color: #972b36; }
+/* Equipment: availability and physical return are separate states. */
+.student-service .service-icon-equipment { background: #e8f1ec; color: #376958; }
+.student-service .equipment-catalog { grid-template-columns: minmax(0,1fr); gap: 0; }
+.student-service .equipment-card { padding: 22px 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: #fff; }
+.student-service .equipment-card h3 { margin: 8px 0; font-size: 16px; }
+.student-service .equipment-card dl { grid-template-columns: minmax(70px,auto) minmax(0,1fr); font-size: 12px; color: var(--muted); }
+.student-service .equipment-card :is(dt,dd) { overflow-wrap: anywhere; }
+.student-service .equipment-warning { background: #fff0f0; border-radius: 7px; padding: 12px; font-size: 12px; color: #972b36; }
+.student-service .equipment-result { border-color: #9ebbac; background: #f7fbf8; }
+.student-service .equipment-result.is-stale { border-color: #e9d7b8; background: #fff7e9; }
+.student-service .panel .equipment-inline { display: flex; gap: 16px; }
+.student-service .equipment-inline label { flex: 1 1 200px; }
 @media (max-width: 600px) {
     .service-heading { display: block; margin-bottom: 25px; }
     .service-heading-actions { margin-top: 18px; }
@@ -105,6 +117,7 @@
     .student-service :is(.appointment-grid,.booking-fields-row,.participant-picker-grid) { grid-template-columns: minmax(0,1fr); gap: 0; }
     .service-row { grid-template-columns: 32px minmax(0,1fr); gap: 12px; }
     .service-row > .service-status { grid-column: 2; justify-self: start; }
+    .service-row-state { grid-column: 2; }
     .service-row-icon { width: 32px; height: 32px; }
     .student-service .booking-guide ol { display: block; }
     .student-service .booking-submit > button { width: 100%; }

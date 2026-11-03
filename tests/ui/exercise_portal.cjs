@@ -139,6 +139,71 @@ async function rooms(page, context) {
   results.push('Real ranked-room form with actual registered student and optional professor; busy/free link; changed input cleared candidate; offline error blocked stale submission; submit/revise/cancel preserved review and revision; unavailable capacity blocked submission; future recurring occurrence cancelled through authorized form.');
   results.push('Synthetic browser-created room request: ' + new URL(requestUrl).pathname);
 }
+async function equipment(page) {
+  await page.goto(fixture.url + '/equipment/catalog?start=2030-01-28T10:00&due=2030-01-28T11:00');
+  await page.locator('[name=faculty]').selectOption(String(fixture.ids.faculty));
+  const quantity = page.locator('[name="qty_' + fixture.ids.equipmentType + '"]');
+  await quantity.fill('1');
+  await page.locator('[name=purpose]').fill('Fictional browser equipment acceptance');
+  await submit(page, page.locator('button[value=recommend]'));
+  assert.match(await page.locator('#equipment-result h2').innerText(), /complete request is feasible/);
+  await screenshot(page, 'equipment-recommendation');
+  await page.locator('[name="qty_' + fixture.ids.equipmentType + '"]').fill('2');
+  assert.match(await page.locator('#equipment-result h2').innerText(), /Selection changed/);
+  await page.locator('[name="qty_' + fixture.ids.equipmentType + '"]').fill('1');
+  await submit(page, page.locator('button[value=submit]'));
+  assert.match(await page.locator('main').innerText(), /Pending Approval/);
+  assert.equal(await page.locator('form[action$="/handover"]').count(), 0);
+  assert.equal(await page.locator('form[action$="/return"]').count(), 0);
+  assert.equal(await page.locator('form[action$="/approve"]').count(), 0);
+  await screenshot(page, 'equipment-submitted');
+  await submit(page, page.locator('form[action$="/cancel"] button'));
+  assert.match(await page.locator('main').innerText(), /Cancelled/);
+  await page.goto(fixture.url + '/equipment/' + fixture.ids.loan);
+  assert.match(await page.locator('main').innerText(), /Partially Returned/);
+  assert.match(await page.locator('main').innerText(), /Overdue equipment remains borrowed/);
+  assert.equal(await page.locator('form[action$="/return"]').count(), 0);
+  const csrf = await page.locator('[name=csrf_token]').first().inputValue();
+  for (const [action, fields] of [['handover',{condition:'Synthetic unauthorized attempt'}],
+    ['return',{unitIds:'999999',condition:'usable'}]]) {
+    assert.equal((await page.request.post(fixture.url + '/equipment/' + fixture.ids.loan + '/' + action,
+      {form:{csrf_token:csrf,...fields}})).status(), 403);
+  }
+  await submit(page, page.locator('form[action$="/intend-return"] button'));
+  assert.match(await page.locator('main').innerText(), /Partially Returned/);
+  const extension = page.locator('form[action$="/extension"]');
+  await extension.locator('[name=due]').fill(new Date(Date.now()+86400000).toISOString().slice(0,16));
+  await extension.locator('[name=reason]').fill('Fictional browser extension request');
+  await submit(page, extension.locator('button'));
+  assert.match(await page.locator('main').innerText(), /Fictional browser extension request/);
+  assert.equal(await page.locator('form[action$="/approve-extension"]').count(), 0);
+  await screenshot(page, 'partial-return-and-extension');
+  await page.goto(fixture.url + '/equipment/catalog?start=2030-01-28T10:00&due=2030-01-28T11:00');
+  await page.locator('[name=faculty]').selectOption(String(fixture.ids.faculty));
+  await page.locator('[name="qty_' + fixture.ids.equipmentType + '"]').fill('1');
+  await page.locator('[name=purpose]').fill('Fictional recurring browser equipment');
+  await page.locator('[name=reservationMode]').selectOption('weekly');
+  await page.locator('[name=academicPeriod]').selectOption({index:1});
+  await page.locator('[name=approvalMode]').selectOption('partial');
+  await page.locator('[name=recurrenceStart]').fill('2030-01-28');
+  await page.locator('[name=recurrenceEnd]').fill('2030-02-04');
+  await page.locator('[name=recurrenceTime]').fill('10:00');
+  await page.locator('[name=recurrenceDays][value="1"]').check();
+  await submit(page, page.locator('button[value=recommend]'));
+  assert.ok(await page.locator('[name=previewToken]').inputValue());
+  await screenshot(page, 'equipment-recurring-preview');
+  await page.locator('[name=purpose]').fill('Fictional recurring browser changed proposal');
+  assert.equal(await page.locator('[name=previewToken]').inputValue(), '');
+  await submit(page, page.locator('button[value=submit]'));
+  assert.equal(new URL(page.url()).pathname, '/equipment/catalog');
+  assert.ok(await page.locator('[name=previewToken]').inputValue());
+  await submit(page, page.locator('button[value=submit]'));
+  assert.match(await page.locator('main').innerText(), /Recurring pickups and returns/);
+  await screenshot(page, 'equipment-recurring-submitted');
+  await submit(page, page.locator('form[action$="/cancel"] button'));
+  assert.match(await page.locator('main').innerText(), /Cancelled/);
+  results.push('Catalog selection, real recommendation, changed-selection warning, normal submit/cancel; overdue partial-return detail, return intent without inventory release, extension request and hidden custodian controls; unauthorized physical handover/return rejected with CSRF present; signed complete recurring preview invalidated on edits, rechecked before submission, recurring request/cancellation persisted.');
+}
 (async () => {
   const browser = await chromium.launch({headless:true, ...(process.env.CHROMIUM_EXECUTABLE ?
     {executablePath:process.env.CHROMIUM_EXECUTABLE} : {channel:'msedge'})});
@@ -150,6 +215,7 @@ async function rooms(page, context) {
     await login(page);
     if (phase === 'UI-03') await appointments(page, context);
     else if (phase === 'UI-04') await rooms(page, context);
+    else if (phase === 'UI-05') await equipment(page);
     else throw new Error('Unknown workflow phase ' + phase);
     assert.deepEqual(errors, []);
     fs.writeFileSync(path.join(output, 'workflow-results.json'), JSON.stringify({phase, results, browserErrors:errors}, null, 2) + '\n');

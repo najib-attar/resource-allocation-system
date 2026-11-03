@@ -1,0 +1,14 @@
+test_all_required_cannot_be_silently_reduced_to_one_date (test_recurring_policy.RecurringEquipmentPolicyTests.test_all_required_cannot_be_silently_reduced_to_one_date) ... ok
+test_database_cannot_partially_confirm_an_all_required_series (test_recurring_policy.RecurringEquipmentPolicyTests.test_database_cannot_partially_confirm_an_all_required_series) ... ok
+test_extensions_recheck_semester_and_configured_weekly_quota (test_recurring_policy.RecurringEquipmentPolicyTests.test_extensions_recheck_semester_and_configured_weekly_quota) ... ok
+test_late_stock_conflict_marks_only_unavailable_occurrence (test_recurring_policy.RecurringEquipmentPolicyTests.test_late_stock_conflict_marks_only_unavailable_occurrence) ... ok
+test_overdue_physical_possession_still_counts_as_an_active_series (test_recurring_policy.RecurringEquipmentPolicyTests.test_overdue_physical_possession_still_counts_as_an_active_series) ... ok
+test_partial_equipment_decision_form_and_private_summary (test_recurring_policy.RecurringEquipmentPolicyTests.test_partial_equipment_decision_form_and_private_summary) ... ok
+test_partial_equipment_preview_persists_unavailable_dates_without_reserving (test_recurring_policy.RecurringEquipmentPolicyTests.test_partial_equipment_preview_persists_unavailable_dates_without_reserving) ... ok
+test_returned_partial_occurrence_does_not_prevent_later_approval (test_recurring_policy.RecurringEquipmentPolicyTests.test_returned_partial_occurrence_does_not_prevent_later_approval) ... ok
+test_selected_approval_and_rejection_keep_exact_quantities (test_recurring_policy.RecurringEquipmentPolicyTests.test_selected_approval_and_rejection_keep_exact_quantities) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 119.032s
+
+OK

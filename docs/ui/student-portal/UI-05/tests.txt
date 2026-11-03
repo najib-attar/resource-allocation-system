@@ -1,0 +1,81 @@
+test_backend_failure_rolls_back_decision_and_notifications (test_equipment.EquipmentWorkflowTests.test_backend_failure_rolls_back_decision_and_notifications) ... ok
+test_concurrent_duplicate_submissions_create_one_request (test_equipment.EquipmentWorkflowTests.test_concurrent_duplicate_submissions_create_one_request) ... ok
+test_database_exclusion_blocks_overlapping_unit_even_without_service (test_equipment.EquipmentWorkflowTests.test_database_exclusion_blocks_overlapping_unit_even_without_service) ... ok
+test_database_prevents_incomplete_approval_and_cross_type_reservations (test_equipment.EquipmentWorkflowTests.test_database_prevents_incomplete_approval_and_cross_type_reservations) ... ok
+test_extensions_respect_future_reservations_and_policy (test_equipment.EquipmentWorkflowTests.test_extensions_respect_future_reservations_and_policy) ... ok
+test_faculty_eligibility_and_disabled_policy_are_enforced_by_engine (test_equipment.EquipmentWorkflowTests.test_faculty_eligibility_and_disabled_policy_are_enforced_by_engine) ... ok
+test_gateway_rejects_duplicate_or_foreign_engine_assets (test_equipment.EquipmentWorkflowTests.test_gateway_rejects_duplicate_or_foreign_engine_assets) ... ok
+test_handover_return_intent_partial_return_and_damage (test_equipment.EquipmentWorkflowTests.test_handover_return_intent_partial_return_and_damage) ... ok
+test_idempotent_submission_returns_same_request_and_rejects_mutation (test_equipment.EquipmentWorkflowTests.test_idempotent_submission_returns_same_request_and_rejects_mutation) ... ok
+test_invalid_fields_and_unavailable_condition_fail_safely (test_equipment.EquipmentWorkflowTests.test_invalid_fields_and_unavailable_condition_fail_safely) ... ok
+test_missing_custodian_blocks_submission_without_partial_data (test_equipment.EquipmentWorkflowTests.test_missing_custodian_blocks_submission_without_partial_data) ... ok
+test_missing_unit_is_not_a_physical_return (test_equipment.EquipmentWorkflowTests.test_missing_unit_is_not_a_physical_return) ... ok
+test_multi_item_request_and_same_faculty_constraint (test_equipment.EquipmentWorkflowTests.test_multi_item_request_and_same_faculty_constraint) ... ok
+test_no_partial_approval_after_competing_request (test_equipment.EquipmentWorkflowTests.test_no_partial_approval_after_competing_request) ... ok
+test_overdue_alert_is_durable_once_per_due_date (test_equipment.EquipmentWorkflowTests.test_overdue_alert_is_durable_once_per_due_date) ... ok
+test_overdue_held_loan_blocks_future_and_staff_sees_affected_reservation (test_equipment.EquipmentWorkflowTests.test_overdue_held_loan_blocks_future_and_staff_sees_affected_reservation) ... ok
+test_overlap_and_adjacent_reservations (test_equipment.EquipmentWorkflowTests.test_overlap_and_adjacent_reservations) ... ok
+test_pending_then_approval_reserves_exact_quantity_and_notifies (test_equipment.EquipmentWorkflowTests.test_pending_then_approval_reserves_exact_quantity_and_notifies) ... ok
+test_permissions_custodian_replacement_and_private_catalog (test_equipment.EquipmentWorkflowTests.test_permissions_custodian_replacement_and_private_catalog) ... ok
+test_reject_cancel_release_and_borrowed_cannot_cancel (test_equipment.EquipmentWorkflowTests.test_reject_cancel_release_and_borrowed_cannot_cancel) ... ok
+test_simultaneous_process_approvals_cannot_share_last_units (test_equipment.EquipmentWorkflowTests.test_simultaneous_process_approvals_cannot_share_last_units) ... ok
+
+----------------------------------------------------------------------
+Ran 21 tests in 265.446s
+
+OK
+
+test_empty_schema_roundtrip_and_drift (test_equipment_web.EquipmentMigrationDemoTests.test_empty_schema_roundtrip_and_drift) ... ok
+test_fictional_moderate_and_large_inventory_never_overwrite_existing (test_equipment_web.EquipmentMigrationDemoTests.test_fictional_moderate_and_large_inventory_never_overwrite_existing) ... ok
+test_large_fictional_inventory_matches_real_engine (test_equipment_web.EquipmentMigrationDemoTests.test_large_fictional_inventory_matches_real_engine) ... ok
+test_csrf_and_unauthorized_faculty_actions_are_denied (test_equipment_web.EquipmentWebTests.test_csrf_and_unauthorized_faculty_actions_are_denied) ... ok
+test_invalid_dates_quantities_and_unknown_operations_fail_safely (test_equipment_web.EquipmentWebTests.test_invalid_dates_quantities_and_unknown_operations_fail_safely) ... ok
+test_inventory_management_and_recommendations_render_without_ids_in_names (test_equipment_web.EquipmentWebTests.test_inventory_management_and_recommendations_render_without_ids_in_names) ... ok
+test_student_catalog_submit_custodian_approval_handover_and_return (test_equipment_web.EquipmentWebTests.test_student_catalog_submit_custodian_approval_handover_and_return) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 97.007s
+
+OK
+
+test_concurrent_identical_equipment_series_submission_is_idempotent (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_concurrent_identical_equipment_series_submission_is_idempotent) ... ok
+test_each_pickup_and_verified_return_is_independent (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_each_pickup_and_verified_return_is_independent) ... ok
+test_existing_preapproved_equipment_queue_keeps_its_reservation (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_existing_preapproved_equipment_queue_keeps_its_reservation) ... ok
+test_future_series_cancellation_never_releases_current_borrowed_units (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_future_series_cancellation_never_releases_current_borrowed_units) ... ok
+test_one_time_and_recurring_periods_compete_under_existing_inventory_locks (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_one_time_and_recurring_periods_compete_under_existing_inventory_locks) ... ok
+test_one_unavailable_period_never_causes_partial_approval (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_one_unavailable_period_never_causes_partial_approval) ... ok
+test_partial_and_damaged_returns_do_not_complete_the_series (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_partial_and_damaged_returns_do_not_complete_the_series) ... ok
+test_series_reserves_all_quantities_without_duplicate_parent_requests (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_series_reserves_all_quantities_without_duplicate_parent_requests) ... ok
+test_unchanged_series_retries_reuse_the_parent_and_changed_payload_fails (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_unchanged_series_retries_reuse_the_parent_and_changed_payload_fails) ... ok
+test_unreturned_previous_occurrence_blocks_same_units_at_later_pickup (test_recurring_workflows.RecurringEquipmentWorkflowTests.test_unreturned_previous_occurrence_blocks_same_units_at_later_pickup) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 161.582s
+
+OK
+
+test_calendar_pickups_and_due_dates_are_separate_nonbusy_reminders (test_recurring_views.RecurringEquipmentViewsTests.test_calendar_pickups_and_due_dates_are_separate_nonbusy_reminders) ... ok
+test_extension_occurrence_cannot_reference_another_series (test_recurring_views.RecurringEquipmentViewsTests.test_extension_occurrence_cannot_reference_another_series) ... ok
+test_extensions_cannot_overlap_next_occurrence_and_can_extend_selected_loan (test_recurring_views.RecurringEquipmentViewsTests.test_extensions_cannot_overlap_next_occurrence_and_can_extend_selected_loan) ... ok
+test_flask_preview_complete_approval_and_one_occurrence_cancel (test_recurring_views.RecurringEquipmentViewsTests.test_flask_preview_complete_approval_and_one_occurrence_cancel) ... ok
+test_gateway_rejects_partial_mismatched_and_ambiguous_series_results (test_recurring_views.RecurringEquipmentViewsTests.test_gateway_rejects_partial_mismatched_and_ambiguous_series_results) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 92.791s
+
+OK
+
+test_all_required_cannot_be_silently_reduced_to_one_date (test_recurring_policy.RecurringEquipmentPolicyTests.test_all_required_cannot_be_silently_reduced_to_one_date) ... ok
+test_database_cannot_partially_confirm_an_all_required_series (test_recurring_policy.RecurringEquipmentPolicyTests.test_database_cannot_partially_confirm_an_all_required_series) ... ok
+test_extensions_recheck_semester_and_configured_weekly_quota (test_recurring_policy.RecurringEquipmentPolicyTests.test_extensions_recheck_semester_and_configured_weekly_quota) ... ok
+test_late_stock_conflict_marks_only_unavailable_occurrence (test_recurring_policy.RecurringEquipmentPolicyTests.test_late_stock_conflict_marks_only_unavailable_occurrence) ... ok
+test_overdue_physical_possession_still_counts_as_an_active_series (test_recurring_policy.RecurringEquipmentPolicyTests.test_overdue_physical_possession_still_counts_as_an_active_series) ... ok
+test_partial_equipment_decision_form_and_private_summary (test_recurring_policy.RecurringEquipmentPolicyTests.test_partial_equipment_decision_form_and_private_summary) ... ok
+test_partial_equipment_preview_persists_unavailable_dates_without_reserving (test_recurring_policy.RecurringEquipmentPolicyTests.test_partial_equipment_preview_persists_unavailable_dates_without_reserving) ... ok
+test_returned_partial_occurrence_does_not_prevent_later_approval (test_recurring_policy.RecurringEquipmentPolicyTests.test_returned_partial_occurrence_does_not_prevent_later_approval) ... ok
+test_selected_approval_and_rejection_keep_exact_quantities (test_recurring_policy.RecurringEquipmentPolicyTests.test_selected_approval_and_rejection_keep_exact_quantities) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 119.032s
+
+OK

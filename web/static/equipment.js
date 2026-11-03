@@ -11,4 +11,15 @@
     };
     faculty.addEventListener('change', update);
     update();
+    // Server-generated recommendations retain entered values and move focus to
+    // their real result, including a complete signed recurring preview.
+    const result = document.getElementById('equipment-result');
+    result?.focus();
+    document.getElementById('equipment-borrow-form')?.addEventListener('input', () => {
+        if (!result) return;
+        const preview = document.querySelector('[name=previewToken]');
+        if (preview) preview.value = '';
+        result.classList.add('is-stale');
+        result.querySelector('h2').textContent = 'Selection changed. Check equipment and alternatives again.';
+    });
 })();

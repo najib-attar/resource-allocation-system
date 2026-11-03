@@ -1,4 +1,5 @@
-{% extends 'base.html' %}
+{% extends 'student_service_base.html' %}
 {% block title %}Equipment Request Unavailable{% endblock %}
 {% block page_heading %}Equipment unavailable{% endblock %}
-{% block content %}<section class="panel"><p role="alert">{{ message }}</p><a class="button-secondary" href="{{ url_for('equipment.index') }}">Back to equipment</a></section>{% endblock %}
+{% block service_eyebrow %}Equipment / Check details{% endblock %}
+{% block service_content %}<section class="panel"><h2>Please check your request</h2><p role="alert">{{ message }}</p><p>Check your period, quantities and current request status before trying again.</p><div class="service-actions"><a class="button-secondary" href="{{ url_for('equipment.index') }}">Back to equipment</a>{% if g.principal.role == 'Student' %}<a class="button-secondary" href="{{ url_for('equipment.catalog') }}">Review catalog</a>{% endif %}</div></section>{% endblock %}
