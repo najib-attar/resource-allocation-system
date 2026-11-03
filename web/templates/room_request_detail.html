@@ -1,5 +1,5 @@
-{% extends "student_service_base.html" %}
-{% from 'components/student_services.html' import status %}
+{% extends "service_base.html" %}
+{% from 'components/services.html' import status %}
 {% block page_heading %}{{ item.purpose }}{% endblock %}
 {% block title %}Room Request Details{% endblock %}
 {% set waiting_active = waiting and waiting.status in ['Pending Review','Preapproved'] %}

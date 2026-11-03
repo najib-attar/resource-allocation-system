@@ -1,4 +1,4 @@
-/* Student Home only; service interiors and other roles retain their styles. */
+/* Shared Campus Space home components; applied only by workspace home templates. */
 .student-home {
     --student-ink: #23313c;
     --student-muted: #596d7b;
@@ -114,3 +114,8 @@
     .student-service-art { display: none; }
     .student-week-preview { padding-inline: 15px; }
 }
+
+/* Additional home groups reuse the same cards, palette and type scale. */
+.workspace-home-column { display: grid; gap: 32px; min-width: 0; }
+.professor-home details { margin-top: 16px; color: var(--student-muted); font-size: 12px; }
+.professor-home details summary { cursor: pointer; min-height: 44px; padding-block: 12px; color: var(--student-blue); }

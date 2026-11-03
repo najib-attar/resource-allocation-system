@@ -1,4 +1,20 @@
-# Professor Services v1 — eligibility and backend acceptance
+# Professor Services v1 — acceptance record
+
+## Professor Portal frontend rollout (in progress)
+
+Reviewed frontend base `5a7f0b0`; Student `747c925` remains unchanged. The approved [frontend plan](frontend-plan.md) and [screen/control coverage](screen-coverage.md) govern this rollout. The prior backend acceptance below is retained as historical executed evidence.
+
+| Phase | Current status and executed evidence |
+|---|---|
+| PROF-UI-01 | Implemented: real scoped Home, shared Campus Space assets, four primary destinations and service discovery. Backend preflight 29/29; initial 56-case phase run had one fixture helper error and one old Instructor redirect expectation. Both corrected: dashboard 4/4 and redirect 1/1 rechecks passed; all other cases passed initially. Browser: 30 views at five widths, 705 keyboard steps, seven actual POSTs including one persisted denial, all five roles, empty/populated Home, no overflow/JS exceptions. |
+| PROF-UI-02–07 | Planned; continue sequentially. |
+
+Shared shell/service CSS declarations were verified equivalent to the approved Student rules after neutral selector promotion. The original three Student asset implementations and two Jinja components were renamed, not copied. Role-specific Student classes and contents remain. Instructor default navigation now reaches Professor Home; session/authentication/CSRF behavior is unchanged. Superseded role-ambiguous intermediate screenshots were archived under ignored build storage; final phase screenshots identify each role.
+
+[Preflight](portal-backend-preflight/tests.json), [initial phase results](PROF-UI-01/tests.json), [dashboard recheck](PROF-UI-01-recheck/tests.json), [redirect recheck](PROF-UI-01-redirect-recheck/tests.json), [real browser results](portal/PROF-UI-01/browser-results.json), [persisted state](portal/PROF-UI-01/post-states.json), [independent checks](portal/PROF-UI-01/persistence-verification.json), [cleanup](portal/PROF-UI-01/cleanup.json).
+
+---
+
 
 **PASS for the approved eligibility/backend increment.** The former missing-gate blocker is resolved under the user's explicit approval. Full professor visual redesign and academic outcome notifications remain outside this completed increment; historical pre-gate reports are identified below.
 

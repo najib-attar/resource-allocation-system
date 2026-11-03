@@ -1,0 +1,83 @@
+{
+  "modules": [
+    "test_professor_portal",
+    "test_student_portal_ui",
+    "test_frontend_prototype",
+    "test_notifications",
+    "test_student_dashboard"
+  ],
+  "expected": 56,
+  "run": 56,
+  "passed": 54,
+  "failures": 1,
+  "errors": 1,
+  "skipped": [],
+  "seconds": 97.83,
+  "results": {
+    "test_student_portal_ui": {
+      "modules": [
+        "test_student_portal_ui"
+      ],
+      "expected": 19,
+      "run": 19,
+      "passed": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 0.64,
+      "exitCode": 0
+    },
+    "test_frontend_prototype": {
+      "modules": [
+        "test_frontend_prototype"
+      ],
+      "expected": 8,
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 30.75,
+      "exitCode": 0
+    },
+    "test_professor_portal": {
+      "modules": [
+        "test_professor_portal"
+      ],
+      "expected": 4,
+      "run": 4,
+      "passed": 3,
+      "failures": 0,
+      "errors": 1,
+      "skipped": [],
+      "seconds": 37.73,
+      "exitCode": 1
+    },
+    "test_student_dashboard": {
+      "modules": [
+        "test_student_dashboard"
+      ],
+      "expected": 14,
+      "run": 14,
+      "passed": 13,
+      "failures": 1,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 76.81,
+      "exitCode": 1
+    },
+    "test_notifications": {
+      "modules": [
+        "test_notifications"
+      ],
+      "expected": 11,
+      "run": 11,
+      "passed": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 94.28,
+      "exitCode": 0
+    }
+  }
+}

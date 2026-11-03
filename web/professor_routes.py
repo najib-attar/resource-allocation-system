@@ -8,6 +8,7 @@ from .persistence.repository import PersistenceError, SubmissionConflict
 from .professor_service import ProfessorRequestError, ProfessorService
 from .input_validation import integer, parse_time_slots
 from .engine_gateway import EngineIntegrationError
+from .professor_dashboard_service import ProfessorDashboardService
 
 
 def create_professor_blueprint(database_provider):
@@ -41,6 +42,11 @@ def create_professor_blueprint(database_provider):
             return int(request.args.get(name, default))
         except (TypeError, ValueError) as error:
             raise ProfessorRequestError('Use integer pagination values.') from error
+
+    @blueprint.get('/')
+    def home():
+        return render_template('professor_home.html',home=ProfessorDashboardService(database_provider()).load(
+            g.principal.user_id,week=request.args.get('week'),month=request.args.get('month')))
 
     @blueprint.get('/academic-requests')
     def academic_requests():

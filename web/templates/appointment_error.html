@@ -1,4 +1,4 @@
-{% extends "student_service_base.html" %}
+{% extends "service_base.html" %}
 {% set schedule_error = request.endpoint == 'appointments.calendar' %}
 {% set recovery = ('appointments.calendar','My Schedule') if schedule_error else {'rooms':('rooms.index','room requests'),'waiting':('waiting.index','waiting lists'),'feedback':('feedback.index','feedback')}.get(request.blueprint, ('appointments.index','appointments')) %}
 {% block page_heading %}{{ 'Schedule unavailable' if schedule_error else 'Appointment unavailable' if request.blueprint == 'appointments' else 'Request unavailable' }}{% endblock %}

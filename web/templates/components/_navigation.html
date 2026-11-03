@@ -11,6 +11,12 @@
     <a class="app-nav-link" href="{{ url_for('student.home') }}#my-activity">{{ icon('book', 19) }}<span>My Activity</span></a>
     <a class="app-nav-link" href="{{ url_for('calendar.index') }}" aria-label="University Calendar"{% if request.endpoint and request.endpoint.startswith('calendar.') %} aria-current="page"{% endif %}>{{ icon('calendar', 19) }}<span class="student-calendar-label">University Calendar</span><span class="student-calendar-short" aria-hidden="true">Calendar</span></a>
     {{ nav_link('notifications.index', 'Inbox', 'meeting', 'notifications.') }}
+    {% elif g.principal.role == 'Instructor' and not g.principal.administrator %}
+    <p class="app-nav-label">Your workspace</p>
+    {{ nav_link('professor.home', 'Home', 'home') }}
+    <a class="app-nav-link" href="{{ url_for('professor.pages') }}" aria-label="My academic requests"{% if request.endpoint in ['professor.pages','professor.page','professor.form'] %} aria-current="page"{% endif %}>{{ icon('book',19) }}<span>My requests</span></a>
+    {{ nav_link('calendar.index', 'Calendar', 'calendar', 'calendar.') }}
+    {{ nav_link('notifications.index', 'Inbox', 'meeting', 'notifications.') }}
     {% else %}
     <p class="app-nav-label">Workspace</p>
     {% if g.principal.role == 'Student' %}{{ nav_link('student.home', 'Home', 'home') }}{% endif %}

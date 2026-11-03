@@ -1,4 +1,4 @@
-{% extends 'student_service_base.html' %}
+{% extends 'service_base.html' %}
 {% block title %}{{ status }} | Campus Space{% endblock %}
 {% block page_heading %}{{ 'Service temporarily unavailable' if status >= 500 else 'Request needs attention' }}{% endblock %}
 {% block service_eyebrow %}Your workspace / {{ status }}{% endblock %}

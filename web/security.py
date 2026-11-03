@@ -19,6 +19,8 @@ def csrf_token():
 def home_endpoint(principal):
     if principal.administrator:
         return "index"
+    if principal.role == "Instructor":
+        return "professor.home"
     return "student.home" if principal.role == "Student" else "appointments.index"
 
 

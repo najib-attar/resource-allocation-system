@@ -1,0 +1,83 @@
+{
+  "modules": [
+    "test_academic_eligibility",
+    "test_professor_intake",
+    "test_eligibility_migration",
+    "test_professor_existing_workflows",
+    "test_identity_sessions"
+  ],
+  "expected": 29,
+  "run": 29,
+  "passed": 29,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 67.2,
+  "results": {
+    "test_eligibility_migration": {
+      "modules": [
+        "test_eligibility_migration"
+      ],
+      "expected": 3,
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 16.44,
+      "exitCode": 0
+    },
+    "test_professor_existing_workflows": {
+      "modules": [
+        "test_professor_existing_workflows"
+      ],
+      "expected": 3,
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 28.76,
+      "exitCode": 0
+    },
+    "test_identity_sessions": {
+      "modules": [
+        "test_identity_sessions"
+      ],
+      "expected": 8,
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 30.5,
+      "exitCode": 0
+    },
+    "test_professor_intake": {
+      "modules": [
+        "test_professor_intake"
+      ],
+      "expected": 7,
+      "run": 7,
+      "passed": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 63.23,
+      "exitCode": 0
+    },
+    "test_academic_eligibility": {
+      "modules": [
+        "test_academic_eligibility"
+      ],
+      "expected": 8,
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 64.17,
+      "exitCode": 0
+    }
+  }
+}

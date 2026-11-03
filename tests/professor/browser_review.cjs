@@ -26,7 +26,7 @@ async function login(browser, actor) {
   await page.locator('[name=username]').fill(fixture.users[actor]);
   await page.locator('[name=password]').fill(fixture.password);
   await submit(page,page.locator('button[type=submit]'));
-  assert.equal(new URL(page.url()).pathname, actor===1?'/student/':actor===6?'/':'/appointments/');
+  assert.equal(new URL(page.url()).pathname, actor===1?'/student/':actor===6?'/':[2,3,12].includes(actor)?'/professor/':'/appointments/');
   tokens.set(page,await page.locator('[data-csrf]').getAttribute('data-csrf'));
   return {context,page};
 }

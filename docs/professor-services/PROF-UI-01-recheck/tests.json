@@ -1,0 +1,12 @@
+{
+  "modules": [
+    "test_professor_portal"
+  ],
+  "expected": 4,
+  "run": 4,
+  "passed": 4,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 29.51
+}

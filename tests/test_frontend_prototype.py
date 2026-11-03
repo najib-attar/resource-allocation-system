@@ -43,13 +43,13 @@ class SharedShellTests(TestCase):
                 html = self.render(role, administrator)
                 document = Document(html)
                 self.assertEqual(bool(document.select('a', href='/student/')), role == 'Student')
-                self.assertEqual(bool(document.select('a', href='/appointments/availability')), role == 'Instructor')
+                self.assertEqual(bool(document.select('a', href='/professor/')), role == 'Instructor')
                 self.assertEqual(bool(document.select('a', href='/users')), administrator)
                 self.assertIn('&lt;script&gt;Private name&lt;/script&gt;', html)
                 self.assertNotIn('<script>Private name</script>', html)
 
     def test_student_service_route_and_professor_parent_navigation_remain_distinct(self):
-        for role, expected in [('Student', []), ('Instructor', ['/appointments/'])]:
+        for role, expected in [('Student', []), ('Instructor', [])]:
             with self.subTest(role=role):
                 html = self.render(role, path='/appointments/new')
                 active = Document(html).select('a', aria_current='page')

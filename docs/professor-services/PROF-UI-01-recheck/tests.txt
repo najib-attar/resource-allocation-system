@@ -1,0 +1,9 @@
+test_dashboard_pending_decisions_confirmed_meetings_and_owner_requests_are_distinct (test_professor_portal.ProfessorPortalTests.test_dashboard_pending_decisions_confirmed_meetings_and_owner_requests_are_distinct) ... ok
+test_home_reads_only_authorized_real_state_without_engine_or_writes (test_professor_portal.ProfessorPortalTests.test_home_reads_only_authorized_real_state_without_engine_or_writes) ... ok
+test_home_uses_current_academic_outcomes_and_no_inferred_dates (test_professor_portal.ProfessorPortalTests.test_home_uses_current_academic_outcomes_and_no_inferred_dates) ... ok
+test_professor_home_role_identity_csrf_and_primary_destinations (test_professor_portal.ProfessorPortalTests.test_professor_home_role_identity_csrf_and_primary_destinations) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 29.503s
+
+OK

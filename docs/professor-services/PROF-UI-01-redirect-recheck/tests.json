@@ -1,0 +1,12 @@
+{
+  "modules": [
+    "test_student_dashboard.StudentDashboardWebTests.test_login_and_root_choose_student_home_without_changing_other_roles"
+  ],
+  "expected": 1,
+  "run": 1,
+  "passed": 1,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 8.75
+}

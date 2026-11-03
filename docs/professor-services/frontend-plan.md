@@ -1,17 +1,29 @@
-# Professor frontend sequence
+# Professor Portal — frontend implementation plan
 
-The backend gate, minimal academic forms, tracking and administrator review are implemented. Full professor visual acceptance follows separately. Keep Student Draft PR #24's dependency explicit and inspect eventual main before preparing a professor PR. No professor push or PR is authorized.
+Reviewed base: `5a7f0b0`, dedicated `codex/professor-services-v1` worktree. Student baseline `747c925` and Draft PR #24 remain unchanged. The fresh 29-test backend preflight passed: eligibility, intake, legacy preservation, existing professor ownership and identity/session workflows. The user request governs over the archived design/handoff instructions.
 
-Reuse base.html, existing panels/form grids, components/ui.html, icons, badges, tokens and page-specific scripts. Academic forms already share components/_academic_request_fields.html; no framework or duplicate scheduling service is needed. Preserve the Student shell and services.
+## Shared design and information architecture
 
-| Group | Current state and next scope | Acceptance boundary |
+Promote the existing Campus Space shell/service CSS and Jinja service parent to workspace-neutral components; retain the Student role classes and rendering. No duplicate design system, framework, global reset or business-rule implementation. Existing other-role styles/permissions remain opt-in and unchanged.
+
+Primary professor navigation: Home, My academic requests (real owner route), Calendar, Inbox. Service entry points appear on Home: Appointments, Office hours, Academic requests, Personal schedule and optional room invitations. Preserve authorized legacy campus-service/history destinations through Home, not duplicate primary navigation. Account controls keep schedule, notifications and logout.
+
+Home uses a read-only, Instructor-scoped database snapshot, existing academic read contracts and personal schedule projection. It shows actual upcoming required confirmed appointments, requests awaiting this professor, bounded office-hour patterns, academic review/outcomes, dated own commitments and recipient notifications. No teaching affiliation or dates are inferred from declarations. Lists link to complete existing services.
+
+## Sequential implementation
+
+| Phase | Pages and presentation | Verification and safety boundary |
 |---|---|---|
-| PUI-01 | Instructor navigation includes Academic Requests; add a coherent professor Home | Real destinations, no student-only services, admin controls or invented activity route |
-| PUI-02 | Existing appointments/hours verified; apply shared visual components | Current revision, all required approvals, rejection/conflict/history; no peer-calendar browsing |
-| PUI-03 | Personal timetable/blocks verified; visual refinement | Own blocks, confirmed commitments protected, optional invitations distinct |
-| PUI-04 | Functional academic list/detail, filters/pagination/history/bindings implemented; refine presentation | Separate eligibility/allocation/calendar states, owner-only and real empty/error states |
-| PUI-05 | Four functional intake forms and unpublished revisions implemented; refine field presentation | Declarations, explicit resources/slots, pending review, no reservation, published read-only explanation |
-| PUI-06 | Existing calendar/Inbox verified; align shared visuals | Month/week/day/filters/privacy, no invented academic notifications or attribution entitlement |
-| PUI-07 | Repeat visual and cross-role acceptance after redesign | Real PostgreSQL/C++, allowed/denied POSTs, 1440/768/390/320, keyboard, overflow, console/network, real screenshots |
+| PROF-UI-01 | Shared Campus shell, Professor Home, four primary destinations, service discovery and real authorized summaries | Read-only/empty/populated/privacy/disabled identity, no engine on reads, Student and other-role shells; actual Flask screenshots at five widths |
+| PROF-UI-02 | Appointment hub, pending decisions, details/progress/invitations/history and authorized approval/decline/cancel | Original parameters/revisions/CSRF, per-professor decisions, Student reschedule invalidation, conflicts; no professor appointment creation |
+| PROF-UI-03 | Office-hour form/list, inclusive validity/exclusions, personal timetable/blocks | Original hour/block services and timezone, invalid intervals and cross-user denials, confirmed commitments protected |
+| PROF-UI-04 | Four academic intake forms and unpublished revision presentation | Explicit resource/weekly slots, declarations and required committee participants; same idempotency/validation; no allocation control or invented date/strategy |
+| PROF-UI-05 | Owner request list/filter/pagination/detail, separate eligibility/allocation/calendar steps, actual resources/reasons/history | Published requests read-only, revision resets approval, current/rejected/pending outcomes and owner-ID tampering |
+| PROF-UI-06 | Existing calendar, personal schedule and Inbox component alignment | Month/week/day, filters/date navigation/privacy, supported read actions; academic notifications explicitly unavailable |
+| PROF-UI-07 | Independent control/source audit, safe cleanup, complete integration/cross-role/browser regressions | Actual persisted POST outcomes, 1440/1024/768/390/320, keyboard/focus/overflow, full Python/PostgreSQL and C++ tests; no operational data |
 
-Keep a single ProfessorService owner/state contract for JSON and Jinja. Minimal admin review may be refined without exposing admin controls to professors. CommitteeMeeting remains separate from appointments. Versioned replacements and academic notifications are deferred, not represented as working controls.
+Each phase receives a focused local commit after relevant automated and real-browser checks. Final full suites run after integration. The [screen/control coverage](screen-coverage.md) extends the existing [backend traceability](traceability.md); the acceptance report records actual execution, not planned passes.
+
+## Existing limitations preserved
+
+Academic slots are weekly weekday/minute requirements. Calendar dates require explicit administrative applicability. Shared/multi-room exam behavior is the existing engine strategy plus the supported split declaration; professors cannot select or run campus allocation strategies. No academic cancellation contract, versioned published replacement, academic notification producer or private teaching-attribution entitlement is added. Existing optional room invitations grant no faculty-review/custody authority.
