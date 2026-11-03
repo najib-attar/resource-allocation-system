@@ -1,0 +1,43 @@
+{
+  "phase": "UI-03",
+  "results": [
+    "student/appointments: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "student/appointment-new: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "student/appointment-detail: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "student/appointment-invitation: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "student/appointment-private: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "student/appointment-invalid: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "empty/appointments: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed"
+  ],
+  "browserErrors": [],
+  "screenshots": [
+    "appointment-detail-1440.png",
+    "appointment-detail-320.png",
+    "appointment-detail-390.png",
+    "appointment-detail-768.png",
+    "appointment-invalid-1440.png",
+    "appointment-invalid-320.png",
+    "appointment-invalid-390.png",
+    "appointment-invalid-768.png",
+    "appointment-invitation-1440.png",
+    "appointment-invitation-320.png",
+    "appointment-invitation-390.png",
+    "appointment-invitation-768.png",
+    "appointment-new-1440.png",
+    "appointment-new-320.png",
+    "appointment-new-390.png",
+    "appointment-new-768.png",
+    "appointment-private-1440.png",
+    "appointment-private-320.png",
+    "appointment-private-390.png",
+    "appointment-private-768.png",
+    "appointments-1440.png",
+    "appointments-320.png",
+    "appointments-390.png",
+    "appointments-768.png",
+    "empty-appointments-1440.png",
+    "empty-appointments-320.png",
+    "empty-appointments-390.png",
+    "empty-appointments-768.png"
+  ]
+}

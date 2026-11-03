@@ -12,7 +12,8 @@ const widths = [1440, 768, 390, 320];
 const id = fixture.ids;
 const groups = {
   'UI-03': [['appointments', '/appointments/'], ['appointment-new', '/appointments/new'],
-    ['appointment-detail', '/appointments/' + id.pending], ['appointment-invitation', '/appointments/' + id.invitation]],
+    ['appointment-detail', '/appointments/' + id.pending], ['appointment-invitation', '/appointments/' + id.invitation],
+    ['appointment-private', '/appointments/' + id.private, 403], ['appointment-invalid', '/appointments/999999999', 409]],
   'UI-04': [['rooms', '/rooms/'], ['room-new', '/rooms/new'], ['room-detail', '/rooms/' + id.room],
     ['room-pending', '/rooms/' + id.roomPending], ['room-revise', '/rooms/' + id.roomPending + '/revise'],
     ['room-series', '/rooms/' + id.roomSeries], ['room-availability', '/rooms/availability/302?date=2030-01-08']],
@@ -123,8 +124,8 @@ async function loginPhase(browser, errors, results) {
         await login(page, role);
         const pages = role === 'empty' ? groups[phase].filter(([name]) =>
           ['appointments','rooms','equipment','waiting','feedback','calendar-month','inbox'].includes(name)) : groups[phase];
-        for (const [name, url] of pages) {
-          for (const width of widths) await capture(page, (role === 'empty' ? 'empty-' : '') + name, url, width);
+        for (const [name, url, expected] of pages) {
+          for (const width of widths) await capture(page, (role === 'empty' ? 'empty-' : '') + name, url, width, expected || 200);
           const forms = await page.locator('form[method=post]').evaluateAll(forms => forms.map(form => ({
             action:form.action, csrf:form.querySelector('[name=csrf_token]')?.value })));
           for (const form of forms) {

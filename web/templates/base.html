@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='shell.css') }}">
     {% if student_shell %}<link rel="stylesheet" href="{{ url_for('static', filename='student-shell.css') }}">{% endif %}
     {% block styles %}{% endblock %}
+    {% if student_shell and student_service %}<link rel="stylesheet" href="{{ url_for('static', filename='student-services.css') }}">{% endif %}
 </head>
 <body{% if g.principal %} class="app-body{% if student_shell %} student-shell{% endif %}"{% endif %}>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -30,10 +31,10 @@
         <header class="{{ 'app-topbar' if g.principal else 'site-header' }}">
             {% if g.principal %}<button class="navigation-toggle ui-icon-button" type="button" data-navigation-toggle aria-label="Open navigation" aria-expanded="false" aria-controls="app-sidebar" hidden>{{ icon('menu') }}</button>{% endif %}
             {% if student_shell %}<a class="student-mobile-brand" href="{{ url_for('student.home') }}"><span class="app-brand-mark" aria-hidden="true">U</span><span>Campus Space</span></a>{% endif %}
-            <div class="app-heading"><p class="{{ 'app-breadcrumb' if g.principal else 'eyebrow' }}">{{ 'Student workspace' if student_shell else ('University portal' if g.principal else 'Resource Allocation System') }}</p>{% if student_shell and request.endpoint == 'student.home' %}<p class="student-current-page">{{ self.page_heading() }}</p>{% else %}<h1>{% block page_heading %}Dashboard{% endblock %}</h1>{% endif %}</div>
+            <div class="app-heading"><p class="{{ 'app-breadcrumb' if g.principal else 'eyebrow' }}">{{ 'Student workspace' if student_shell else ('University portal' if g.principal else 'Resource Allocation System') }}</p>{% if student_shell and (request.endpoint == 'student.home' or student_service) %}<p class="student-current-page">{{ self.page_heading() }}</p>{% else %}<h1>{% block page_heading %}Dashboard{% endblock %}</h1>{% endif %}</div>
             {% if g.principal %}{% include 'components/_account_controls.html' %}{% endif %}
         </header>
-        <main id="main-content" class="{{ 'app-content' if g.principal else 'page-shell' }}" tabindex="-1">
+        <main id="main-content" class="{{ 'app-content' if g.principal else 'page-shell' }}{% if student_shell and student_service %} student-service{% endif %}" tabindex="-1">
             {% block content %}{% endblock %}
         </main>
     </div>

@@ -16,6 +16,7 @@ if __name__ == '__main__':
     started = time.monotonic()
     with (output / 'tests.log').open('w', encoding='utf-8') as log:
         result = unittest.TextTestRunner(stream=log, verbosity=2).run(suite)
+    (output / 'tests.txt').write_text((output / 'tests.log').read_text(encoding='utf-8'), encoding='utf-8')
     report = dict(modules=modules, run=result.testsRun,
                   passed=result.testsRun-len(result.failures)-len(result.errors)-len(result.skipped),
                   failures=len(result.failures), errors=len(result.errors),

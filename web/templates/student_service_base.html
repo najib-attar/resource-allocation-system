@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% set student_service = true %}
+{% block content %}
+{% if student_shell %}
+<header class="service-heading">
+    <div><p class="service-eyebrow"><a href="{{ url_for('student.home') }}">Student services</a> / {% block service_eyebrow %}Your workspace{% endblock %}</p>
+        <h1>{{ self.page_heading() }}</h1>
+        {% if self.service_intro()|trim %}<p class="service-intro">{% block service_intro %}{% endblock %}</p>{% endif %}
+    </div>
+    <div class="service-heading-actions">{% block service_actions %}{% endblock %}</div>
+</header>
+{% endif %}
+{% block service_content %}{% endblock %}
+{% endblock %}
