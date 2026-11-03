@@ -4,11 +4,14 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 const { chromium } = require(process.env.PLAYWRIGHT_NODE_MODULE || 'playwright');
 const root = path.resolve(__dirname, '../..');
-const fixture = JSON.parse(fs.readFileSync(path.join(root, 'build/student-portal/preview.json')));
+const fixture = JSON.parse(fs.readFileSync(process.env.PORTAL_INFO_FILE || path.join(root, 'build/student-portal/preview.json')));
 const phase = process.argv[2];
-const output = path.join(root, 'docs/ui/student-portal', phase);
+const output = process.env.PORTAL_OUTPUT_DIR || path.join(root, 'docs/ui/student-portal', phase);
+fs.mkdirSync(output, {recursive:true});
 const results = [];
+const controlsAudit=process.env.PORTAL_INFO_FILE ? require('./control_audit.cjs') : null;
 async function login(page, actor=1) {
+  page.auditActor=actor;
   await page.goto(fixture.url + '/login');
   await page.locator('[name=username]').fill(fixture.users[String(actor)]);
   await page.locator('[name=password]').fill(fixture.password);
@@ -19,6 +22,8 @@ async function submit(page, locator) {
   assert.ok(response.status() < 400, 'Form submission failed: ' + response.status());
 }
 async function screenshot(page, name) {
+  if(controlsAudit) await controlsAudit.inspect(page,name,fixture,page.auditActor||1);
+  await page.evaluate(()=>{document.activeElement.blur();scrollTo(0,0);});
   await page.screenshot({path:path.join(output, name + '-workflow.png'), fullPage:true});
 }
 async function appointments(page, context) {
@@ -141,11 +146,15 @@ async function rooms(page, context) {
 }
 async function equipment(page) {
   await page.goto(fixture.url + '/equipment/catalog?start=2030-01-28T10:00&due=2030-01-28T11:00');
+  await page.locator('a[href="#main-content"]').focus();
+  await page.keyboard.press('Enter');
   await page.locator('[name=faculty]').selectOption(String(fixture.ids.faculty));
   const quantity = page.locator('[name="qty_' + fixture.ids.equipmentType + '"]');
   await quantity.fill('1');
   await page.locator('[name=purpose]').fill('Fictional browser equipment acceptance');
   await submit(page, page.locator('button[value=recommend]'));
+  assert.equal(await page.evaluate(()=>document.activeElement.id),'equipment-result');
+  assert.equal(new URL(page.url()).hash,'');
   assert.match(await page.locator('#equipment-result h2').innerText(), /complete request is feasible/);
   await screenshot(page, 'equipment-recommendation');
   await page.locator('[name="qty_' + fixture.ids.equipmentType + '"]').fill('2');
@@ -182,6 +191,12 @@ async function equipment(page) {
   await page.locator('[name=faculty]').selectOption(String(fixture.ids.faculty));
   await page.locator('[name="qty_' + fixture.ids.equipmentType + '"]').fill('1');
   await page.locator('[name=purpose]').fill('Fictional recurring browser equipment');
+  await page.locator('[name=reservationMode]').selectOption('weekly');
+  assert.ok(await page.locator('button[value=wait]').isDisabled());
+  assert.ok(await page.locator('#equipment-waiting-reason').isVisible());
+  await page.locator('[name=reservationMode]').selectOption('once');
+  assert.ok(await page.locator('button[value=wait]').isEnabled());
+  assert.ok(await page.locator('#equipment-waiting-reason').isHidden());
   await page.locator('[name=reservationMode]').selectOption('weekly');
   await page.locator('[name=academicPeriod]').selectOption({index:1});
   await page.locator('[name=approvalMode]').selectOption('partial');
@@ -396,10 +411,14 @@ async function calendarAndInbox(page, browser) {
   const browser = await chromium.launch({headless:true, ...(process.env.CHROMIUM_EXECUTABLE ?
     {executablePath:process.env.CHROMIUM_EXECUTABLE} : {channel:'msedge'})});
   const errors = [];
+  const httpErrors=[], consoleErrors=[], failedRequests=[];
   try {
     const context = await browser.newContext({viewport:{width:390,height:900}});
     const page = await context.newPage();
     page.on('pageerror', error => errors.push(error.message));
+    page.on('console', message=>{if(message.type()==='error') consoleErrors.push(message.text());});
+    page.on('response',response=>{if(response.status()>=400) httpErrors.push({url:new URL(response.url()).pathname,status:response.status()});});
+    page.on('requestfailed',request=>failedRequests.push({url:new URL(request.url()).pathname,error:request.failure()?.errorText}));
     await login(page);
     if (phase === 'UI-03') await appointments(page, context);
     else if (phase === 'UI-04') await rooms(page, context);
@@ -409,7 +428,10 @@ async function calendarAndInbox(page, browser) {
     else if (phase === 'UI-08') await calendarAndInbox(page, browser);
     else throw new Error('Unknown workflow phase ' + phase);
     assert.deepEqual(errors, []);
-    fs.writeFileSync(path.join(output, 'workflow-results.json'), JSON.stringify({phase, results, browserErrors:errors}, null, 2) + '\n');
+    assert.ok(httpErrors.every(r=>[400,403,409].includes(r.status)),JSON.stringify(httpErrors));
+    assert.deepEqual(consoleErrors.filter(message=>!message.startsWith('Failed to load resource:')),[]);
+    if(controlsAudit) controlsAudit.save(output);
+    fs.writeFileSync(path.join(output, 'workflow-results.json'), JSON.stringify({phase, results, browserErrors:errors,httpErrors,consoleErrors,failedRequests}, null, 2) + '\n');
     console.log(JSON.stringify({phase, results, browserErrors:errors}, null, 2));
     await context.close();
   } finally { await browser.close(); }

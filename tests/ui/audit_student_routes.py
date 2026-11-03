@@ -1,6 +1,5 @@
 """Inventory every route and preserve the original student form contracts."""
 import csv
-import io
 import json
 from pathlib import Path
 import re
@@ -44,7 +43,7 @@ def git(*args):
 
 
 def main():
-    output = ROOT / 'docs/ui/student-portal/UI-09'
+    output = ROOT / 'docs/ui/student-portal' / (sys.argv[1] if len(sys.argv)>1 else 'UI-09')
     output.mkdir(parents=True, exist_ok=True)
     routes = []
     prefixes = ('student.','appointments.','rooms.','equipment.','waiting.','feedback.','calendar.','notifications.')
@@ -67,6 +66,13 @@ def main():
             continue
         pattern = r'<(?:input|select|textarea|button)\b[^>]*\bname="([^"]+)"'
         before = set(re.findall(pattern, original.stdout.decode('utf-8')))
+        if not (ROOT/name).exists():
+            # UI-10 proved this old Home macro unreachable in every route graph.
+            if name != 'web/templates/_student_appointment_card.html' or before:
+                raise RuntimeError('Unreviewed template removal: '+name)
+            fields.append(dict(template=name, originalFieldNames=[], missingFieldNames=[],
+                               removedUnused=True, evidence='UI-10/dead-code.json'))
+            continue
         after = set(re.findall(pattern, (ROOT/name).read_text(encoding='utf-8')))
         missing = sorted(before-after)
         fields.append(dict(template=name, originalFieldNames=sorted(before), missingFieldNames=missing))

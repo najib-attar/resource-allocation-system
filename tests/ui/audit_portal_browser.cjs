@@ -4,10 +4,12 @@ const path = require('node:path');
 const assert = require('node:assert/strict');
 const {chromium} = require(process.env.PLAYWRIGHT_NODE_MODULE || 'playwright');
 const root = path.resolve(__dirname, '../..');
-const fixture = JSON.parse(fs.readFileSync(path.join(root, 'build/student-portal/preview.json')));
-const output = path.join(root, 'docs/ui/student-portal/UI-09');
+const fixture = JSON.parse(fs.readFileSync(process.env.PORTAL_INFO_FILE || path.join(root, 'build/student-portal/preview.json')));
+const output = process.env.PORTAL_OUTPUT_DIR || path.join(root, 'docs/ui/student-portal/UI-09');
+fs.mkdirSync(output, {recursive:true});
 const widths = [1440,768,390,320];
 const id = fixture.ids;
+const controlsAudit=process.env.PORTAL_INFO_FILE ? require('./control_audit.cjs') : null;
 const pages = [
   ['home','/student/?week=2030-01-07'], ['appointments','/appointments/'], ['appointment-new','/appointments/new'],
   ['appointment','/appointments/'+id.pending], ['invitation','/appointments/'+id.invitation],
@@ -60,7 +62,8 @@ async function keyboard(page, width, name) {
   assert.ok(reachedEnd,name+': complete main-content keyboard walk did not finish');
   return steps;
 }
-async function inspect(page,width,name,student=true) {
+async function inspect(page,width,name,student=true,actor=1) {
+  if(controlsAudit) await controlsAudit.inspect(page,name,fixture,actor);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),width,name+': page overflow');
   assert.equal(await page.locator('h1').count(),1,name+': heading');
   const unlabeled=await page.locator('main input:not([type=hidden]),main select,main textarea').evaluateAll(fields=>fields.filter(el=>{
@@ -82,11 +85,17 @@ async function inspect(page,width,name,student=true) {
 (async()=>{
   const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_EXECUTABLE?
     {executablePath:process.env.CHROMIUM_EXECUTABLE}:{channel:'msedge'})});
-  const results=[], errors=[];
+  const results=[], errors=[], consoleErrors=[], httpErrors=[], failedRequests=[];
+  function observe(page) {
+    page.on('pageerror',e=>errors.push(e.message));
+    page.on('console',m=>{if(m.type()==='error') consoleErrors.push(m.text());});
+    page.on('response',r=>{if(r.status()>=400) httpErrors.push({url:new URL(r.url()).pathname,status:r.status()});});
+    page.on('requestfailed',r=>failedRequests.push({url:new URL(r.url()).pathname,error:r.failure()?.errorText}));
+  }
   let totalViews=0, keyboardSteps=0;
   try {
     const context=await browser.newContext();
-    const page=await context.newPage();page.on('pageerror',e=>errors.push(e.message));
+    const page=await context.newPage();observe(page);
     for (const width of widths) {
       await page.setViewportSize({width,height:900});
       assert.equal((await page.goto(fixture.url+'/login')).status(),200);
@@ -129,14 +138,39 @@ async function inspect(page,width,name,student=true) {
     await page.screenshot({path:path.join(output,'csrf-error-320.png'),fullPage:true});
     results.push('Eight staff/administration-only GET boundaries denied; real CSRF rejection retained HTTP 400 and student error presentation');
     await context.close();
+    for (const [actor,statePages] of [
+      [5,[['home','/student/?week=2030-01-07'],['appointments','/appointments/'],['rooms','/rooms/'],
+          ['equipment','/equipment/'],['waiting','/waiting-lists/'],['feedback','/feedback/'],
+          ['inbox','/notifications/'],['calendar','/calendar/?view=week&date=2030-01-07'],
+          ['schedule','/appointments/calendar?month=2030-01&week=2030-01-07']]],
+      [8,[['calendar-warning','/calendar/?view=week&date=2030-01-07'],
+          ['schedule-warning','/appointments/calendar?month=2030-01&week=2030-01-07']]],
+    ]) {
+      const stateContext=await browser.newContext(), statePage=await stateContext.newPage();
+      observe(statePage);await login(statePage,actor);
+      for(const width of widths) {
+        await statePage.setViewportSize({width,height:900});
+        for(const [name,url] of statePages) {
+          assert.equal((await statePage.goto(fixture.url+url)).status(),200);
+          if(actor===5) assert.equal(await statePage.locator('main .service-row,main .student-activity-row,main .notification-item').count(),0,'Empty private activity '+name);
+          else assert.ok(await statePage.locator('.calendar-warning,.student-calendar-warning').count(),'Actual unresolved warning '+name);
+          keyboardSteps+=await inspect(statePage,width,`actor-${actor}-${name}`,true,actor);
+          if(width===320) await statePage.screenshot({path:path.join(output,`actor-${actor}-${name}-320.png`),fullPage:true});
+          totalViews++;
+        }
+      }
+      results.push(`Actor ${actor}: ${statePages.length} empty/private or actual unresolved-warning views at all four widths; real labels, focus, keyboard and overflow passed`);
+      await stateContext.close();
+    }
     const rolePages={
       2:['/appointments/','/appointments/availability','/appointments/calendar?month=2030-01&week=2030-01-07','/rooms/','/equipment/','/waiting-lists/','/feedback/','/calendar/?date=2030-01-07','/notifications/'],
       7:['/appointments/','/rooms/','/rooms/'+id.roomPending,'/equipment/','/equipment/'+id.loan,'/equipment/inventory/'+id.faculty,'/waiting-lists/','/feedback/','/feedback/'+id.report,'/calendar/?date=2030-01-07','/notifications/'],
       6:['/','/requests','/rooms/configuration','/equipment/custodians','/waiting-lists/configuration','/calendar/publications','/notifications/'],
     };
+    if (fixture.users['9']) rolePages[9]=rolePages[2].filter(url=>url!=='/appointments/availability');
     for (const [actor,urls] of Object.entries(rolePages)) {
       const roleContext=await browser.newContext();const rolePage=await roleContext.newPage();
-      rolePage.on('pageerror',e=>errors.push(e.message));await login(rolePage,actor);
+      observe(rolePage);await login(rolePage,actor);
       for (const width of [1440,390]) {
         await rolePage.setViewportSize({width,height:900});
         for (const url of urls) {
@@ -145,6 +179,7 @@ async function inspect(page,width,name,student=true) {
           assert.equal(await rolePage.locator('.student-service').count(),0);
           assert.equal(await rolePage.locator('link[href$="student-services.css"]').count(),0);
           assert.equal(await rolePage.evaluate(()=>document.documentElement.scrollWidth),width,'Role overflow '+actor+' '+url);
+          if(controlsAudit) await controlsAudit.inspect(rolePage,'role-'+actor+' '+url,fixture,actor);
           totalViews++;
         }
         await rolePage.screenshot({path:path.join(output,`role-${actor}-${width}.png`),fullPage:true});
@@ -159,8 +194,8 @@ async function inspect(page,width,name,student=true) {
       results.push('Role '+actor+': '+urls.length+' existing views at desktop/mobile, original shell, no student stylesheet, no overflow and drawer/Escape focus passed');
       await roleContext.close();
     }
-    const fault=JSON.parse(fs.readFileSync(path.join(root,'build/student-portal/unavailable-preview.json')));
-    const faultContext=await browser.newContext();const faultPage=await faultContext.newPage();
+    const fault=JSON.parse(fs.readFileSync(process.env.PORTAL_FAULT_INFO_FILE || path.join(root,'build/student-portal/unavailable-preview.json')));
+    const faultContext=await browser.newContext();const faultPage=await faultContext.newPage();observe(faultPage);
     await login(faultPage,1,fault);
     for (const width of widths) {
       await faultPage.setViewportSize({width,height:900});
@@ -176,7 +211,11 @@ async function inspect(page,width,name,student=true) {
     await faultContext.close();
     results.push('Real separate review server with an intentionally tiny existing engine timeout: 503 at four widths, safe private presentation, labels, keyboard and overflow passed; no responses mocked');
     assert.deepEqual(errors,[],'Browser JavaScript errors');
-    const report={totalViews,keyboardSteps,results,browserErrors:errors};
+    assert.deepEqual(consoleErrors.filter(m=>!m.startsWith('Failed to load resource:')),[],'Application console errors');
+    assert.ok(httpErrors.every(r=>[400,403,503].includes(r.status)),JSON.stringify(httpErrors));
+    assert.ok(failedRequests.every(r=>r.error==='net::ERR_ABORTED'),JSON.stringify(failedRequests));
+    const report={totalViews,keyboardSteps,results,browserErrors:errors,consoleErrors,httpErrors,failedRequests};
+    if(controlsAudit) controlsAudit.save(output);
     fs.writeFileSync(path.join(output,'browser-results.json'),JSON.stringify(report,null,2)+'\n');
     console.log(JSON.stringify(report,null,2));
   } finally {await browser.close();}

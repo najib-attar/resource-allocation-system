@@ -4,7 +4,7 @@ const path=require('node:path');
 const assert=require('node:assert/strict');
 const {chromium}=require(process.env.PLAYWRIGHT_NODE_MODULE||'playwright');
 const root=path.resolve(__dirname,'../..');
-const fixture=JSON.parse(fs.readFileSync(path.join(root,'build/student-portal/preview.json')));
+const fixture=JSON.parse(fs.readFileSync(process.env.PORTAL_INFO_FILE || path.join(root,'build/student-portal/preview.json')));
 (async()=>{
   const browser=await chromium.launch({headless:true,...(process.env.CHROMIUM_EXECUTABLE?
     {executablePath:process.env.CHROMIUM_EXECUTABLE}:{channel:'msedge'})});
@@ -62,7 +62,7 @@ const fixture=JSON.parse(fs.readFileSync(path.join(root,'build/student-portal/pr
     const report={method:'Synchronous observation at the native fetch call, followed by the unchanged real network request; no response mocks or delays.',
       notifications,appointments,rooms,realAppointmentChoices:appointmentChoices,
       realRoomCandidates:await page.locator('.room-candidate').count(),passed:true};
-    fs.writeFileSync(path.join(root,'docs/ui/student-portal/UI-09/loading-results.json'),JSON.stringify(report,null,2)+'\n');
+    fs.writeFileSync(path.join(process.env.PORTAL_OUTPUT_DIR || path.join(root,'docs/ui/student-portal/UI-09'),'loading-results.json'),JSON.stringify(report,null,2)+'\n');
     console.log(JSON.stringify(report,null,2));
   } finally {await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});
