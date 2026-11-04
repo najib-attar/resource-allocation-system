@@ -1,5 +1,10 @@
 # I3a: offline calendar snapshot and shadow comparison
 
+> Stage documentation and dated verification record. See the
+> [research guide](../README.md) for the current stage map and application boundary.
+> Schema counts, branch/publication status and next-stage recommendations below
+> refer to their recorded checkpoints; CDMCS remains inactive in live scheduling.
+
 This independent Python research tool invokes the two existing C++ executables.
 It has no database access, web routes, booking actions, or production selection
 flag. Everything it accepts must be explicitly synthetic. Roles are descriptive

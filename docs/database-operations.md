@@ -128,9 +128,11 @@ out of Git. Use a non-superuser application account and restrict network access;
 use authenticated TLS connections for a remote database. CI's trust-authenticated
 database is disposable test infrastructure, not a production configuration.
 
-Open `http://127.0.0.1:5000` and sign in with the provisioned identity. Use Run Allocation after import to publish the first
-database result. Before that, requests are pending; existing generated result files
-are **not** an operational fallback. The standalone C++ CSV CLI still works in an
+Open `http://127.0.0.1:5000` and sign in with the provisioned identity. Before
+Run Allocation, an authorized administrator must individually review imported
+academic requests in **Academic Eligibility**. Only eligible current revisions
+enter the first run; submission/import alone reserves nothing. Existing generated
+result files are **not** an operational fallback. The standalone C++ CSV CLI still works in an
 isolated working directory and does not update the database.
 
 ## Accounts and appointment calendars

@@ -1,5 +1,10 @@
 # Student Portal UI-01
 
+> Historical phase record. UI-01–UI-10 are complete and merged; see the
+> [current Student Portal guide](../student-portal/README.md). Scope statements, test counts
+> and follow-up plans below describe this phase at its recorded revision.
+> Later shared-component and authentication changes are documented in the current guides.
+
 UI-01 applies the approved Campus Space Concept 04 visual direction to the existing
 Flask/Jinja Student Home and student navigation. It introduces no routes, database
 changes, scheduling changes, frontend framework, or service business rules.
@@ -84,11 +89,9 @@ Build the existing backend with `python scripts/build_backend.py`. Set
 migrate a unique owned schema, provisions fictional accounts, and serves the real
 application on loopback port 5051. Account details are written under ignored
 `build/ui01/preview.json`. Stop the preview normally to clean up the owned schema.
-`UI01_PORT` overrides the port. The review instance uses
-`http://127.0.0.1:5052/student/?week=2030-01-07`, with fictional login
-`ui01-student` (populated) or `ui01-empty` (empty), password
-`Fictional-UI01-review-password`. These accounts belong only to the disposable
-review schema.
+`UI01_PORT` overrides the port. Use the fixture's generated metadata for its
+actual loopback URL and synthetic sign-in details; do not reuse those identities
+outside its disposable review schema.
 
 With Playwright available, run `node tests/ui/capture_student_portal.cjs`.
 Run `node tests/ui/check_student_controls.cjs` for the additional control checks.

@@ -1,5 +1,10 @@
 # UI-04 Rooms
 
+> Historical phase record. UI-01–UI-10 are complete and merged; see the
+> [current Student Portal guide](../README.md). Scope statements, test counts
+> and follow-up plans below describe this phase at its recorded revision.
+> Later shared-component and authentication changes are documented in the current guides.
+
 Room request list, new/revision forms, details, recurring series and busy/free
 availability use the shared student service components. Activity, time/requirements
 and ranked-room selection are separate panels. Required facilities, faculty and

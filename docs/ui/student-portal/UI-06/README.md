@@ -1,5 +1,10 @@
 # UI-06 Waiting Lists
 
+> Historical phase record. UI-01–UI-10 are complete and merged; see the
+> [current Student Portal guide](../README.md). Scope statements, test counts
+> and follow-up plans below describe this phase at its recorded revision.
+> Later shared-component and authentication changes are documented in the current guides.
+
 Overview, queue detail and policy use the approved student service layout. Queue
 rows preserve resource kind, owning faculty, exact interval, review status and
 contextual estimated/eligible position. Detail separates review from recorded

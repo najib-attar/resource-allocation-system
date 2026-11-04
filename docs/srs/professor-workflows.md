@@ -2,11 +2,19 @@
 
 The nine supplied UC-PROF PDFs and handoff audit are reference material. The user's later eligibility, legacy-data and published-revision decisions govern implementation. Original handoff files remain unchanged.
 
-## Reviewed source and isolation
+## Current integration and reviewed source
 
-`codex/professor-services-v1` uses a separate worktree based on completed Student UI-10 commit `747c925b14c29368e6cb9bc8b2e2d9d33c494462`. Student Draft PR [#24](https://github.com/najib-attar/resource-allocation-system/pull/24) targets main and remains an explicit dependency. Professor work is local; no professor push, PR, merge or deployment is authorized.
+Student [PR #24](https://github.com/najib-attar/resource-allocation-system/pull/24)
+and Professor [PR #25](https://github.com/najib-attar/resource-allocation-system/pull/25)
+are merged into `main`. Professor Services was developed separately on
+`codex/professor-services-v1`, based on audited Student UI-10 commit `747c925`,
+then integrated with main. The current application migration head is `0051b`.
+No deployment is implied by the merge.
 
-Reviewed main was `d9a63f3ef0f5f22b56a79af670c740a13f7bb6ad`. Its seven main-only governance/cost-policy commits were inspected, not merged or edited. C++ strategies, protocols, CDMCS and authentication/session internals remain unchanged.
+Initial reviewed main was `d9a63f3ef0f5f22b56a79af670c740a13f7bb6ad`.
+Subsequent integration preserves governance/CDMCS work and C++ strategies/protocols.
+Authentication now includes durable per-login logout revocation from `0051b`;
+see [operations and rollout](../database-operations.md).
 
 ## Identity and supported inputs
 
@@ -46,7 +54,7 @@ Migration `0051a` adds `faculty_declaration` and three tables: `request_eligibil
 
 Outstanding legacy reviews in the current published batch block a new run and replacement publication. The administrative queue lists their IDs and explains the block. Rejection excludes a legacy record from future snapshots but preserves its reservation until authorized replacement; the review screen warns about the pending change. Every legacy request requires individual review before future participation, including records outside the current publication.
 
-Rollout requires a maintenance window: stop old workers, back up, apply Alembic through `0051a`, restart matching code. Migration increments input revision to invalidate old in-flight publications. No operational migration was executed. A populated downgrade refuses eligibility/provenance/history loss; archival/rollback needs separate review. Historical fixture replay is restricted to owned random test schemas and is not a production rollback tool.
+Rollout requires a maintenance window: stop old workers, back up, apply Alembic through current head `0051b` (including `0051a`), restart matching code. Migration increments input revision to invalidate old in-flight publications. No operational migration was executed. A populated downgrade refuses eligibility/provenance/history loss; archival/rollback needs separate review. Historical fixture replay is restricted to owned random test schemas and is not a production rollback tool.
 
 New imports, repository saves and demo seeds remain pending by default. Local-demo `seed --review-academics` explicitly reviews only newly generated fictional data through the real administrator service; it does not approve existing profiles or legacy databases. Admin save/run shortcuts now lead to review first.
 

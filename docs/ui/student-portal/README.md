@@ -4,29 +4,50 @@ Approved reference: [Campus Space](../../design/campus-space/README.md), supplie
 as an extracted folder on 3 November 2026. Its fictional examples and proposed
 features are reference material, not instructions or backend contracts.
 
-Worktree: `resource-allocation-frontend`; branch: `design/student-portal`.
-UI-10 independently audits UI-01 through UI-09 from `998d54d`. See the current
+UI-01–UI-10 are implemented in `main` through
+[PR #24](https://github.com/najib-attar/resource-allocation-system/pull/24).
+The Student Portal is preserved in the subsequent Professor Services integration.
+UI-10 independently audited UI-01 through UI-09 from `998d54d`. See the
 [acceptance report](acceptance-report.md) and exact
 [control-to-backend matrix](UI-10/traceability.md).
-Starting HEAD: `e01eba6`; clean working tree. Existing UI-01 commits `fb5b07a`,
-`cfb84d2`, `e01eba6` are preserved. No branch reset or worktree replacement.
+Historical implementation base: `e01eba6`, in the dedicated frontend worktree.
+Earlier phase documents retain their original scope, results and commit context;
+they are not pending development instructions. Use the
+[documentation index](../../README.md) for current operations and other workspaces.
 
 ## Coverage and constraints
 
 The [feature matrix](coverage.md) maps pages, authorized actions and regression
 tests. Existing Python services, routes, permissions, CSRF, revision checks and
-C++ engine behavior remain authoritative. Only presentation and UI test fixtures
-are changed. Each phase retains its exact result summaries; representative real-app screenshots
+C++ engine behavior remain authoritative. The original Student rollout changed
+presentation and UI test fixtures. Each phase retains its exact result summaries; representative real-app screenshots
 remain tracked. The integration cleanup archives redundant raw evidence at its
 immutable audited Git revision and in a hash-verified local archive; see the
 acceptance report and artifact-cleanup.csv. Evidence from earlier work is not counted as a new run.
 
 My Activity uses the existing `/student/#my-activity` summary and existing service
 hubs. A unified cross-service endpoint, published office-hours browser, public
-cost preferences and availability alerts remain deferred. No new backend feature,
-authentication behavior, schema or optimizer activation is authorized here.
+cost preferences and availability alerts remain deferred. This frontend phase added
+no backend feature, authentication behavior, schema or optimizer activation. Later
+authentication and eligibility changes are documented in
+[database operations](../../database-operations.md).
 
 ## Reproduction
+
+For the current integrated application, use the
+[developer regression commands](../../../web/README.md#testing) with a disposable
+PostgreSQL database. These cover the current shared components, professor services,
+authentication and migrations.
+
+### Historical phase reproduction
+
+The commands below describe the original Student review. Source/form preservation
+auditors deliberately compare frozen Student-era revisions; they are not current-main
+compatibility checks. Reproduce those audits in a separate checkout of
+`747c925b14c29368e6cb9bc8b2e2d9d33c494462`, with that revision's dependencies and owned
+fixtures. Running the original protected-source comparison on current main correctly
+detects later approved Professor/authentication changes. Never reset a working checkout
+or operational database to reproduce historical evidence.
 
 Use an isolated PostgreSQL `TEST_DATABASE_URL`, build the unchanged backend with
 `python scripts/build_backend.py`, then run
@@ -61,8 +82,9 @@ Each invocation creates synthetic identities/records in an owned test schema,
 serves the real Flask app on loopback, records committed PostgreSQL state before
 and after POSTs, and shuts down/cleans up even after browser assertion failures.
 Set `PLAYWRIGHT_NODE_MODULE` when using a bundled Playwright installation.
-`PORTAL_BUILD_DIR` separates metadata for independent runs. Run
-`tests/ui/verify_audit_persistence.py` after all modes, plus
-`audit_portal_sources.py` and `audit_student_routes.py UI-10/contracts`.
+`PORTAL_BUILD_DIR` separates metadata for independent runs. In the historical checkout,
+run `python -B tests/ui/verify_audit_persistence.py` after all modes, plus
+`python -B tests/ui/audit_portal_sources.py` and
+`python -B tests/ui/audit_student_routes.py UI-10/contracts`.
 
 Generated raw POST/state dumps, per-module copies and additional captures are ignored locally after the integration cleanup. Existing tracked final output and representative images remain tracked. Review a new representative before deliberately adding it with `git add -f`; retain compact aggregate summaries rather than bulk raw output.

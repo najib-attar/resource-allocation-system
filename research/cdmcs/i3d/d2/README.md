@@ -1,5 +1,10 @@
 # D2: research-only fixed-calendar batching
 
+> Stage documentation and dated verification record. See the
+> [research guide](../../README.md) for the current stage map and application boundary.
+> Schema counts, branch/publication status and next-stage recommendations below
+> refer to their recorded checkpoints; CDMCS remains inactive in live scheduling.
+
 This stage is synthetic-only and explicitly invoked. It does not select a live
 scheduler, read a database, create bookings or persist preferences. Both C++ engines,
 their protocols and the historical Python references remain unchanged.

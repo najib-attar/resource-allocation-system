@@ -1,5 +1,11 @@
 # Professor Services - independent acceptance record
 
+> Integration status: [PR #25](https://github.com/najib-attar/resource-allocation-system/pull/25)
+> is merged into `main` at `4566ceb861b23d6be279ae221138117b871fad02`.
+> The verification snapshots below preserve their actual commands/results and
+> pre-publication status. They are historical evidence, not pending implementation
+> instructions or a deployment claim. See the [current guide](README.md).
+
 **FRESH LOCAL INTEGRATION VERIFICATION PASSED.** This is the pre-publication verification snapshot for Professor Services plus Student Portal and current main `196933506469ae25d3214a91ef2fd457356d096d`. User authorization resumes publication and a normal merge only after all hosted checks, current-base and review/protection gates pass. The eventual Professor PR records hosted run IDs and merge status. No deployment is included. [Exact fresh results](integration-verification.json).
 
 ## Resumed final integration - 4 November 2026
@@ -163,4 +169,4 @@ Outstanding scope/rollout limits:
 
 The final integration authorization permits a Professor Services PR and normal merge only after fresh local/hosted checks pass. Migration assumptions remain explicit, and deployment is excluded. The historical independent audit passed within its documented limits; the integration gates above remain authoritative.
 
-**FRESH LOCAL VERIFICATION PASSED - HOSTED AND FINAL MAIN GATES STILL REQUIRED**
+Historical status: **FRESH LOCAL VERIFICATION PASSED - HOSTED AND FINAL MAIN GATES STILL REQUIRED**

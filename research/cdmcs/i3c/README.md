@@ -1,5 +1,10 @@
 # I3c: controlled internal shadow execution
 
+> Stage documentation and dated verification record. See the
+> [research guide](../README.md) for the current stage map and application boundary.
+> Schema counts, branch/publication status and next-stage recommendations below
+> refer to their recorded checkpoints; CDMCS remains inactive in live scheduling.
+
 This module is **disabled by default, synthetic-only and explicitly invoked**.
 It registers no routes, hooks, jobs or configuration defaults. It does not select
 an application scheduler, query a database, confirm a meeting, obtain approval,

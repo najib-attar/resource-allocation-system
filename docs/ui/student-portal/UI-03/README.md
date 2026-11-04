@@ -1,5 +1,10 @@
 # UI-03 Appointments
 
+> Historical phase record. UI-01–UI-10 are complete and merged; see the
+> [current Student Portal guide](../README.md). Scope statements, test counts
+> and follow-up plans below describe this phase at its recorded revision.
+> Later shared-component and authentication changes are documented in the current guides.
+
 The approved service heading, restrained cards, blue controls, status pills and
 stacking fields now cover list, new request, detail, optional invitation and
 unavailable states. Shared components are opt-in for student service templates;
