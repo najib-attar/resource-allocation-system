@@ -1,6 +1,6 @@
 {
   "status": "LOCAL INTEGRATION VERIFICATION PASSED - HOSTED CI REQUIRED BEFORE MERGE",
-  "recordedAt": "2026-11-04T17:44:58.708624+03:00",
+  "recordedAt": "2026-11-04T18:05:21.057574+03:00",
   "reviewedImplementation": "bddf7ab83370c3e26a11ca9ea0d221c7a0ed8009",
   "fullSuiteStart": "06e0e12a953222a5898a067defce65219ecbfa6a",
   "subsequentChange": "Audit tool pins the separately approved authentication fix; production and root test code unchanged.",
@@ -951,14 +951,15 @@
     "productionCppAndResearchChanges": [],
     "protectedSourcesUnchanged": [
       "src",
-      "research",
       ".github",
       "web/cost_policy_service.py",
       "web/scheduling_preference_service.py"
-    ]
+    ],
+    "researchImplementationUnchanged": true,
+    "researchFixtureOnlyChange": "Two current session-metadata fields; all test assertions byte-preserved."
   },
   "syntax": {
-    "python": 67,
+    "python": 68,
     "javascript": 10,
     "failures": 0
   },
@@ -985,5 +986,46 @@
     "Safely fast-forward normal main checkout and run final merged-main regressions/startup smoke"
   ],
   "deploymentPerformed": false,
-  "operationalDatabaseModified": false
+  "operationalDatabaseModified": false,
+  "ciCompatibilityCorrection": {
+    "initialFailedHead": "9bb0f1dbac29998cf0f64005db8b43b0b49b140e",
+    "failedJob": "https://github.com/najib-attar/resource-allocation-system/actions/runs/41851271655/job/126647916810",
+    "initialHostedResult": {
+      "run": 55,
+      "failures": 1,
+      "errors": 32
+    },
+    "cause": "I3b test context omitted the current signed-login format and nonce; real middleware correctly rejected it.",
+    "fix": "Populate login_format=2 and a random CSRF nonce in the existing test fixture before real middleware runs.",
+    "file": "research/cdmcs/i3b/tests/test_readonly_projection.py",
+    "addedLines": 2,
+    "researchImplementationChanged": false,
+    "testAssertionsChanged": false,
+    "productionAuthenticationChanged": false,
+    "rootApplicationTestsChanged": false,
+    "freshProjection": {
+      "run": 47,
+      "passed": 47,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 319.075
+    },
+    "freshIdentity": {
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 30.363
+    },
+    "originalFailureReproducedLocally": true,
+    "hostedChecksMustRerunOnCorrectedHead": true,
+    "evidenceHashes": {
+      "professor-projection-job.log": "1332c3f7d07b7bb236466eeca05dd15c62e1871e3040035f6ad1382da3849c41",
+      "projection-before-fixture-correction.txt": "8cb2b231973fcb5a56a879cbc85f0fc2ad4cd7da1405e4fb0c9cd9dd68f964ff",
+      "projection-after-fixture-correction.txt": "56d4e62d98d9c11c4ecaa1a0dc939dfafd8854b46bf18749dfd8cd85f12cdfe8",
+      "projection-identity-regression.txt": "69b19540eab5fb2ab2e63cc3ced985fd62a6dfced69b2498e179e31fb918a9f5"
+    }
+  }
 }

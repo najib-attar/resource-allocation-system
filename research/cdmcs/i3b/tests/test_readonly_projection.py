@@ -54,6 +54,8 @@ class ReadonlyProjectionTests(PostgresTestCase):
         with web_app.app.test_request_context("/appointments/?organizerId=999"):
             if actor is not None:
                 login_session["user_id"], login_session["session_version"] = actor, version
+                login_session["login_format"] = 2
+                login_session["csrf"] = secrets.token_urlsafe(32)
             web_app.app.preprocess_request()
             yield
 

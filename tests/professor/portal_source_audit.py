@@ -64,8 +64,17 @@ def delivery_inventory():
 
 
 def main():
-    inherited_main=['research','.github','web/cost_policy_service.py','tests/test_cost_policy_governance.py']
+    inherited_main=['.github','web/cost_policy_service.py','tests/test_cost_policy_governance.py']
     assert not git('diff',REVIEW_BASE,'--',*inherited_main)
+    research_fixture='research/cdmcs/i3b/tests/test_readonly_projection.py'
+    assert git('diff','--name-only',REVIEW_BASE,'--','research').splitlines()==[research_fixture]
+    original_fixture=git('show',REVIEW_BASE+':'+research_fixture)
+    login_line='                login_session["user_id"], login_session["session_version"] = actor, version\n'
+    assert original_fixture.count(login_line)==1
+    expected_fixture=original_fixture.replace(login_line,login_line+
+        '                login_session["login_format"] = 2\n'
+        '                login_session["csrf"] = secrets.token_urlsafe(32)\n')
+    assert (ROOT/research_fixture).read_text(encoding='utf-8')==expected_fixture
     protected=['src','migrations','web/persistence','web/academic_eligibility.py',
         'web/account_service.py','web/appointment_service.py','web/room_request_service.py','web/equipment_service.py',
         'web/calendar_service.py','web/university_calendar.py','web/personal_schedule_service.py',
@@ -147,6 +156,9 @@ def main():
     after=class_methods(service_source.replace(input_guard,''))
     assert all(before[key]==after[key] for key in before if key!='directory')
     report=dict(frontendBase=BASE,reviewedMain=REVIEW_BASE,unchangedMainResearchAndGovernance=inherited_main,
+        researchImplementationUnchanged=True,researchTestAssertionsUnchanged=True,
+        approvedResearchFixtureAlignment=dict(path=research_fixture,
+            change='Populate current login format and random nonce before real middleware authentication; no security bypass.'),
         protectedSourceGroups=protected,approvedLogoutCorrections=sorted(logout_files),
         otherProtectedSourcesUnchanged=True,allExistingModelDefinitionsPreserved=True,
         existingAccountMethodsPreservedExceptSessionIdentity=True,

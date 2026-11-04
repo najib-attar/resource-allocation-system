@@ -16,12 +16,13 @@
   "untrackedPathCollisions": [],
   "protectedProductionPathsUnchanged": [
     "src",
-    "research",
     ".github",
     "web/cost_policy_service.py",
     "web/scheduling_preference_service.py"
   ],
   "integrationResumedByUser": true,
   "operationalDatabaseModified": false,
-  "deploymentPerformed": false
+  "deploymentPerformed": false,
+  "researchImplementationUnchanged": true,
+  "researchFixtureOnlyChange": "Two current authenticated-session metadata fields; exact source transformation checked."
 }

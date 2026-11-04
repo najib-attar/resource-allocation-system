@@ -866,6 +866,10 @@
     },
     {
       "status": "M",
+      "path": "research/cdmcs/i3b/tests/test_readonly_projection.py"
+    },
+    {
+      "status": "M",
       "path": "scripts/generate_database_diagrams.py"
     },
     {
