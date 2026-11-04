@@ -1,5 +1,5 @@
-{% extends 'student_service_base.html' %}
-{% from 'components/student_services.html' import status %}
+{% extends 'service_base.html' %}
+{% from 'components/services.html' import status %}
 {% block title %}Equipment Request{% endblock %}
 {% block page_heading %}Equipment Request{% endblock %}
 {% macro action_form(action,label) -%}<form method="post" action="{{ url_for('equipment.transition',request_id=item.id,action=action) }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="button-secondary">{{ label }}</button></form>{%- endmacro %}

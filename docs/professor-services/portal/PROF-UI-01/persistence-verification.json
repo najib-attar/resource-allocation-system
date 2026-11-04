@@ -1,0 +1,9 @@
+{
+  "posts": 7,
+  "outcomes": [
+    {
+      "path": "/run-allocation",
+      "result": "rejected; persisted state unchanged"
+    }
+  ]
+}

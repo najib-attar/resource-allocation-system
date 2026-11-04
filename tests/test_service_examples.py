@@ -109,7 +109,7 @@ class ServiceExampleTests(RoomFixture):
             self.assertEqual(page.status_code, 200)
             self.assertNotIn(forbidden_button, page.data)
             if row['service'] == 'Appointment':
-                self.assertIn(b'My activity', page.data)
+                self.assertIn(b'Appointment history', page.data)
                 self.assertNotIn(b'Notified:', page.data)
             else:
                 self.assertIn(b'Operational audit log', page.data)
@@ -143,7 +143,7 @@ class ServiceExampleTests(RoomFixture):
                 self.assertIsNotNone(event['at'].tzinfo)
             page = student.get(row['url'])
             self.assertEqual(page.status_code, 200)
-            self.assertIn(b'My activity', page.data)
+            self.assertIn(b'Appointment history' if row['service'] == 'Appointment' else b'My activity', page.data)
             self.assertNotIn(b'Notified:', page.data)
             if row['service'] == 'Appointment':
                 professor = self.service.detail(row['id'], 2)

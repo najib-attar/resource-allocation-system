@@ -1,0 +1,102 @@
+{
+  "originalRevision": "937adcc75e23af79e37c394c932e99bc330e6a1b",
+  "removedFiles": 420,
+  "removedBytes": 45658932,
+  "retainedRepresentativeScreenshots": 68,
+  "localArchive": "C:\\Users\\najee\\.codex\\worktrees\\professor-services-v1\\resource-allocation-frontend\\build\\integration\\professor-evidence-937adcc.zip",
+  "archiveSha256": "a27c669230b5d5b9a63ae2a1f5553a84ebd874bdb41c61126fbf8a7e41fa87f9",
+  "archiveFiles": 606,
+  "archiveEveryFileHashVerified": true,
+  "historicalGitEvidencePreserved": true,
+  "rewrittenHistoricalLinks": 5,
+  "controlSummary": {
+    "originalInstances": 5892,
+    "distinctSignatures": 378,
+    "sumOccurrences": 5892,
+    "labelEncoding": "JSON escaped string"
+  },
+  "compactedBrowserMetadata": [
+    {
+      "path": "docs/professor-services/PROF-UI-08/browser/browser-results.json",
+      "originalSha256": "6bd080bfa419dd95a22fc9bb00f91a96a6a5877c9a0fb7951220b3b25b8aa041",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    },
+    {
+      "path": "docs/professor-services/PROF-UI-08/legacy-gate/browser-results.json",
+      "originalSha256": "ce9bc35330b4ac1c6af8455f2272052d1dc0089a04a72bc72cf3847c4184c1d2",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    },
+    {
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/browser-results.json",
+      "originalSha256": "6068894bc0ad49a66529157e9d958c9d27235e8b8a0f7c3f33ba34e71b228900",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    },
+    {
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-02/browser-results.json",
+      "originalSha256": "c8db3243ae96bced22996882d857837893538c79725080602af059ec2204e3da",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    },
+    {
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/browser-results.json",
+      "originalSha256": "cc73883e996f88db47a07f6e0b70adf56ed7fd33115f61f2ba755cafc00e3753",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    },
+    {
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-04/browser-results.json",
+      "originalSha256": "4f481b2098e1ac8a54139ec1328c1a12b8a180bb77aee3f58183c7cdb38af5b2",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    },
+    {
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/browser-results.json",
+      "originalSha256": "0ead08b69c3a73a714dd83ed374f074fac9cea48a458c713aabcbd5bc0ffcf1e",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    },
+    {
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-06/browser-results.json",
+      "originalSha256": "1e4c51a1831419965ff7a49a1c3872834e2f876c661c17bb98c35799e1006eb5",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    },
+    {
+      "path": "docs/professor-services/eligibility-browser/browser-results.json",
+      "originalSha256": "eb51de81dfcbef11b7db6e08b7f7481bf6678f42636fde60ebe3e92ce5a4ce53",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    },
+    {
+      "path": "docs/professor-services/portal/PROF-UI-01/browser-results.json",
+      "originalSha256": "7e553cbafe57f684295b388986665f2d0c4cf4c775f2a495727636be07fd5100",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    },
+    {
+      "path": "docs/professor-services/portal/PROF-UI-02/browser-results.json",
+      "originalSha256": "8e808b667503cfbc60912e3ce4241301311c93b616422dd1bfbde81e719db4a6",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    },
+    {
+      "path": "docs/professor-services/portal/PROF-UI-03/browser-results.json",
+      "originalSha256": "6820092bca6217c1aed417d908e6d1a81242b5a058b8ddef77428414262a3e83",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    },
+    {
+      "path": "docs/professor-services/portal/PROF-UI-04/browser-results.json",
+      "originalSha256": "ae568c8cfd3c9a06c47885115674eabe2999b27b2ebc2f77c6b34607281af6cb",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    },
+    {
+      "path": "docs/professor-services/portal/PROF-UI-05/browser-results.json",
+      "originalSha256": "6f038fa9be5a29fcb4f14ca14d6eafb09cd253d775f46a37bd0a8e51bbf31f6f",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    },
+    {
+      "path": "docs/professor-services/portal/PROF-UI-06/browser-results.json",
+      "originalSha256": "f7fab47e7236db3cc33029d40559d816706ac11474c576d5766f4db875acb45b",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    },
+    {
+      "path": "docs/professor-services/portal/PROF-UI-07/browser-results.json",
+      "originalSha256": "db46f2517e43fb9eced49bde1122d175ee64c579c848cf9513d90195916b0549",
+      "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+    }
+  ],
+  "productionFilesChanged": [],
+  "testsRemoved": []
+}

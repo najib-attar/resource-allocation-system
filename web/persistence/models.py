@@ -104,6 +104,54 @@ class ResourceRequest(Base):
     submission_fingerprint: Mapped[str | None] = mapped_column(String(64))
     calendar_public: Mapped[bool] = mapped_column(Boolean, server_default="false")
     academic_instructor_id: Mapped[int | None] = mapped_column(ForeignKey("university_user.id"), index=True)
+    faculty_declaration: Mapped[str] = mapped_column(Text, server_default="")
+
+
+ELIGIBILITY_STATES = ('Pending Eligibility Review', 'Eligible', 'Eligibility Rejected')
+ELIGIBILITY_ORIGINS = ('Legacy', 'Repository', 'Import', 'Demo', 'Professor', 'Administration')
+
+
+class RequestEligibility(Base):
+    __tablename__ = 'request_eligibility'
+    __table_args__ = (
+        CheckConstraint(allowed('status', ELIGIBILITY_STATES), name='ck_eligibility_status'),
+        CheckConstraint(allowed('origin', ELIGIBILITY_ORIGINS), name='ck_eligibility_origin'),
+        CheckConstraint('version >= 0', name='ck_eligibility_version'),
+        CheckConstraint("origin <> 'Professor' OR submitted_by IS NOT NULL", name='ck_eligibility_submitter'),
+        CheckConstraint("(status = 'Pending Eligibility Review' AND reviewed_revision IS NULL AND reviewer_id IS NULL AND decided_at IS NULL) OR "
+            "(status <> 'Pending Eligibility Review' AND reviewed_revision > 0 AND reviewer_id IS NOT NULL AND decided_at IS NOT NULL AND length(btrim(reason)) BETWEEN 1 AND 2000)", name='ck_eligibility_decision'))
+    request_id: Mapped[int] = mapped_column(ForeignKey('resource_request.id'), primary_key=True)
+    origin: Mapped[str] = mapped_column(String(24), server_default='Repository')
+    submitted_by: Mapped[int | None] = mapped_column(ForeignKey('university_user.id'), index=True)
+    legacy_revision: Mapped[int | None] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(40), server_default='Pending Eligibility Review', index=True)
+    version: Mapped[int] = mapped_column(Integer, server_default='0')
+    reviewed_revision: Mapped[int | None] = mapped_column(Integer)
+    reviewer_id: Mapped[int | None] = mapped_column(ForeignKey('university_user.id'), index=True)
+    reason: Mapped[str] = mapped_column(Text, server_default='')
+    decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class EligibilityEvent(Base):
+    __tablename__ = 'eligibility_event'
+    __table_args__ = (UniqueConstraint('request_id', 'version', name='uq_eligibility_event_version'),)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    request_id: Mapped[int] = mapped_column(ForeignKey('resource_request.id'), index=True)
+    version: Mapped[int] = mapped_column(Integer)
+    request_revision: Mapped[int] = mapped_column(Integer)
+    status: Mapped[str] = mapped_column(String(40))
+    origin: Mapped[str] = mapped_column(String(24))
+    actor_id: Mapped[int | None] = mapped_column(ForeignKey('university_user.id'), index=True)
+    reason: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class AllocationEligibility(Base):
+    __tablename__ = 'allocation_eligibility'
+    run_id: Mapped[int] = mapped_column(ForeignKey('allocation_run.id'), primary_key=True)
+    request_id: Mapped[int] = mapped_column(ForeignKey('resource_request.id'), primary_key=True, index=True)
+    request_revision: Mapped[int] = mapped_column(Integer)
+    eligibility_version: Mapped[int] = mapped_column(Integer)
 
 
 class RequestSlot(Base):
@@ -406,6 +454,19 @@ class LoginAccount(Base):
     session_version: Mapped[int] = mapped_column(Integer, default=1)
     failed_attempts: Mapped[int] = mapped_column(Integer, default=0)
     locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class LoggedOutSession(Base):
+    """Durable denial of one signed browser session, including late responses."""
+    __tablename__ = "logged_out_session"
+    __table_args__ = (
+        CheckConstraint("session_version > 0", name="ck_logout_session_version"),
+        CheckConstraint("token_digest ~ '^[0-9a-f]{64}$'", name="ck_logout_token_digest"),
+    )
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True)
+    session_version: Mapped[int] = mapped_column(Integer, primary_key=True)
+    token_digest: Mapped[str] = mapped_column(String(64), primary_key=True)
+    logged_out_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
 class AcademicPeriod(Base):

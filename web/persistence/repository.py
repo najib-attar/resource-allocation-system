@@ -10,6 +10,7 @@ from sqlalchemy import func, select, text, update
 
 from .models import ApplicationState, BusySlot, ExamDetails, OrganizationUnit, RequestHistory, RequestParticipant, RequestSlot, Resource, ResourceRequest, Role, User, UserRole
 from .models import Allocation, AllocationParticipant, AllocationRun, MeetingSuggestion, RequestDecision, SuggestionGroup
+from .models import RequestEligibility, AllocationEligibility
 from ..engine_gateway import validate_result
 
 
@@ -44,6 +45,8 @@ def validate_unit_hierarchy(parents):
 def submission_fingerprint(item):
     payload = {key: item[key] for key in ("type", "requesterId", "spaceId", "participantCount", "slots")}
     payload.update({key: item.get(key, "") for key in ("title", "purpose", "requiredFeature", "requiredBuilding")})
+    if item.get('facultyDeclaration'):
+        payload['facultyDeclaration'] = item['facultyDeclaration']
     if item["type"] == "CommitteeMeeting":
         payload["participants"] = [{"userId": entry["userId"], "role": entry.get("role") or "Participant"}
                                    for entry in item.get("participants", [])]
@@ -95,7 +98,7 @@ def slot_dict(item):
     return {"day": item.day, "startMinutes": item.start_minutes, "endMinutes": item.end_minutes}
 
 
-def snapshot_from_session(session, strategy, run_id=None):
+def snapshot_from_session(session, strategy, run_id=None, *, for_allocation=True):
     roles = {item.id: item.name for item in session.scalars(select(Role))}
     unit_records = list(session.scalars(select(OrganizationUnit)))
     validate_unit_hierarchy({item.id: item.parent_id for item in unit_records})
@@ -112,14 +115,20 @@ def snapshot_from_session(session, strategy, run_id=None):
                   "building": item.building, "available": item.available,
                   "features": {key: getattr(item, key) for key in ("projector", "whiteboard", "computers")}}
                  for item in session.scalars(select(Resource).order_by(Resource.source_order))]
+    query = select(ResourceRequest).order_by(ResourceRequest.submission_order)
+    if for_allocation:
+        query = query.join(RequestEligibility, RequestEligibility.request_id == ResourceRequest.id).where(
+            RequestEligibility.status == 'Eligible', RequestEligibility.reviewed_revision == ResourceRequest.revision)
+    records = list(session.scalars(query))
+    keys = [r.id for r in records]
     slots, participants = defaultdict(list), defaultdict(list)
-    for item in session.scalars(select(RequestSlot).order_by(RequestSlot.request_id, RequestSlot.ordinal)):
+    for item in session.scalars(select(RequestSlot).where(RequestSlot.request_id.in_(keys)).order_by(RequestSlot.request_id, RequestSlot.ordinal)):
         slots[item.request_id].append(slot_dict(item))
-    for item in session.scalars(select(RequestParticipant).order_by(RequestParticipant.request_id, RequestParticipant.ordinal)):
+    for item in session.scalars(select(RequestParticipant).where(RequestParticipant.request_id.in_(keys)).order_by(RequestParticipant.request_id, RequestParticipant.ordinal)):
         participants[item.request_id].append({"userId": item.user_id, "role": item.role})
-    exams = {item.request_id: item for item in session.scalars(select(ExamDetails))}
+    exams = {item.request_id: item for item in session.scalars(select(ExamDetails).where(ExamDetails.request_id.in_(keys)))}
     requests = []
-    for item in session.scalars(select(ResourceRequest).order_by(ResourceRequest.submission_order)):
+    for item in records:
         if (not slots[item.id] or len(slots[item.id]) > 10000
                 or (item.type != "Recurring" and len(slots[item.id]) != 1)
                 or (item.type == "Exam") != (item.id in exams)
@@ -146,7 +155,8 @@ def insert_request(session, request, explicit_order=None):
     record = ResourceRequest(type=request["type"], requester_id=request["requesterId"],
                              resource_id=request["spaceId"], participant_count=request["participantCount"],
                              title=request.get("title", ""), purpose=request.get("purpose", ""),
-                             required_feature=request.get("requiredFeature", ""), required_building=request.get("requiredBuilding", ""))
+                             required_feature=request.get("requiredFeature", ""), required_building=request.get("requiredBuilding", ""),
+                             faculty_declaration=request.get('facultyDeclaration',''))
     if "id" in request:
         record.id = request["id"]
     if explicit_order is not None:
@@ -167,38 +177,50 @@ def insert_request(session, request, explicit_order=None):
     return record
 
 
+def save_request_in_session(session, request, submission_key=None):
+    """Shared insertion contract; callers own authorization and the transaction."""
+    from .validation import validate_request
+    state = state_row(session, lock=True)
+    if submission_key is not None and (not isinstance(submission_key, str) or not re.fullmatch(r"[0-9a-f]{32}", submission_key)):
+        raise PersistenceError("Invalid submission key; reopen the form and retry.")
+    validate_request(request, set(session.scalars(select(User.id))), set(session.scalars(select(Resource.id))))
+    fingerprint = submission_fingerprint(request) if submission_key else None
+    if submission_key:
+        previous = session.scalar(select(ResourceRequest).where(ResourceRequest.submission_key == submission_key))
+        if previous is not None:
+            if previous.submission_fingerprint != fingerprint:
+                raise SubmissionConflict("Submission key was already used for different request content. Open a new form.")
+            return previous.id
+    record = insert_request(session, request)
+    record.submission_key, record.submission_fingerprint = submission_key, fingerprint
+    session.add(RequestHistory(request_id=record.id, kind="saved", message="Request saved; pending eligibility review. No resource reserved."))
+    session.flush()
+    session.expire(state, ['input_revision'])
+    return record.id
+
+
 class Repository:
     def __init__(self, database):
         self.database = database
 
     def snapshot(self):
+        from ..academic_eligibility import AllocationInput, assert_legacy_reviewed
         with self.database.transaction(read_only=True) as session:
             state = state_row(session)
-            return snapshot_from_session(session, state.strategy)
+            assert_legacy_reviewed(session)
+            return AllocationInput(snapshot_from_session(session, state.strategy), self.database, state.input_revision)
 
-    def save_request(self, request, submission_key=None):
-        from .validation import validate_request
-        if submission_key is not None and (not isinstance(submission_key, str) or not re.fullmatch(r"[0-9a-f]{32}", submission_key)):
-            raise PersistenceError("Invalid submission key; reopen the form and retry.")
+    def save_request(self, request, submission_key=None, actor=None):
         with self.database.transaction() as session:
-            state = state_row(session, lock=True)
-            users = set(session.scalars(select(User.id)))
-            resources = set(session.scalars(select(Resource.id)))
-            validate_request(request, users, resources)
-            fingerprint = submission_fingerprint(request) if submission_key else None
-            if submission_key:
-                previous = session.scalar(select(ResourceRequest).where(ResourceRequest.submission_key == submission_key))
-                if previous is not None:
-                    if previous.submission_fingerprint != fingerprint:
-                        raise SubmissionConflict("Submission key was already used for different request content. Open a new form.")
-                    return previous.id
-            record = insert_request(session, request)
-            record.submission_key = submission_key
-            record.submission_fingerprint = fingerprint
-            session.add(RequestHistory(request_id=record.id, kind="saved", message="Request saved; pending allocation."))
-            state.input_revision += 1
-            session.flush()
-            return record.id
+            if actor is not None:
+                from ..academic_eligibility import administrator
+                administrator(session,actor)
+            key=save_request_in_session(session, request, submission_key)
+            meta=session.get(RequestEligibility,key)
+            if actor is not None and meta.origin=='Repository' and meta.version==0:
+                meta.origin,meta.submitted_by='Administration',actor
+                meta.version+=1
+            return key
 
     def set_strategy(self, strategy):
         from .models import STRATEGIES
@@ -211,14 +233,21 @@ class Repository:
                 state.input_revision += 1
 
     def start_run(self):
+        from ..academic_eligibility import AllocationInput, assert_legacy_reviewed
         with self.database.transaction() as session:
             state = state_row(session, lock=True)
+            assert_legacy_reviewed(session)
             snapshot = snapshot_from_session(session, state.strategy)
             run = AllocationRun(correlation_id=snapshot["runId"], input_revision=state.input_revision,
                                 strategy=state.strategy, snapshot=snapshot)
             session.add(run)
             session.flush()
-            return run.id, snapshot
+            for row, eligibility in session.execute(select(ResourceRequest, RequestEligibility).join(
+                    RequestEligibility, RequestEligibility.request_id == ResourceRequest.id).where(
+                    ResourceRequest.id.in_([r['id'] for r in snapshot['requests']]))):
+                session.add(AllocationEligibility(run_id=run.id, request_id=row.id,
+                    request_revision=row.revision, eligibility_version=eligibility.version))
+            return run.id, AllocationInput(snapshot, self.database, state.input_revision)
 
     def fail_run(self, run_id, message, superseded=False):
         with self.database.transaction() as session:
@@ -232,57 +261,75 @@ class Repository:
             if run is None or run.status != "running":
                 raise PersistenceError("Allocation run is missing or already completed.")
             if state.input_revision != run.input_revision:
-                raise StaleRun("Inputs changed during allocation. Saved requests remain pending; retry allocation. Previous results remain active.")
+                raise StaleRun("Inputs changed, including eligibility decisions. Retry allocation; previous results remain active.")
+            from ..academic_eligibility import assert_legacy_reviewed
+            assert_legacy_reviewed(session)
+            current = snapshot_from_session(session, run.strategy, run.correlation_id)
+            if current != run.snapshot:
+                raise StaleRun('Allocation input no longer matches current eligible revisions.')
+            proof = {p.request_id:(p.request_revision,p.eligibility_version) for p in session.scalars(
+                select(AllocationEligibility).where(AllocationEligibility.run_id == run.id))}
+            eligible = {r.id:(r.revision,e.version) for r,e in session.execute(select(ResourceRequest,RequestEligibility)
+                .join(RequestEligibility,RequestEligibility.request_id == ResourceRequest.id)
+                .where(RequestEligibility.status == 'Eligible',RequestEligibility.reviewed_revision == ResourceRequest.revision))}
+            if proof != eligible:
+                raise StaleRun('Allocation eligibility proof is missing or stale.')
             if state.active_run_id is not None and state.active_run_id > run.id:
                 raise StaleRun("A newer allocation run is already active. This older run was not published.")
             validate_publication(result, run.snapshot)
-            for ordinal, item in enumerate(result["requestResults"], 1):
-                session.add(RequestDecision(run_id=run.id, request_id=item["requestId"], ordinal=ordinal,
-                                            status=item["status"], reason=item["rejectionReason"], payload=item))
-                session.add(RequestHistory(request_id=item["requestId"], run_id=run.id, kind="decision",
-                                           message=item["status"] + (": " + item["rejectionReason"] if item["rejectionReason"] else "")))
-            session.flush()
-            allocation_records = []
-            for item in result["allocations"]:
+            self._store_publication(session, state, run, result, build)
+
+    def _store_publication(self, session, state, run, result, build):
+        run_id = run.id
+        for ordinal, item in enumerate(result["requestResults"], 1):
+            session.add(RequestDecision(run_id=run.id, request_id=item["requestId"], ordinal=ordinal,
+                                        status=item["status"], reason=item["rejectionReason"], payload=item))
+            session.add(RequestHistory(request_id=item["requestId"], run_id=run.id, kind="decision",
+                                       message=item["status"] + (": " + item["rejectionReason"] if item["rejectionReason"] else "")))
+        session.flush()
+        allocation_records = []
+        for item in result["allocations"]:
+            slot = item["slot"]
+            allocation = Allocation(run_id=run.id, request_id=item["requestId"], engine_id=item["allocationId"],
+                                    resource_id=item["spaceId"], day=slot["day"], start_minutes=slot["startMinutes"],
+                                    end_minutes=slot["endMinutes"], assigned_participants=item["assignedParticipants"])
+            allocation_records.append(allocation)
+        session.add_all(allocation_records)
+        session.flush()
+        for item, allocation in zip(result["allocations"], allocation_records):
+            for ordinal, uid in enumerate(item["requiredParticipantIds"], 1):
+                session.add(AllocationParticipant(allocation_id=allocation.id, user_id=uid, ordinal=ordinal))
+        for ordinal, group in enumerate(result["suggestions"], 1):
+            session.add(SuggestionGroup(run_id=run.id, request_id=group["requestId"], ordinal=ordinal))
+        session.flush()
+        for group in result["suggestions"]:
+            for rank, item in enumerate(group["items"], 1):
                 slot = item["slot"]
-                allocation = Allocation(run_id=run.id, request_id=item["requestId"], engine_id=item["allocationId"],
-                                        resource_id=item["spaceId"], day=slot["day"], start_minutes=slot["startMinutes"],
-                                        end_minutes=slot["endMinutes"], assigned_participants=item["assignedParticipants"])
-                allocation_records.append(allocation)
-            session.add_all(allocation_records)
-            session.flush()
-            for item, allocation in zip(result["allocations"], allocation_records):
-                for ordinal, uid in enumerate(item["requiredParticipantIds"], 1):
-                    session.add(AllocationParticipant(allocation_id=allocation.id, user_id=uid, ordinal=ordinal))
-            for ordinal, group in enumerate(result["suggestions"], 1):
-                session.add(SuggestionGroup(run_id=run.id, request_id=group["requestId"], ordinal=ordinal))
-            session.flush()
-            for group in result["suggestions"]:
-                for rank, item in enumerate(group["items"], 1):
-                    slot = item["slot"]
-                    session.add(MeetingSuggestion(run_id=run.id, request_id=group["requestId"], rank=rank,
-                                                   resource_id=item["spaceId"], day=slot["day"], start_minutes=slot["startMinutes"],
-                                                   end_minutes=slot["endMinutes"], score=item["score"], time_distance=item["timeDistanceMinutes"],
-                                                   day_distance=item["dayDistance"], conflict_count=item["conflictCount"], reason=item["reason"]))
-            run.status, run.build, run.engine_version = "success", build, result["engineVersion"]
-            from .models import AppointmentCommitment, RoomOrganizerCommitment
-            from ..calendar_service import assert_commitments_compatible, legacy_intervals
-            commitments = [row for model in (AppointmentCommitment, RoomOrganizerCommitment) for row in session.scalars(select(model))]
-            if commitments:
-                intervals, unresolved = legacy_intervals(session, {row.user_id for row in commitments},
-                    min(row.start_at for row in commitments), max(row.end_at for row in commitments), run.id)
-                if unresolved:
-                    raise PersistenceError("New university commitments have unresolved calendar dates for confirmed appointment participants. Configure explicit academic bindings before publishing.")
-                assert_commitments_compatible(session, intervals)
-            from ..room_calendar import assert_room_publication
-            assert_room_publication(session, run.id)
-            state.active_run_id = run.id
-            state.calendar_revision += 1
+                session.add(MeetingSuggestion(run_id=run.id, request_id=group["requestId"], rank=rank,
+                                               resource_id=item["spaceId"], day=slot["day"], start_minutes=slot["startMinutes"],
+                                               end_minutes=slot["endMinutes"], score=item["score"], time_distance=item["timeDistanceMinutes"],
+                                               day_distance=item["dayDistance"], conflict_count=item["conflictCount"], reason=item["reason"]))
+        run.status, run.build, run.engine_version = "success", build, result["engineVersion"]
+        from .models import AppointmentCommitment, RoomOrganizerCommitment
+        from ..calendar_service import assert_commitments_compatible, legacy_intervals
+        commitments = [row for model in (AppointmentCommitment, RoomOrganizerCommitment) for row in session.scalars(select(model))]
+        if commitments:
+            intervals, unresolved = legacy_intervals(session, {row.user_id for row in commitments},
+                min(row.start_at for row in commitments), max(row.end_at for row in commitments), run.id)
+            if unresolved:
+                raise PersistenceError("New university commitments have unresolved calendar dates for confirmed appointment participants. Configure explicit academic bindings before publishing.")
+            assert_commitments_compatible(session, intervals)
+        from ..room_calendar import assert_room_publication
+        assert_room_publication(session, run.id)
+        state.active_run_id = run.id
+        state.calendar_revision += 1
+
 
     def read_view(self):
         with self.database.transaction(read_only=True) as session:
             state = state_row(session)
-            snapshot = snapshot_from_session(session, state.strategy)
+            from ..academic_eligibility import PresentationInput
+            snapshot = PresentationInput(snapshot_from_session(session, state.strategy, for_allocation=False))
             document = None
             if state.active_run_id is not None:
                 run = session.get(AllocationRun, state.active_run_id)

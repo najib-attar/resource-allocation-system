@@ -1,0 +1,17 @@
+{
+  "posts": 5,
+  "outcomes": [
+    {
+      "path": "/notifications/read",
+      "result": "recipient read state persisted"
+    },
+    {
+      "path": "/notifications/read",
+      "result": "recipient read state persisted"
+    },
+    {
+      "path": "/calendar/publications",
+      "result": "rejected; state unchanged"
+    }
+  ]
+}

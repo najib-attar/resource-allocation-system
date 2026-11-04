@@ -1,0 +1,69 @@
+{
+  "modules": [
+    "test_professor_portal",
+    "test_professor_existing_workflows",
+    "test_personal_schedule",
+    "test_appointments"
+  ],
+  "expected": 48,
+  "run": 48,
+  "passed": 48,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 113.91,
+  "results": {
+    "test_professor_existing_workflows": {
+      "modules": [
+        "test_professor_existing_workflows"
+      ],
+      "expected": 3,
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 27.67,
+      "exitCode": 0
+    },
+    "test_personal_schedule": {
+      "modules": [
+        "test_personal_schedule"
+      ],
+      "expected": 15,
+      "run": 15,
+      "passed": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 42.36,
+      "exitCode": 0
+    },
+    "test_professor_portal": {
+      "modules": [
+        "test_professor_portal"
+      ],
+      "expected": 6,
+      "run": 6,
+      "passed": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 54.06,
+      "exitCode": 0
+    },
+    "test_appointments": {
+      "modules": [
+        "test_appointments"
+      ],
+      "expected": 24,
+      "run": 24,
+      "passed": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 109.53,
+      "exitCode": 0
+    }
+  }
+}

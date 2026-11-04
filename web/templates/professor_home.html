@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% from 'components/ui.html' import icon %}
+{% block title %}Professor Home | Campus Space{% endblock %}
+{% block page_heading %}Professor Home{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static',filename='campus-home.css') }}">{% endblock %}
+{% macro heading(id, title, note) %}<div class="student-section-heading"><h2 id="{{ id }}">{{ title }}</h2><span>{{ note }}</span></div>{% endmacro %}
+{% macro meetings(items, empty) %}<div class="student-activity-list">{% for item in items %}<article class="student-activity-row"><span class="student-activity-icon">{{ icon('meeting',17) }}</span><div><h3><a href="{{ url_for('appointments.detail',appointment_id=item.id) }}">{{ item.purpose }}</a></h3><p class="student-activity-meta">{{ item.start|university_time }} &ndash; {{ item.end|university_time }} &middot; {{ item.organizer|person_name }}</p><span class="student-request-status{% if item.status=='Confirmed' %} is-confirmed{% endif %}">{{ item.status }}</span></div></article>{% else %}<p class="student-empty">{{ empty }}</p>{% endfor %}</div>{% endmacro %}
+{% block content %}
+<div class="student-home professor-home">
+  <section class="student-welcome" aria-labelledby="welcome-heading">
+    <p class="student-eyebrow">Professor workspace / Overview</p>{% if campus_shell %}<h1 id="welcome-heading">Your academic day, in order.</h1>{% else %}<h2 id="welcome-heading">Your academic day, in order.</h2>{% endif %}
+    <p>Meet with students, plan your availability and follow your academic requests.</p>
+    <div class="student-welcome-meta"><span>Welcome, {{ home.name|person_name }}.</span><time datetime="{{ home.now.date().isoformat() }}">{{ home.now.strftime('%A, %d %B %Y') }}</time></div>
+  </section>
+  <div class="student-home-columns">
+    <div class="workspace-home-column">
+      <section aria-labelledby="professor-services-heading">
+        {{ heading('professor-services-heading','Your professor services','Start here') }}
+        <article class="student-service student-service-appointments"><div class="student-service-copy"><p class="student-eyebrow">Meetings &amp; student requests</p><h3>Make time for a conversation.</h3><p>{{ home.counts.pending }} request(s) await your decision. Every required professor approves the same revision.</p><a href="{{ url_for('appointments.index') }}">Open Appointments {{ icon('arrow',15) }}</a></div><span class="student-service-art">{{ icon('meeting',80) }}</span></article>
+        <div class="student-service-pair">
+          <article class="student-service student-service-rooms"><span class="student-service-icon">{{ icon('clock',21) }}</span><h3>Office hours</h3><p>Publish appointment hours with explicit validity dates and exclusions.</p><a href="{{ url_for('appointments.availability') }}">Manage office hours {{ icon('arrow',15) }}</a></article>
+          <article class="student-service student-service-equipment"><span class="student-service-icon">{{ icon('room',21) }}</span><h3>Academic requests</h3><p>Declare an exam, teaching activity or committee meeting for eligibility review.</p><a href="{{ url_for('professor.pages') }}">Open academic requests {{ icon('arrow',15) }}</a></article>
+        </div>
+        <div class="student-more-services"><a href="{{ url_for('appointments.calendar') }}"><strong>My schedule &amp; blocks</strong>{{ icon('arrow',17) }}<span>Your dated commitments and personal availability.</span></a><a href="{{ url_for('rooms.index') }}"><strong>Room invitations</strong>{{ icon('arrow',17) }}<span>Respond to optional attendance invitations.</span></a></div>
+        <details><summary>Other campus services &amp; history</summary><p><a href="{{ url_for('equipment.index') }}">Equipment history</a> &middot; <a href="{{ url_for('waiting.index') }}">Waiting lists</a> &middot; <a href="{{ url_for('waiting.policy') }}">Waiting-list policy</a> &middot; <a href="{{ url_for('feedback.index') }}">Feedback &amp; issues</a></p><p class="student-caption">Each service shows only records and actions authorized for your account.</p></details>
+      </section>
+      <section class="student-activity" aria-labelledby="decision-heading">{{ heading('decision-heading','Awaiting your decision',home.counts.pending ~ ' upcoming requests') }}{{ meetings(home.pending,'No upcoming appointment requests await your decision.') }}<a class="student-inline-link" href="{{ url_for('appointments.index') }}">All appointment requests {{ icon('arrow',15) }}</a></section>
+      <section class="student-activity" aria-labelledby="confirmed-heading">{{ heading('confirmed-heading','Upcoming confirmed appointments',home.counts.confirmed ~ ' confirmed') }}{{ meetings(home.confirmed,'No upcoming confirmed appointments.') }}</section>
+      <section class="student-activity" aria-labelledby="academic-heading">{{ heading('academic-heading','Your academic requests',home.counts.review ~ ' awaiting eligibility review') }}
+        {% for item in home.academic %}<article class="student-activity-row"><span class="student-activity-icon">{{ icon('book',17) }}</span><div><h3><a href="{{ url_for('professor.page',request_id=item.id) }}">{{ item.title }}</a></h3><p class="student-activity-meta">{{ item.type }} &middot; Eligibility: {{ item.eligibilityStatus }}</p><p class="student-activity-meta">Allocation: {{ item.status }}</p></div></article>{% else %}<p class="student-empty">No academic requests yet. Open academic requests to submit a declaration.</p>{% endfor %}
+        <p class="student-caption">Submission and eligibility approval reserve no resources.</p>
+        {% if home.results %}<h3>Results in the active allocation publication</h3>{% for item in home.results %}<p class="student-caption"><a href="{{ url_for('professor.page',request_id=item.id) }}">{{ item.title }}</a> &middot; {{ item.status }}</p>{% endfor %}{% endif %}
+        {% if home.inputsChanged %}<p class="student-calendar-warning">Inputs have changed since the active publication. Existing published results remain in force.</p>{% endif %}
+      </section>
+    </div>
+    <div class="student-home-secondary workspace-home-column">
+      <section class="student-planning" aria-labelledby="week-heading">{{ heading('week-heading','Your week','Dated commitments') }}
+        <div class="student-week-preview"><p class="student-week-range">{{ home.schedule.weekStart.strftime('%d %b') }} &ndash; {{ home.schedule.weekEnd.strftime('%d %b %Y') }} <span>{{ home.zone }}</span></p>
+          <div class="student-week-days">{% for day in home.schedule.days %}<a href="{{ url_for('calendar.index',view='day',date=day.date.isoformat()) }}" aria-label="{{ day.date.strftime('%A, %d %B') }}, {{ day.entries|length }} entries"><span>{{ day.date.strftime('%a') }}</span><strong>{{ day.date.strftime('%d') }}</strong><span class="student-day-marker{% if day.entries %} has-entries{% endif %}" aria-hidden="true"></span></a>{% endfor %}</div>
+          {% set preview=namespace(events=[]) %}{% for day in home.schedule.days %}{% for event in day.entries %}{% if event not in preview.events %}{% set preview.events=preview.events+[event] %}{% endif %}{% endfor %}{% endfor %}{% for event in home.schedule.weekend %}{% if event not in preview.events %}{% set preview.events=preview.events+[event] %}{% endif %}{% endfor %}
+          <div class="student-week-events">{% for event in (preview.events|sort(attribute='start'))[:4] %}<article class="student-week-event"><p>{{ event.start|university_time }} &ndash; {{ event.end|university_time }}</p><a href="{{ url_for('calendar.index',view='day',date=event.start.date().isoformat()) }}">{{ event.title }}</a><span>{{ event.kind }}</span></article>{% else %}<p class="student-calendar-empty">No dated commitments this week.</p>{% endfor %}</div>
+          <a class="student-inline-link" href="{{ url_for('calendar.index',view='week',date=home.schedule.weekStart.isoformat()) }}">View week {{ icon('arrow',15) }}</a>
+        </div>
+        {% if home.schedule.unresolved %}<p class="student-calendar-warning">Some academic commitments need an explicit period binding. Empty calendar cells are not proof of availability.</p>{% endif %}
+      </section>
+      <section class="student-activity" aria-labelledby="hours-heading">{{ heading('hours-heading','Published office hours',home.counts.hours ~ ' current or upcoming patterns') }}{% for pattern in home.hours %}<article class="student-week-event"><p>{{ ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'][pattern.day-1] }} &middot; {{ '%02d:%02d'|format(pattern.start//60,pattern.start%60) }}&ndash;{{ '%02d:%02d'|format(pattern.end//60,pattern.end%60) }}</p><span>{{ pattern.validFrom }} through {{ pattern.validUntil }}</span>{% if pattern.excluded %}<span>Excluded: {{ pattern.excluded|join(', ') }}</span>{% endif %}</article>{% else %}<p class="student-empty">No current or upcoming hours published.</p>{% endfor %}<a class="student-inline-link" href="{{ url_for('appointments.availability') }}">All office-hour patterns {{ icon('arrow',15) }}</a></section>
+      <section class="student-activity" aria-labelledby="updates-heading">{{ heading('updates-heading','Your updates',home.inbox.unreadCount ~ ' unread') }}{% for item in home.inbox['items'] %}<article class="student-week-event"><a href="{{ item.url }}" data-notification-id="{{ item.id }}">{{ item.subject }}</a><span>{{ 'Unread' if not item.read_at else 'Read' }} &middot; {{ item.current_status }}</span><p>{{ item.message }}</p></article>{% else %}<p class="student-empty">No notifications yet.</p>{% endfor %}<a class="student-inline-link" href="{{ url_for('notifications.index') }}">Open Inbox {{ icon('arrow',15) }}</a><p class="student-caption">Academic allocation outcomes are shown in My requests; academic notifications are not enabled.</p></section>
+    </div>
+  </div>
+</div>
+{% endblock %}

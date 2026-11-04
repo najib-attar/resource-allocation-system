@@ -90,7 +90,7 @@ class SaveOnlyConfirmationTests(PostgresTestCase):
         self.assertEqual(confirmation.status_code, 200)
         page = confirmation.get_data(as_text=True)
         for text in ("Request 41 was added successfully", "Saved normal request", "Student Requester",
-                     "Monday 10:00-11:00", "M301", "pending until allocation is run"):
+                     "Monday 10:00-11:00", "M301", "Pending Eligibility Review"):
             self.assertIn(text, page)
         self.assertNotIn("Required Participants", page)
         self.assertIn('/request/41', page)
@@ -140,14 +140,14 @@ class SaveOnlyConfirmationTests(PostgresTestCase):
         self.run_backend.assert_not_called()
 
     def test_recurring_save_preserves_ordered_occurrences_and_runs_through_real_engine(self):
-        from web.allocation_workflow import execute_allocation
+        from academic_fixtures import execute_reviewed_allocation as execute_allocation
         from web.engine_gateway import EngineGateway
         from postgres_fixtures import ROOT
         form = self.save_form("Recurring")
         form.update(title='Seminar, "Part II" \u00d6', timeData="2-13:15-14:00;4-09:00-10:00")
         response = self.client.post("/add-request", data=form)
         self.assertTrue(response.location.endswith("/request-added/41"))
-        saved = self.repository.snapshot()["requests"][-1]
+        saved = self.repository.read_view()[0]["requests"][-1]
         self.assertEqual(saved["title"], form["title"])
         self.assertEqual(saved["slots"], [{"day": 2, "startMinutes": 795, "endMinutes": 840},
                                            {"day": 4, "startMinutes": 540, "endMinutes": 600}])
@@ -201,13 +201,31 @@ class SaveOnlyConfirmationTests(PostgresTestCase):
 
     def test_confirmation_run_button_keeps_explicit_run_and_detail_navigation(self):
         confirmation = self.client.get("/request-added/40")
-        self.assertIn('action="/run-allocation-now/40"', confirmation.get_data(as_text=True))
+        self.assertNotIn('action="/run-allocation-now/40"', confirmation.get_data(as_text=True))
+        self.assertIn('href="/academic-eligibility/40"', confirmation.get_data(as_text=True))
+        self.assertIn('Pending Eligibility Review', confirmation.get_data(as_text=True))
         self.run_backend.assert_not_called()
         response = self.client.post("/run-allocation-now/40")
         self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.location.endswith('/academic-eligibility/40'))
+        self.run_backend.assert_not_called()
+        from academic_fixtures import review_requests
+        review_requests(self.database)
+        confirmation = self.client.get('/request-added/40').get_data(as_text=True)
+        self.assertIn('Current eligibility: <strong>Eligible</strong>',confirmation)
+        self.assertIn('action="/run-allocation-now/40"',confirmation)
+        self.assertIn('Run Allocation Now',confirmation)
+        self.assertNotIn('Review eligibility before allocation',confirmation)
+        response = self.client.post('/run-allocation-now/40')
         self.assertTrue(response.location.startswith("/request/40?"))
         self.run_backend.assert_called_once_with()
         self.assertEqual(self.client.get(response.location).status_code, 200)
+
+    def test_unknown_confirmation_does_not_claim_a_successful_creation(self):
+        response=self.client.get('/request-added/999999')
+        self.assertEqual(response.status_code,404)
+        self.assertNotIn('was added successfully',response.get_data(as_text=True))
+        self.run_backend.assert_not_called()
 
     def test_helper_is_available_for_package_and_standalone_imports(self):
         self.assertIs(web_app.build_committee_participant_display, build_committee_participant_display)

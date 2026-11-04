@@ -10,6 +10,10 @@ erDiagram
         integer request_id FK
         integer resource_id FK
     }
+    allocation_eligibility {
+        bigint run_id PK,FK
+        integer request_id PK,FK
+    }
     allocation_run {
         bigint id PK "identity"
     }
@@ -58,6 +62,11 @@ erDiagram
         bigint id PK "identity"
         integer user_id FK
     }
+    eligibility_event {
+        bigint id PK "identity"
+        integer request_id FK
+        integer actor_id FK "nullable"
+    }
     equipment_category {
         integer id PK "identity"
     }
@@ -105,6 +114,11 @@ erDiagram
         integer busy_slot_id FK "nullable"
         integer request_id FK "nullable"
     }
+    logged_out_session {
+        integer user_id PK,FK
+        integer session_version PK
+        varchar_64 token_digest PK
+    }
     login_account {
         integer user_id PK,FK
     }
@@ -127,6 +141,11 @@ erDiagram
     request_decision {
         bigint run_id PK,FK
         integer request_id PK,FK
+    }
+    request_eligibility {
+        integer request_id PK,FK
+        integer submitted_by FK "nullable"
+        integer reviewer_id FK "nullable"
     }
     request_history {
         bigint id PK "identity"
@@ -245,6 +264,8 @@ erDiagram
     }
     resource ||--o{ allocation : resource_id
     request_decision ||--o{ allocation : run_id_request_id
+    resource_request ||--o{ allocation_eligibility : request_id
+    allocation_run ||--o{ allocation_eligibility : run_id
     allocation_run o|--o| application_state : active_run_id
     university_user ||--o{ appointment : organizer_id
     appointment ||--o{ appointment_commitment : appointment_id
@@ -262,6 +283,8 @@ erDiagram
     organization_unit ||--o{ borrow_request : faculty_id
     university_user ||--o{ busy_slot : user_id
     university_user ||--o{ calendar_block : user_id
+    university_user o|--o{ eligibility_event : actor_id
+    resource_request ||--o{ eligibility_event : request_id
     organization_unit ||--o| equipment_custodian : faculty_id
     login_account ||--o{ equipment_custodian : user_id
     university_user ||--o{ equipment_event : actor_id
@@ -283,6 +306,7 @@ erDiagram
     busy_slot o|--o{ legacy_calendar_binding : busy_slot_id
     academic_period ||--o{ legacy_calendar_binding : period_id
     resource_request o|--o{ legacy_calendar_binding : request_id
+    university_user ||--o{ logged_out_session : user_id
     university_user ||--o| login_account : user_id
     equipment_event o|--o{ notification : equipment_event_id
     feedback_event o|--o{ notification : feedback_event_id
@@ -291,6 +315,9 @@ erDiagram
     university_user ||--o{ professor_availability : user_id
     resource_request ||--o{ request_decision : request_id
     allocation_run ||--o{ request_decision : run_id
+    resource_request ||--o| request_eligibility : request_id
+    university_user o|--o{ request_eligibility : reviewer_id
+    university_user o|--o{ request_eligibility : submitted_by
     resource_request ||--o{ request_history : request_id
     allocation_run o|--o{ request_history : run_id
     login_account o|--o{ reservation_occurrence : decided_by

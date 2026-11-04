@@ -1,0 +1,3295 @@
+{
+  "checks": [
+    "Independent audit: malformed JSON is a persisted no-op; all-role global controls and menus, live pending/eligible/rejected confirmation states, explicit administrator Run Allocation Now POST, missing-ID 404, and expanded eligibility navigation.",
+    "Independent final sweep: 24 professor surfaces, three real error states and eight Student surfaces at five widths; long persisted content, every collected GET destination, native disclosures, all-role logout/CSRF, staff drawers, optional student decline and room invitation mutations."
+  ],
+  "views": [
+    {
+      "name": "home",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointments",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointment",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "hours",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "schedule",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-Exam",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-OneTime",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-Recurring",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-CommitteeMeeting",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "requests",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "allocated",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "pending",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "revise",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "month",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "week",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "day",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "academic-event",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "inbox",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "room-invitations",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "room-invitation",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "equipment-history",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "waiting",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "waiting-policy",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "feedback",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "home",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointments",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointment",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "hours",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "schedule",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-Exam",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-OneTime",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-Recurring",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-CommitteeMeeting",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "requests",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "allocated",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "pending",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "revise",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "month",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "week",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "day",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "academic-event",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "inbox",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "room-invitations",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "room-invitation",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "equipment-history",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "waiting",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "waiting-policy",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "feedback",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "home",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointments",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointment",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "hours",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "schedule",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-Exam",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-OneTime",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-Recurring",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-CommitteeMeeting",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "requests",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "allocated",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "pending",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "revise",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "month",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "week",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "day",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "academic-event",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "inbox",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "room-invitations",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "room-invitation",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "equipment-history",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "waiting",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "waiting-policy",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "feedback",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "home",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointments",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointment",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "hours",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "schedule",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-Exam",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-OneTime",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-Recurring",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-CommitteeMeeting",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "requests",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "allocated",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "pending",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "revise",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "month",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "week",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "day",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "academic-event",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "inbox",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "room-invitations",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "room-invitation",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "equipment-history",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "waiting",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "waiting-policy",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "feedback",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "home",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointments",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointment",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "hours",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "schedule",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-Exam",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-OneTime",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-Recurring",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "form-CommitteeMeeting",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "requests",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "allocated",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "pending",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "revise",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "month",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "week",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "day",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "academic-event",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "inbox",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "room-invitations",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "room-invitation",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "equipment-history",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "waiting",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "waiting-policy",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "feedback",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "private-error",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "invalid-week",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "published-readonly-error",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "private-error",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "invalid-week",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "published-readonly-error",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "private-error",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "invalid-week",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "published-readonly-error",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "private-error",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "invalid-week",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "published-readonly-error",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "private-error",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "invalid-week",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "published-readonly-error",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-home",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-appointments",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-rooms",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-equipment",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-waiting",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-feedback",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-calendar",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-inbox",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-home",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-appointments",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-rooms",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-equipment",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-waiting",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-feedback",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-calendar",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-inbox",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-home",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-appointments",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-rooms",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-equipment",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-waiting",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-feedback",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-calendar",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-inbox",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-home",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-appointments",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-rooms",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-equipment",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-waiting",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-feedback",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-calendar",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-inbox",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-home",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-appointments",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-rooms",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-equipment",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-waiting",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-feedback",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-calendar",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "student-inbox",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "eligibility-queue",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "eligibility-detail",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "pending-confirmation",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "eligible-confirmation",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "eligibility-queue",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "eligibility-detail",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "pending-confirmation",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "eligible-confirmation",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "eligibility-queue",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "eligibility-detail",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "pending-confirmation",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "eligible-confirmation",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "eligibility-queue",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "eligibility-detail",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "pending-confirmation",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "eligible-confirmation",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "eligibility-queue",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "eligibility-detail",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "pending-confirmation",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "eligible-confirmation",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "rejected-confirmation",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "rejected-confirmation",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "rejected-confirmation",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "rejected-confirmation",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "rejected-confirmation",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    }
+  ],
+  "errors": [],
+  "expectedErrors": [
+    {
+      "url": "/professor/requests/6",
+      "status": 403
+    },
+    {
+      "url": "/professor/",
+      "status": 400
+    },
+    {
+      "url": "/professor/requests/1/revise",
+      "status": 400
+    },
+    {
+      "url": "/professor/requests/6",
+      "status": 403
+    },
+    {
+      "url": "/professor/",
+      "status": 400
+    },
+    {
+      "url": "/professor/requests/1/revise",
+      "status": 400
+    },
+    {
+      "url": "/professor/requests/6",
+      "status": 403
+    },
+    {
+      "url": "/professor/",
+      "status": 400
+    },
+    {
+      "url": "/professor/requests/1/revise",
+      "status": 400
+    },
+    {
+      "url": "/professor/requests/6",
+      "status": 403
+    },
+    {
+      "url": "/professor/",
+      "status": 400
+    },
+    {
+      "url": "/professor/requests/1/revise",
+      "status": 400
+    },
+    {
+      "url": "/professor/requests/6",
+      "status": 403
+    },
+    {
+      "url": "/professor/",
+      "status": 400
+    },
+    {
+      "url": "/professor/requests/1/revise",
+      "status": 400
+    },
+    {
+      "url": "/request-added/999999",
+      "status": 404
+    }
+  ],
+  "keyboardSteps": 2604,
+  "nativePickerSteps": 80,
+  "verifiedDestinations": [
+    {
+      "identity": "2 /professor/",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/",
+      "status": 200
+    },
+    {
+      "identity": "2 /notifications/",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/calendar",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/availability",
+      "status": 200
+    },
+    {
+      "identity": "2 /rooms/",
+      "status": 200
+    },
+    {
+      "identity": "2 /equipment/",
+      "status": 200
+    },
+    {
+      "identity": "2 /waiting-lists/",
+      "status": 200
+    },
+    {
+      "identity": "2 /waiting-lists/policy",
+      "status": 200
+    },
+    {
+      "identity": "2 /feedback/",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/2",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/3",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/1",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests/7",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests/5",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests/4",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests/3",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests/2",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-07",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-08",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-09",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-10",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-11",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=week&date=2030-01-07",
+      "status": 200
+    },
+    {
+      "identity": "2 /rooms/2",
+      "status": 200
+    },
+    {
+      "identity": "2 /rooms/1",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/calendar?month=2030-01&week=2029-12-31",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/calendar?month=2030-01&week=2030-01-07",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/calendar?month=2030-01&week=2030-01-14",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/calendar?month=2030-01&week=2030-01-21",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/calendar?month=2030-01&week=2030-01-28",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests/new?type=Exam",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests/new?type=OneTime",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests/new?type=Recurring",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests/new?type=CommitteeMeeting",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests/1",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests/7/revise",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests/7/revise?type=Exam",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests/7/revise?type=OneTime",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests/7/revise?type=Recurring",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests/7/revise?type=CommitteeMeeting",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=month&date=2029-12-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=month&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=month&date=2030-02-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=month&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=week&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-01&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-02&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-05&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-06&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/academic/1?date=2030-01-08",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/academic/2?date=2030-01-09",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/academic/3?date=2030-01-10",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/academic/3?date=2030-01-11",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-15&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-16&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-17&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-18&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-19&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-20&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-21&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-22&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-23&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-24&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-25&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-26&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-27&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-28&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-29&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-30&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-02-01&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-02-02&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-02-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=week&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=week&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /rooms/availability/302?date=2030-01-08",
+      "status": 200
+    },
+    {
+      "identity": "2 /feedback/?scope=mine",
+      "status": 200
+    },
+    {
+      "identity": "1 /student/",
+      "status": 200
+    },
+    {
+      "identity": "1 /student/#my-activity",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/",
+      "status": 200
+    },
+    {
+      "identity": "1 /notifications/",
+      "status": 200
+    },
+    {
+      "identity": "1 /appointments/calendar",
+      "status": 200
+    },
+    {
+      "identity": "1 /appointments/",
+      "status": 200
+    },
+    {
+      "identity": "1 /rooms/",
+      "status": 200
+    },
+    {
+      "identity": "1 /equipment/",
+      "status": 200
+    },
+    {
+      "identity": "1 /waiting-lists/",
+      "status": 200
+    },
+    {
+      "identity": "1 /feedback/",
+      "status": 200
+    },
+    {
+      "identity": "1 /appointments/new",
+      "status": 200
+    },
+    {
+      "identity": "1 /appointments/1",
+      "status": 200
+    },
+    {
+      "identity": "1 /appointments/2",
+      "status": 200
+    },
+    {
+      "identity": "1 /appointments/3",
+      "status": 200
+    },
+    {
+      "identity": "1 /rooms/1",
+      "status": 200
+    },
+    {
+      "identity": "1 /rooms/2",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2026-11-02",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2026-11-03",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2026-11-04",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2026-11-05",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2026-11-06",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=week&date=2026-11-02",
+      "status": 200
+    },
+    {
+      "identity": "1 /appointments/calendar?month=2026-11&week=2026-11-02",
+      "status": 200
+    },
+    {
+      "identity": "1 /rooms/new",
+      "status": 200
+    },
+    {
+      "identity": "1 /equipment/catalog",
+      "status": 200
+    },
+    {
+      "identity": "1 /waiting-lists/policy",
+      "status": 200
+    },
+    {
+      "identity": "1 /feedback/?scope=mine",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=week&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=week&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=month&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=week&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "6 /",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/",
+      "status": 200
+    },
+    {
+      "identity": "6 /appointments/",
+      "status": 200
+    },
+    {
+      "identity": "6 /rooms/",
+      "status": 200
+    },
+    {
+      "identity": "6 /equipment/",
+      "status": 200
+    },
+    {
+      "identity": "6 /waiting-lists/",
+      "status": 200
+    },
+    {
+      "identity": "6 /feedback/",
+      "status": 200
+    },
+    {
+      "identity": "6 /appointments/calendar",
+      "status": 200
+    },
+    {
+      "identity": "6 /add-request",
+      "status": 200
+    },
+    {
+      "identity": "6 /academic-eligibility/",
+      "status": 200
+    },
+    {
+      "identity": "6 /requests",
+      "status": 200
+    },
+    {
+      "identity": "6 /allocation-summary",
+      "status": 200
+    },
+    {
+      "identity": "6 /schedules",
+      "status": 200
+    },
+    {
+      "identity": "6 /users",
+      "status": 200
+    },
+    {
+      "identity": "6 /spaces",
+      "status": 200
+    },
+    {
+      "identity": "6 /raw-data",
+      "status": 200
+    },
+    {
+      "identity": "6 /appointments/calendar-setup",
+      "status": 200
+    },
+    {
+      "identity": "6 /rooms/configuration",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/publications",
+      "status": 200
+    },
+    {
+      "identity": "6 /equipment/custodians",
+      "status": 200
+    },
+    {
+      "identity": "6 /waiting-lists/configuration",
+      "status": 200
+    },
+    {
+      "identity": "6 /academic-eligibility/1",
+      "status": 200
+    },
+    {
+      "identity": "6 /academic-eligibility/2",
+      "status": 200
+    },
+    {
+      "identity": "6 /academic-eligibility/3",
+      "status": 200
+    },
+    {
+      "identity": "6 /academic-eligibility/4",
+      "status": 200
+    },
+    {
+      "identity": "6 /academic-eligibility/5",
+      "status": 200
+    },
+    {
+      "identity": "6 /academic-eligibility/6",
+      "status": 200
+    },
+    {
+      "identity": "6 /academic-eligibility/7",
+      "status": 200
+    },
+    {
+      "identity": "6 /notifications/",
+      "status": 200
+    },
+    {
+      "identity": "6 /request/7",
+      "status": 200
+    },
+    {
+      "identity": "6 /allocation-summary?highlight=7",
+      "status": 200
+    },
+    {
+      "identity": "6 /requests?highlight=7",
+      "status": 200
+    },
+    {
+      "identity": "6 /request/1",
+      "status": 200
+    },
+    {
+      "identity": "6 /allocation-summary?highlight=1",
+      "status": 200
+    },
+    {
+      "identity": "6 /requests?highlight=1",
+      "status": 200
+    }
+  ],
+  "networkRequests": [
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 4,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 9,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 7,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 7,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "shellKeyboardChecks": [
+    {
+      "actor": 2,
+      "width": 1440,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 1440,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 1024,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 1024,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 768,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 768,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 390,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 390,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 320,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 320,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 1,
+      "width": 1440,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 1,
+      "width": 1440,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 1,
+      "width": 1024,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 1,
+      "width": 1024,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 1,
+      "width": 768,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 1,
+      "width": 768,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 1,
+      "width": 390,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 1,
+      "width": 390,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 1,
+      "width": 320,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 1,
+      "width": 320,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 1440,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 1440,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 1024,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 1024,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 1024,
+      "panel": "navigation",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 768,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 768,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 768,
+      "panel": "navigation",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 390,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 390,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 390,
+      "panel": "navigation",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 320,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 320,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 320,
+      "panel": "navigation",
+      "passed": true
+    }
+  ],
+  "phase": "PROF-UI-07",
+  "archivedControlSnapshots": 234,
+  "rawControlRevision": "937adcc75e23af79e37c394c932e99bc330e6a1b",
+  "compactControlInventory": "control-summary.csv"
+}

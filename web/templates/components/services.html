@@ -1,0 +1,10 @@
+{% macro status(label) -%}
+{% set tone = 'success' if label in ['Confirmed','Approved','Returned','Resolved','Accepted','Assigned','Eligible','Allocated'] else 'danger' if label in ['Cancelled','Rejected','Declined','Overdue','Eligibility Rejected'] else 'warning' if label in ['Pending','Pending Approval','Pending Faculty Approval','Pending Review','Preapproved','Needs Revision','Partially Confirmed','Partially Returned','Pending Eligibility Review'] else 'info' %}
+<span class="service-status service-status-{{ tone }}">{{ label }}</span>
+{%- endmacro %}
+
+{% macro weekly_slot(day,start,end) -%}
+{{ ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'][day-1] }} &middot; {{ '%02d:%02d'|format(start//60,start%60) }}&ndash;{{ '%02d:%02d'|format(end//60,end%60) }}
+{%- endmacro %}
+
+{% macro academic_type(kind) -%}{{ {'Exam':'Examination','OneTime':'Teaching activity','Recurring':'Recurring teaching','CommitteeMeeting':'Committee meeting'}.get(kind,kind) }}{%- endmacro %}

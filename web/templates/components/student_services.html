@@ -1,4 +1,0 @@
-{% macro status(label) -%}
-{% set tone = 'success' if label in ['Confirmed','Approved','Returned','Resolved','Accepted','Assigned'] else 'danger' if label in ['Cancelled','Rejected','Declined','Overdue'] else 'warning' if label in ['Pending','Pending Approval','Pending Faculty Approval','Pending Review','Preapproved','Needs Revision','Partially Confirmed','Partially Returned'] else 'info' %}
-<span class="service-status service-status-{{ tone }}">{{ label }}</span>
-{%- endmacro %}

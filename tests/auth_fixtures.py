@@ -15,6 +15,7 @@ class AuthenticatedClient:
         with self.client.session_transaction() as session:
             session["user_id"] = user_id
             session["session_version"] = version
+            session["login_format"] = 2
             session["csrf"] = self.csrf
 
     def post(self, *args, **kwargs):

@@ -8,9 +8,8 @@
     <p class="eyebrow">Request Entry</p>
     <h2>Create a request</h2>
     <p>
-        Save many requests for batch processing, or use <strong>Submit and Run</strong>
-        to add one request and immediately focus its backend-generated result.
-        Flask saves requests transactionally; the C++ backend still evaluates and allocates.
+        Save requests for administrative eligibility review. Only explicitly eligible current
+        revisions can enter batch allocation. Saving or approving eligibility reserves no resources.
     </p>
 
     {% if errors %}
@@ -264,7 +263,7 @@
 
         <div class="form-actions">
             <button type="submit" name="submitAction" value="save">Save Request Only</button>
-            <button class="button-strong" type="submit" name="submitAction" value="save_run">Submit and Run</button>
+            <button class="button-strong" type="submit" name="submitAction" value="save_review">Save and review eligibility</button>
             <a href="{{ url_for('schedules') }}">View Schedules</a>
             <a href="{{ url_for('requests') }}">View Requests</a>
         </div>

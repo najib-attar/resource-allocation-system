@@ -5,13 +5,13 @@
 
 {% block content %}
 <section class="confirmation-card">
-    <p class="eyebrow">Pending Request</p>
+    <p class="eyebrow">Saved Request</p>
     <h2>Request {{ request_id }} was added successfully.</h2>
     <p>
-        It is pending until allocation is run. The request already appears in
-        the database, but approval or rejection will appear
-        only after the C++ backend runs and its results are published.
+        Current eligibility: <strong>{{ eligibility.status }}</strong>. Eligibility approval reserves no resources and is
+        separate from allocation approval or rejection. Only eligible revisions enter allocation.
     </p>
+    <p><a href="{{ url_for('eligibility.detail',request_id=request_id) }}">Review academic eligibility</a></p>
 
     {% if request_row %}
     {% set is_committee = request_row.get("requestType") == "CommitteeMeeting" %}
@@ -90,10 +90,10 @@
         <a href="{{ url_for('add_request', type='CommitteeMeeting') if request_row and request_row.get('requestType') == 'CommitteeMeeting' else url_for('add_request') }}">Add Another Request</a>
         <a href="{{ url_for('allocation_summary', highlight=request_id) }}">View Allocation Summary</a>
         <a href="{{ url_for('requests', highlight=request_id) }}">View Requests</a>
-        <form method="post" action="{{ url_for('run_allocation_now', request_id=request_id) }}">
+        {% if eligibility.status == 'Eligible' %}<form method="post" action="{{ url_for('run_allocation_now', request_id=request_id) }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit">Run Allocation Now</button>
-        </form>
+        </form>{% endif %}
     </div>
 </section>
 {% endblock %}

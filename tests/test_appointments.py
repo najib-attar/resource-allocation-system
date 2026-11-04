@@ -270,7 +270,7 @@ class AppointmentWorkflowTests(AppointmentFixture):
 
     def test_dated_university_publication_cannot_conflict_with_confirmed_appointment(self):
         from web.persistence.repository import Repository
-        from web.allocation_workflow import execute_allocation
+        from academic_fixtures import execute_reviewed_allocation as execute_allocation
         repository = Repository(self.database)
         request_id = repository.save_request({"type": "OneTime", "requesterId": 2, "spaceId": 301,
             "participantCount": 2, "title": "Fictional Monday commitment", "purpose": "Meeting",

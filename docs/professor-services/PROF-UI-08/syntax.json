@@ -1,0 +1,352 @@
+{
+  "base": "747c925",
+  "files": [
+    {
+      "path": "migrations/versions/0051a_academic_eligibility.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "scripts/generate_database_diagrams.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "scripts/seed_demo_database.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "scripts/setup_local_demo.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/academic_fixtures.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/professor/browser_review.cjs",
+      "check": "node --check",
+      "passed": true
+    },
+    {
+      "path": "tests/professor/browser_review.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/professor/eligibility_browser.cjs",
+      "check": "node --check",
+      "passed": true
+    },
+    {
+      "path": "tests/professor/eligibility_browser.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/professor/portal_browser.cjs",
+      "check": "node --check",
+      "passed": true
+    },
+    {
+      "path": "tests/professor/portal_browser.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/professor/portal_source_audit.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/professor/review_contracts.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/professor/run_tests.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_academic_eligibility.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_appointments.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_backend_executable.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_calendar_loading.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_cost_policy_persistence.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_database_diagrams.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_eligibility_migration.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_engine_gateway.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_equipment.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_frontend_prototype.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_local_demo.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_notifications.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_postgres_completion.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_postgres_concurrency.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_postgres_demo.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_postgres_import.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_postgres_quality.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_postgres_recovery.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_postgres_runtime_independence.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_postgres_text_contract.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_postgres_web.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_postgres_workflow.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_professor_existing_workflows.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_professor_intake.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_professor_portal.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_professor_services.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_recurring_persistence.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_recurring_workflows.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_resource_feedback.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_room_requests.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_save_only_confirmation.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_scheduling_preferences.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_service_examples.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_student_dashboard.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_student_portal_ui.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_university_calendar.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/test_waiting_lists.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "tests/ui/audit_integrations.cjs",
+      "check": "node --check",
+      "passed": true
+    },
+    {
+      "path": "tests/ui/audit_portal_browser.cjs",
+      "check": "node --check",
+      "passed": true
+    },
+    {
+      "path": "web/academic_eligibility.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "web/app.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "web/appointment_routes.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "web/eligibility_routes.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "web/engine_gateway.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "web/persistence/importer.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "web/persistence/models.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "web/persistence/repository.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "web/professor_dashboard_service.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "web/professor_routes.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "web/professor_service.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "web/security.py",
+      "check": "ast.parse",
+      "passed": true
+    },
+    {
+      "path": "web/static/academic-requests.js",
+      "check": "node --check",
+      "passed": true
+    },
+    {
+      "path": "web/static/calendar.js",
+      "check": "node --check",
+      "passed": true
+    },
+    {
+      "path": "web/static/shell.js",
+      "check": "node --check",
+      "passed": true
+    },
+    {
+      "path": "web/static/workspace-forms.js",
+      "check": "node --check",
+      "passed": true
+    }
+  ],
+  "python": 60,
+  "javascript": 9
+}

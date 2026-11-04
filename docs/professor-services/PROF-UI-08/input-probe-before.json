@@ -1,0 +1,58 @@
+[
+  {
+    "case": "null",
+    "exception": "TypeError",
+    "before": [
+      0,
+      0,
+      null
+    ],
+    "after": [
+      0,
+      0,
+      null
+    ]
+  },
+  {
+    "case": "empty-string",
+    "status": 201,
+    "before": [
+      0,
+      0,
+      null
+    ],
+    "after": [
+      1,
+      1,
+      null
+    ]
+  },
+  {
+    "case": "empty-object",
+    "status": 201,
+    "before": [
+      1,
+      1,
+      null
+    ],
+    "after": [
+      2,
+      2,
+      null
+    ]
+  },
+  {
+    "case": "valid-empty-list",
+    "status": 201,
+    "before": [
+      2,
+      2,
+      null
+    ],
+    "after": [
+      3,
+      3,
+      null
+    ]
+  }
+]

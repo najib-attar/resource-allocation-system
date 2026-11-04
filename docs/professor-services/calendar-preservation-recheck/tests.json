@@ -1,0 +1,12 @@
+{
+  "modules": [
+    "test_professor_intake"
+  ],
+  "expected": 7,
+  "run": 7,
+  "passed": 7,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 70.02
+}

@@ -1,0 +1,12 @@
+{
+  "modules": [
+    "test_service_examples"
+  ],
+  "expected": 5,
+  "run": 5,
+  "passed": 5,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 67.42
+}

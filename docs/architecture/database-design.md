@@ -1,8 +1,35 @@
 # PostgreSQL application persistence and dated calendars
 
+## Durable logout revocation (0051b)
+
+The schema now has **62 application tables** plus Alembic. `logged_out_session`
+records one signed login's denial using university identity, account generation,
+SHA-256 nonce digest and server logout time. It contains no cookie or plaintext
+CSRF token. Logout commits before clearing the cookie; each subsequent authenticated
+HTTP request checks the record. A delayed cookie refresh cannot restore access.
+Other browser logins and the existing global account-revocation mechanism remain
+independent. Denials survive account deletion/reprovisioning. A populated downgrade
+refuses denial loss. See [rollout and retention requirements](../database-operations.md).
+
+## Academic eligibility review (0051a)
+
+That revision brought the schema to **61 application tables** plus Alembic. `request_eligibility`
+stores independent human review, provenance, reviewed request revision and review
+version. `eligibility_event` holds immutable review/invalidation history.
+`allocation_eligibility` binds each run to its reviewed request revisions.
+`resource_request.faculty_declaration` stores unverified declared context.
+
+Only currently Eligible revisions enter academic snapshots. Application-state
+locking and immutable run proofs reject stale execution/publication. Material edits
+invalidate review; inputs included in the active publication remain read-only.
+Migration marks every old request Legacy/Pending Eligibility Review without
+changing existing results. Outstanding current legacy reviews block replacement;
+rejection preserves current reservations until authorized replacement. A populated
+downgrade refuses history loss. See the [approved contracts and rollout assumptions](../srs/professor-workflows.md).
+
 ## Institutional cost-policy foundation (0050b)
 
-The source schema now has **58 application tables** plus Alembic. Four empty
+That revision brought the schema to **58 application tables** plus Alembic. Four empty
 institutional cost-policy tables separate immutable values, governance history,
 an optional current pointer and explicit authority history. No numerical defaults,
 authority grants or optimizer activation are introduced. The internal governance

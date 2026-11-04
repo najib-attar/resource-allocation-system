@@ -15,6 +15,7 @@
     <p class="muted">
         This page focuses on workflow status. A technical database projection is available under Raw Data.
     </p>
+    <p><a href="{{ url_for('eligibility.index') }}">Academic eligibility review</a> is separate from the allocation statuses below. Unreviewed and eligibility-rejected requests never enter allocation.</p>
 
     <form class="filter-form filters-panel" method="get" action="{{ url_for('requests') }}">
         <label>

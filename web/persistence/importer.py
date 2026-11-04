@@ -8,7 +8,7 @@ from sqlalchemy import func, select
 
 from ..engine_gateway import EngineIntegrationError, PROTOCOL_VERSION
 from ..input_validation import integer, minutes, parse_time_slots
-from .models import Base, BusySlot, OrganizationUnit, RequestHistory, Resource, ResourceRequest, Role, ROLES, STRATEGIES, User, UserRole
+from .models import Base, BusySlot, OrganizationUnit, RequestHistory, RequestEligibility, Resource, ResourceRequest, Role, ROLES, STRATEGIES, User, UserRole
 from .validation import DataValidationError as ImportValidationError, require, validate_snapshot
 from .repository import PROFILE_FIELDS, PersistenceError, advance_identity, insert_request, state_row, validate_unit_hierarchy
 
@@ -193,12 +193,16 @@ def populate_empty_database(database, snapshot, unit_definitions=None, event_kin
                 session.add(UserRole(user_id=item["id"], role_id=roles[name].id, ordinal=ordinal))
         for ordinal, item in enumerate(snapshot["requests"], 1):
             record = insert_request(session, item, ordinal)
+            meta = session.get(RequestEligibility,record.id)
+            meta.origin = 'Import' if event_kind == 'imported' else 'Demo'
+            meta.version += 1
             session.add(RequestHistory(request_id=record.id, kind=event_kind, message="Imported from validated CSV input." if event_kind == "imported" else "Created from fictional development demo data."))
         for ordinal, item in enumerate(snapshot["busySlots"], 1):
             slot = item["slot"]
             session.add(BusySlot(user_id=item["userId"], source_order=ordinal, day=slot["day"],
                                  start_minutes=slot["startMinutes"], end_minutes=slot["endMinutes"], reason=item["reason"]))
         state.strategy = snapshot["strategy"]
+        session.refresh(state,['input_revision'])
         state.input_revision += 1
         session.flush()
         for model in (Role, OrganizationUnit, User, Resource, ResourceRequest, BusySlot):

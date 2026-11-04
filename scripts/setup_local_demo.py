@@ -43,7 +43,7 @@ def validate_period(start, end):
         raise ValueError("Use an explicit fictional academic period of at most two years, between 1970 and 2099.")
 
 
-def seed_local_demo(database, password, start, end, seed=42):
+def seed_local_demo(database, password, start, end, seed=42, *, review_academics=False):
     validate_period(start, end)
     if not isinstance(password, str) or not 12 <= len(password) <= 256:
         raise ValueError("The generated demo password must contain 12-256 characters.")
@@ -81,7 +81,20 @@ def seed_local_demo(database, password, start, end, seed=42):
         session.add(CalendarBlock(user_id=students[1]["id"], start_at=optional_block,
                     end_at=optional_block + timedelta(hours=2), reason="Fictional optional student conflict"))
         state_row(session, True).calendar_revision += 1
-    result = execute_allocation(Repository(database), EngineGateway(ROOT))
+    result = {'allocations':[]}
+    if review_academics:
+        # Explicit opt-in applies only to these newly generated fictional declarations.
+        from web.academic_eligibility import EligibilityService
+        from web.persistence.models import RequestEligibility
+        administrators=[person['id'] for person in snapshot['users'] if person['role']=='Administrator']
+        with database.transaction(read_only=True) as session:
+            pending=[(r.id,r.requester_id,r.revision,e.version) for r,e in session.execute(select(ResourceRequest,RequestEligibility)
+                .join(RequestEligibility,RequestEligibility.request_id==ResourceRequest.id))]
+        for key,owner,revision,version in pending:
+            reviewer=next((actor for actor in administrators if actor!=owner),None)
+            if reviewer is None:raise PersistenceError('Another administrator must review this fictional declaration.')
+            EligibilityService(database).decide(reviewer,key,revision,version,True,'Explicit operator-approved review of newly generated fictional demo input.')
+        result = execute_allocation(Repository(database), EngineGateway(ROOT))
     # Ownership is explicit fictional fixture configuration, never a legacy backfill.
     room_service = RoomRequestService(database, EngineGateway(ROOT))
     administrators = [row['id'] for row in snapshot['users'] if row['role'] == 'Administrator']
@@ -96,7 +109,7 @@ def seed_local_demo(database, password, start, end, seed=42):
     return {"seed": seed, "academicStart": start.isoformat(), "academicEnd": end.isoformat(),
             "counts": {key: len(snapshot[key]) for key in ("users", "spaces", "requests", "busySlots")},
             "accounts": accounts, "allocationCount": len(result["allocations"]), "configuredStudentRooms": len(snapshot['spaces']),
-            "equipment": equipment}
+            "equipment": equipment,"academicReviewRequired":not review_academics}
 
 
 def write_settings(path, settings):
@@ -152,7 +165,8 @@ def main():
     prepare.add_argument("--start")
     prepare.add_argument("--end")
     prepare.add_argument("--port", type=int)
-    commands.add_parser("seed")
+    seed_command=commands.add_parser("seed")
+    seed_command.add_argument('--review-academics',action='store_true',help='Explicitly review newly generated fictional academic declarations before demo allocation.')
     commands.add_parser("show")
     args = parser.parse_args()
     path = Path(args.state_dir).resolve() / "settings.json"
@@ -180,7 +194,7 @@ def main():
             print("Existing demo reused; no people, passwords, requests or calendars were overwritten.")
         else:
             settings["summary"] = seed_local_demo(database, settings["demoPassword"], date.fromisoformat(settings["academicStart"]),
-                                                   date.fromisoformat(settings["academicEnd"]), settings["seed"])
+                                                   date.fromisoformat(settings["academicEnd"]), settings["seed"],review_academics=args.review_academics)
             settings["seeded"] = True
             write_settings(path, settings)
             print(json.dumps({key: value for key, value in settings["summary"].items() if key != "accounts"}, indent=2))

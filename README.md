@@ -38,6 +38,12 @@ from one student-scoped PostgreSQL snapshot; pending requests and optional invit
 remain distinct from organizer reservations. The full monthly timetable and personal
 blocks remain available through My Schedule. See the [UI-01 implementation and visual
 evidence](docs/ui/student-portal-ui01/README.md) for data limits and responsive captures.
+Professors have a dedicated Campus Space Home at `/professor/`, with appointments,
+office hours, personal availability, academic declarations and owner-only allocation
+tracking. Academic eligibility, allocation and calendar publication are separate;
+submission/eligibility approval alone reserve nothing. The interface reuses the
+Student components. See [Professor Portal acceptance and limitations](docs/professor-services/acceptance-report.md)
+and [screen/backend coverage](docs/professor-services/screen-coverage.md).
 All authenticated pages share a profile header with a circular initials avatar,
 name, role and private notification bell. Appointment/room decisions and invitations
 and equipment updates appear in the inbox; read state persists in PostgreSQL. Navigation remains role-aware
@@ -414,7 +420,7 @@ and `RESOURCE_ALLOCATION_TIMEZONE=Europe/Istanbul`. Provision trusted identities
 with `python scripts/manage_accounts.py --user-id <existing-user-id> --username <username>`;
 add `--administrator` only for technical dashboard management. Passwords are prompted,
 not passed on the command line. See [account/calendar setup](docs/database-operations.md#accounts-and-appointment-calendars).
-Students land at `/student/` after sign-in; professors use `/appointments/` and
+Students land at `/student/` after sign-in; professors land at `/professor/`, and
 administrators retain the technical dashboard. The weekly
 administration grid and dated participant calendar are deliberately separate.
 For HTTPS set `RESOURCE_ALLOCATION_SECURE_COOKIE=1`; debug defaults off.
@@ -438,7 +444,7 @@ explicitly date academic activities. Undated legacy records produce a warning,
 not guessed calendar dates. The existing **My Schedule** page still manages blocks.
 See the [calendar architecture](docs/architecture/unified-calendar-design.md).
 
-For a new empty development database, `python scripts/seed_demo_database.py --seed 41 --run-allocation` creates reproducible fictional university data and runs the real engine. Use `--size large` for a 1,200-request sanity dataset. Seeding never overwrites/resets existing data. See the [ER diagrams and full schema inventory](docs/architecture/database-design.md) and [demo/recovery guide](docs/database-operations.md).
+For a new empty development database, `python scripts/seed_demo_database.py --seed 41` creates reproducible fictional data. Academic inputs await individual administrator eligibility review; `--run-allocation` reports an error if none has been reviewed. Use `--size large` for a 1,200-request dataset. Local-demo setup has an explicit `seed --review-academics` option that reviews newly generated fictional inputs through the real service before running the engine. Default seeding never approves requests or overwrites existing profiles. See [Professor contracts](docs/srs/professor-workflows.md), [schema inventory](docs/architecture/database-design.md) and [demo/recovery guide](docs/database-operations.md).
 
 The current dashboard supports:
 

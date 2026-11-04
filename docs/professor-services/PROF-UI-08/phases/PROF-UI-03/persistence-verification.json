@@ -1,0 +1,37 @@
+{
+  "posts": 10,
+  "outcomes": [
+    {
+      "path": "/appointments/availability",
+      "result": "own availability mutation persisted"
+    },
+    {
+      "path": "/appointments/availability",
+      "result": "rejected; state unchanged"
+    },
+    {
+      "path": "/appointments/calendar",
+      "result": "rejected; state unchanged"
+    },
+    {
+      "path": "/appointments/1/cancel",
+      "result": "appointment revision/approvals/commitments persisted"
+    },
+    {
+      "path": "/appointments/availability",
+      "result": "own availability mutation persisted"
+    },
+    {
+      "path": "/appointments/calendar",
+      "result": "own block mutation persisted"
+    },
+    {
+      "path": "/appointments/calendar",
+      "result": "own block mutation persisted"
+    },
+    {
+      "path": "/appointments/calendar",
+      "result": "own block mutation persisted"
+    }
+  ]
+}

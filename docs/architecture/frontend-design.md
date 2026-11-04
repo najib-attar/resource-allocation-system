@@ -3,24 +3,28 @@
 The prototype audit below is retained as historical context. The current student
 rollout follows the approved [Campus Space reference](../design/campus-space/README.md)
 and is documented in the [student portal implementation](../ui/student-portal/README.md)
-and [acceptance report](../ui/student-portal/acceptance-report.md). Student service
-pages now opt into `student_service_base.html` and scoped `student-services.css`;
-professor, staff and administrator workflows keep their existing permission guards
-and shell. This rollout adds no frontend framework or scheduling rules.
+and [acceptance report](../ui/student-portal/acceptance-report.md). Student and professor service
+pages opt into `service_base.html` and scoped `campus-services.css`. Both use the
+same Campus Space shell; staff/administrator workflows retain their existing
+chrome and all server-side permission guards. This rollout adds no frontend framework or scheduling rules.
 
 The frontend remains Flask/Jinja with small, page-specific JavaScript modules.
 One `base.html` composes shared navigation and account controls; it does not own
 scheduling or database queries. No new frontend framework is required.
 
-## Current student component boundaries
+## Current Campus Space component boundaries
 
 | Layer | Responsibility |
 |---|---|
 | `base.html`, navigation/account/notification partials; `shell.js`, `notifications.js` | Shared authenticated shell, existing role-aware links, disclosure/focus behavior, private notification fragments and read receipts. Server authorization remains authoritative for every destination. |
-| `student_home.html`, `student-home.css`, `student-shell.css` | Student service discovery, authorized dashboard summaries and four primary navigation destinations. My Activity is the existing Home anchor. |
-| `student_service_base.html`, `components/student_services.html`, `student-services.css` | Student-only service heading, common status vocabulary, form/list/detail styling and responsive agendas. Other roles keep the original shell/styles and conditional workflow controls. |
+| `student_home.html`, `professor_home.html`, `campus-home.css`, `campus-shell.css` | Shared workspace identity, home cards and four primary destinations. Student My Activity is the existing Home anchor; professor My requests is the real owner academic route. |
+| `service_base.html`, `components/services.html`, `campus-services.css` | One shared service heading, status/weekly-slot/type vocabulary, forms/lists/details and responsive agendas for Student/Instructor. Other roles retain their original styles and conditional workflow controls. |
 | `prototype.css`, `appointments.js`, `rooms.js`, `equipment.js`, `recurrence.js`, `feedback.js` | Existing form contracts and page-specific interaction state. Recommendation invalidation, recurrence fields and eligibility messages do not replace service validation. `prototype.css` now serves only the appointment form; obsolete Home components were removed in UI-10. |
 | Flask routes → services → PostgreSQL / existing C++ gateway | Session identity, permissions, transactions, revisions, availability and approval rules. No frontend framework, dependency, permission, migration or scheduling behavior was added. |
+
+Professor implementation and the [screen/control coverage](../professor-services/screen-coverage.md) extend the existing backend contracts. `ProfessorDashboardService` uses bounded, Instructor-scoped read queries and the existing academic/schedule projections; `StudentDashboardService` remains unchanged. Native professor POST forms use `workspace-forms.js` to retain submitter/CSRF values and prevent repeats. `academic-requests.js` displays actual resource profiles and provides local weekly-slot/participant helpers; it computes no scheduling or authorization decisions. Professor Home is the ordinary Instructor landing destination; authentication/session/CSRF internals are preserved.
+
+The [Professor acceptance report](../professor-services/acceptance-report.md) records real Flask/PostgreSQL/C++ and five-width browser evidence. The three former Student asset files, service parent/macros and common error template were renamed/promoted rather than copied. Student CSS declarations and Home contents were preserved. Shared components remain opt-in; no second theme, framework, dependency, schema or scheduling engine was introduced.
 
 The [UI-10 control traceability matrix](../ui/student-portal/UI-10/traceability.md)
 records exact parameters, endpoints, persistence/engine boundaries and regression

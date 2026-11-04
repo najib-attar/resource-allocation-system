@@ -1,5 +1,6 @@
 """PostgreSQL/Python/C++ preserve user text without CSV execution dependencies."""
 
+from academic_fixtures import submit_reviewed
 from pathlib import Path
 from unittest import mock
 import os
@@ -21,7 +22,7 @@ class PostgresTextContractTests(PostgresTestCase):
         title = 'Advanced Algorithms, "Part II" \u00c7a\u011fr\u0131'
         client = self.configure_web()
         with forbid_runtime_files(), mock.patch.dict(os.environ, {"RESOURCE_ALLOCATION_BACKEND": str(self.backend.path)}):
-            response = client.post("/add-request", data={
+            response = submit_reviewed(client,self.database,"/add-request", data={
                 "requestType": "OneTime", "userId": "2", "spaceId": "301", "participantCount": "4",
                 "day": "1", "startTime": "10:00", "endTime": "11:00", "title": title,
                 "purpose": "Meeting", "requiredFeature": "None", "requiredBuilding": "Main",

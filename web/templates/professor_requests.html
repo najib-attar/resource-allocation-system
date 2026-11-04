@@ -1,0 +1,27 @@
+{% extends 'service_base.html' %}
+{% from 'components/ui.html' import icon %}
+{% from 'components/services.html' import academic_type,status %}
+{% block title %}My academic requests | Campus Space{% endblock %}
+{% block page_heading %}My academic requests{% endblock %}
+{% block service_eyebrow %}Academic requests / Your activity{% endblock %}
+{% block service_intro %}Track your declarations, administrative eligibility and actual allocation outcomes. Eligibility approval alone does not reserve a resource.{% endblock %}
+{% block service_content %}
+<section class="panel"><h2>Start an academic request</h2><nav class="service-tabs" aria-label="New academic request">{% for kind in ['Exam','OneTime','Recurring','CommitteeMeeting'] %}<a href="{{ url_for('professor.form',type=kind) }}">{{ icon('plus',15) }} {{ academic_type(kind) }}</a>{% endfor %}</nav><p>Course, faculty and activity descriptions remain declarations. Requests are submitted under your own identity.</p></section>
+<section class="panel"><h2>Your requests <span class="service-count">{{ data.total }}</span></h2>
+  <form method="get"><div class="appointment-grid">
+    <label>Request type <select name="type"><option value="">All types</option>{% for kind in ['Exam','OneTime','Recurring','CommitteeMeeting'] %}<option value="{{ kind }}"{% if request.args.get('type')==kind %} selected{% endif %}>{{ academic_type(kind) }}</option>{% endfor %}</select></label>
+    <label>Allocation outcome <select name="status"><option value="">All outcomes</option>{% for state in ['Pending','Approved','Rejected'] %}<option{% if request.args.get('status')==state %} selected{% endif %}>{{ state }}</option>{% endfor %}</select></label>
+    <label>Requests per page <select name="limit">{% if data.limit not in [10,25,50,100] %}<option selected>{{ data.limit }}</option>{% endif %}{% for limit in [10,25,50,100] %}<option{% if data.limit==limit %} selected{% endif %}>{{ limit }}</option>{% endfor %}</select></label>
+  </div><div class="service-actions"><button class="button-primary">Apply filters</button><a class="service-button" href="{{ url_for('professor.pages') }}">Reset filters</a></div></form>
+  <div class="service-list">{% for item in data['items'] %}<article class="service-row"><span class="service-row-icon">{{ icon('room',18) }}</span><div>
+    <span class="service-row-kind">{{ academic_type(item.type) }} &middot; Request {{ item.id }} &middot; Revision {{ item.revision }}</span><h3><a href="{{ url_for('professor.page',request_id=item.id) }}">{{ item.title }}</a></h3>
+    <p>Requested/reference resource: {{ item.requestedResource.name }}</p><p>Eligibility: {{ status(item.eligibilityStatus) }}</p><p>Allocation outcome: {{ status(item.status) }}</p>
+    {% if item.eligibilityReason %}<p>{{ item.eligibilityReason }}</p>{% endif %}
+    {% if item.status=='Approved' and item.eligibilityStatus!='Eligible' %}<p class="service-notice">The current published allocation remains active during eligibility review. Only an authorized replacement publication changes it.</p>{% elif item.eligibilityStatus=='Pending Eligibility Review' %}<p>Awaiting administrative review; excluded from future allocation inputs.</p>{% elif item.eligibilityStatus=='Eligibility Rejected' %}<p>Excluded from future allocation inputs. Open the request for the review explanation.</p>{% elif item.status=='Pending' %}<p>Eligible, with no processed allocation for this revision.</p>{% endif %}
+    {% if item.decision and item.decision.reason %}<p>Allocation explanation: {{ item.decision.reason }}</p>{% endif %}
+  </div></article>{% else %}<div class="service-empty"><h3>No academic requests on this page.</h3><p>Change your filters or start a new declaration. Full history remains on each request.</p></div>{% endfor %}</div>
+  {% if data['items'] %}<p class="student-card-note">Showing {{ data.offset+1 }}&ndash;{{ data.offset+data['items']|length }} of {{ data.total }} requests.</p>{% endif %}
+  <nav class="service-actions" aria-label="Request pages">{% if data.offset %}<a class="service-button" href="{{ url_for('professor.pages',type=request.args.get('type',''),status=request.args.get('status',''),limit=data.limit,offset=[0,data.offset-data.limit]|max) }}">Previous page</a>{% endif %}{% if data.offset+data.limit<data.total %}<a class="service-button" href="{{ url_for('professor.pages',type=request.args.get('type',''),status=request.args.get('status',''),limit=data.limit,offset=data.offset+data.limit) }}">Next page</a>{% endif %}</nav>
+</section>
+{% if data.inputsChangedSincePublication %}<p class="service-notice">Inputs have changed since the active allocation publication. Previously published outcomes remain active; pending declarations do not reserve resources.</p>{% endif %}
+{% endblock %}

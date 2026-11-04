@@ -1,0 +1,14 @@
+{
+  "modules": [
+    "test_save_only_confirmation",
+    "test_professor_portal.ProfessorPortalTests.test_eligibility_navigation_is_expanded_for_administrators_and_protected_for_other_roles",
+    "test_professor_intake.ProfessorIntakeTests.test_malformed_optional_participants_return_json_errors_without_persistence"
+  ],
+  "expected": 13,
+  "run": 13,
+  "passed": 13,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 213.76
+}

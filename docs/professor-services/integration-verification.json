@@ -1,0 +1,1031 @@
+{
+  "status": "LOCAL INTEGRATION VERIFICATION PASSED - HOSTED CI REQUIRED BEFORE MERGE",
+  "recordedAt": "2026-11-04T18:05:21.057574+03:00",
+  "reviewedImplementation": "bddf7ab83370c3e26a11ca9ea0d221c7a0ed8009",
+  "fullSuiteStart": "06e0e12a953222a5898a067defce65219ecbfa6a",
+  "subsequentChange": "Audit tool pins the separately approved authentication fix; production and root test code unchanged.",
+  "reviewedMain": "196933506469ae25d3214a91ef2fd457356d096d",
+  "studentPR": 24,
+  "studentMerge": "196933506469ae25d3214a91ef2fd457356d096d",
+  "authenticationFix": "bf8f829af782aee9fbff869d365d41d0c9393350",
+  "python": {
+    "expected": 741,
+    "run": 741,
+    "passed": 740,
+    "failures": 0,
+    "errors": 0,
+    "skipped": [
+      {
+        "test": "test_linux_execute_permission_is_checked (test_backend_executable.BackendExecutableTests.test_linux_execute_permission_is_checked)",
+        "reason": "POSIX permission check runs on Linux."
+      }
+    ],
+    "seconds": 2342.84
+  },
+  "pythonModules": {
+    "test_appointment_protocol": {
+      "expected": 5,
+      "run": 5,
+      "passed": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 6.34,
+      "exitCode": 0
+    },
+    "test_application_entrypoints": {
+      "expected": 7,
+      "run": 7,
+      "passed": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 17.17,
+      "exitCode": 0
+    },
+    "test_backend_executable": {
+      "expected": 21,
+      "run": 21,
+      "passed": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [
+        {
+          "test": "test_linux_execute_permission_is_checked (test_backend_executable.BackendExecutableTests.test_linux_execute_permission_is_checked)",
+          "reason": "POSIX permission check runs on Linux."
+        }
+      ],
+      "seconds": 17.08,
+      "exitCode": 0
+    },
+    "test_appointment_foundation": {
+      "expected": 6,
+      "run": 6,
+      "passed": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 48.55,
+      "exitCode": 0
+    },
+    "test_calendar_loading": {
+      "expected": 3,
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 23.61,
+      "exitCode": 0
+    },
+    "test_academic_eligibility": {
+      "expected": 9,
+      "run": 9,
+      "passed": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 136.78,
+      "exitCode": 0
+    },
+    "test_cost_policy_values": {
+      "expected": 13,
+      "run": 13,
+      "passed": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 0.14,
+      "exitCode": 0
+    },
+    "test_csv_cli": {
+      "expected": 1,
+      "run": 1,
+      "passed": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 0.81,
+      "exitCode": 0
+    },
+    "test_csv_contract": {
+      "expected": 3,
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 2.34,
+      "exitCode": 0
+    },
+    "test_database_diagrams": {
+      "expected": 1,
+      "run": 1,
+      "passed": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 0.31,
+      "exitCode": 0
+    },
+    "test_eligibility_migration": {
+      "expected": 4,
+      "run": 4,
+      "passed": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 40.02,
+      "exitCode": 0
+    },
+    "test_engine_gateway": {
+      "expected": 24,
+      "run": 24,
+      "passed": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 23.16,
+      "exitCode": 0
+    },
+    "test_appointments": {
+      "expected": 24,
+      "run": 24,
+      "passed": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 257.7,
+      "exitCode": 0
+    },
+    "test_equipment_web": {
+      "expected": 7,
+      "run": 7,
+      "passed": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 105.33,
+      "exitCode": 0
+    },
+    "test_cost_policy_persistence": {
+      "expected": 31,
+      "run": 31,
+      "passed": 31,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 361.33,
+      "exitCode": 0
+    },
+    "test_frontend_prototype": {
+      "expected": 8,
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 60.25,
+      "exitCode": 0
+    },
+    "test_cost_policy_governance": {
+      "expected": 56,
+      "run": 56,
+      "passed": 56,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 408.69,
+      "exitCode": 0
+    },
+    "test_logout_migration": {
+      "expected": 3,
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 22.5,
+      "exitCode": 0
+    },
+    "test_identity_sessions": {
+      "expected": 8,
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 57.03,
+      "exitCode": 0
+    },
+    "test_equipment": {
+      "expected": 21,
+      "run": 21,
+      "passed": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 399.61,
+      "exitCode": 0
+    },
+    "test_persistence_boundaries": {
+      "expected": 3,
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 3.17,
+      "exitCode": 0
+    },
+    "test_local_demo": {
+      "expected": 5,
+      "run": 5,
+      "passed": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 188.73,
+      "exitCode": 0
+    },
+    "test_notifications": {
+      "expected": 11,
+      "run": 11,
+      "passed": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 226.97,
+      "exitCode": 0
+    },
+    "test_personal_schedule": {
+      "expected": 15,
+      "run": 15,
+      "passed": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 111.3,
+      "exitCode": 0
+    },
+    "test_logout_sessions": {
+      "expected": 12,
+      "run": 12,
+      "passed": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 259.02,
+      "exitCode": 0
+    },
+    "test_postgres_foundation": {
+      "expected": 8,
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 24.56,
+      "exitCode": 0
+    },
+    "test_postgres_demo": {
+      "expected": 5,
+      "run": 5,
+      "passed": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 81.31,
+      "exitCode": 0
+    },
+    "test_postgres_completion": {
+      "expected": 21,
+      "run": 21,
+      "passed": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 240.03,
+      "exitCode": 0
+    },
+    "test_postgres_import": {
+      "expected": 10,
+      "run": 10,
+      "passed": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 96.19,
+      "exitCode": 0
+    },
+    "test_postgres_concurrency": {
+      "expected": 15,
+      "run": 15,
+      "passed": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 212.73,
+      "exitCode": 0
+    },
+    "test_postgres_quality": {
+      "expected": 11,
+      "run": 11,
+      "passed": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 111.91,
+      "exitCode": 0
+    },
+    "test_postgres_runtime_independence": {
+      "expected": 3,
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 64.61,
+      "exitCode": 0
+    },
+    "test_postgres_text_contract": {
+      "expected": 1,
+      "run": 1,
+      "passed": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 14.58,
+      "exitCode": 0
+    },
+    "test_preference_values": {
+      "expected": 11,
+      "run": 11,
+      "passed": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 0.36,
+      "exitCode": 0
+    },
+    "test_professor_existing_workflows": {
+      "expected": 3,
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 59.25,
+      "exitCode": 0
+    },
+    "test_postgres_web": {
+      "expected": 8,
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 94.77,
+      "exitCode": 0
+    },
+    "test_postgres_workflow": {
+      "expected": 12,
+      "run": 12,
+      "passed": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 147.61,
+      "exitCode": 0
+    },
+    "test_postgres_recovery": {
+      "expected": 4,
+      "run": 4,
+      "passed": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 271.69,
+      "exitCode": 0
+    },
+    "test_recurrence": {
+      "expected": 16,
+      "run": 16,
+      "passed": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 0.17,
+      "exitCode": 0
+    },
+    "test_professor_intake": {
+      "expected": 8,
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 141.77,
+      "exitCode": 0
+    },
+    "test_professor_portal": {
+      "expected": 12,
+      "run": 12,
+      "passed": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 197.33,
+      "exitCode": 0
+    },
+    "test_recurring_persistence": {
+      "expected": 6,
+      "run": 6,
+      "passed": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 111.25,
+      "exitCode": 0
+    },
+    "test_professor_services": {
+      "expected": 14,
+      "run": 14,
+      "passed": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 227.16,
+      "exitCode": 0
+    },
+    "test_recurring_views": {
+      "expected": 10,
+      "run": 10,
+      "passed": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 186.89,
+      "exitCode": 0
+    },
+    "test_room_foundation": {
+      "expected": 4,
+      "run": 4,
+      "passed": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 24.38,
+      "exitCode": 0
+    },
+    "test_recurring_policy": {
+      "expected": 25,
+      "run": 25,
+      "passed": 25,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 408.16,
+      "exitCode": 0
+    },
+    "test_recurring_workflows": {
+      "expected": 25,
+      "run": 25,
+      "passed": 25,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 365.19,
+      "exitCode": 0
+    },
+    "test_save_only_confirmation": {
+      "expected": 11,
+      "run": 11,
+      "passed": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 68.0,
+      "exitCode": 0
+    },
+    "test_room_requests": {
+      "expected": 18,
+      "run": 18,
+      "passed": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 249.75,
+      "exitCode": 0
+    },
+    "test_resource_feedback": {
+      "expected": 31,
+      "run": 31,
+      "passed": 31,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 439.88,
+      "exitCode": 0
+    },
+    "test_service_examples": {
+      "expected": 5,
+      "run": 5,
+      "passed": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 111.36,
+      "exitCode": 0
+    },
+    "test_student_portal_ui": {
+      "expected": 19,
+      "run": 19,
+      "passed": 19,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 0.98,
+      "exitCode": 0
+    },
+    "test_scheduling_preferences": {
+      "expected": 40,
+      "run": 40,
+      "passed": 40,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 165.03,
+      "exitCode": 0
+    },
+    "test_student_dashboard": {
+      "expected": 14,
+      "run": 14,
+      "passed": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 107.7,
+      "exitCode": 0
+    },
+    "test_university_calendar": {
+      "expected": 21,
+      "run": 21,
+      "passed": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 212.12,
+      "exitCode": 0
+    },
+    "test_waiting_lists": {
+      "expected": 49,
+      "run": 49,
+      "passed": 49,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 522.58,
+      "exitCode": 0
+    }
+  },
+  "cpp": {
+    "passed": 192,
+    "failed": 0,
+    "runtimeSmokes": [
+      "clean-slot",
+      "normal-dataset"
+    ]
+  },
+  "browserSuites": [
+    {
+      "name": "PROF-UI-01",
+      "views": 30,
+      "keyboardSteps": 745,
+      "posts": 7,
+      "verifiedOutcomes": 1,
+      "seconds": 184.77,
+      "schema": "ras_test_fcae02d6a2d74938976d6a2d902793f1",
+      "schemaAbsent": true,
+      "serverStopped": true
+    },
+    {
+      "name": "PROF-UI-02",
+      "views": 15,
+      "keyboardSteps": 70,
+      "posts": 13,
+      "verifiedOutcomes": 9,
+      "seconds": 111.39,
+      "schema": "ras_test_eb184e2438a54d63a7f5f2bcc98ddad3",
+      "schemaAbsent": true,
+      "serverStopped": true
+    },
+    {
+      "name": "PROF-UI-03",
+      "views": 26,
+      "keyboardSteps": 351,
+      "posts": 10,
+      "verifiedOutcomes": 8,
+      "seconds": 96.25,
+      "schema": "ras_test_06b43d2f521141c2a59eef2a5bb65759",
+      "schemaAbsent": true,
+      "serverStopped": true
+    },
+    {
+      "name": "PROF-UI-04",
+      "views": 25,
+      "keyboardSteps": 590,
+      "posts": 6,
+      "verifiedOutcomes": 5,
+      "seconds": 118.42,
+      "schema": "ras_test_79a840dbfc11441f936b975ffe5730d5",
+      "schemaAbsent": true,
+      "serverStopped": true
+    },
+    {
+      "name": "PROF-UI-05",
+      "views": 35,
+      "keyboardSteps": 335,
+      "posts": 10,
+      "verifiedOutcomes": 6,
+      "seconds": 181.02,
+      "schema": "ras_test_f9cf0b6b838b4743b3851bc6477371ee",
+      "schemaAbsent": true,
+      "serverStopped": true
+    },
+    {
+      "name": "PROF-UI-06",
+      "views": 30,
+      "keyboardSteps": 765,
+      "posts": 5,
+      "verifiedOutcomes": 3,
+      "seconds": 160.59,
+      "schema": "ras_test_e65d577235984f32b5e54472d2690ac0",
+      "schemaAbsent": true,
+      "serverStopped": true
+    },
+    {
+      "name": "Independent",
+      "views": 200,
+      "keyboardSteps": 2604,
+      "posts": 32,
+      "verifiedOutcomes": 20,
+      "seconds": 336.77,
+      "schema": "ras_test_f2a95b296a0d46cfa46e92480570ebe1",
+      "schemaAbsent": true,
+      "serverStopped": true
+    },
+    {
+      "name": "Five roles",
+      "views": 41,
+      "keyboardSteps": 927,
+      "posts": 41,
+      "verifiedOutcomes": 28,
+      "seconds": 150.19,
+      "schema": "ras_test_610c1e010c114c27af1650ea21663457",
+      "schemaAbsent": true,
+      "serverStopped": true
+    },
+    {
+      "name": "Legacy eligibility",
+      "views": 32,
+      "keyboardSteps": 452,
+      "posts": 28,
+      "verifiedOutcomes": 21,
+      "seconds": 87.31,
+      "schema": "ras_test_205a307ae5d544099cba8b9102475e07",
+      "schemaAbsent": true,
+      "serverStopped": true
+    }
+  ],
+  "browserTotals": {
+    "views": 434,
+    "keyboardSteps": 6839,
+    "posts": 152,
+    "verifiedOutcomes": 101
+  },
+  "deterministicLogoutRace": {
+    "browser": {
+      "passed": 5,
+      "results": [
+        {
+          "actor": 1,
+          "role": "Student",
+          "lateCookiePresent": true,
+          "protectedAfterLogout": 302,
+          "replayedMutationStatus": 400,
+          "independentLoginStatus": 200,
+          "newLoginStatus": 200
+        },
+        {
+          "actor": 2,
+          "role": "Instructor",
+          "lateCookiePresent": true,
+          "protectedAfterLogout": 302,
+          "replayedMutationStatus": 400,
+          "independentLoginStatus": 200,
+          "newLoginStatus": 200
+        },
+        {
+          "actor": 6,
+          "role": "Administrator",
+          "lateCookiePresent": true,
+          "protectedAfterLogout": 302,
+          "replayedMutationStatus": 400,
+          "independentLoginStatus": 200,
+          "newLoginStatus": 200
+        },
+        {
+          "actor": 7,
+          "role": "Staff",
+          "lateCookiePresent": true,
+          "protectedAfterLogout": 302,
+          "replayedMutationStatus": 400,
+          "independentLoginStatus": 200,
+          "newLoginStatus": 200
+        },
+        {
+          "actor": 9,
+          "role": "TeachingAssistant",
+          "lateCookiePresent": true,
+          "protectedAfterLogout": 302,
+          "replayedMutationStatus": 400,
+          "independentLoginStatus": 200,
+          "newLoginStatus": 200
+        }
+      ]
+    },
+    "persistence": {
+      "logoutDenialsPersisted": 5,
+      "allFiveActorsVerified": true,
+      "accountVersionsUnchanged": true,
+      "rejectedMutationsPersisted": 0,
+      "responseTimingOnly": true
+    }
+  },
+  "studentLifecycle": {
+    "posts": 67,
+    "successful": 62,
+    "rejected": 5,
+    "allCommittedOutcomesVerified": true,
+    "fourParticipantCombinations": true,
+    "actualStudentFormAndProfessorApprovals": true,
+    "calendarAndNotificationsVerified": true
+  },
+  "controls": {
+    "instances": 5892,
+    "classifications": {
+      "Verified functional destination": 4193,
+      "Verified local helper": 285,
+      "Verified native disclosure": 285,
+      "Verified form action": 374,
+      "Verified form/local input": 750,
+      "Intentionally disabled; visible empty/unavailable state": 5
+    },
+    "verifiedDestinations": 167,
+    "successfulJavascriptResponses": 170,
+    "shellKeyboardChecks": 34
+  },
+  "realEligibleEngineInputs": [
+    {
+      "requestIds": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "eligibleAtExecution": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "realEngine": true
+    }
+  ],
+  "ownedBrowserSchemasAbsent": [
+    "ras_test_fcae02d6a2d74938976d6a2d902793f1",
+    "ras_test_eb184e2438a54d63a7f5f2bcc98ddad3",
+    "ras_test_06b43d2f521141c2a59eef2a5bb65759",
+    "ras_test_79a840dbfc11441f936b975ffe5730d5",
+    "ras_test_f9cf0b6b838b4743b3851bc6477371ee",
+    "ras_test_e65d577235984f32b5e54472d2690ac0",
+    "ras_test_f2a95b296a0d46cfa46e92480570ebe1",
+    "ras_test_610c1e010c114c27af1650ea21663457",
+    "ras_test_205a307ae5d544099cba8b9102475e07",
+    "ras_test_3e0b3f2df2944ce5bd19de87c101a159",
+    "ras_test_b4d57612046e455a92e9ef95d8304cf9"
+  ],
+  "unownedSchemasPreserved": [
+    "ras_test_0582a99d4f8441c0a65b8173541556d5",
+    "ras_test_a8b4fa0498774ce6b029889906f0ec9d"
+  ],
+  "migration": {
+    "head": "0051b",
+    "dependencies": "0050b -> 0051a -> 0051b",
+    "applicationTables": 62,
+    "sources": {
+      "0051a_academic_eligibility.py": "a609a0af4331b517bab13977cb4c27ac37ee5ee47e5e1e76b89074706eeaf742",
+      "0051b_logged_out_sessions.py": "9959df9e9a06b7e930e4edc88590b46553c8dccc142700ffbf9e5ee219644215"
+    },
+    "disposableFreshAndUpgradeRegressionsPassed": true,
+    "legacyPublicationPreservationVerified": true,
+    "developmentCopy": {
+      "sourceRevision": "0051a",
+      "targetRevision": "0051b",
+      "originalTablesPreserved": 61,
+      "accountsPreserved": 94,
+      "appointmentsPreserved": 2,
+      "allOriginalRowFingerprintsMatch": true,
+      "originalSourceDatabaseReset": false,
+      "originalNormalDemoUntouched": true
+    },
+    "operationalDatabaseModified": false,
+    "rollout": "Stop old workers, back up, upgrade head, restart matching code; one fresh login required for pre-fix cookies."
+  },
+  "cleanup": {
+    "originalRevision": "937adcc75e23af79e37c394c932e99bc330e6a1b",
+    "removedFiles": 420,
+    "removedBytes": 45658932,
+    "retainedRepresentativeScreenshots": 68,
+    "localArchive": "C:\\Users\\najee\\.codex\\worktrees\\professor-services-v1\\resource-allocation-frontend\\build\\integration\\professor-evidence-937adcc.zip",
+    "archiveSha256": "a27c669230b5d5b9a63ae2a1f5553a84ebd874bdb41c61126fbf8a7e41fa87f9",
+    "archiveFiles": 606,
+    "archiveEveryFileHashVerified": true,
+    "historicalGitEvidencePreserved": true,
+    "rewrittenHistoricalLinks": 5,
+    "controlSummary": {
+      "originalInstances": 5892,
+      "distinctSignatures": 378,
+      "sumOccurrences": 5892,
+      "labelEncoding": "JSON escaped string"
+    },
+    "compactedBrowserMetadata": [
+      {
+        "path": "docs/professor-services/PROF-UI-08/browser/browser-results.json",
+        "originalSha256": "6bd080bfa419dd95a22fc9bb00f91a96a6a5877c9a0fb7951220b3b25b8aa041",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      },
+      {
+        "path": "docs/professor-services/PROF-UI-08/legacy-gate/browser-results.json",
+        "originalSha256": "ce9bc35330b4ac1c6af8455f2272052d1dc0089a04a72bc72cf3847c4184c1d2",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      },
+      {
+        "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/browser-results.json",
+        "originalSha256": "6068894bc0ad49a66529157e9d958c9d27235e8b8a0f7c3f33ba34e71b228900",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      },
+      {
+        "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-02/browser-results.json",
+        "originalSha256": "c8db3243ae96bced22996882d857837893538c79725080602af059ec2204e3da",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      },
+      {
+        "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/browser-results.json",
+        "originalSha256": "cc73883e996f88db47a07f6e0b70adf56ed7fd33115f61f2ba755cafc00e3753",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      },
+      {
+        "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-04/browser-results.json",
+        "originalSha256": "4f481b2098e1ac8a54139ec1328c1a12b8a180bb77aee3f58183c7cdb38af5b2",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      },
+      {
+        "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/browser-results.json",
+        "originalSha256": "0ead08b69c3a73a714dd83ed374f074fac9cea48a458c713aabcbd5bc0ffcf1e",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      },
+      {
+        "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-06/browser-results.json",
+        "originalSha256": "1e4c51a1831419965ff7a49a1c3872834e2f876c661c17bb98c35799e1006eb5",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      },
+      {
+        "path": "docs/professor-services/eligibility-browser/browser-results.json",
+        "originalSha256": "eb51de81dfcbef11b7db6e08b7f7481bf6678f42636fde60ebe3e92ce5a4ce53",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      },
+      {
+        "path": "docs/professor-services/portal/PROF-UI-01/browser-results.json",
+        "originalSha256": "7e553cbafe57f684295b388986665f2d0c4cf4c775f2a495727636be07fd5100",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      },
+      {
+        "path": "docs/professor-services/portal/PROF-UI-02/browser-results.json",
+        "originalSha256": "8e808b667503cfbc60912e3ce4241301311c93b616422dd1bfbde81e719db4a6",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      },
+      {
+        "path": "docs/professor-services/portal/PROF-UI-03/browser-results.json",
+        "originalSha256": "6820092bca6217c1aed417d908e6d1a81242b5a058b8ddef77428414262a3e83",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      },
+      {
+        "path": "docs/professor-services/portal/PROF-UI-04/browser-results.json",
+        "originalSha256": "ae568c8cfd3c9a06c47885115674eabe2999b27b2ebc2f77c6b34607281af6cb",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      },
+      {
+        "path": "docs/professor-services/portal/PROF-UI-05/browser-results.json",
+        "originalSha256": "6f038fa9be5a29fcb4f14ca14d6eafb09cd253d775f46a37bd0a8e51bbf31f6f",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      },
+      {
+        "path": "docs/professor-services/portal/PROF-UI-06/browser-results.json",
+        "originalSha256": "f7fab47e7236db3cc33029d40559d816706ac11474c576d5766f4db875acb45b",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      },
+      {
+        "path": "docs/professor-services/portal/PROF-UI-07/browser-results.json",
+        "originalSha256": "db46f2517e43fb9eced49bde1122d175ee64c579c848cf9513d90195916b0549",
+        "reason": "Removed duplicate inline control vectors; preserved checks/views/network/keyboard/error metadata"
+      }
+    ],
+    "productionFilesChanged": [],
+    "testsRemoved": []
+  },
+  "diffReview": {
+    "highConfidenceSecretMatches": 0,
+    "mainUntrackedPathCollisions": 0,
+    "productionCppAndResearchChanges": [],
+    "protectedSourcesUnchanged": [
+      "src",
+      ".github",
+      "web/cost_policy_service.py",
+      "web/scheduling_preference_service.py"
+    ],
+    "researchImplementationUnchanged": true,
+    "researchFixtureOnlyChange": "Two current session-metadata fields; all test assertions byte-preserved."
+  },
+  "syntax": {
+    "python": 68,
+    "javascript": 10,
+    "failures": 0
+  },
+  "contractReview": {
+    "pythonSources": 18,
+    "validatedTestReferences": 52,
+    "handoffFiles": 12
+  },
+  "rawEvidenceRoot": "C:\\Users\\najee\\.codex\\worktrees\\professor-services-v1\\resource-allocation-frontend\\build\\integration",
+  "evidenceHashes": {
+    "resumed-professor-python/tests.txt": "827584ad028e0fed854168e1eb10285d11675e394ca70976788adce5cb1ee350",
+    "resumed-professor-cpp.log": "ce3653577ae575614e7e9808b2d1dfb88f5484afd471edc4a94f64c0e68f1982",
+    "resumed-browser/execution.json": "4a8a0cbe11bb031da89e82fc86faec233b4bfa06063172ecde531408bd36205e",
+    "resumed-browser/legacy-gate/persistence-verification.json": "798d980742af6de62490579eb84346b57e552eeb484a1dd7b612327f96824093",
+    "resumed-browser/logout-race/persistence-verification.json": "f8823e19e0562fe80824fa1fd22395d2125f260bee75e74681827f820bec8dd3",
+    "resumed-student-browser/verification.json": "1f4f82422c8466f6bcdf5366c851ac3e68bbc9e393b50d61ae0c3ed4d12a0fb0",
+    "resumed-syntax.json": "24f937b9964f63fffdadf868c8c54ea669043417bf18fe6bf6e9c3db43d134aa",
+    "resumed-diff-review.json": "dd7681bd59f4cdabf6ca23efe122327bd4b2bc6d6182ceec63b31ce5f335e836"
+  },
+  "historicalLogoutVerification": "https://github.com/najib-attar/resource-allocation-system/blob/06e0e12a953222a5898a067defce65219ecbfa6a/docs/professor-services/integration-verification.json",
+  "releaseGatesRemaining": [
+    "Push reviewed branch; create PR; verify all hosted push and proposed-merge checks",
+    "Normal merge only after latest-main and protection/review checks",
+    "Safely fast-forward normal main checkout and run final merged-main regressions/startup smoke"
+  ],
+  "deploymentPerformed": false,
+  "operationalDatabaseModified": false,
+  "ciCompatibilityCorrection": {
+    "initialFailedHead": "9bb0f1dbac29998cf0f64005db8b43b0b49b140e",
+    "failedJob": "https://github.com/najib-attar/resource-allocation-system/actions/runs/41851271655/job/126647916810",
+    "initialHostedResult": {
+      "run": 55,
+      "failures": 1,
+      "errors": 32
+    },
+    "cause": "I3b test context omitted the current signed-login format and nonce; real middleware correctly rejected it.",
+    "fix": "Populate login_format=2 and a random CSRF nonce in the existing test fixture before real middleware runs.",
+    "file": "research/cdmcs/i3b/tests/test_readonly_projection.py",
+    "addedLines": 2,
+    "researchImplementationChanged": false,
+    "testAssertionsChanged": false,
+    "productionAuthenticationChanged": false,
+    "rootApplicationTestsChanged": false,
+    "freshProjection": {
+      "run": 47,
+      "passed": 47,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 319.075
+    },
+    "freshIdentity": {
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 30.363
+    },
+    "originalFailureReproducedLocally": true,
+    "hostedChecksMustRerunOnCorrectedHead": true,
+    "evidenceHashes": {
+      "professor-projection-job.log": "1332c3f7d07b7bb236466eeca05dd15c62e1871e3040035f6ad1382da3849c41",
+      "projection-before-fixture-correction.txt": "8cb2b231973fcb5a56a879cbc85f0fc2ad4cd7da1405e4fb0c9cd9dd68f964ff",
+      "projection-after-fixture-correction.txt": "56d4e62d98d9c11c4ecaa1a0dc939dfafd8854b46bf18749dfd8cd85f12cdfe8",
+      "projection-identity-regression.txt": "69b19540eab5fb2ab2e63cc3ced985fd62a6dfced69b2498e179e31fb918a9f5"
+    }
+  }
+}

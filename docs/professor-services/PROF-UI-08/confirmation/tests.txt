@@ -1,0 +1,61 @@
+test_committee_save_only_preserves_participants_and_renders_confirmation (test_save_only_confirmation.SaveOnlyConfirmationTests.test_committee_save_only_preserves_participants_and_renders_confirmation) ... ok
+test_confirmation_run_button_keeps_explicit_run_and_detail_navigation (test_save_only_confirmation.SaveOnlyConfirmationTests.test_confirmation_run_button_keeps_explicit_run_and_detail_navigation) ... ok
+test_exam_save_only_uses_shared_validation_and_preserves_course_fields (test_save_only_confirmation.SaveOnlyConfirmationTests.test_exam_save_only_uses_shared_validation_and_preserves_course_fields) ... ok
+test_existing_committee_confirmation_and_detail_routes_render (test_save_only_confirmation.SaveOnlyConfirmationTests.test_existing_committee_confirmation_and_detail_routes_render) ... ok
+test_existing_normal_confirmation_and_detail_routes_render (test_save_only_confirmation.SaveOnlyConfirmationTests.test_existing_normal_confirmation_and_detail_routes_render) ... ok
+test_helper_is_available_for_package_and_standalone_imports (test_save_only_confirmation.SaveOnlyConfirmationTests.test_helper_is_available_for_package_and_standalone_imports) ... ok
+test_invalid_normal_and_exam_forms_do_not_persist_or_execute (test_save_only_confirmation.SaveOnlyConfirmationTests.test_invalid_normal_and_exam_forms_do_not_persist_or_execute) ... ok
+test_legacy_result_urls_redirect_to_working_raw_data_views (test_save_only_confirmation.SaveOnlyConfirmationTests.test_legacy_result_urls_redirect_to_working_raw_data_views) ... ok
+test_normal_save_only_writes_one_request_and_renders_confirmation (test_save_only_confirmation.SaveOnlyConfirmationTests.test_normal_save_only_writes_one_request_and_renders_confirmation) ... ok
+test_recurring_save_preserves_ordered_occurrences_and_runs_through_real_engine (test_save_only_confirmation.SaveOnlyConfirmationTests.test_recurring_save_preserves_ordered_occurrences_and_runs_through_real_engine) ... ok
+test_unknown_confirmation_does_not_claim_a_successful_creation (test_save_only_confirmation.SaveOnlyConfirmationTests.test_unknown_confirmation_does_not_claim_a_successful_creation) ... ERROR
+
+======================================================================
+ERROR: test_unknown_confirmation_does_not_claim_a_successful_creation (test_save_only_confirmation.SaveOnlyConfirmationTests.test_unknown_confirmation_does_not_claim_a_successful_creation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\najee\.codex\worktrees\professor-services-v1\resource-allocation-frontend\tests\test_save_only_confirmation.py", line 225, in test_unknown_confirmation_does_not_claim_a_successful_creation
+    response=self.client.get('/request-added/999999')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\werkzeug\test.py", line 1166, in get
+    return self.open(*args, **kw)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\flask\testing.py", line 235, in open
+    response = super().open(
+               ^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\werkzeug\test.py", line 1120, in open
+    response_parts = self.run_wsgi_app(request.environ, buffered=buffered)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\werkzeug\test.py", line 992, in run_wsgi_app
+    rv = run_wsgi_app(self.application, environ, buffered=buffered)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\werkzeug\test.py", line 1268, in run_wsgi_app
+    app_rv = app(environ, start_response)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\flask\app.py", line 1536, in __call__
+    return self.wsgi_app(environ, start_response)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\flask\app.py", line 1514, in wsgi_app
+    response = self.handle_exception(e)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\flask\app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\flask\app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\flask\app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+         ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\Desktop\resource-allocation-system\build\postgresql-venv\Lib\site-packages\flask\app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\najee\.codex\worktrees\professor-services-v1\resource-allocation-frontend\web\app.py", line 904, in request_added
+    abort(404, description="Academic request not found.")
+    ^^^^^
+NameError: name 'abort' is not defined
+
+----------------------------------------------------------------------
+Ran 11 tests in 96.251s
+
+FAILED (errors=1)

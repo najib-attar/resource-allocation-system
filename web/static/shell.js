@@ -5,11 +5,11 @@
     const close = document.querySelector("[data-navigation-close]");
     const backdrop = document.querySelector("[data-navigation-backdrop]");
     if (!sidebar || !toggle) return;
-    const studentShell = document.body.classList.contains("student-shell");
+    const campusShell = document.body.classList.contains("campus-shell");
     const mobile = window.matchMedia("(max-width: 1050px)");
     let previousFocus;
     function setOpen(open, restore = true) {
-        const drawer = mobile.matches && !studentShell;
+        const drawer = mobile.matches && !campusShell;
         if (drawer && open) previousFocus = document.activeElement;
         sidebar.hidden = drawer && !open;
         toggle.setAttribute("aria-expanded", String(drawer && open));
@@ -27,15 +27,15 @@
         }
     }
     function resize() {
-        toggle.hidden = studentShell || !mobile.matches;
-        close.hidden = studentShell || !mobile.matches;
+        toggle.hidden = campusShell || !mobile.matches;
+        close.hidden = campusShell || !mobile.matches;
         setOpen(false, false);
     }
     toggle.addEventListener("click", () => setOpen(true));
     close.addEventListener("click", () => setOpen(false));
     backdrop.addEventListener("click", () => setOpen(false));
     sidebar.addEventListener("keydown", event => {
-        if (studentShell || !mobile.matches || sidebar.hidden) return;
+        if (campusShell || !mobile.matches || sidebar.hidden) return;
         if (event.key === "Escape") { event.preventDefault(); setOpen(false); }
         if (event.key === "Tab") {
             const links = [...sidebar.querySelectorAll("a, button, summary")].filter(node => !node.hidden && node.getClientRects().length);

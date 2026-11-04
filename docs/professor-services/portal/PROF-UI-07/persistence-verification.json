@@ -1,0 +1,74 @@
+{
+  "posts": 28,
+  "outcomes": [
+    {
+      "path": "/rooms/1/invitation",
+      "result": "optional response persisted; no approval or reservation"
+    },
+    {
+      "path": "/rooms/2/invitation",
+      "result": "optional response persisted; no approval or reservation"
+    },
+    {
+      "path": "/logout",
+      "result": "rejected; state unchanged"
+    },
+    {
+      "path": "/logout",
+      "result": "rejected; state unchanged"
+    },
+    {
+      "path": "/logout",
+      "result": "rejected; state unchanged"
+    },
+    {
+      "path": "/logout",
+      "result": "rejected; state unchanged"
+    },
+    {
+      "path": "/professor/requests/7/revise",
+      "result": "material revision invalidated eligibility",
+      "id": 7
+    },
+    {
+      "path": "/professor/requests/new",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/academic-eligibility/7",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/professor/requests/new",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/academic-eligibility/7",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/professor/requests/new",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/academic-eligibility/7",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/professor/requests/new",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/academic-eligibility/7",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/run-allocation",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/appointments/2/decline-invitation",
+      "result": "optional student decline persisted without changing mandatory commitments"
+    }
+  ]
+}

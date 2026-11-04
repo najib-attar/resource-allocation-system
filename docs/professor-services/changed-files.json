@@ -1,0 +1,1387 @@
+{
+  "reviewedBase": "196933506469ae25d3214a91ef2fd457356d096d",
+  "frontendBase": "5a7f0b012308dea87e15c390519122f8248699f4",
+  "inheritedStudentBase": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+  "professorBranch": "codex/professor-services-v1",
+  "files": [
+    {
+      "status": "M",
+      "path": ".gitignore"
+    },
+    {
+      "status": "A",
+      "path": "Codex-Professor-Handoff.md"
+    },
+    {
+      "status": "M",
+      "path": "README.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/architecture/database-design.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/architecture/database-er-high-level.mmd"
+    },
+    {
+      "status": "M",
+      "path": "docs/architecture/database-er-high-level.svg"
+    },
+    {
+      "status": "M",
+      "path": "docs/architecture/database-er-physical.mmd"
+    },
+    {
+      "status": "M",
+      "path": "docs/architecture/database-er-physical.svg"
+    },
+    {
+      "status": "M",
+      "path": "docs/architecture/database-schema-catalog.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/architecture/frontend-design.md"
+    },
+    {
+      "status": "M",
+      "path": "docs/database-operations.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-01-recheck/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-01-redirect-recheck/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-01/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-02-error-recheck/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-02/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-03/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-04-field-recheck/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-04/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-05-stale-recheck/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-05/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-06/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser-diagnostic/browser-output.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser-diagnostic/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/academic-event-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/allocated-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/allocated-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/appointment-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/appointment-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/appointments-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/appointments-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/control-summary.csv"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/day-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/day-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/eligibility-detail-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/eligibility-detail-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/eligibility-queue-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/eligibility-queue-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/eligible-confirmation-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/eligible-confirmation-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/form-CommitteeMeeting-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/form-CommitteeMeeting-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/form-Exam-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/form-Exam-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/form-OneTime-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/form-OneTime-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/form-Recurring-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/form-Recurring-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/home-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/home-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/hours-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/hours-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/inbox-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/inbox-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/invalid-week-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/month-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/month-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/pending-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/pending-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/pending-confirmation-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/pending-confirmation-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/private-error-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/published-readonly-error-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/rejected-confirmation-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/rejected-confirmation-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/requests-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/requests-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/revise-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/revise-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/room-invitation-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/room-invitation-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/room-invitations-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/room-invitations-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/schedule-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/schedule-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/student-equipment-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/student-home-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/student-home-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/student-rooms-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/week-1440.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/browser/week-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/confirmation/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/confirmation/tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/corrections-recheck/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/cpp-tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/documentation-check.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/existing-workflows/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/existing-workflows/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/existing-workflows/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/final-regression/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/focused/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/gateway-probe-before.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/gateway-recheck/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/input-probe-before.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/inventory-integrity.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/legacy-gate/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/legacy-gate/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/legacy-gate/legacy-rejected-reservation-preserved.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/legacy-gate/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/legacy-gate/reviewed-queue-after-publication.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/legacy-gate/revision-requires-review.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/empty-home-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-02/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-02/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-02/history-after-decisions.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-02/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/block-conflict-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/protected-hours-removal-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-04/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-04/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-04/invalid-academic-form-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-04/invalid-academic-form-768.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-04/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/rejected-eligibility-still-allocated-320.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/revision-reset-eligibility.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-06/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-06/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-06/inbox-all-read.png"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-06/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/regression/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/regression/tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/reviewed-commits.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/source-integrity.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/syntax.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/template-review.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/verified-regression/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/PROF-UI-08/verified-regression/tests.txt"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/acceptance-report.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/accepted-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/approval-gate-evidence.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/artifact-cleanup.csv"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/artifact-cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/backend-artifact.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/browser/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/calendar-preservation-recheck/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/changed-files.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-browser/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-compatibility/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-contract-review.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-core/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-final-regression/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/eligibility-full-regression/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/existing-contracts/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/frontend-plan.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/gate-verified/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/git-isolation-current.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/git-preparation.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/intake-integration/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/integration-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/owner-reads-final/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/owner-reads/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal-acceptance-regression/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal-acceptance-regression/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal-backend-preflight/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal-final-regression/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal-service-examples-recheck/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal-source-audit.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-01/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-01/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-01/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-02/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-02/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-02/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-03/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-03/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-03/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-04/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-04/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-04/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-05/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-05/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-05/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-06/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-06/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-06/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-07/browser-results.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-07/cleanup.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/portal/PROF-UI-07/persistence-verification.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/protocol-artifact-recheck/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/regression/tests.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/screen-coverage.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/screenshots.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/source-review.json"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/traceability.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/srs/professor-backend-audit.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/srs/professor-workflows.md"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-01.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-02.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-03.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-04.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-05.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-06.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-07.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-08.pdf"
+    },
+    {
+      "status": "A",
+      "path": "docs/use-cases/UC-PROF-09.pdf"
+    },
+    {
+      "status": "A",
+      "path": "migrations/versions/0051a_academic_eligibility.py"
+    },
+    {
+      "status": "A",
+      "path": "migrations/versions/0051b_logged_out_sessions.py"
+    },
+    {
+      "status": "A",
+      "path": "reference/Professor-Use-Cases-Combined.pdf"
+    },
+    {
+      "status": "M",
+      "path": "research/cdmcs/i3b/tests/test_readonly_projection.py"
+    },
+    {
+      "status": "M",
+      "path": "scripts/generate_database_diagrams.py"
+    },
+    {
+      "status": "M",
+      "path": "scripts/seed_demo_database.py"
+    },
+    {
+      "status": "M",
+      "path": "scripts/setup_local_demo.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/academic_fixtures.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/auth_fixtures.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/logout_browser.cjs"
+    },
+    {
+      "status": "A",
+      "path": "tests/logout_browser.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/postgres_fixtures.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/professor/browser_review.cjs"
+    },
+    {
+      "status": "A",
+      "path": "tests/professor/browser_review.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/professor/eligibility_browser.cjs"
+    },
+    {
+      "status": "A",
+      "path": "tests/professor/eligibility_browser.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/professor/portal_browser.cjs"
+    },
+    {
+      "status": "A",
+      "path": "tests/professor/portal_browser.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/professor/portal_source_audit.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/professor/review_contracts.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/professor/run_tests.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_academic_eligibility.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_appointments.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_backend_executable.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_calendar_loading.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_cost_policy_persistence.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_database_diagrams.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_eligibility_migration.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_engine_gateway.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_equipment.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_frontend_prototype.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_local_demo.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_logout_migration.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_logout_sessions.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_notifications.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_completion.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_concurrency.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_demo.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_import.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_quality.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_recovery.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_runtime_independence.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_text_contract.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_web.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_postgres_workflow.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_professor_existing_workflows.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_professor_intake.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_professor_portal.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_professor_services.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_recurring_persistence.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_recurring_workflows.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_resource_feedback.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_room_requests.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_save_only_confirmation.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_scheduling_preferences.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_service_examples.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_student_dashboard.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_student_portal_ui.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_university_calendar.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/test_waiting_lists.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/ui/audit_integrations.cjs"
+    },
+    {
+      "status": "M",
+      "path": "tests/ui/audit_portal_browser.cjs"
+    },
+    {
+      "status": "M",
+      "path": "web/README.md"
+    },
+    {
+      "status": "A",
+      "path": "web/academic_eligibility.py"
+    },
+    {
+      "status": "M",
+      "path": "web/account_service.py"
+    },
+    {
+      "status": "M",
+      "path": "web/app.py"
+    },
+    {
+      "status": "M",
+      "path": "web/appointment_routes.py"
+    },
+    {
+      "status": "A",
+      "path": "web/eligibility_routes.py"
+    },
+    {
+      "status": "M",
+      "path": "web/engine_gateway.py"
+    },
+    {
+      "status": "M",
+      "path": "web/persistence/importer.py"
+    },
+    {
+      "status": "M",
+      "path": "web/persistence/models.py"
+    },
+    {
+      "status": "M",
+      "path": "web/persistence/repository.py"
+    },
+    {
+      "status": "A",
+      "path": "web/professor_dashboard_service.py"
+    },
+    {
+      "status": "A",
+      "path": "web/professor_routes.py"
+    },
+    {
+      "status": "A",
+      "path": "web/professor_service.py"
+    },
+    {
+      "status": "M",
+      "path": "web/security.py"
+    },
+    {
+      "status": "A",
+      "path": "web/static/academic-requests.js"
+    },
+    {
+      "status": "A",
+      "path": "web/static/calendar.js"
+    },
+    {
+      "status": "R095",
+      "path": "web/static/campus-home.css",
+      "previousPath": "web/static/student-home.css"
+    },
+    {
+      "status": "A",
+      "path": "web/static/campus-services.css"
+    },
+    {
+      "status": "A",
+      "path": "web/static/campus-shell.css"
+    },
+    {
+      "status": "M",
+      "path": "web/static/prototype.css"
+    },
+    {
+      "status": "M",
+      "path": "web/static/shell.js"
+    },
+    {
+      "status": "D",
+      "path": "web/static/student-services.css"
+    },
+    {
+      "status": "D",
+      "path": "web/static/student-shell.css"
+    },
+    {
+      "status": "M",
+      "path": "web/static/style.css"
+    },
+    {
+      "status": "A",
+      "path": "web/static/workspace-forms.js"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/_personal_timetable.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/add_request.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/appointment_availability.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/appointment_calendar.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/appointment_detail.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/appointment_error.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/appointment_new.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/appointments.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/base.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/calendar_academic_detail.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/calendar_error.html"
+    },
+    {
+      "status": "A",
+      "path": "web/templates/components/_academic_request_fields.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/components/_activity_history.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/components/_navigation.html"
+    },
+    {
+      "status": "A",
+      "path": "web/templates/components/appointment_rows.html"
+    },
+    {
+      "status": "A",
+      "path": "web/templates/components/services.html"
+    },
+    {
+      "status": "D",
+      "path": "web/templates/components/student_services.html"
+    },
+    {
+      "status": "A",
+      "path": "web/templates/eligibility_queue.html"
+    },
+    {
+      "status": "A",
+      "path": "web/templates/eligibility_review.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/equipment_catalog.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/equipment_detail.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/equipment_error.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/equipment_requests.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/feedback_detail.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/feedback_list.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/feedback_new.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/notifications.html"
+    },
+    {
+      "status": "A",
+      "path": "web/templates/professor_home.html"
+    },
+    {
+      "status": "A",
+      "path": "web/templates/professor_request.html"
+    },
+    {
+      "status": "A",
+      "path": "web/templates/professor_request_form.html"
+    },
+    {
+      "status": "A",
+      "path": "web/templates/professor_requests.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/request_added.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/request_detail.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/requests.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/room_availability.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/room_request_detail.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/room_request_new.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/room_requests.html"
+    },
+    {
+      "status": "R066",
+      "path": "web/templates/service_base.html",
+      "previousPath": "web/templates/student_service_base.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/student_home.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/university_calendar.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/waiting_detail.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/waiting_lists.html"
+    },
+    {
+      "status": "M",
+      "path": "web/templates/waiting_policy.html"
+    },
+    {
+      "status": "R093",
+      "path": "web/templates/workspace_error.html",
+      "previousPath": "web/templates/student_error.html"
+    }
+  ]
+}

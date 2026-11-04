@@ -12,7 +12,7 @@ from test_appointments import START
 from test_room_requests import RoomFixture
 from web import app as web_app
 from web.account_service import AccountService
-from web.allocation_workflow import execute_allocation
+from academic_fixtures import execute_reviewed_allocation as execute_allocation
 from web.calendar_service import CalendarError
 from web.engine_gateway import EngineGateway
 from web.equipment_service import EquipmentService
@@ -327,6 +327,6 @@ class UnifiedCalendarTests(RoomFixture):
             row = session.scalar(select(ResourceRequest))
             self.assertFalse(row.calendar_public)
             self.assertIsNone(row.academic_instructor_id)
-            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), '0050b')
+            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), self.head_revision)
         with self.assertRaises(IntegrityError), self.database.transaction() as session:
             session.scalar(select(ResourceRequest)).academic_instructor_id = 999999

@@ -1,0 +1,195 @@
+/* Opt-in Campus Space service components; Home, sign-in and legacy roles are isolated. */
+.campus-service {
+    --ui-primary: #204b69;
+    --ui-primary-hover: #163c56;
+    --ui-primary-soft: #eaf2f7;
+    --ui-control-line: #7d8f9c;
+    --ink: #23313c;
+    --muted: #596d7b;
+    --line: #e0e7eb;
+    --accent: #204b69;
+    --accent-dark: #204b69;
+    --soft-blue: #eaf2f7;
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.65;
+}
+.service-heading { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin: 0 0 30px; }
+.service-eyebrow { color: #2b6282; font-size: 10px; text-transform: uppercase; letter-spacing: .14em; font-weight: 700; margin: 0 0 12px; }
+.service-eyebrow a { text-decoration: none; }
+.service-heading h1 { font-size: clamp(27px, 2.6vw, 36px); line-height: 1.2; letter-spacing: -1.2px; margin: 0 0 12px; font-weight: 650; overflow-wrap: anywhere; }
+.service-heading .service-intro { color: var(--muted); margin: 0; font-size: 13px; max-width: 680px; }
+.service-heading-actions, .service-actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.service-heading-actions { flex-shrink: 0; }
+.campus-service a { color: var(--accent); text-underline-offset: 3px; }
+.campus-service .panel, .campus-service .ui-card { min-width: 0; border: 1px solid var(--line); border-radius: 12px; box-shadow: none; background: #fff; padding: 24px; margin-bottom: 22px; }
+.campus-service .panel :is(h2,h3,h4) { color: var(--ink); font-weight: 650; line-height: 1.4; }
+.campus-service h2 { font-size: 18px; letter-spacing: -.4px; margin: 0 0 16px; }
+.campus-service h3 { font-size: 14px; margin-top: 24px; }
+.campus-service p { overflow-wrap: anywhere; }
+.campus-service :is(.panel,.ui-card) > p { color: var(--muted); }
+.campus-service .panel form { display: block; margin: 18px 0; }
+.campus-service .panel form.appointment-grid { display: grid; }
+.campus-service :is(label,.ui-field-label) { display: block; color: #435969; font-size: 12px; font-weight: 600; margin: 16px 0 7px; }
+.campus-service :is(input:not([type=checkbox]):not([type=hidden]),select,textarea) { display: block; min-width: 0; width: 100%; max-width: 100%; min-height: 44px; border: 1px solid var(--ui-control-line); border-radius: 7px; background: #fff; color: var(--ink); font: inherit; padding: 10px 12px; margin-top: 7px; }
+.campus-service textarea { resize: vertical; }
+.campus-service input[type=checkbox] { width: 18px; height: 18px; flex-shrink: 0; accent-color: var(--accent); }
+.campus-service input[type=datetime-local], .campus-service input[type=date] { appearance: none; }
+.campus-service :is(.appointment-grid,.booking-fields-row,.participant-picker-grid) { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; width: 100%; }
+.campus-service :is(.appointment-grid,.booking-fields-row,.participant-picker-grid) > * { min-width: 0; }
+.campus-service :is(fieldset,.booking-section) { min-width: 0; border: 1px solid var(--line); border-radius: 10px; padding: 18px; margin: 20px 0; }
+.campus-service legend { color: var(--ink); font-size: 14px; font-weight: 650; max-width: 100%; padding-inline: 5px; }
+.campus-service .check-label { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 400; margin: 8px 16px 8px 0; }
+.campus-service :is(button,.button,.button-primary,.button-secondary,.ui-button,.service-button) { display: inline-flex; align-items: center; justify-content: center; gap: 7px; max-width: 100%; min-height: 44px; border: 1px solid var(--ui-control-line); border-radius: 7px; background: #fff; color: var(--accent); padding: 10px 14px; font: inherit; font-size: 12px; line-height: 1.5; font-weight: 650; text-align: center; text-decoration: none; cursor: pointer; box-shadow: none; white-space: normal; }
+.campus-service :is(.button-primary,.ui-button--primary) { background: var(--accent); border-color: var(--accent); color: #fff; }
+.campus-service :is(button,.service-button,.button-secondary):hover { background: #eaf2f7; color: #163c56; }
+.campus-service :is(.button-primary,.ui-button--primary):hover { background: #163c56; color: #fff; }
+.campus-service button:disabled { opacity: .6; cursor: not-allowed; }
+.campus-service .service-danger { color: #972b36; border-color: #dfb6ba; }
+.campus-service :focus-visible { outline: 3px solid #176fbd; outline-offset: 3px; }
+.campus-service :is(input,select,textarea):focus-within { outline: 3px solid #176fbd; outline-offset: 3px; }
+.campus-service summary { color: var(--accent); cursor: pointer; padding-block: 10px; font-size: 12px; font-weight: 650; }
+.campus-service :is(.student-card-note,.ui-note,.ui-field-help) { color: var(--muted); font-size: 11px; line-height: 1.7; }
+.campus-service .service-notice { border: 1px solid #e9d7b8; background: #fff7e9; color: #795733; border-radius: 8px; padding: 14px 16px; }
+.service-status { display: inline-flex; align-items: center; padding: 4px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; background: #eaf2f7; color: #204b69; max-width: 100%; }
+.service-status-success { color: #2b614d; background: #e8f1ec; }
+.service-status-warning { color: #795733; background: #f7f1e7; }
+.service-status-danger { color: #972b36; background: #fff0f0; }
+.service-list { border-top: 1px solid var(--line); }
+.service-row { display: grid; grid-template-columns: 38px minmax(0,1fr) auto; gap: 16px; align-items: center; padding: 21px 0; border-bottom: 1px solid var(--line); }
+.service-row h3 { font-size: 14px; margin: 0 0 6px; }
+.service-row h3 a { color: var(--ink); text-decoration: none; }
+.service-row h3 a:hover { color: var(--accent); text-decoration: underline; }
+.service-row p { font-size: 12px; color: var(--muted); margin: 4px 0; }
+.service-row-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 9px; background: #eaf2f7; color: #2b6282; }
+.service-row-kind { display: block; font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+.service-empty { padding: 28px 0; color: var(--muted); }
+.service-empty h3 { color: var(--ink); font-size: 16px; margin: 0 0 8px; }
+.service-metrics { display: flex; flex-wrap: wrap; gap: 20px 40px; padding: 18px 0; margin-top: 12px; border-block: 1px solid var(--line); }
+.service-metrics span { display: block; font-size: 11px; color: var(--muted); }
+.service-metrics strong { display: block; font-size: 20px; font-weight: 650; }
+.campus-service progress { width: 100%; height: 7px; accent-color: #376958; margin: 16px 0; }
+.campus-service .service-person { display: flex; justify-content: space-between; align-items: center; gap: 15px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.campus-service .service-person p { margin: 0; }
+.campus-service .table-wrap { max-width: 100%; overflow-x: auto; border-radius: 8px; }
+.campus-service table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.campus-service th { background: #f6f9fa; color: #435969; text-align: left; font-weight: 650; }
+.campus-service :is(td,th) { padding: 14px; border-bottom: 1px solid var(--line); }
+/* Appointments: retained published-availability picker and manual-time contract. */
+.campus-service .booking-layout { display: block; max-width: 960px; }
+.campus-service .booking-section { margin: 0 0 24px; padding: 24px; }
+.campus-service .booking-guide { position: static; }
+.campus-service .booking-guide .ui-card { background: #f7fafb; }
+.campus-service .booking-step { display: none; }
+.campus-service .participant-picker { margin: 8px 0 18px; border-color: var(--line); border-radius: 8px; max-width: 100%; }
+.campus-service .picker-option { display: flex; align-items: center; gap: 10px; padding: 12px; font-size: 12px; font-weight: 400; }
+.campus-service .picker-search-label { margin-inline: 12px; }
+.campus-service .picker-options { max-height: 250px; overflow-y: auto; }
+.campus-service .time-slot-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(120px,1fr)); gap: 8px; }
+.campus-service .appointment-choice { width: 100%; border-radius: 7px; }
+.campus-service .appointment-choice[aria-pressed=true] { background: var(--accent); color: #fff; }
+.campus-service .booking-times-state { background: #f6f9fa; border-color: var(--line); }
+/* Rooms: ranked choices remain explicit and date-specific. */
+.campus-service .service-icon-room { background: #f7f1e7; color: #795733; }
+.campus-service .room-candidate-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; }
+.campus-service .room-candidate-option { min-width: 0; }
+.campus-service .room-candidate { display: flex; flex-direction: column; align-items: start; text-align: left; width: 100%; height: auto; padding: 18px; background: #fbfcfc; border-radius: 9px; }
+.campus-service .room-candidate[aria-pressed=true] { border-color: #2b6282; background: #eaf2f7; box-shadow: inset 0 0 0 1px #2b6282; }
+.campus-service .room-candidate :is(span,small) { color: var(--muted); font-weight: 400; }
+.campus-service .room-candidate-option > a { display: inline-block; font-size: 11px; margin: 9px 0; padding-block: 6px; }
+.campus-service #room-alternatives button { margin: 5px 8px 5px 0; }
+.campus-service #room-message[role=alert] { color: #972b36; }
+/* Equipment: availability and physical return are separate states. */
+.campus-service .service-icon-equipment { background: #e8f1ec; color: #376958; }
+.campus-service .equipment-catalog { grid-template-columns: minmax(0,1fr); gap: 0; }
+.campus-service .equipment-card { padding: 22px 0; border: 0; border-top: 1px solid var(--line); border-radius: 0; background: #fff; }
+.campus-service .equipment-card h3 { margin: 8px 0; font-size: 16px; }
+.campus-service .equipment-card dl { grid-template-columns: minmax(70px,auto) minmax(0,1fr); font-size: 12px; color: var(--muted); }
+.campus-service .equipment-card :is(dt,dd) { overflow-wrap: anywhere; }
+.campus-service .equipment-warning { background: #fff0f0; border-radius: 7px; padding: 12px; font-size: 12px; color: #972b36; }
+.campus-service .equipment-result { border-color: #9ebbac; background: #f7fbf8; }
+.campus-service .equipment-result.is-stale { border-color: #e9d7b8; background: #fff7e9; }
+.campus-service .panel .equipment-inline { display: flex; gap: 16px; }
+.campus-service .equipment-inline label { flex: 1 1 200px; }
+/* Policy prose stays readable without hiding timing or eligibility constraints. */
+.campus-service .service-policy { max-width: 960px; }
+.campus-service .service-policy h2 { margin-top: 28px; padding-top: 20px; border-top: 1px solid var(--line); }
+.campus-service .service-policy p { max-width: 85ch; }
+/* Calendar and Inbox retain their scoped source projections and real read state. */
+.campus-service .calendar-intro { margin-top: 0; }
+.campus-service .calendar-intro h2 { font-size: 23px; }
+.campus-service .calendar-actions { display: none; }
+.campus-service .calendar-controls fieldset { border: 0; border-top: 1px solid var(--line); border-radius: 0; padding: 14px 0 0; }
+.campus-service .calendar-checkbox { display: inline-flex; align-items: center; gap: 8px; margin: 8px 18px 8px 0; font-weight: 400; }
+.campus-service .calendar-filter-row { align-items: end; gap: 16px; }
+.campus-service .calendar-filter-row label { flex: 1 1 200px; }
+.campus-service .calendar-toolbar [aria-current=page] { background: var(--accent); color: #fff; }
+.campus-service .calendar-month { border-color: var(--line); }
+.campus-service .calendar-day { border-color: var(--line); }
+.campus-service .calendar-day.outside-month { background: #f7f9fa; }
+.campus-service .calendar-event { color: #204b69; border-radius: 6px; }
+.campus-service .calendar-timetable thead th { background: #f2f6f8; }
+.campus-service .calendar-timetable td { height: 90px; }
+.campus-service .calendar-agenda, .campus-service .personal-agenda { display: none; }
+.campus-service .timetable-toolbar form { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; }
+.campus-service .timetable-toolbar input { width: auto; }
+.campus-service .timetable-weeks a { color: var(--accent); background: #eaf2f7; }
+.campus-service .timetable-weeks a[aria-current] { color: #fff; background: var(--accent); }
+.campus-service .timetable-scroll { border-color: var(--line); }
+.campus-service .personal-block-record { padding-block: 10px; border-bottom: 1px solid var(--line); }
+.campus-service .notification-list { margin-top: 15px; }
+.campus-service .notification-item { border-bottom: 1px solid var(--line); }
+.campus-service .notification-item > a { border-radius: 8px; padding: 18px 16px; }
+.campus-service .notification-item.is-unread > a { background: #f0f6fa; }
+.campus-service .notification-kind { font-size: 10px; }
+.campus-service .notification-read-state { font-weight: 700; margin-left: 10px; }
+.campus-service .notification-item strong { color: var(--ink); font-size: 13px; }
+.campus-service .notification-item :is(small,time) { color: var(--muted); font-size: 11px; }
+.campus-service .notification-item .status-badge { background: #eaf2f7; color: var(--accent); }
+@media (max-width: 800px) {
+    /* Native keyboard scrolling must account for the fixed student navigation. */
+    html:has(.student-service) { scroll-padding-bottom: calc(100px + env(safe-area-inset-bottom)); }
+    .campus-service .calendar-agenda, .campus-service .personal-agenda { display: block; }
+    .campus-service :is(.calendar-table-scroll,.timetable-scroll) { display: none; }
+}
+@media (max-width: 600px) {
+    .service-heading { display: block; margin-bottom: 25px; }
+    .service-heading-actions { margin-top: 18px; }
+    .campus-service .panel, .campus-service .ui-card, .campus-service .booking-section { padding: 19px; }
+    .campus-service :is(.appointment-grid,.booking-fields-row,.participant-picker-grid) { grid-template-columns: minmax(0,1fr); gap: 0; }
+    .service-row { grid-template-columns: 32px minmax(0,1fr); gap: 12px; }
+    .service-row > .service-status { grid-column: 2; justify-self: start; }
+    .service-row-state { grid-column: 2; }
+    .service-row-icon { width: 32px; height: 32px; }
+    .campus-service .booking-guide ol { display: block; }
+    .campus-service .booking-submit > button { width: 100%; }
+    .campus-service .service-person { align-items: start; flex-wrap: wrap; }
+    .campus-service .room-candidate-grid { grid-template-columns: minmax(0,1fr); }
+    .campus-service .calendar-agenda .panel { margin-bottom: 14px; }
+    .campus-service .personal-agenda-day { border-top: 1px solid var(--line); padding: 8px 0 16px; }
+    .campus-service .personal-agenda-day > p { font-size: 12px; color: var(--muted); }
+    .campus-service .timetable-event { margin-top: 12px; }
+    .campus-service .calendar-filter-row label { flex: 0 1 auto; }
+}
+
+.service-count { display: inline-block; margin-left: 8px; color: var(--muted); font-size: 13px; font-weight: 500; }
+.service-split { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; align-items: start; }
+.service-split > * { min-width: 0; }
+@media (max-width: 1050px) { .service-split { grid-template-columns: minmax(0,1fr); } }
+.service-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.service-tabs a { display: inline-flex; align-items: center; padding: 10px 14px; min-height: 44px; border: 1px solid var(--line); border-radius: 8px; text-decoration: none; }
+.service-tabs a[aria-current=page] { background: var(--soft-blue); border-color: var(--accent); font-weight: 650; }
+.campus-service .academic-person { padding: 12px 0; border-top: 1px solid var(--line); align-items: center; }
+.campus-service .academic-person[hidden] { display: none; }
+.service-progress { list-style: none; margin: 0; padding: 0; }
+.service-progress > li { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.service-progress > li:first-child { padding-top: 0; }
+.service-progress h3 { margin-top: 0; }
+.service-definition { display: grid; grid-template-columns: minmax(130px,1fr) minmax(0,2fr); gap: 10px 20px; }
+.service-definition dt { color: var(--muted); font-weight: 600; }
+.service-definition dd { margin: 0; overflow-wrap: anywhere; }
+.academic-allocation { padding: 16px 0; border-top: 1px solid var(--line); }
+.academic-allocation h3 { margin-top: 0; }
+.service-history > li { padding: 12px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.service-history time { color: var(--muted); font-size: 11px; }
+@media (max-width: 600px) { .service-definition { grid-template-columns: minmax(0,1fr); gap: 5px; } .service-definition dd { margin-bottom: 12px; } }

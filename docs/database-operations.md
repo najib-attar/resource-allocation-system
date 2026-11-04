@@ -1,8 +1,50 @@
 # PostgreSQL setup and safe operations
 
-## Current schema (0050b)
+## Current schema (0051b)
 
-The current source migration head is `0050b`: 58 application tables plus Alembic.
+Revision `0051b` adds `logged_out_session` (62 application tables plus Alembic).
+Logout commits a denial for the signed login's random nonce before clearing the
+cookie. Authentication checks that denial on every request, including a cookie
+refreshed by an older in-flight response. Only a SHA-256 nonce digest, university
+identity, account generation and logout time are stored. Passwords, other browser
+logins, the eight-hour sliding lifetime and all reservations are unchanged.
+
+The additive upgrade starts with an empty table. Matching authentication code
+requires one fresh login for cookies issued before the fix: historical logouts
+cannot be reconstructed safely. Passwords and stored application data are
+preserved. New signed logins carry a format marker and a random CSRF nonce used
+to identify their session. A malformed or missing nonce requires signing in again.
+Keep denials durable: refreshed cookies can arrive after logout, so their signing
+time alone is insufficient for safely expiring a denial. There is no automatic
+purge. Rows survive account deletion/reprovisioning and must not be manually
+deleted to roll back the fix. An empty downgrade is supported; a populated
+downgrade refuses to reactivate logged-out cookies. Review retention/compaction
+separately before introducing an absolute per-login expiry or deletion procedure.
+
+Stop all old workers, back up, upgrade, then start matching code; mixed old/new
+authentication workers are unsafe. No operational database was migrated during
+verification. The local synthetic demo launcher applies the additive upgrade on
+restart without reseeding existing accounts or appointments.
+
+## Academic eligibility (0051a)
+
+That revision brought the schema to 61 application tables plus Alembic. It adds
+academic eligibility/provenance, immutable review history, per-run revision proof
+and a declared faculty-context field. Existing requests become Legacy/Pending
+Eligibility Review; none is approved automatically. Existing published results and
+reservations remain unchanged. Review each legacy request individually; outstanding
+reviews in the current batch block replacement. Rejection preserves the current
+reservation until authorized replacement publication.
+
+Stop old workers, back up, apply `python -m alembic upgrade head`, then restart
+matching code. This is a reviewed rollout procedure, not authorization to migrate
+an operational database. Material unpublished revisions invalidate approval;
+active published inputs are read-only. Populated downgrade refuses audit loss.
+See [Professor contracts](srs/professor-workflows.md) for concurrency and recovery assumptions.
+
+## Institutional cost-policy foundation (0050b)
+
+That revision introduced 58 application tables plus Alembic.
 It creates four empty institutional cost-policy foundation tables, not an active
 policy or an administration interface. No coefficients, authority grants or head
 row are seeded. Downgrade locks all four tables before checking and refuses any
@@ -163,8 +205,9 @@ This iteration performs no destructive migration of an existing application DB.
 ## Workflow and failures
 
 Save Only commits the request, participants and history, without invoking C++.
-Submit and Run commits the request first and then starts allocation. Engine errors,
-timeouts or publication failures leave that request saved/pending and keep the
+Save and review eligibility commits the request before individual administrator
+review. Allocation is a separate authorized action using only Eligible current
+revisions. Engine errors, timeouts or publication failures leave inputs saved and keep the
 previous successful run visible. A lost HTTP response does not undo a committed save.
 Each rendered request form carries a random submission key. An exact retry with
 the same key reuses the existing request ID without another save/history/revision;
@@ -254,7 +297,7 @@ to head. Then seed directly into PostgreSQL, not into the regression CSV fixture
 
 ```powershell
 python scripts/seed_demo_database.py --seed 41 --dry-run
-python scripts/seed_demo_database.py --seed 41 --run-allocation
+python scripts/seed_demo_database.py --seed 41
 python web/app.py
 ```
 
@@ -267,7 +310,10 @@ Only the real C++ engine generates decisions/allocations/suggestions.
 
 `--size large` uses 1,060 users, 200 resources, 1,200 requests and 120 busy slots.
 `--seed` makes input generation reproducible; allocation remains strategy-dependent.
-An empty seed creates pending requests; `--run-allocation` explicitly invokes C++.
+An empty seed creates requests awaiting eligibility review. `--run-allocation`
+requires already reviewed inputs and reports an error when none is eligible.
+For new fictional local-demo profiles only, `seed --review-academics` explicitly
+performs individual synthetic administrator reviews before invoking C++.
 If the engine fails afterward, the seed remains saved and pending, with no partial
 results published. Inspect Users, Spaces, Requests, Allocation Summary and Schedules.
 

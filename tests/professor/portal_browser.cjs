@@ -1,0 +1,229 @@
+/* Real professor phase acceptance; shared keyboard/control inspector. */
+const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
+const {chromium}=require(process.env.PLAYWRIGHT_NODE_MODULE||'playwright');
+const {go,submit,login,post,shot,inspect,base,ids,out,results}=require('./browser_review.cjs');
+const phase=process.env.PROFESSOR_PORTAL_PHASE||'PROF-UI-01';
+const independentAudit=process.env.PROFESSOR_INDEPENDENT_AUDIT==='1';
+const widths=[1440,1024,768,390,320],checks=[];
+async function views(page,pages,captureWidths=widths) {
+  for(const width of widths) {
+    await page.setViewportSize({width,height:950});
+    for(const [name,url,status=200] of pages) {
+      await go(page,url,status);await page.locator('main details').evaluateAll(nodes=>nodes.forEach(d=>d.open=true));await inspect(page,width,name);
+      assert.doesNotMatch(await page.locator('main').innerText(),/PRIVATE PEER/);
+      if(captureWidths.includes(width))await shot(page,name+'-'+width);
+    }
+  }
+
+}
+async function fillAcademic(page,kind,index=0) {
+  await go(page,'/professor/requests/new?type='+kind);
+  for(const [field,value] of Object.entries({title:'Synthetic '+kind+' declaration '+index,purpose:'Synthetic academic activity',facultyDeclaration:'Declared faculty, unverified',participantCount:'5'}))await page.locator('[name='+field+']').fill(value);
+  await page.locator('[name=spaceId]').selectOption(kind==='CommitteeMeeting'?'301':'302');
+  assert.match(await page.locator('[data-resource-summary]').innerText(),/Capacity.*not a reservation/);
+  if(kind==='Recurring') {
+    await page.locator('[data-slot-day]').selectOption('5');await page.locator('[data-slot-start]').fill('13:00');await page.locator('[data-slot-end]').fill('14:00');await page.locator('[data-add-slot]').click();
+    await page.locator('[data-slot-day]').selectOption('7');await page.locator('[data-add-slot]').click();
+    assert.equal(await page.locator('[name=timeData]').inputValue(),'5-13:00-14:00;7-13:00-14:00');
+  } else {await page.locator('[name=day]').selectOption(String(index+2));await page.locator('[name=startTime]').fill('13:00');await page.locator('[name=endTime]').fill('14:00');}
+  if(kind==='Exam') {await page.locator('[name=courseCode]').fill('SYN101');await page.locator('[name=courseName]').fill('Declared course');await page.locator('[name=canSplitAcrossRooms]').selectOption('true');}
+  if(kind==='CommitteeMeeting') {
+    await page.locator('[name=requiredParticipantIds][value="2"]').check();await page.locator('[name=requiredParticipantIds][value="3"]').check();await page.locator('[name=participantRole_2]').fill('Chair');
+    await page.locator('[data-participant-search]').fill('no matching unselected person');assert.ok(await page.locator('[name=requiredParticipantIds][value="2"]').isVisible());
+    assert.match(await page.locator('[data-participant-count]').innerText(),/2 selected/);await page.locator('[data-participant-search]').fill('');
+  }
+}
+async function main(){
+ const browser=await chromium.launch({headless:true,channel:'msedge'});
+ try {
+  const prof=await login(browser,2);
+  if(phase==='PROF-UI-01') {
+    await views(prof.page,[['home','/professor/?week=2030-01-07']]);
+    const nav=prof.page.locator('nav[aria-label="Main navigation"] a');
+    assert.deepEqual(await nav.evaluateAll(a=>a.map(x=>new URL(x.href).pathname)),['/professor/','/professor/requests','/calendar/','/notifications/']);
+    const empty=await login(browser,12);await views(empty.page,[['empty-home','/professor/']]);await empty.context.close();
+    for(const actor of [1,9,7,6]) {
+      const user=await login(browser,actor);
+      assert.equal((await user.page.request.get(base+'/professor/')).status(),403);
+      await views(user.page,[[actor===1?'student-home':'role-'+actor+'-calendar',actor===1?'/student/':'/calendar/?view=day&date=2030-01-07']]);
+      await user.context.close();
+    }
+    assert.equal((await prof.page.request.get(base+'/appointments/new')).status(),403);
+    await post(prof.page,'/run-allocation',{},403);
+    checks.push('Home empty/populated and all five role shells at five widths; real four-item professor navigation, no student creation or admin allocation.');
+  }
+  if(phase==='PROF-UI-02') {
+    await views(prof.page,[['appointments','/appointments/'],['appointment-detail','/appointments/'+ids.multi]]);
+    const empty=await login(browser,12);await views(empty.page,[['empty-appointments','/appointments/']]);await empty.context.close();
+    const peer=await login(browser,3),student=await login(browser,1);
+    await go(prof.page,'/appointments/'+ids.multi);await submit(prof.page,prof.page.locator('button[name=decision][value=approve]'));
+    assert.equal(await prof.page.locator('button[name=decision][value=approve]').count(),0);
+    assert.match(await prof.page.locator('main').innerText(),/You approved this revision/);
+    await go(peer.page,'/appointments/'+ids.multi);await submit(peer.page,peer.page.locator('button[name=decision][value=approve]'));
+    await go(student.page,'/appointments/'+ids.multi);const reschedule=student.page.locator('form[action$="/reschedule"]');
+    await reschedule.locator('[name=start]').fill('2030-01-07T14:00');await submit(student.page,reschedule.locator('button'));
+    await post(prof.page,'/appointments/'+ids.multi+'/decision',{revision:1,decision:'approve'},409);
+    for(const user of [prof,peer]) {await go(user.page,'/appointments/'+ids.multi);await submit(user.page,user.page.locator('button[name=decision][value=approve]'));}
+    await go(prof.page,'/appointments/'+ids.multi);await submit(prof.page,prof.page.locator('form[action$="/cancel"] button'));
+    await go(prof.page,'/appointments/'+ids.decline);await submit(prof.page,prof.page.locator('button[name=decision][value=decline]'));
+    await post(prof.page,'/appointments/'+ids.multi+'/reschedule',{revision:2,start:'2030-01-07T15:00'},403);
+    await go(prof.page,'/appointments/');await shot(prof.page,'history-after-decisions');
+    checks.push('Actual own approval, no duplicate approve control, unanimous confirmation, Student reschedule reset/stale rejection, reapproval, cancellation and decline; private/state persistence independently checked.');
+    await peer.context.close();await student.context.close();
+  }
+  if(phase==='PROF-UI-03') {
+    await views(prof.page,[['office-hours','/appointments/availability'],['schedule','/appointments/calendar?month=2030-01&week=2030-01-07']]);
+    const empty=await login(browser,12);await views(empty.page,[['empty-office-hours','/appointments/availability'],['empty-schedule','/appointments/calendar?month=2030-01&week=2030-01-07']]);await empty.context.close();
+    await go(prof.page,'/appointments/availability');
+    const form=prof.page.locator('form').filter({has:prof.page.locator('[name=action][value=hours]')});
+    for(const [name,value] of Object.entries({startTime:'09:00',endTime:'12:00',validFrom:'2030-01-01',validUntil:'2030-01-31',excludedDates:'2030-01-15'}))await form.locator('[name='+name+']').fill(value);
+    await form.locator('[name=day]').selectOption('2');
+    const [published]=await Promise.all([prof.page.waitForNavigation(),form.evaluate(el=>{const button=el.querySelector('button[type=submit]');el.requestSubmit(button);el.requestSubmit(button);})]);assert.equal(published.status(),200);
+    let removal=prof.page.locator('form').filter({has:prof.page.locator('[name=action][value=remove-hours]')}).last();
+    const pattern=await removal.locator('[name=id]').inputValue();await submit(prof.page,removal.locator('button'),409);
+    assert.match(await prof.page.locator('[role=alert]').innerText(),/future confirmed appointments/);await inspect(prof.page,320,'protected-hours-removal');await shot(prof.page,'protected-hours-removal-320');
+    await go(prof.page,'/appointments/calendar?month=2030-01&week=2030-01-07');
+    const confirmedConflict=prof.page.locator('form').filter({has:prof.page.locator('[name=action][value=block]')});
+    await confirmedConflict.locator('[name=start]').fill('2030-01-07T10:00');await confirmedConflict.locator('[name=end]').fill('2030-01-07T11:00');await confirmedConflict.locator('[name=reason]').fill('Conflict with confirmed appointment');await submit(prof.page,confirmedConflict.locator('button'),409);
+    for(const width of widths) {await prof.page.setViewportSize({width,height:950});await inspect(prof.page,width,'block-conflict');await shot(prof.page,'block-conflict-'+width);}
+    await go(prof.page,'/appointments/'+ids.confirmed);await submit(prof.page,prof.page.locator('form[action$="/cancel"] button'));
+    await go(prof.page,'/appointments/availability');removal=prof.page.locator('form').filter({has:prof.page.locator('[name=action][value=remove-hours]')}).filter({has:prof.page.locator('[name=id][value="'+pattern+'"]')});await submit(prof.page,removal.locator('button'));
+    await go(prof.page,'/appointments/calendar?month=2030-01&week=2030-01-07');
+    const block=prof.page.locator('form').filter({has:prof.page.locator('[name=action][value=block]')});
+    await block.locator('[name=start]').fill('2030-01-08T12:00');await block.locator('[name=end]').fill('2030-01-08T13:00');await block.locator('[name=reason]').fill('Professor review private block');await submit(prof.page,block.locator('button'));
+    await submit(prof.page,prof.page.getByRole('button',{name:'Remove block: Professor review private block'}));
+    const conflict=prof.page.locator('form').filter({has:prof.page.locator('[name=action][value=block]')});
+    await conflict.locator('[name=start]').fill('2030-01-08T10:00');await conflict.locator('[name=end]').fill('2030-01-08T11:00');await conflict.locator('[name=reason]').fill('Personal preference during academic allocation');await submit(prof.page,conflict.locator('button'));
+
+    checks.push('Double native hour submission produced one POST; inclusive/excluded dates persisted, confirmed appointment blocked removal until cancellation, block create/remove, confirmed-appointment conflict rollback and unchanged academic publication under an overlapping personal block verified.');
+  }
+  if(phase==='PROF-UI-04') {
+    await views(prof.page,['Exam','OneTime','Recurring','CommitteeMeeting'].map(kind=>['new-'+kind,'/professor/requests/new?type='+kind]));
+    const created=[];
+    for(const [index,kind] of ['Exam','OneTime','Recurring','CommitteeMeeting'].entries()) {
+      await fillAcademic(prof.page,kind,index);
+      if(kind==='OneTime') {const [r]=await Promise.all([prof.page.waitForNavigation(),prof.page.locator('[data-academic-form]').evaluate(el=>{const button=el.querySelector('button[type=submit]');el.requestSubmit(button);el.requestSubmit(button);})]);assert.equal(r.status(),200);}
+      else await submit(prof.page,prof.page.locator('[data-academic-form] button[type=submit]'));
+      assert.match(await prof.page.locator('main').innerText(),/Pending Eligibility Review/);created.push(Number(new URL(prof.page.url()).pathname.split('/').pop()));
+    }
+    assert.equal(new Set(created).size,4);
+    await fillAcademic(prof.page,'OneTime');await prof.page.locator('[name=title]').fill('   ');await submit(prof.page,prof.page.locator('[data-academic-form] button[type=submit]'),400);
+    assert.equal(await prof.page.locator('[name=facultyDeclaration]').inputValue(),'Declared faculty, unverified');
+    for(const width of widths) {await prof.page.setViewportSize({width,height:950});await inspect(prof.page,width,'invalid-academic-form');await shot(prof.page,'invalid-academic-form-'+width);}
+    checks.push('Four real self-owned pending submissions, source resource profile, split declaration, serialized recurring helper, selected participant search/roles, duplicate-submit protection and retained invalid form values; no allocation on submission.');
+  }
+  if(phase==='PROF-UI-05') {
+    await views(prof.page,[['academic-list','/professor/requests'],['allocated-request','/professor/requests/'+ids.academic.Exam],['unallocated-request','/professor/requests/'+ids.rejected],['pending-review','/professor/requests/'+ids.pending]]);
+    const empty=await login(browser,12);await views(empty.page,[['empty-academic-list','/professor/requests']]);await empty.context.close();
+    await go(prof.page,'/professor/requests?limit=1');assert.equal(await prof.page.locator('.service-list .service-row').count(),1);
+    await prof.page.getByRole('link',{name:'Next page',exact:true}).click();assert.equal(new URL(prof.page.url()).searchParams.get('offset'),'1');
+    assert.equal(await prof.page.locator('[name=limit]').inputValue(),'1');await prof.page.getByRole('link',{name:'Previous page',exact:true}).click();
+    await prof.page.locator('[name=type]').selectOption('Exam');await prof.page.locator('[name=status]').selectOption('Rejected');await submit(prof.page,prof.page.getByRole('button',{name:'Apply filters',exact:true}));
+    assert.equal(await prof.page.locator('.service-list .service-row').count(),1);assert.match(await prof.page.locator('main').innerText(),/Allocation explanation/);
+    const peer=await login(browser,3);assert.equal((await peer.page.request.get(base+'/professor/requests/'+ids.pending)).status(),403);await post(peer.page,'/professor/requests/'+ids.pending+'/revise',{},403);
+    const admin=await login(browser,6);
+    async function review(key,decision) {
+      await go(admin.page,'/academic-eligibility/'+key);await admin.page.locator('[name=reason]').fill('Synthetic individual administrative decision.');await submit(admin.page,admin.page.locator('button[name=decision][value='+decision+']'));
+    }
+    await review(ids.academic.Exam,'reject');await views(prof.page,[['rejected-eligibility-still-allocated','/professor/requests/'+ids.academic.Exam]]);
+    assert.ok(await prof.page.locator('.academic-allocation').count()>0);assert.equal(await prof.page.locator('a[href$="/revise"]').count(),0);
+    await post(prof.page,'/professor/requests/'+ids.academic.Exam+'/revise',{},400);
+    await review(ids.pending,'approve');await views(prof.page,[['revise-as-exam','/professor/requests/'+ids.pending+'/revise?type=Exam']]);
+    const token=await prof.page.locator('[name=submissionKey]').inputValue();
+    await prof.page.locator('[name=title]').fill('Revised examination declaration');await prof.page.locator('[name=courseCode]').fill('REV101');await prof.page.locator('[name=courseName]').fill('Declared revised examination');
+    await submit(prof.page,prof.page.locator('[data-academic-form] button[type=submit]'));
+    assert.match(await prof.page.locator('main').innerText(),/Pending Eligibility Review/);assert.equal(await prof.page.locator('.academic-allocation').count(),0);
+    const result=await (await prof.page.request.get(base+'/professor/academic-requests/'+ids.pending)).json();assert.equal(result.item.type,'Exam');assert.equal(result.item.revision,2);
+    const stale=await post(prof.page,'/professor/requests/'+ids.pending+'/revise',{requestType:'Exam',revision:1,submissionKey:token,title:'Stale revision',purpose:'Declared',spaceId:302,participantCount:5,day:7,startTime:'10:00',endTime:'11:00',courseCode:'REV101',courseName:'Declared',examType:'General',canSplitAcrossRooms:'false'},400);
+    assert.match(await stale.text(),/name="revision" value="1"/);
+    assert.match(await stale.text(),/Reload saved declaration/);
+    await shot(prof.page,'revision-reset-eligibility');
+    checks.push('Owner list/filter/page controls, actual allocated vs unallocated states, private IDs, published read-only after rejection, same-record unpublished type revision invalidates approval, stale revision rejected; no administrative allocation controls.');
+    await peer.context.close();await admin.context.close();
+  }
+  if(phase==='PROF-UI-06') {
+    await views(prof.page,[['calendar-month','/calendar/?view=month&date=2030-01-07'],['calendar-week','/calendar/?view=week&date=2030-01-07'],['calendar-day','/calendar/?view=day&date=2030-01-07'],['academic-calendar-detail','/calendar/academic/'+ids.academic.Exam+'?date=2030-01-08'],['inbox','/notifications/']]);
+    const empty=await login(browser,12);await views(empty.page,[['empty-inbox','/notifications/']]);await empty.context.close();
+    await go(prof.page,'/calendar/?view=week&date=2030-01-07');await prof.page.getByRole('link',{name:'Next',exact:true}).click();assert.equal(new URL(prof.page.url()).searchParams.get('date'),'2030-01-14');
+    await prof.page.getByRole('link',{name:'Previous',exact:true}).click();
+    const filters=prof.page.locator('form.calendar-filters');for(const box of await filters.locator('[name=category]').all())await box.uncheck();await filters.locator('[name=category][value=academic]').check();await submit(prof.page,filters.getByRole('button',{name:'Apply filters'}));
+    assert.equal(new URL(prof.page.url()).searchParams.getAll('category').join(','),'academic');
+    assert.equal(await prof.page.locator('a[href="/calendar/publications"]').count(),0);
+    await go(prof.page,'/notifications/');const first=prof.page.locator('main a[data-notification-id]').first();await Promise.all([prof.page.waitForNavigation(),first.click()]);
+    await go(prof.page,'/notifications/');await submit(prof.page,prof.page.locator('form[action="/notifications/read"]').filter({has:prof.page.locator('[name=throughId]')}).locator('button'));
+    assert.match(await prof.page.locator('main').innerText(),/0 unread/);await shot(prof.page,'inbox-all-read');
+    await post(prof.page,'/calendar/publications',{id:ids.academic.Exam,visibility:'published'},403);
+    checks.push('Month/week/day and academic detail at five widths; real date navigation and category filtering, recipient link read and mark-all persisted, empty Inbox and administrative publication denial.');
+  }
+  if(phase==='PROF-UI-07') {
+    await go(prof.page,'/professor/requests/'+ids.pending+'/revise');await prof.page.locator('[name=title]').fill('Academic declaration '+ 'W'.repeat(450));await submit(prof.page,prof.page.locator('[data-academic-form] button[type=submit]'));
+    const pages=[['home','/professor/?week=2030-01-07'],['appointments','/appointments/'],['appointment','/appointments/'+ids.multi],['hours','/appointments/availability'],['schedule','/appointments/calendar?month=2030-01&week=2030-01-07'],...['Exam','OneTime','Recurring','CommitteeMeeting'].map(k=>['form-'+k,'/professor/requests/new?type='+k]),['requests','/professor/requests'],['allocated','/professor/requests/'+ids.academic.Exam],['pending','/professor/requests/'+ids.pending],['revise','/professor/requests/'+ids.pending+'/revise'],['month','/calendar/?view=month&date=2030-01-07'],['week','/calendar/?view=week&date=2030-01-07'],['day','/calendar/?view=day&date=2030-01-07'],['academic-event','/calendar/academic/'+ids.academic.Exam+'?date=2030-01-08'],['inbox','/notifications/'],['room-invitations','/rooms/'],['room-invitation','/rooms/'+ids.roomAccept],['equipment-history','/equipment/'],['waiting','/waiting-lists/'],['waiting-policy','/waiting-lists/policy'],['feedback','/feedback/']];
+    await views(prof.page,pages,[1440,320]);
+    await views(prof.page,[['private-error','/professor/requests/'+ids.foreign,403],['invalid-week','/professor/?week=invalid',400],['published-readonly-error','/professor/requests/'+ids.academic.Exam+'/revise',400]],[1440,320]);
+    const student=await login(browser,1);await views(student.page,[['student-home','/student/'],['student-appointments','/appointments/'],['student-rooms','/rooms/'],['student-equipment','/equipment/'],['student-waiting','/waiting-lists/'],['student-feedback','/feedback/'],['student-calendar','/calendar/?view=week&date=2030-01-07'],['student-inbox','/notifications/']],[1440,320]);
+    const invited=await login(browser,4);await go(invited.page,'/appointments/'+ids.multi);await submit(invited.page,invited.page.locator('form[action$="/decline-invitation"] button'));await invited.context.close();
+    for(const [key,response] of [[ids.roomAccept,'accept'],[ids.roomDecline,'decline']]) {await go(prof.page,'/rooms/'+key);assert.equal(await prof.page.locator('form[action$="/decision"]').count(),0);await submit(prof.page,prof.page.locator('button[name=response][value='+response+']'));}
+    for(const actor of [1,9,7,6]) {
+      const user=await login(browser,actor);assert.equal((await user.page.request.get(base+'/professor/requests')).status(),403);await post(user.page,'/professor/requests/new',{},403);
+      if(actor!==6)await post(user.page,'/academic-eligibility/'+ids.pending,{revision:2,reviewVersion:1,decision:'approve',reason:'Unauthorized'},403);
+      await user.page.setViewportSize({width:390,height:950});await go(user.page,actor===1?'/student/':'/calendar/?date=2030-01-07');
+      if(actor!==1) {await user.page.locator('[data-navigation-toggle]').click();await user.page.keyboard.press('Escape');assert.equal(await user.page.locator('[data-navigation-toggle]').getAttribute('aria-expanded'),'false');}
+      await post(user.page,'/logout',{csrf_token:'invalid'},400);await user.page.locator('[data-account-menu] summary').click();await submit(user.page,user.page.locator('form[action="/logout"] button'));assert.equal((await user.page.request.get(base+'/professor/',{maxRedirects:0})).status(),302);await user.context.close();
+    }
+    await post(prof.page,'/academic-eligibility/'+ids.pending,{revision:2,reviewVersion:1,decision:'approve',reason:'Self approval'},403);await post(prof.page,'/run-allocation',{},403);
+    let administrator;
+    if(independentAudit) {
+      const response=await prof.page.request.post(base+'/professor/academic-requests',{headers:{'X-CSRF-Token':await prof.page.locator('[data-csrf]').getAttribute('data-csrf')},data:{type:'OneTime',spaceId:302,participantCount:5,title:'Synthetic malformed API',purpose:'Independent audit',slots:[{day:7,startMinutes:600,endMinutes:660}],submissionKey:'a'.repeat(32),participants:null}});
+      assert.equal(response.status(),400);assert.match((await response.json()).error,/Participants must be a list/);
+      administrator=await login(browser,6);
+      const pages=[['eligibility-queue','/academic-eligibility/'],['eligibility-detail','/academic-eligibility/'+ids.pending],['pending-confirmation','/request-added/'+ids.pending],['eligible-confirmation','/request-added/'+ids.academic.Exam]];
+      for(const width of widths) {
+        await administrator.page.setViewportSize({width,height:950});
+        for(const [name,url] of pages) {
+          await go(administrator.page,url);await inspect(administrator.page,width,name);
+          if(name.startsWith('eligibility'))assert.ok(await administrator.page.locator('.app-admin-navigation').getAttribute('open')!==null);
+          if(name==='pending-confirmation')assert.equal(await administrator.page.locator('main form[action^="/run-allocation-now/"]').count(),0);
+          if(name==='eligible-confirmation')assert.equal(await administrator.page.getByRole('button',{name:'Run Allocation Now',exact:true}).count(),1);
+          if([1440,320].includes(width))await shot(administrator.page,name+'-'+width);
+        }
+      }
+      await go(administrator.page,'/request-added/'+ids.academic.Exam);
+      await submit(administrator.page,administrator.page.getByRole('button',{name:'Run Allocation Now',exact:true}));
+      await go(administrator.page,'/academic-eligibility/'+ids.pending);
+      await administrator.page.locator('[name=reason]').fill('Synthetic independent review rejection; no reservation change.');
+      await submit(administrator.page,administrator.page.locator('button[name=decision][value=reject]'));
+      for(const width of widths) {
+        await administrator.page.setViewportSize({width,height:950});await go(administrator.page,'/request-added/'+ids.pending);
+        assert.match(await administrator.page.locator('main').innerText(),/Current eligibility: Eligibility Rejected/);
+        assert.equal(await administrator.page.locator('main form[action^="/run-allocation-now/"]').count(),0);
+        await inspect(administrator.page,width,'rejected-confirmation');if([1440,320].includes(width))await shot(administrator.page,'rejected-confirmation-'+width);
+      }
+      await go(administrator.page,'/request-added/999999',404);assert.doesNotMatch(await administrator.page.locator('body').innerText(),/was added successfully/);
+      checks.push('Independent audit: malformed JSON is a persisted no-op; all-role global controls and menus, live pending/eligible/rejected confirmation states, explicit administrator Run Allocation Now POST, missing-ID 404, and expanded eligibility navigation.');
+    }
+    const contexts=new Map([[1,student.page],[2,prof.page],...(administrator?[[6,administrator.page]]:[])]),destinations=[],classified=[];
+    for(const view of results().controls)for(const control of view.items) {
+      let behavior;
+      if(control.disabled)behavior='Intentionally disabled; visible empty/unavailable state';
+      else if(control.tag==='A')behavior='Verified functional destination';
+      else if(control.tag==='SUMMARY')behavior='Verified native disclosure';
+      else if(control.tag==='INPUT'||control.tag==='SELECT'||control.tag==='TEXTAREA')behavior='Verified form/local input';
+      else if(control.tag==='BUTTON')behavior=control.type==='button'?'Verified local helper':'Verified form action';
+      else throw new Error('Unclassified control '+JSON.stringify(control));
+      classified.push({...control,view:view.name,width:view.width,actor:view.actor,behavior});
+      if(control.href&&control.href.startsWith('/')&&contexts.has(view.actor)) {
+        const identity=view.actor+' '+control.href;if(destinations.some(d=>d.identity===identity))continue;
+        const response=await contexts.get(view.actor).request.get(base+control.href);assert.equal(response.status(),200,identity);destinations.push({identity,status:response.status()});
+      }
+    }
+    fs.writeFileSync(path.join(out,'control-trace.json'),JSON.stringify({classified,destinations},null,2)+'\n');
+    checks.push('Independent final sweep: 24 professor surfaces, three real error states and eight Student surfaces at five widths; long persisted content, every collected GET destination, native disclosures, all-role logout/CSRF, staff drawers, optional student decline and room invitation mutations.');
+    await student.context.close();
+    if(administrator)await administrator.context.close();
+  }
+  const data=results();assert.equal(data.views.length,{'PROF-UI-01':30,'PROF-UI-02':15,'PROF-UI-03':26,'PROF-UI-04':25,'PROF-UI-05':35,'PROF-UI-06':30,'PROF-UI-07':independentAudit?200:175}[phase], 'Every planned phase view must execute');assert.deepEqual(data.errors,[]);assert.ok(data.expectedErrors.every(r=>[400,403,409,...(independentAudit?[404]:[])].includes(r.status)));
+  fs.writeFileSync(path.join(out,'browser-results.json'),JSON.stringify({...data,phase,checks},null,2)+'\n');
+  console.log(JSON.stringify({phase,views:data.views.length,keyboardSteps:data.keyboardSteps,checks}));
+ } finally {await browser.close();}
+}
+main().catch(e=>{console.error(e);process.exitCode=1;});

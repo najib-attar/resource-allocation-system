@@ -8,6 +8,7 @@ from unittest import TestCase, mock
 
 from alembic import command
 from alembic.config import Config
+from alembic.script import ScriptDirectory
 from sqlalchemy import create_engine
 from sqlalchemy.schema import CreateSchema, DropSchema
 
@@ -19,6 +20,11 @@ ROOT = Path(__file__).resolve().parent.parent
 
 class PostgresTestCase(TestCase):
     migration_target = "head"
+
+    @property
+    def head_revision(self):
+        return ScriptDirectory.from_config(Config(str(ROOT / "alembic.ini"))).get_current_head()
+
     def setUp(self):
         configured = os.environ.get("TEST_DATABASE_URL")
         if not configured:

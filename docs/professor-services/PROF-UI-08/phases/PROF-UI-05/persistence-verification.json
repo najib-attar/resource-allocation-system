@@ -1,0 +1,32 @@
+{
+  "posts": 10,
+  "outcomes": [
+    {
+      "path": "/professor/requests/7/revise",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/academic-eligibility/1",
+      "result": "review persisted; current reservation unchanged",
+      "id": 1
+    },
+    {
+      "path": "/professor/requests/1/revise",
+      "result": "rejected; persisted state unchanged"
+    },
+    {
+      "path": "/academic-eligibility/7",
+      "result": "review persisted; current reservation unchanged",
+      "id": 7
+    },
+    {
+      "path": "/professor/requests/7/revise",
+      "result": "material revision invalidated eligibility",
+      "id": 7
+    },
+    {
+      "path": "/professor/requests/7/revise",
+      "result": "rejected; persisted state unchanged"
+    }
+  ]
+}

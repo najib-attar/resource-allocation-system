@@ -20,6 +20,12 @@ erDiagram
         integer end_minutes
         integer assigned_participants
     }
+    allocation_eligibility {
+        bigint run_id PK,FK
+        integer request_id PK,FK
+        integer request_revision
+        integer eligibility_version
+    }
     allocation_participant {
         bigint allocation_id PK,FK
         integer user_id PK,FK
@@ -132,6 +138,17 @@ erDiagram
         timestamptz end_at
         text reason
     }
+    eligibility_event {
+        bigint id PK "identity"
+        integer request_id FK
+        integer version
+        integer request_revision
+        varchar_40 status
+        varchar_24 origin
+        integer actor_id FK "nullable"
+        text reason
+        timestamptz created_at
+    }
     equipment_category {
         integer id PK "identity"
         varchar_150 name UK
@@ -215,6 +232,12 @@ erDiagram
         date week_start "nullable"
         jsonb excluded_dates
     }
+    logged_out_session {
+        integer user_id PK,FK
+        integer session_version PK
+        varchar_64 token_digest PK
+        timestamptz logged_out_at
+    }
     login_account {
         integer user_id PK,FK
         varchar_100 username UK
@@ -272,6 +295,18 @@ erDiagram
         varchar_20 status
         text reason
         jsonb payload
+    }
+    request_eligibility {
+        integer request_id PK,FK
+        varchar_24 origin
+        integer submitted_by FK "nullable"
+        integer legacy_revision "nullable"
+        varchar_40 status
+        integer version
+        integer reviewed_revision "nullable"
+        integer reviewer_id FK "nullable"
+        text reason
+        timestamptz decided_at "nullable"
     }
     request_history {
         bigint id PK "identity"
@@ -381,6 +416,7 @@ erDiagram
         varchar_64 submission_fingerprint "nullable"
         boolean calendar_public
         integer academic_instructor_id FK "nullable"
+        text faculty_declaration
     }
     role {
         integer id PK "identity"
@@ -585,6 +621,8 @@ erDiagram
     }
     resource ||--o{ allocation : resource_id
     request_decision ||--o{ allocation : run_id_request_id
+    resource_request ||--o{ allocation_eligibility : request_id
+    allocation_run ||--o{ allocation_eligibility : run_id
     allocation ||--o{ allocation_participant : allocation_id
     university_user ||--o{ allocation_participant : user_id
     allocation_run o|--o| application_state : active_run_id
@@ -606,6 +644,8 @@ erDiagram
     organization_unit ||--o{ borrow_request : faculty_id
     university_user ||--o{ busy_slot : user_id
     university_user ||--o{ calendar_block : user_id
+    university_user o|--o{ eligibility_event : actor_id
+    resource_request ||--o{ eligibility_event : request_id
     organization_unit ||--o| equipment_custodian : faculty_id
     login_account ||--o{ equipment_custodian : user_id
     university_user ||--o{ equipment_event : actor_id
@@ -628,6 +668,7 @@ erDiagram
     busy_slot o|--o{ legacy_calendar_binding : busy_slot_id
     academic_period ||--o{ legacy_calendar_binding : period_id
     resource_request o|--o{ legacy_calendar_binding : request_id
+    university_user ||--o{ logged_out_session : user_id
     university_user ||--o| login_account : user_id
     resource ||--o{ meeting_suggestion : resource_id
     suggestion_group ||--o{ meeting_suggestion : run_id_request_id
@@ -640,6 +681,9 @@ erDiagram
     university_user ||--o{ professor_availability : user_id
     resource_request ||--o{ request_decision : request_id
     allocation_run ||--o{ request_decision : run_id
+    resource_request ||--o| request_eligibility : request_id
+    university_user o|--o{ request_eligibility : reviewer_id
+    university_user o|--o{ request_eligibility : submitted_by
     resource_request ||--o{ request_history : request_id
     allocation_run o|--o{ request_history : run_id
     resource_request ||--o{ request_participant : request_id

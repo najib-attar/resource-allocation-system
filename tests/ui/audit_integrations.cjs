@@ -190,8 +190,8 @@ async function roomLifecycles(student,staff,prof,peer) {
 async function rolesAndSessions(browser) {
   for(const [actor,role] of [[1,'Student'],[2,'Instructor'],[9,'TeachingAssistant'],[7,'Staff'],[6,'Administrator']]) {
     const {context,page}=await login(browser,actor);
-    assert.equal(new URL(page.url()).pathname,actor===1?'/student/':actor===6?'/':'/appointments/');
-    if(actor!==1) assert.equal(await page.locator('link[href$="student-services.css"]').count(),0);
+    assert.equal(new URL(page.url()).pathname,actor===1?'/student/':actor===6?'/':actor===2||actor===3?'/professor/':'/appointments/');
+    if(actor!==1&&actor!==2&&actor!==3) assert.equal(await page.locator('link[href$="campus-services.css"]').count(),0);
     if(actor!==6) assert.equal((await page.request.get(base+'/users')).status(),403);
     if(actor!==1) assert.equal((await page.request.get(base+'/appointments/new')).status(),403);
     const csrf=await page.locator('[data-csrf]').getAttribute('data-csrf');

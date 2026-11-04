@@ -1,5 +1,7 @@
 {% from 'components/ui.html' import icon %}
 {% set student_shell = g.principal and g.principal.role == 'Student' and not g.principal.administrator %}
+{% set professor_shell = g.principal and g.principal.role == 'Instructor' and not g.principal.administrator %}
+{% set campus_shell = student_shell or professor_shell %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -10,37 +12,38 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='tokens.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='shell.css') }}">
-    {% if student_shell %}<link rel="stylesheet" href="{{ url_for('static', filename='student-shell.css') }}">{% endif %}
+    {% if campus_shell %}<link rel="stylesheet" href="{{ url_for('static', filename='campus-shell.css') }}">{% endif %}
     {% block styles %}{% endblock %}
-    {% if student_shell and student_service %}<link rel="stylesheet" href="{{ url_for('static', filename='student-services.css') }}">{% endif %}
+    {% if campus_shell and workspace_service %}<link rel="stylesheet" href="{{ url_for('static', filename='campus-services.css') }}">{% endif %}
 </head>
-<body{% if g.principal %} class="app-body{% if student_shell %} student-shell{% endif %}"{% endif %}>
+<body{% if g.principal %} class="app-body{% if campus_shell %} campus-shell{% endif %}{% if student_shell %} student-shell{% elif professor_shell %} professor-shell{% endif %}"{% endif %}>
     <a class="skip-link" href="#main-content">Skip to content</a>
     {% if g.principal %}
     <aside class="app-sidebar" id="app-sidebar" aria-label="University navigation">
-        <a class="app-brand" href="{{ url_for('student.home' if g.principal.role == 'Student' and not g.principal.administrator else 'index') }}">
-            {% if student_shell %}<span class="app-brand-mark" aria-hidden="true">U</span><span>Campus Space<span class="app-brand-subtitle">Student workspace</span></span>{% else %}<span class="app-brand-mark">{{ icon('book', 25) }}</span><span>University<span class="app-brand-subtitle">Resources &amp; scheduling</span></span>{% endif %}
+        <a class="app-brand" href="{{ url_for('student.home' if student_shell else 'professor.home' if professor_shell else 'index') }}">
+            {% if campus_shell %}<span class="app-brand-mark" aria-hidden="true">U</span><span>Campus Space<span class="app-brand-subtitle">{{ 'Student' if student_shell else 'Professor' }} workspace</span></span>{% else %}<span class="app-brand-mark">{{ icon('book', 25) }}</span><span>University<span class="app-brand-subtitle">Resources &amp; scheduling</span></span>{% endif %}
         </a>
         <button class="sidebar-close ui-icon-button" type="button" data-navigation-close aria-label="Close navigation" hidden>{{ icon('close') }}</button>
         {% include 'components/_navigation.html' %}
-        <div class="sidebar-note">{% if student_shell %}<strong>A simpler campus day.</strong><span>Your services and plans, together.</span>{% else %}One campus. Connected services.<span>Your academic day, organized.</span>{% endif %}</div>
+        <div class="sidebar-note">{% if campus_shell %}<strong>A simpler campus day.</strong><span>Your services and plans, together.</span>{% else %}One campus. Connected services.<span>Your academic day, organized.</span>{% endif %}</div>
     </aside>
     <div class="sidebar-backdrop" data-navigation-backdrop hidden></div>
     {% endif %}
     <div{% if g.principal %} class="app-workspace"{% endif %}>
         <header class="{{ 'app-topbar' if g.principal else 'site-header' }}">
             {% if g.principal %}<button class="navigation-toggle ui-icon-button" type="button" data-navigation-toggle aria-label="Open navigation" aria-expanded="false" aria-controls="app-sidebar" hidden>{{ icon('menu') }}</button>{% endif %}
-            {% if student_shell %}<a class="student-mobile-brand" href="{{ url_for('student.home') }}"><span class="app-brand-mark" aria-hidden="true">U</span><span>Campus Space</span></a>{% endif %}
-            <div class="app-heading"><p class="{{ 'app-breadcrumb' if g.principal else 'eyebrow' }}">{{ 'Student workspace' if student_shell else ('University portal' if g.principal else 'Resource Allocation System') }}</p>{% if student_shell and (request.endpoint == 'student.home' or student_service) %}<p class="student-current-page">{{ self.page_heading() }}</p>{% else %}<h1>{% block page_heading %}Dashboard{% endblock %}</h1>{% endif %}</div>
+            {% if campus_shell %}<a class="student-mobile-brand" href="{{ url_for('student.home' if student_shell else 'professor.home') }}"><span class="app-brand-mark" aria-hidden="true">U</span><span>Campus Space</span></a>{% endif %}
+            <div class="app-heading"><p class="{{ 'app-breadcrumb' if g.principal else 'eyebrow' }}">{{ 'Student workspace' if student_shell else 'Professor workspace' if professor_shell else ('University portal' if g.principal else 'Resource Allocation System') }}</p>{% if campus_shell and (request.endpoint in ['student.home','professor.home'] or workspace_service) %}<p class="student-current-page">{{ self.page_heading() }}</p>{% else %}<h1>{% block page_heading %}Dashboard{% endblock %}</h1>{% endif %}</div>
             {% if g.principal %}{% include 'components/_account_controls.html' %}{% endif %}
         </header>
-        <main id="main-content" class="{{ 'app-content' if g.principal else 'page-shell' }}{% if student_shell and student_service %} student-service{% endif %}" tabindex="-1">
+        <main id="main-content" class="{{ 'app-content' if g.principal else 'page-shell' }}{% if campus_shell and workspace_service %} campus-service{% if student_shell %} student-service{% endif %}{% endif %}" tabindex="-1">
             {% block content %}{% endblock %}
         </main>
     </div>
     {% if g.principal %}
     <script src="{{ url_for('static', filename='shell.js') }}" defer></script>
     <script src="{{ url_for('static', filename='notifications.js') }}" defer></script>
+    {% if professor_shell %}<script src="{{ url_for('static',filename='workspace-forms.js') }}" defer></script>{% endif %}
     {% endif %}
 </body>
 </html>

@@ -1,0 +1,105 @@
+{
+  "frontendBase": "5a7f0b0",
+  "reviewedMain": "196933506469ae25d3214a91ef2fd457356d096d",
+  "unchangedMainResearchAndGovernance": [
+    ".github",
+    "web/cost_policy_service.py",
+    "tests/test_cost_policy_governance.py"
+  ],
+  "researchImplementationUnchanged": true,
+  "researchTestAssertionsUnchanged": true,
+  "approvedResearchFixtureAlignment": {
+    "path": "research/cdmcs/i3b/tests/test_readonly_projection.py",
+    "change": "Populate current login format and random nonce before real middleware authentication; no security bypass."
+  },
+  "protectedSourceGroups": [
+    "src",
+    "migrations",
+    "web/persistence",
+    "web/academic_eligibility.py",
+    "web/account_service.py",
+    "web/appointment_service.py",
+    "web/room_request_service.py",
+    "web/equipment_service.py",
+    "web/calendar_service.py",
+    "web/university_calendar.py",
+    "web/personal_schedule_service.py",
+    "web/notification_service.py",
+    "web/student_routes.py",
+    "web/student_dashboard_service.py",
+    "requirements.txt"
+  ],
+  "approvedLogoutCorrections": [
+    "migrations/versions/0051b_logged_out_sessions.py",
+    "web/account_service.py",
+    "web/persistence/models.py"
+  ],
+  "otherProtectedSourcesUnchanged": true,
+  "allExistingModelDefinitionsPreserved": true,
+  "existingAccountMethodsPreservedExceptSessionIdentity": true,
+  "gatewayOnlyChange": "Canonical repository input types and unbound guard invocation; all wire protocols and validators unchanged",
+  "studentHomeUnchangedApartFromAssetPath": true,
+  "sharedCss": [
+    {
+      "previous": "student-shell.css",
+      "current": "campus-shell.css",
+      "originalDeclarationsPreserved": true,
+      "newSelectorClassesWithCallers": []
+    },
+    {
+      "previous": "student-services.css",
+      "current": "campus-services.css",
+      "originalDeclarationsPreserved": true,
+      "newSelectorClassesWithCallers": [
+        "academic-allocation",
+        "academic-person",
+        "campus-service",
+        "service-count",
+        "service-definition",
+        "service-history",
+        "service-progress",
+        "service-split",
+        "service-tabs"
+      ]
+    },
+    {
+      "previous": "student-home.css",
+      "current": "campus-home.css",
+      "originalDeclarationsPreserved": true,
+      "newSelectorClassesWithCallers": [
+        "professor-home",
+        "workspace-home-column"
+      ]
+    }
+  ],
+  "professorBusinessMethodsUnchanged": true,
+  "approvedInputValidation": "Optional participants must be a list; malformed input returns 400 before persistence",
+  "onlyExistingDirectorySpecsAdded": true,
+  "templates": 67,
+  "unreferencedTemplates": [],
+  "retainedDynamicTemplates": [
+    "spaces.html",
+    "table.html"
+  ],
+  "testRetention": {
+    "baseline": 652,
+    "current": 741,
+    "removed": 0,
+    "consolidated": 0
+  },
+  "cleanup": {
+    "renamedImplementations": [
+      "student-shell.css -> campus-shell.css",
+      "student-home.css -> campus-home.css",
+      "student-services.css -> campus-services.css",
+      "student_service_base.html -> service_base.html",
+      "components/student_services.html -> components/services.html",
+      "student_error.html -> workspace_error.html"
+    ],
+    "removedUnusedImport": "Unused fixture binding from portal browser helper",
+    "retainedLegacyCss": "style.css remains used by staff/administration and legacy views",
+    "newFrameworks": [],
+    "newDependencies": [],
+    "backendFeaturesRemoved": []
+  }
+}

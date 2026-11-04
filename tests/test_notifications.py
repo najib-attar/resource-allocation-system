@@ -121,7 +121,7 @@ class NotificationTests(RoomFixture):
             self.assertIn('profile-avatar',page)
             self.assertIn(role,page)
             self.assertIn('notification-toggle',page)
-            self.assertEqual('href="/appointments/availability"' in page,actor == 2)
+            self.assertEqual('href="/professor/"' in page,actor == 2)
             self.assertEqual('class="app-admin-navigation"' in page,actor == 6)
             if actor != 6: self.assertEqual(client.get('/users').status_code,403)
 
@@ -133,6 +133,8 @@ class NotificationUpgradeTests(RoomFixture):
         from postgres_fixtures import ROOT
         import os
         # Only this owned test schema is downgraded; its inbox is still empty.
+        from academic_fixtures import prepare_historical_gate_replay
+        prepare_historical_gate_replay(self.database)
         with mock.patch.dict(os.environ,{'DATABASE_URL':self.url}):
             command.downgrade(Config(str(ROOT/'alembic.ini')),'0043b')
         with self.database.transaction() as session:

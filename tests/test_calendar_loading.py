@@ -6,7 +6,7 @@ from datetime import date, timedelta
 from sqlalchemy import delete, event
 
 from test_appointments import AppointmentFixture, START
-from web.allocation_workflow import execute_allocation
+from academic_fixtures import execute_reviewed_allocation as execute_allocation
 from web.calendar_service import epoch, legacy_intervals
 from web.persistence.models import BusySlot, LegacyCalendarBinding
 from web.persistence.repository import Repository, state_row

@@ -15,7 +15,7 @@ from test_postgres_import import copy_inputs
 from postgres_web_fixtures import form
 from runtime_file_guard import forbid_runtime_files
 from web import app as web_app
-from web.allocation_workflow import execute_allocation
+from academic_fixtures import execute_reviewed_allocation as execute_allocation
 from web.database_result_adapter import DatabaseResultAdapter
 from web.engine_gateway import EngineGateway
 from web.persistence.importer import CsvInputs, import_csv
@@ -32,6 +32,8 @@ class PostgresWebTests(PostgresTestCase):
             import_csv(self.database, data)
         # The seed CSVs no longer exist when the application is exercised.
         self.repository = Repository(self.database)
+        from academic_fixtures import review_requests
+        review_requests(self.database)
         self.client = self.configure_web()
 
     def test_normal_views_and_execution_never_use_csv_or_local_result_json(self):
@@ -46,7 +48,7 @@ class PostgresWebTests(PostgresTestCase):
                     self.assertEqual(self.client.get(route).status_code, 200)
 
     def test_database_and_original_csv_produce_identical_results_for_all_strategies(self):
-        gateway = EngineGateway(ROOT)
+        gateway = EngineGateway(ROOT,allow_unbound_allocations=True)
         for strategy in STRATEGIES:
             with self.subTest(strategy=strategy):
                 self.repository.set_strategy(strategy)
@@ -84,10 +86,10 @@ class PostgresWebTests(PostgresTestCase):
             self.assertEqual(self.client.get("/request/40").status_code, 200)
             self.assertIn("Suggested least-change", self.client.get(f"/request/{suggested_request}").get_data(as_text=True))
         with self.database.transaction(read_only=True) as session:
-            self.assertEqual(session.scalar(select(func.count()).select_from(RequestHistory)), 2 * len(result["requestResults"]))
+            self.assertEqual(session.scalar(select(func.count()).select_from(RequestHistory)), 3 * len(result["requestResults"]))
 
     def test_invalid_strategy_and_forms_leave_database_inputs_unchanged(self):
-        before = self.repository.snapshot()
+        before = self.repository.read_view()[0]
         response = self.client.post("/set-strategy", data={"strategy": "unknown"})
         self.assertIn("strategy_status=error", response.location)
         for changes in ({"requestType": "Recurring", "timeData": "not a slot"},
@@ -98,7 +100,7 @@ class PostgresWebTests(PostgresTestCase):
                 response = self.client.post("/add-request", data=data)
                 self.assertEqual(response.status_code, 200)
                 self.assertIn('class="form-message form-message-error"', response.get_data(as_text=True))
-        after = self.repository.snapshot()
+        after = self.repository.read_view()[0]
         before.pop("runId"); after.pop("runId")
         self.assertEqual(before, after)
 
@@ -107,10 +109,10 @@ class PostgresWebTests(PostgresTestCase):
         from alembic.migration import MigrationContext
         with self.database.engine.connect() as connection:
             self.assertEqual(compare_metadata(MigrationContext.configure(connection), Base.metadata), [])
-        before = self.repository.snapshot()
+        before = self.repository.read_view()[0]
         with mock.patch.dict(os.environ, {"DATABASE_URL": self.url}):
             command.upgrade(Config(str(ROOT / "alembic.ini")), "head")
-        after = self.repository.snapshot()
+        after = self.repository.read_view()[0]
         before.pop("runId"); after.pop("runId")
         self.assertEqual(before, after)
 

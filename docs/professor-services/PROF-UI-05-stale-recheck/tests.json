@@ -1,0 +1,12 @@
+{
+  "modules": [
+    "test_professor_portal.ProfessorPortalTests.test_owner_tracking_distinguishes_pending_allocation_and_type_revision_requires_review"
+  ],
+  "expected": 1,
+  "run": 1,
+  "passed": 1,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 8.0
+}

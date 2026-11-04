@@ -1,0 +1,69 @@
+{
+  "modules": [
+    "test_professor_portal",
+    "test_appointments",
+    "test_student_portal_ui",
+    "test_frontend_prototype"
+  ],
+  "expected": 56,
+  "run": 56,
+  "passed": 55,
+  "failures": 0,
+  "errors": 1,
+  "skipped": [],
+  "seconds": 111.94,
+  "results": {
+    "test_student_portal_ui": {
+      "modules": [
+        "test_student_portal_ui"
+      ],
+      "expected": 19,
+      "run": 19,
+      "passed": 18,
+      "failures": 0,
+      "errors": 1,
+      "skipped": [],
+      "seconds": 0.59,
+      "exitCode": 1
+    },
+    "test_frontend_prototype": {
+      "modules": [
+        "test_frontend_prototype"
+      ],
+      "expected": 8,
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 26.42,
+      "exitCode": 0
+    },
+    "test_professor_portal": {
+      "modules": [
+        "test_professor_portal"
+      ],
+      "expected": 5,
+      "run": 5,
+      "passed": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 43.12,
+      "exitCode": 0
+    },
+    "test_appointments": {
+      "modules": [
+        "test_appointments"
+      ],
+      "expected": 24,
+      "run": 24,
+      "passed": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 108.42,
+      "exitCode": 0
+    }
+  }
+}

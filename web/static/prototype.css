@@ -1,4 +1,4 @@
-/* Appointment form components. Home uses student-home.css. */
+/* Appointment form components. Home uses campus-home.css. */
 .portal-prototype { --ink: var(--ui-ink); --muted: var(--ui-muted); --line: var(--ui-line); --accent: var(--ui-primary); --accent-dark: var(--ui-primary-hover); display: grid; gap: var(--ui-space-5); }
 .portal-prototype h2, .portal-prototype h3, .portal-prototype p { margin-top: 0; }
 .portal-prototype h2 { font-size: 18px; font-weight: 600; letter-spacing: -.4px; line-height: 1.35; }

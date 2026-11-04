@@ -1,0 +1,478 @@
+[
+  {
+    "path": "PROF-UI-08/browser/academic-event-320.png",
+    "width": 320,
+    "height": 950,
+    "sha256": "5e70436b4e9e581c7b94a4bd0a838564e97e4bfa077a9a444fbd26b550e9cdc8",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/allocated-1440.png",
+    "width": 1440,
+    "height": 3070,
+    "sha256": "a42449c7765f086cc1cd1446f9dc99a8ec28d726811e106be2ce4575b365a48d",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/allocated-320.png",
+    "width": 320,
+    "height": 3993,
+    "sha256": "c7d6e99407e90ea909586390fe8a23bde16ed4022f10589fd8acfdf719082909",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/appointment-1440.png",
+    "width": 1440,
+    "height": 1654,
+    "sha256": "606df3fe1fcabcc89bd1add5e1b872a1ac5bba17eac1d0c42a680ba171f061a0",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/appointment-320.png",
+    "width": 320,
+    "height": 1999,
+    "sha256": "06af448406bcb26f3f6cf0cd1525487e91d033440d982ebac2006be437f6128a",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/appointments-1440.png",
+    "width": 1440,
+    "height": 1581,
+    "sha256": "a48c93aba75e0a415c3dc8ab58a25253860d920ecb209271672b462ee3b213be",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/appointments-320.png",
+    "width": 320,
+    "height": 1993,
+    "sha256": "e6d9976a4a861196f4ae6ee01dad5f99f77f04b1cf13c97520e0394eddbd6e90",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/day-1440.png",
+    "width": 1440,
+    "height": 2207,
+    "sha256": "19439b799a37cfe335b07e254749185a7932bdc543f327442a5bd61bf06270a0",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/day-320.png",
+    "width": 320,
+    "height": 2248,
+    "sha256": "8fde86a3db8fb5b9e31ea3655046e92efb5ed297c80d32b4c7f18380ea4088d3",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/eligibility-detail-1440.png",
+    "width": 1440,
+    "height": 1307,
+    "sha256": "25af6c79ca386e5d084e779dc660bbc037bc0c1da6c26727025aa77ad78ae36e",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/eligibility-detail-320.png",
+    "width": 320,
+    "height": 2565,
+    "sha256": "b885e19e421c5a14cf10c4cfabafb108baa9ec2abd8d4563580c81ee4d2e0e58",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/eligibility-queue-1440.png",
+    "width": 1440,
+    "height": 1320,
+    "sha256": "008bd12fc6f6829e58b3fc228e36e859b08d3a9b325def30a6cc8279527a59b7",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/eligibility-queue-320.png",
+    "width": 320,
+    "height": 2197,
+    "sha256": "031d293865cc1ea0b56fab4c663ba87c79aa58e58c3ac0fba9a1c036d38c92b9",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/eligible-confirmation-1440.png",
+    "width": 1440,
+    "height": 950,
+    "sha256": "a6216f3d2551274e5429c5266ec018b7d54f16f423a8e01886bc13a96e5170e2",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/eligible-confirmation-320.png",
+    "width": 320,
+    "height": 1434,
+    "sha256": "65989d8a4610fab85d2a2e7c5c50aa5dadab1e95813c0f80c99d1cbbacaf840e",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/form-CommitteeMeeting-1440.png",
+    "width": 1440,
+    "height": 3330,
+    "sha256": "3461f870d5d6b8b16862592ba16db12c163210a209d02c38b2531f3012844445",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/form-CommitteeMeeting-320.png",
+    "width": 320,
+    "height": 4565,
+    "sha256": "83bb144f5c0901ee1fd18a8bb530b76990aeb78b98c78a8a4eadd1becfbc32e8",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/form-Exam-1440.png",
+    "width": 1440,
+    "height": 2140,
+    "sha256": "8d1851f491bbf28069131056576f0b66a6d520e6e3e914752075de11d1c76bcf",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/form-Exam-320.png",
+    "width": 320,
+    "height": 3089,
+    "sha256": "7751f689f84f634eb3ab571e3285893578519ab8c5035ab30809a80277b288c2",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/form-OneTime-1440.png",
+    "width": 1440,
+    "height": 1793,
+    "sha256": "b1b39a377f4260a4e731888ef19327271aefba72aab7572b42fa8b97d61cd9d3",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/form-OneTime-320.png",
+    "width": 320,
+    "height": 2498,
+    "sha256": "77efc59494bf954036c9ca921b40447a0a765aa49b1fb886888fc002babd08aa",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/form-Recurring-1440.png",
+    "width": 1440,
+    "height": 1961,
+    "sha256": "ed319a5863ccaab5d36be4b2985f2b8249295a2fe70f0112f719a2186376a8a9",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/form-Recurring-320.png",
+    "width": 320,
+    "height": 2704,
+    "sha256": "5e3f54b94faa67701f8e9f84b14f5252bd4bb6cc9c7629b5b504241e3d3fa06a",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/home-1440.png",
+    "width": 1440,
+    "height": 2460,
+    "sha256": "48d05426101b036cb6e7969a00346cdfcfdc2352c535e9877abfab91a2178b75",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/home-320.png",
+    "width": 320,
+    "height": 4443,
+    "sha256": "69290a7814d475ad38056eacc0c00192d11b1670454654a74424a1d193fc9522",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/hours-1440.png",
+    "width": 1440,
+    "height": 951,
+    "sha256": "6ab61d8f0099d0a36e16f0f8c3d2adadb8b7e13db7230d821d8f20ce68fed678",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/hours-320.png",
+    "width": 320,
+    "height": 1865,
+    "sha256": "57be23a29f87e5222bc37bc3809934b11a02f9895086ddf57bd5cfdcfc92108e",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/inbox-1440.png",
+    "width": 1440,
+    "height": 1557,
+    "sha256": "699d3a2d5f865330750288857dc0ba8d71c998bf0b9762e9079a244479e71c18",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/inbox-320.png",
+    "width": 320,
+    "height": 2054,
+    "sha256": "fc81d418c58c96acf2912d69f5897481146cc0f119cdfb016bca24edce2814aa",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/invalid-week-320.png",
+    "width": 320,
+    "height": 950,
+    "sha256": "a5f7b44ab757ed86e3a2b01cb61ffa4e03e0db2179c0762cf10183548d88f283",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/month-1440.png",
+    "width": 1440,
+    "height": 2222,
+    "sha256": "28eeb65b228d41adcd358fe9ce2f923eeb7f9ddcd0cf6d71e82088bc5acf41e1",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/month-320.png",
+    "width": 320,
+    "height": 5187,
+    "sha256": "bed72df45d6f220aa0faf59eca1e4d4b289b8a7195f5031e6d141a9d56b129e5",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/pending-1440.png",
+    "width": 1440,
+    "height": 2866,
+    "sha256": "499f98243a7f93da454817087982e934e87cbf4035a729a751bb140df658897c",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/pending-320.png",
+    "width": 320,
+    "height": 4319,
+    "sha256": "b024b51c2c205c78f2c4cb225b1f094880bd814eb0c69a3c26296d66bebf56b7",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/pending-confirmation-1440.png",
+    "width": 1440,
+    "height": 1251,
+    "sha256": "ddef2cfabca0ed3a73a47896053ac0ba2ee76135f1acabf4710c27e021d82bc7",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/pending-confirmation-320.png",
+    "width": 320,
+    "height": 1923,
+    "sha256": "ef81af367a1e8d6950250cd379551cf8829cfbed0844bb39f439e10e22b099d1",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/private-error-320.png",
+    "width": 320,
+    "height": 950,
+    "sha256": "de51ec2ab0813886667aae7dd79281b662f2b3e6effb24ce2f2d2ef74adb3757",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/published-readonly-error-320.png",
+    "width": 320,
+    "height": 950,
+    "sha256": "b58c886f718a11ee37850916c3bcc70800c92b5c62c539099e60f46d06684908",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/rejected-confirmation-1440.png",
+    "width": 1440,
+    "height": 1251,
+    "sha256": "ad2036b693e2d9a71e576455c078f18e9b8462c19ddb391574394dcdbaa24cf8",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/rejected-confirmation-320.png",
+    "width": 320,
+    "height": 1923,
+    "sha256": "e1c73b3e586cf39e71643d7fa1e391a6502b902d485377b7509d92b78d6de8d6",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/requests-1440.png",
+    "width": 1440,
+    "height": 2453,
+    "sha256": "860c2b88937231f230b394a2f89e21ac393b111f40fd5e3bfe25bc8661ef1fba",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/requests-320.png",
+    "width": 320,
+    "height": 3759,
+    "sha256": "1ece7c534d52f2be1678de13f15b76899063e10b5b1169b306191fead23af340",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/revise-1440.png",
+    "width": 1440,
+    "height": 1924,
+    "sha256": "9af188ada3f96ac41ae841191f41ede464ee711f1c72bf7ec713fc9014998db2",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/revise-320.png",
+    "width": 320,
+    "height": 2736,
+    "sha256": "4e0397ca856a86ea61cb889d3713048972a0ef80e20a6f7d468714dd176cb88f",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/room-invitation-1440.png",
+    "width": 1440,
+    "height": 1296,
+    "sha256": "935a27298f8641f3c0338552cc84eb9b01048caee14d45dcb4632ba8acd49c30",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/room-invitation-320.png",
+    "width": 320,
+    "height": 1799,
+    "sha256": "d485470f5364ef4b0c8a97f6a2078f7c2783d43aafea2ee74c0d6e32ec79d373",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/room-invitations-1440.png",
+    "width": 1440,
+    "height": 950,
+    "sha256": "430327bd48e9e9a07f4cc8134eb874f3c0b993a3abe8a1665c1aaf0425b2b6db",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/room-invitations-320.png",
+    "width": 320,
+    "height": 975,
+    "sha256": "701ec9e8ef3d96c7c1246edc5ba733382ee6617577dd7fdd099a8ed2425d6e46",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/schedule-1440.png",
+    "width": 1440,
+    "height": 2146,
+    "sha256": "81e03737903eb2504cdbbae022ae5e0a62d34d10a45cd512f13cba87be772d1a",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/schedule-320.png",
+    "width": 320,
+    "height": 2786,
+    "sha256": "632a7d19be5a353108e74e7639f0ec66031951f527174ea2eadb7d40290e0479",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/student-equipment-320.png",
+    "width": 320,
+    "height": 950,
+    "sha256": "090674c26c240be0abec7418b7c968334b20b978ba084c9811c35cc408beb923",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/student-home-1440.png",
+    "width": 1440,
+    "height": 1475,
+    "sha256": "0d1bdc3634fcce8f63464c76e67516738d8f6fb80ce1cf98868e65beb32503ab",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/student-home-320.png",
+    "width": 320,
+    "height": 2420,
+    "sha256": "f5f47a6505edb874085e3274fc55a39e560973533c9aed02064d59f984c048cb",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/student-rooms-320.png",
+    "width": 320,
+    "height": 1019,
+    "sha256": "ec0d412003afbc59d608506da5a37080283af545adca524878813e92efa0d53a",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/week-1440.png",
+    "width": 1440,
+    "height": 2528,
+    "sha256": "95e12cde50c6df5472dae12efd1bc2a70620338bfb6b29e73e3b25e79ba6c9c5",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/browser/week-320.png",
+    "width": 320,
+    "height": 3704,
+    "sha256": "17493e665c760a80a879d4b80eb2508cc212bbc7ff6199cfd0a72cd04d69692e",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/legacy-gate/legacy-rejected-reservation-preserved.png",
+    "width": 320,
+    "height": 1774,
+    "sha256": "e1a366aa338b9b62220a08de439d8043fea571783b2f5820f3aab2e8e309ea39",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/legacy-gate/reviewed-queue-after-publication.png",
+    "width": 320,
+    "height": 1483,
+    "sha256": "08217a96601b3c81a135a3ce14e5b37e1f7990338bdc1b5906c80a9be081871a",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/legacy-gate/revision-requires-review.png",
+    "width": 320,
+    "height": 3587,
+    "sha256": "a5e1132499e2296cb800e9e377801f7b1c5759263bc8c26150ced88583c2d4d5",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/phases/PROF-UI-01/empty-home-320.png",
+    "width": 320,
+    "height": 3018,
+    "sha256": "5baf7bf8e93ef7dfd6e099b1e812b34d73d9c91dc45d5331fd12545d168e164b",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/phases/PROF-UI-02/history-after-decisions.png",
+    "width": 320,
+    "height": 1993,
+    "sha256": "43a4b6fb3b8f620a34fd920f61a0c2e1f0356ea599d08020c851bccc4aff6d6b",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/phases/PROF-UI-03/block-conflict-320.png",
+    "width": 320,
+    "height": 950,
+    "sha256": "1bb30540f62b6bbdb3b7376fed55b14b4c404785da6bd04101edbc35e1653847",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/phases/PROF-UI-03/protected-hours-removal-320.png",
+    "width": 320,
+    "height": 2268,
+    "sha256": "62d3b33c2c1f294d63a76206cd5514b9371d682e6d558f19e405cc1f6834d06d",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/phases/PROF-UI-04/invalid-academic-form-320.png",
+    "width": 320,
+    "height": 2788,
+    "sha256": "68309c3ff6413651ba7d23a0ad1d22413b04f883720ba2b23d9754ede761df03",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/phases/PROF-UI-04/invalid-academic-form-768.png",
+    "width": 768,
+    "height": 2124,
+    "sha256": "74cae841049acb883453a5b1aba2a082d8039ea208e7b831a04c529afb19e74c",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/phases/PROF-UI-05/rejected-eligibility-still-allocated-320.png",
+    "width": 320,
+    "height": 4499,
+    "sha256": "33c249074635a395a4a03d16562e2a23bf92e23f693b88d168efc20232b6dd7a",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/phases/PROF-UI-05/revision-reset-eligibility.png",
+    "width": 320,
+    "height": 3610,
+    "sha256": "6ec66957421525fe826af76a5acd7862b2984bfa37f0e83d63bf1b84e9b293c1",
+    "pngCRC": true
+  },
+  {
+    "path": "PROF-UI-08/phases/PROF-UI-06/inbox-all-read.png",
+    "width": 320,
+    "height": 2054,
+    "sha256": "e6a3f6d2f348438e977763f74726a4029993cbc8d8219b712a839783e0cc9fac",
+    "pngCRC": true
+  }
+]

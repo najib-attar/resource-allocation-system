@@ -1,0 +1,65 @@
+{
+  "modules": [
+    "test_academic_eligibility",
+    "test_backend_executable",
+    "test_engine_gateway"
+  ],
+  "expected": 54,
+  "run": 54,
+  "passed": 53,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [
+    {
+      "test": "test_linux_execute_permission_is_checked (test_backend_executable.BackendExecutableTests.test_linux_execute_permission_is_checked)",
+      "reason": "POSIX permission check runs on Linux."
+    }
+  ],
+  "seconds": 149.8,
+  "results": {
+    "test_engine_gateway": {
+      "modules": [
+        "test_engine_gateway"
+      ],
+      "expected": 24,
+      "run": 24,
+      "passed": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 28.47,
+      "exitCode": 0
+    },
+    "test_backend_executable": {
+      "modules": [
+        "test_backend_executable"
+      ],
+      "expected": 21,
+      "run": 21,
+      "passed": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [
+        {
+          "test": "test_linux_execute_permission_is_checked (test_backend_executable.BackendExecutableTests.test_linux_execute_permission_is_checked)",
+          "reason": "POSIX permission check runs on Linux."
+        }
+      ],
+      "seconds": 27.91,
+      "exitCode": 0
+    },
+    "test_academic_eligibility": {
+      "modules": [
+        "test_academic_eligibility"
+      ],
+      "expected": 9,
+      "run": 9,
+      "passed": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 136.42,
+      "exitCode": 0
+    }
+  }
+}

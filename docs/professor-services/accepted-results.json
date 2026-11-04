@@ -1,0 +1,47 @@
+{
+  "selectedModules": 25,
+  "uniqueSelectedTests": 391,
+  "passed": 390,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [
+    {
+      "test": "test_linux_execute_permission_is_checked (test_backend_executable.BackendExecutableTests.test_linux_execute_permission_is_checked)",
+      "reason": "POSIX permission check runs on Linux."
+    }
+  ],
+  "method": "Original 25-module run, replacing only the appointment protocol module result after its missing default build artifact was repaired. This is not represented as a new complete run.",
+  "original": {
+    "path": "regression/tests.json",
+    "run": 391,
+    "passed": 389,
+    "failures": 0,
+    "errors": 1,
+    "skipped": 1,
+    "seconds": 1024.56
+  },
+  "recheck": {
+    "path": "protocol-artifact-recheck/tests.json",
+    "run": 5,
+    "passed": 5,
+    "seconds": 12.91
+  },
+  "artifactProof": "backend-artifact.json",
+  "testedCodeHead": "3c3af41928f0a3dae55a70bdc743b0ee83785ee7",
+  "cpp": {
+    "passed": 192,
+    "failed": 0,
+    "runtimeSmokesPassed": 2,
+    "runnerExitCode": 0
+  },
+  "browser": {
+    "views": 41,
+    "keyboardSteps": 884,
+    "screenshots": 22,
+    "posts": 41,
+    "successfulDomainPosts": 15,
+    "rejectedPosts": 13,
+    "authenticationPosts": 13
+  },
+  "verifiedAt": "2026-11-03T18:16:43.908628+00:00"
+}

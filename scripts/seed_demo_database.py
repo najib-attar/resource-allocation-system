@@ -34,6 +34,8 @@ def main():
             database = Database()
             report = seed_demo_database(database, args.seed, args.size)
             if args.run_allocation:
+                if not Repository(database).snapshot()['requests'] and report['counts']['requests']:
+                    raise PersistenceError('Seed persisted as Pending Eligibility Review. An authorized administrator must review requests before allocation.')
                 started = time.monotonic()
                 result = execute_allocation(Repository(database), EngineGateway(Path(__file__).resolve().parent.parent))
                 report["allocation"] = {"seconds": round(time.monotonic() - started, 3), "rows": len(result["allocations"]),

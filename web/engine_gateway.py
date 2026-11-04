@@ -92,8 +92,9 @@ def validate_result(result, snapshot):
 
 
 class EngineGateway:
-    def __init__(self, project_root, timeout=30, logger=None):
+    def __init__(self, project_root, timeout=30, logger=None, *, allow_unbound_allocations=False):
         self.project_root, self.timeout, self.logger = project_root, timeout, logger
+        self.allow_unbound_allocations = allow_unbound_allocations
 
     def execute(self, snapshot):
         return self._execute(snapshot, "--json", validate_result)
@@ -114,6 +115,14 @@ class EngineGateway:
         return self._execute(snapshot, "--equipment-series-json", validate_equipment_series_result)
 
     def _execute(self, snapshot, mode, validator):
+        if mode == '--json':
+            from .academic_eligibility import AllocationInput, PresentationInput
+            if type(snapshot) is AllocationInput:
+                AllocationInput.assert_allocation_ready(snapshot)
+            elif type(snapshot) is PresentationInput:
+                PresentationInput.assert_allocation_ready(snapshot)
+            elif not self.allow_unbound_allocations:
+                raise EngineIntegrationError('Academic allocation requires a current eligibility-checked repository snapshot. Raw protocol fixtures require explicit standalone opt-in.')
         backend = resolve_backend_executable(self.project_root, os.environ.get("RESOURCE_ALLOCATION_BACKEND"))
         if self.logger:
             self.logger.info("Executing JSON backend %s (built=%s source=%s binary=%s compiler=%s run=%s)",

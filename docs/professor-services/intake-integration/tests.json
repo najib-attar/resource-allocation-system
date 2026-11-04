@@ -1,0 +1,13 @@
+{
+  "modules": [
+    "test_professor_intake",
+    "test_academic_eligibility"
+  ],
+  "expected": 12,
+  "run": 12,
+  "passed": 9,
+  "failures": 3,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 84.0
+}

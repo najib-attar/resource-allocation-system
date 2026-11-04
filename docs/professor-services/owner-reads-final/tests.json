@@ -1,0 +1,12 @@
+{
+  "modules": [
+    "test_professor_services"
+  ],
+  "expected": 14,
+  "run": 14,
+  "passed": 14,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 106.44
+}

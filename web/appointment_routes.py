@@ -114,7 +114,7 @@ def create_appointment_blueprint(database_provider, gateway_provider):
 
     @blueprint.get("/<int:appointment_id>")
     def detail(appointment_id):
-        return render_template("appointment_detail.html", item=service().detail(appointment_id, g.principal.user_id), zone=university_zone().key)
+        return render_template("appointment_detail.html", item=service().detail(appointment_id, g.principal.user_id), zone=university_zone().key, now=datetime.now(timezone.utc))
 
     @blueprint.post("/<int:appointment_id>/decision")
     def decision(appointment_id):
@@ -145,17 +145,22 @@ def create_appointment_blueprint(database_provider, gateway_provider):
     @blueprint.route("/availability", methods=["GET", "POST"])
     def availability():
         actor = professor()
+        error = None
         if request.method == "POST":
-            action = request.form.get("action")
-            if action == "hours":
-                service().publish_hours(actor, integer(request.form.get("day")), minutes(request.form.get("startTime")),
-                    minutes(request.form.get("endTime")), day(request.form.get("validFrom")), day(request.form.get("validUntil")), excluded())
-            elif action == "remove-hours":
-                service().remove_hours(actor, integer(request.form.get("id")))
-            else:
-                raise AppointmentError("Unknown office-hour action.")
-            return redirect(url_for("appointments.availability"))
-        return render_template("appointment_availability.html", values=service().availability_for(actor), zone=university_zone().key)
+            try:
+                action = request.form.get("action")
+                if action == "hours":
+                    service().publish_hours(actor, integer(request.form.get("day")), minutes(request.form.get("startTime")),
+                        minutes(request.form.get("endTime")), day(request.form.get("validFrom")), day(request.form.get("validUntil")), excluded())
+                elif action == "remove-hours":
+                    service().remove_hours(actor, integer(request.form.get("id")))
+                else:
+                    raise AppointmentError("Unknown office-hour action.")
+                return redirect(url_for("appointments.availability"))
+            except CalendarError as failure:
+                error = str(failure)
+        return render_template("appointment_availability.html", values=service().availability_for(actor),
+            zone=university_zone().key,error=error,form=request.form if error else {}),409 if error else 200
 
     @blueprint.route("/calendar", methods=["GET", "POST"])
     def calendar():

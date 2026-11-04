@@ -155,8 +155,15 @@ class BackendExecutionTests(BackendFixture, TestCase):
         data = self.root / "data"
         data.mkdir()
         self.repository = mock.Mock()
-        self.repository.start_run.return_value = (1, {"protocolVersion": 1, "runId": "verified-artifact",
-                                                     "strategy": "greedy", "users": [], "spaces": [], "busySlots": [], "requests": []})
+        # Artifact/loader tests isolate repository validation; the actual canonical
+        # gate and forged-wrapper rejection are exercised against PostgreSQL.
+        from web.academic_eligibility import AllocationInput
+        snapshot=AllocationInput({"protocolVersion":1,"runId":"verified-artifact","strategy":"greedy",
+            "users":[],"spaces":[],"busySlots":[],"requests":[]},self.repository.database,1)
+        self.repository.start_run.return_value=(1,snapshot)
+        patch=mock.patch.object(AllocationInput,'assert_allocation_ready',autospec=True)
+        self.eligibility_guard=patch.start()
+        self.addCleanup(patch.stop)
         patch = mock.patch.object(web_app, "get_repository", return_value=self.repository)
         patch.start()
         self.addCleanup(patch.stop)
@@ -194,6 +201,7 @@ class BackendExecutionTests(BackendFixture, TestCase):
         self.assertIn("protocolVersion", json.loads(run.call_args.kwargs["input"]))
         self.assertEqual(list((self.root / "data" / ".runtime").glob("run-*")), [])
         self.repository.publish_run.assert_called_once()
+        self.eligibility_guard.assert_called_once_with(self.repository.start_run.return_value[1])
         refresh.assert_called_once_with('room')
         self.assertFalse(run.call_args.kwargs.get("shell", False))
         self.assertTrue(any("source=" in entry and "compiler=" in entry for entry in logs.output))

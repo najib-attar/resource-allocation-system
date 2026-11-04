@@ -148,6 +148,11 @@ app.register_blueprint(create_appointment_blueprint(lambda: get_repository().dat
 from web.student_routes import create_student_blueprint
 app.register_blueprint(create_student_blueprint(lambda: get_repository().database))
 
+from web.professor_routes import create_professor_blueprint
+app.register_blueprint(create_professor_blueprint(lambda: get_repository().database))
+from web.eligibility_routes import create_eligibility_blueprint
+app.register_blueprint(create_eligibility_blueprint(lambda: get_repository().database))
+
 from web.room_request_routes import create_room_blueprint
 app.config['ROOM_SELECTION_STRATEGY'] = os.environ.get('RESOURCE_ALLOCATION_ROOM_STRATEGY', 'best_fit')
 app.register_blueprint(create_room_blueprint(lambda: get_repository().database,
@@ -174,14 +179,14 @@ app.register_blueprint(create_feedback_blueprint(lambda: get_repository().databa
 
 @app.before_request
 def pin_database_view():
-    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "rooms.", "notifications.", "equipment.", "calendar.", "waiting.", "feedback.")):
+    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "professor.", "eligibility.", "rooms.", "notifications.", "equipment.", "calendar.", "waiting.", "feedback.")):
         current_results()
 
 
-def student_error_response(message, status, headers=None):
-    """Present existing failures to students without changing status or authority."""
+def workspace_error_response(message, status, headers=None):
+    """Present workspace failures without changing status codes or authority."""
     principal = getattr(g, "principal", None) if has_request_context() else None
-    if principal is None or principal.role != "Student" or principal.administrator:
+    if principal is None or principal.role not in {"Student","Instructor"} or principal.administrator:
         return None
     recovery = {
         "appointments": ("appointments.index", "appointments"),
@@ -191,17 +196,18 @@ def student_error_response(message, status, headers=None):
         "feedback": ("feedback.index", "feedback"),
         "calendar": ("calendar.index", "calendar"),
         "notifications": ("notifications.index", "Inbox"),
-    }.get(request.blueprint, ("student.home", "Home"))
+        "professor": (("professor.pages", "academic requests") if principal.role == "Instructor" else ("student.home", "Home")),
+    }.get(request.blueprint, ("professor.home" if principal.role == "Instructor" else "student.home", "Home"))
     if request.endpoint == "appointments.calendar":
         recovery = ("appointments.calendar", "My Schedule")
-    return render_template("student_error.html", message=message, status=status, recovery=recovery), status, {
+    return render_template("workspace_error.html", message=message, status=status, recovery=recovery), status, {
         "Cache-Control": "private, no-store", **(headers or {})}
 
 
 @app.errorhandler(HTTPException)
-def student_http_error(error):
+def workspace_http_error(error):
     if error.code is not None and error.code >= 400:
-        presentation = student_error_response(error.description, error.code)
+        presentation = workspace_error_response(error.description, error.code)
         if presentation is not None:
             response = error.get_response()
             response.set_data(presentation[0])
@@ -213,7 +219,7 @@ def student_http_error(error):
 
 @app.errorhandler(DatabaseBusy)
 def database_busy(error):
-    return student_error_response("This service is busy. Please try again shortly.", 503, {"Retry-After": "2"}) or (str(error), 503, {"Retry-After": "2"})
+    return workspace_error_response("This service is busy. Please try again shortly.", 503, {"Retry-After": "2"}) or (str(error), 503, {"Retry-After": "2"})
 
 
 @app.errorhandler(DatabaseConfigurationError)
@@ -221,18 +227,18 @@ def database_busy(error):
 @app.errorhandler(EngineIntegrationError)
 def application_error(error):
     app.logger.error("Application operation failed: %s", error)
-    return student_error_response("Application operation failed. Please try again shortly.", 503) or (f"Application operation failed: {error}", 503)
+    return workspace_error_response("Application operation failed. Please try again shortly.", 503) or (f"Application operation failed: {error}", 503)
 
 
 @app.errorhandler(SQLAlchemyError)
 def database_error(error):
     app.logger.error("Database operation failed (%s).", type(error).__name__)
-    return student_error_response("Database operation failed. Please try again shortly.", 503) or ("Database operation failed. Check PostgreSQL configuration and migrations; previous results remain active.", 503)
+    return workspace_error_response("Database operation failed. Please try again shortly.", 503) or ("Database operation failed. Check PostgreSQL configuration and migrations; previous results remain active.", 503)
 
 
 @app.errorhandler(SubmissionConflict)
 def submission_conflict(error):
-    return student_error_response(str(error), 409) or (str(error), 409)
+    return workspace_error_response(str(error), 409) or (str(error), 409)
 
 
 def current_strategy():
@@ -867,11 +873,9 @@ def add_request():
         row, participant_rows, errors = validate_request_form(form_data, users, spaces)
         if not errors:
             request_id = get_repository().save_request(request_record(row, participant_rows),
-                                                       submission_key=request.form.get("submissionKey") or None)
-            if request.form.get("submitAction") == "save_run":
-                run_result = run_backend_allocation()
-                return redirect(url_for("request_detail", request_id=request_id,
-                                        run_status=run_result["status"], run_message=run_result["message"]))
+                                                       submission_key=request.form.get("submissionKey") or None,actor=g.principal.user_id)
+            if request.form.get("submitAction") in {"save_run", "save_review"}:
+                return redirect(url_for('eligibility.detail',request_id=request_id))
             return redirect(url_for("request_added", request_id=request_id))
 
     return render_template(
@@ -896,6 +900,11 @@ def add_request():
 @app.route("/request-added/<request_id>")
 def request_added(request_id):
     row = get_request_row(request_id)
+    if row is None:
+        return render_template('workspace_error.html',message='Academic request not found.',status=404,
+            recovery=('eligibility.index','academic eligibility review')),404
+    from .academic_eligibility import EligibilityService
+    eligibility = EligibilityService(get_repository().database).detail(g.principal.user_id,safe_int(request_id))
     display_row = dict(row) if row else None
     participant_rows = get_request_participant_rows(request_id)
     users_by_id = index_by_field(get_table("users")["rows"], "userId")
@@ -912,6 +921,7 @@ def request_added(request_id):
         "request_added.html",
         request_id=request_id,
         request_row=display_row,
+        eligibility=eligibility,
         requester=requester,
         requested_space=requested_space,
         committee_participants=build_committee_participant_display(
@@ -923,6 +933,10 @@ def request_added(request_id):
 
 @app.post("/run-allocation-now/<request_id>")
 def run_allocation_now(request_id):
+    from .academic_eligibility import EligibilityService
+    item=EligibilityService(get_repository().database).detail(g.principal.user_id,safe_int(request_id))
+    if item['status']!='Eligible':
+        return redirect(url_for('eligibility.detail',request_id=item['id']))
     run_result = run_backend_allocation()
 
     return redirect(
@@ -948,10 +962,13 @@ def request_detail(request_id):
         }
 
     item, summary_context = get_request_summary(request_id)
+    from .academic_eligibility import EligibilityService
+    eligibility=EligibilityService(get_repository().database).detail(g.principal.user_id,safe_int(request_id)) if item else None
 
     return render_template(
         "request_detail.html",
         item=item,
+        eligibility=eligibility,
         request_id=str(request_id),
         run_message=run_message,
         requests_available=summary_context["requests_available"],

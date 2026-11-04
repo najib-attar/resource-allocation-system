@@ -1,20 +1,18 @@
-{% extends "student_service_base.html" %}
-{% from 'components/ui.html' import icon %}
-{% from 'components/student_services.html' import status %}
-{% block page_heading %}My Appointments{% endblock %}
-{% block title %}My appointments | Campus Space{% endblock %}
+{% extends 'service_base.html' %}
+{% from 'components/appointment_rows.html' import appointment_row with context %}
+{% block page_heading %}{{ 'Student appointments' if professor_shell else 'My Appointments' }}{% endblock %}
+{% block title %}Appointments | Campus Space{% endblock %}
 {% block service_eyebrow %}Appointments{% endblock %}
-{% block service_intro %}Plan a conversation, follow professor approvals and manage your invitations.{% endblock %}
+{% block service_intro %}{{ 'Review student requests, follow shared approvals and manage your confirmed meetings.' if professor_shell else 'Plan a conversation, follow professor approvals and manage your invitations.' }}{% endblock %}
+{% block service_actions %}{% if professor_shell %}<a class="service-button" href="{{ url_for('appointments.availability') }}">Office hours</a><a class="service-button" href="{{ url_for('appointments.calendar') }}">My schedule</a>{% endif %}{% endblock %}
 {% block service_content %}
-<section class="panel"><p>Dates use {{ zone }}. Pending requests reserve no time; all required professors must approve.</p>
-{% if g.principal.role == 'Student' %}<a class="button" href="{{ url_for('appointments.new') }}">Schedule an appointment</a>{% endif %}</section>
-<section class="panel"><h2>Requests and invitations</h2>
-<div class="service-list">{% for item in items %}<article class="service-row">
-<span class="service-row-icon">{{ icon('meeting', 18) }}</span><div>
-<span class="service-row-kind">{{ 'Your request' if item.organizerId == g.principal.user_id else 'Required professor' if g.principal.user_id in item.professors|map(attribute='id')|list else 'Optional invitation' }}</span>
-<h3><a href="{{ url_for('appointments.detail', appointment_id=item.id) }}">{{ item.purpose }}</a></h3>
-<p>{{ item.start|university_time }} &ndash; {{ item.end|university_time }}</p>
-<p>Organizer: {{ item.organizerName|person_name }} &middot; {{ item.professors|length }} professor(s), {{ item.invitations|length }} invitation(s)</p>
-{% if item.organizerId != g.principal.user_id and g.principal.role == 'Student' %}<p>Attendance optional; this is not your organizer reservation.</p>{% endif %}
-</div>{{ status(item.status) }}</article>{% else %}<div class="service-empty"><h3>No appointments yet.</h3><p>Your requests and optional invitations will appear here.</p></div>{% endfor %}</div>
-</section>{% endblock %}
+<section class="panel"><p>Dates use {{ zone }}. Pending requests reserve no time; all required professors must approve.</p>{% if g.principal.role=='Student' %}<a class="button" href="{{ url_for('appointments.new') }}">Schedule an appointment</a>{% endif %}</section>
+{% if professor_shell %}
+  {% for state,title,note in [('Pending Approval','Pending student requests','Open a request to review your decision and the current approval progress.'),('Confirmed','Confirmed appointments','Only confirmed meetings reserve required participants\' time.'),('history','Appointment history','Declined and cancelled meetings remain available with their history.')] %}
+    {% set group=items|rejectattr('status','in',['Pending Approval','Confirmed'])|list if state=='history' else items|selectattr('status','equalto',state)|list %}
+    <section class="panel"><h2>{{ title }} <span class="service-count">{{ group|length }}</span></h2><p>{{ note }}</p><div class="service-list">{% for item in group %}{{ appointment_row(item,true) }}{% else %}<div class="service-empty"><h3>No {{ title|lower }}.</h3><p>New activity will appear here when its state changes.</p></div>{% endfor %}</div></section>
+  {% endfor %}
+{% else %}
+<section class="panel"><h2>Requests and invitations</h2><div class="service-list">{% for item in items %}{{ appointment_row(item) }}{% else %}<div class="service-empty"><h3>No appointments yet.</h3><p>Your requests and optional invitations will appear here.</p></div>{% endfor %}</div></section>
+{% endif %}
+{% endblock %}
