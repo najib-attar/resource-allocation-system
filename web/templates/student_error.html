@@ -1,0 +1,9 @@
+{% extends 'student_service_base.html' %}
+{% block title %}{{ status }} | Campus Space{% endblock %}
+{% block page_heading %}{{ 'Service temporarily unavailable' if status >= 500 else 'Request needs attention' }}{% endblock %}
+{% block service_eyebrow %}Your workspace / {{ status }}{% endblock %}
+{% block service_content %}
+<section class="panel"><h2>{{ 'Please try again shortly' if status >= 500 else 'Please check this request' }}</h2>
+<p role="alert">{{ message }}</p><p>Return to your workspace to choose your next step.</p>
+<a class="service-button" href="{{ url_for(recovery[0]) }}">Back to {{ recovery[1] }}</a></section>
+{% endblock %}

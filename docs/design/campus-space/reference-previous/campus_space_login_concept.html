@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in · Campus Space (design prototype)</title>
+<style>
+:root{--ink:#23313c;--muted:#71808a;--border:#dfe7eb;--paper:#f5f7f8;--blue:#2b6282;--blue-deep:#204b69;--focus:#367ba5;--white:#fff;--error:#aa3838}
+*{box-sizing:border-box}html,body{min-height:100%;margin:0}body{font-family:"Avenir Next","Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased}a,button,input{font:inherit}
+.skip-link{position:absolute;left:16px;top:-70px;background:#fff;padding:12px;color:var(--ink);z-index:10}.skip-link:focus{top:12px}
+.viewport{min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:44px 24px}
+.login{width:min(100%,432px);background:var(--white);border:1px solid var(--border);border-radius:15px;padding:45px 45px 39px;box-shadow:0 18px 70px rgba(35,49,60,.035)}
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:55px}.mark{width:37px;height:37px;background:var(--blue-deep);border-radius:11px;display:grid;place-items:center;position:relative;color:#fff;font-size:17px;font-weight:750;letter-spacing:-.12em}.mark:after{content:"";position:absolute;right:-3px;top:-3px;width:10px;height:10px;border-radius:50%;background:#c6a17a;border:3px solid #fff}
+.brand strong{display:block;font-size:16px;letter-spacing:-.03em}.brand small{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--blue);font-weight:700;margin:0 0 11px}h1{font-size:35px;font-weight:600;line-height:1.15;letter-spacing:-1.2px;margin:0 0 12px}.intro{font-size:14px;line-height:1.6;color:var(--muted);margin:0 0 31px}
+.field{margin-bottom:20px}.field label{display:block;font-size:13px;font-weight:650;margin-bottom:9px}.field input{display:block;width:100%;height:48px;background:#fff;border:1px solid #cbd7dd;border-radius:7px;color:var(--ink);padding:0 14px;font-size:14px;outline:none}.field input:focus{border-color:var(--focus);box-shadow:0 0 0 3px rgba(54,123,165,.14)}
+.pass-wrap{position:relative}.pass-wrap input{padding-right:66px}.reveal{position:absolute;right:8px;top:8px;height:32px;min-width:48px;border:0;background:transparent;color:var(--blue);font-size:12px;font-weight:650;border-radius:5px;cursor:pointer}
+.signin{display:block;margin-top:30px;width:100%;height:48px;border:0;border-radius:7px;background:var(--blue-deep);color:#fff;font-weight:650;font-size:14px;cursor:pointer;transition:background .12s}.signin:hover{background:#173a53}.signin:focus-visible,.reveal:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.error{display:none;background:#fff1f1;color:#8f2727;border:1px solid #eed0d0;font-size:13px;line-height:1.5;padding:12px 14px;border-radius:7px;margin:0 0 20px}.error.show{display:block}
+.note{font-size:12px;color:var(--muted);margin:24px 0 0;line-height:1.6;text-align:center}.prototype{font-size:11px;color:#8e9aa1;text-align:center;margin:22px 0 0}
+@media(max-width:600px){body{background:#fff}.viewport{align-items:flex-start;padding:0}.login{border:none;box-shadow:none;padding:36px 25px 42px;width:100%;max-width:none;min-height:100dvh;border-radius:0}.brand{margin-bottom:71px}h1{font-size:32px}.intro{margin-bottom:36px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<a href="#main" class="skip-link">Skip to sign-in</a>
+<div class="viewport">
+<main class="login" id="main">
+<header class="brand" aria-label="Campus Space university portal"><span class="mark" aria-hidden="true">U</span><span><strong>Campus Space</strong><small>University services</small></span></header>
+<p class="eyebrow">University portal</p>
+<h1>Sign in</h1>
+<p class="intro">Use your university account to continue.</p>
+<p class="error" role="alert" id="form-error" aria-live="assertive"></p>
+<form id="login-form" method="post" action="#" autocomplete="on">
+<div class="field"><label for="username">Username</label><input id="username" name="username" type="text" autocomplete="username" maxlength="100" required></div>
+<div class="field"><label for="password">Password</label><div class="pass-wrap"><input id="password" name="password" type="password" autocomplete="current-password" maxlength="256" required><button type="button" class="reveal" id="reveal" aria-label="Show password" aria-pressed="false">Show</button></div></div>
+<button class="signin" type="submit">Sign in</button>
+</form>
+<p class="note">Access is provided through your university account.</p>
+<p class="prototype">Design preview · Not connected to authentication</p>
+</main>
+</div>
+<script>
+document.getElementById('reveal').addEventListener('click',function(){const p=document.getElementById('password');const visible=p.type==='text';p.type=visible?'password':'text';this.textContent=visible?'Show':'Hide';this.setAttribute('aria-label',(visible?'Show':'Hide')+' password');this.setAttribute('aria-pressed',String(!visible));});
+document.getElementById('login-form').addEventListener('submit',function(event){event.preventDefault();const error=document.getElementById('form-error');error.textContent='This is a design preview. Sign in through the real university application.';error.classList.add('show');});
+</script>
+</body>
+</html>

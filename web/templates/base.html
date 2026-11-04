@@ -1,4 +1,5 @@
 {% from 'components/ui.html' import icon %}
+{% set student_shell = g.principal and g.principal.role == 'Student' and not g.principal.administrator %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -9,28 +10,31 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='tokens.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='shell.css') }}">
+    {% if student_shell %}<link rel="stylesheet" href="{{ url_for('static', filename='student-shell.css') }}">{% endif %}
     {% block styles %}{% endblock %}
+    {% if student_shell and student_service %}<link rel="stylesheet" href="{{ url_for('static', filename='student-services.css') }}">{% endif %}
 </head>
-<body{% if g.principal %} class="app-body"{% endif %}>
+<body{% if g.principal %} class="app-body{% if student_shell %} student-shell{% endif %}"{% endif %}>
     <a class="skip-link" href="#main-content">Skip to content</a>
     {% if g.principal %}
     <aside class="app-sidebar" id="app-sidebar" aria-label="University navigation">
         <a class="app-brand" href="{{ url_for('student.home' if g.principal.role == 'Student' and not g.principal.administrator else 'index') }}">
-            <span class="app-brand-mark">{{ icon('book', 25) }}</span><span>University<span class="app-brand-subtitle">Resources &amp; scheduling</span></span>
+            {% if student_shell %}<span class="app-brand-mark" aria-hidden="true">U</span><span>Campus Space<span class="app-brand-subtitle">Student workspace</span></span>{% else %}<span class="app-brand-mark">{{ icon('book', 25) }}</span><span>University<span class="app-brand-subtitle">Resources &amp; scheduling</span></span>{% endif %}
         </a>
         <button class="sidebar-close ui-icon-button" type="button" data-navigation-close aria-label="Close navigation" hidden>{{ icon('close') }}</button>
         {% include 'components/_navigation.html' %}
-        <div class="sidebar-note">One campus. Connected services.<span>Your academic day, organized.</span></div>
+        <div class="sidebar-note">{% if student_shell %}<strong>A simpler campus day.</strong><span>Your services and plans, together.</span>{% else %}One campus. Connected services.<span>Your academic day, organized.</span>{% endif %}</div>
     </aside>
     <div class="sidebar-backdrop" data-navigation-backdrop hidden></div>
     {% endif %}
     <div{% if g.principal %} class="app-workspace"{% endif %}>
         <header class="{{ 'app-topbar' if g.principal else 'site-header' }}">
             {% if g.principal %}<button class="navigation-toggle ui-icon-button" type="button" data-navigation-toggle aria-label="Open navigation" aria-expanded="false" aria-controls="app-sidebar" hidden>{{ icon('menu') }}</button>{% endif %}
-            <div class="app-heading"><p class="{{ 'app-breadcrumb' if g.principal else 'eyebrow' }}">{{ 'University portal' if g.principal else 'Resource Allocation System' }}</p><h1>{% block page_heading %}Dashboard{% endblock %}</h1></div>
+            {% if student_shell %}<a class="student-mobile-brand" href="{{ url_for('student.home') }}"><span class="app-brand-mark" aria-hidden="true">U</span><span>Campus Space</span></a>{% endif %}
+            <div class="app-heading"><p class="{{ 'app-breadcrumb' if g.principal else 'eyebrow' }}">{{ 'Student workspace' if student_shell else ('University portal' if g.principal else 'Resource Allocation System') }}</p>{% if student_shell and (request.endpoint == 'student.home' or student_service) %}<p class="student-current-page">{{ self.page_heading() }}</p>{% else %}<h1>{% block page_heading %}Dashboard{% endblock %}</h1>{% endif %}</div>
             {% if g.principal %}{% include 'components/_account_controls.html' %}{% endif %}
         </header>
-        <main id="main-content" class="{{ 'app-content' if g.principal else 'page-shell' }}" tabindex="-1">
+        <main id="main-content" class="{{ 'app-content' if g.principal else 'page-shell' }}{% if student_shell and student_service %} student-service{% endif %}" tabindex="-1">
             {% block content %}{% endblock %}
         </main>
     </div>

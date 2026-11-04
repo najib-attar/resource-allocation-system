@@ -1,11 +1,20 @@
-{% extends "base.html" %}
+{% extends "student_service_base.html" %}
+{% from 'components/ui.html' import icon %}
+{% from 'components/student_services.html' import status %}
 {% block page_heading %}My Appointments{% endblock %}
-{% block content %}
+{% block title %}My appointments | Campus Space{% endblock %}
+{% block service_eyebrow %}Appointments{% endblock %}
+{% block service_intro %}Plan a conversation, follow professor approvals and manage your invitations.{% endblock %}
+{% block service_content %}
 <section class="panel"><p>Dates use {{ zone }}. Pending requests reserve no time; all required professors must approve.</p>
 {% if g.principal.role == 'Student' %}<a class="button" href="{{ url_for('appointments.new') }}">Schedule an appointment</a>{% endif %}</section>
 <section class="panel"><h2>Requests and invitations</h2>
-{% if not items %}<p>No appointments yet.</p>{% endif %}
-{% for item in items %}<article class="appointment-card"><h3><a href="{{ url_for('appointments.detail', appointment_id=item.id) }}">{{ item.purpose }}</a></h3>
-<p>{{ item.start|university_time }} &ndash; {{ item.end|university_time }} &middot; {{ item.status }}</p>
-<p>Organizer: {{ item.organizerName|person_name }} &middot; {{ item.professors|length }} professor(s), {{ item.invitations|length }} invitation(s)</p></article>{% endfor %}
+<div class="service-list">{% for item in items %}<article class="service-row">
+<span class="service-row-icon">{{ icon('meeting', 18) }}</span><div>
+<span class="service-row-kind">{{ 'Your request' if item.organizerId == g.principal.user_id else 'Required professor' if g.principal.user_id in item.professors|map(attribute='id')|list else 'Optional invitation' }}</span>
+<h3><a href="{{ url_for('appointments.detail', appointment_id=item.id) }}">{{ item.purpose }}</a></h3>
+<p>{{ item.start|university_time }} &ndash; {{ item.end|university_time }}</p>
+<p>Organizer: {{ item.organizerName|person_name }} &middot; {{ item.professors|length }} professor(s), {{ item.invitations|length }} invitation(s)</p>
+{% if item.organizerId != g.principal.user_id and g.principal.role == 'Student' %}<p>Attendance optional; this is not your organizer reservation.</p>{% endif %}
+</div>{{ status(item.status) }}</article>{% else %}<div class="service-empty"><h3>No appointments yet.</h3><p>Your requests and optional invitations will appear here.</p></div>{% endfor %}</div>
 </section>{% endblock %}

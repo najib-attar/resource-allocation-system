@@ -4,7 +4,7 @@
     <strong>{{ event.title }}</strong>
     <span class="calendar-state">{{ event.label }}{% if event.status not in [event.label, 'Confirmed'] %} &middot; {{ event.status }}{% endif %}</span>
     {% if event.location %}<span>{{ event.location }}</span>{% endif %}
-    {% if not compact %}<small>{{ event.note }}</small>{% endif %}
-    {% if event.busy and not compact %}<small>Personal commitment</small>{% endif %}
+    <small>{{ event.note }}</small>
+    {% if event.busy %}<small>Personal commitment</small>{% endif %}
 </a>
 {%- endmacro %}

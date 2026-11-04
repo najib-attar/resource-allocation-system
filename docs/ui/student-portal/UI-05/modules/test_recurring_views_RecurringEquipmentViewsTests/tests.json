@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_recurring_views.RecurringEquipmentViewsTests"
+  ],
+  "run": 5,
+  "passed": 5,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 92.81
+}

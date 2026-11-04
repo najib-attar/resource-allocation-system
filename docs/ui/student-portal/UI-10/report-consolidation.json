@@ -1,0 +1,55 @@
+{
+  "reason": "Per-module generated copies duplicate retained aggregate JSON and complete ordered test output. Copies will be archived under the local ignored build directory; no tests, results, failure traces, historical evidence or screenshots are deleted.",
+  "runs": [
+    {
+      "run": "regression",
+      "modules": 47,
+      "duplicateReportFiles": 94,
+      "temporaryLogs": 47,
+      "allPerModuleResultsRetained": true,
+      "allTestOutputByteEquivalentAfterNewlineNormalization": true,
+      "aggregateJsonSha256": "efd6f6da02876302a509b27769ca177825aff610f27ff37ff537762826a79687",
+      "aggregateTextSha256": "a019eef0667d6c05317c81ae20859d49c991367e2a1d233297427354f96082f0",
+      "source": "C:\\Users\\najee\\Desktop\\resource-allocation-frontend\\docs\\ui\\student-portal\\UI-10\\regression\\modules",
+      "archive": "C:\\Users\\najee\\Desktop\\resource-allocation-frontend\\build\\ui10-module-report-copies\\regression\\modules"
+    },
+    {
+      "run": "final-regression",
+      "modules": 47,
+      "duplicateReportFiles": 94,
+      "temporaryLogs": 47,
+      "allPerModuleResultsRetained": true,
+      "allTestOutputByteEquivalentAfterNewlineNormalization": true,
+      "aggregateJsonSha256": "3781014dbba1d9ad4259e2c7c148ca96bd6f5d4ff52fa51418e058fdd41169aa",
+      "aggregateTextSha256": "e792146e236a6ebaede4c6e6a43cc118e41ebb3a3af5d995449949c1210cf0ff",
+      "source": "C:\\Users\\najee\\Desktop\\resource-allocation-frontend\\docs\\ui\\student-portal\\UI-10\\final-regression\\modules",
+      "archive": "C:\\Users\\najee\\Desktop\\resource-allocation-frontend\\build\\ui10-module-report-copies\\final-regression\\modules"
+    },
+    {
+      "run": "verified-regression",
+      "modules": 47,
+      "duplicateReportFiles": 94,
+      "temporaryLogs": 47,
+      "allPerModuleResultsRetained": true,
+      "allTestOutputByteEquivalentAfterNewlineNormalization": true,
+      "aggregateJsonSha256": "e806c8bc9b35317ac11ed67ab6913ad0cbce124d778dc2a22d27bce3bd1fdba2",
+      "aggregateTextSha256": "b49c921a1d6824bd13401d220a45413384c9703eaeca49bc163f6c720d8d15ba",
+      "source": "C:\\Users\\najee\\Desktop\\resource-allocation-frontend\\docs\\ui\\student-portal\\UI-10\\verified-regression\\modules",
+      "archive": "C:\\Users\\najee\\Desktop\\resource-allocation-frontend\\build\\ui10-module-report-copies\\verified-regression\\modules"
+    },
+    {
+      "run": "acceptance-regression",
+      "modules": 47,
+      "duplicateReportFiles": 94,
+      "temporaryLogs": 47,
+      "allPerModuleResultsRetained": true,
+      "allTestOutputByteEquivalentAfterNewlineNormalization": true,
+      "aggregateJsonSha256": "3574b2aa8aad508e1513ccb9fa00ad8e2db03ace345045e12dd547c37ce3063c",
+      "aggregateTextSha256": "4e8ab4bf16e547a9f2ce39c0cfd373efcf36a0b95a3dff391e4b49b63ae8877b",
+      "source": "C:\\Users\\najee\\Desktop\\resource-allocation-frontend\\docs\\ui\\student-portal\\UI-10\\acceptance-regression\\modules",
+      "archive": "C:\\Users\\najee\\Desktop\\resource-allocation-frontend\\build\\ui10-module-report-copies\\acceptance-regression\\modules"
+    }
+  ],
+  "duplicateReportFiles": 376,
+  "temporaryLogs": 188
+}

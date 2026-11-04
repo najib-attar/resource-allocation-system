@@ -1,11 +1,30 @@
-{% extends "base.html" %}
-{% block title %}Sign In - University Scheduling{% endblock %}
-{% block page_heading %}University Scheduling{% endblock %}
-{% block content %}
-<section class="panel"><h2>Sign in</h2><p>Use the account provisioned for your university identity.</p>
-{% if error %}<p class="message error" role="alert">{{ error }}</p>{% endif %}
-<form method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-<p><label>Username <input name="username" autocomplete="username" required maxlength="100"></label></p>
-<p><label>Password <input name="password" type="password" autocomplete="current-password" required maxlength="256"></label></p>
-<button class="button" type="submit">Sign in</button></form></section>
-{% endblock %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Sign in | Campus Space</title>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <script src="{{ url_for('static', filename='login.js') }}" defer></script>
+</head>
+<body class="login-page">
+    <a class="login-skip" href="#main-content">Skip to sign in</a>
+    <main id="main-content" class="login-container" tabindex="-1">
+        <div class="login-brand"><span class="login-mark" aria-hidden="true">U</span><span>Campus Space</span></div>
+        <p class="login-eyebrow">University account</p>
+        <h1>Sign in.</h1>
+        <p class="login-intro">Use the university account provided to you.</p>
+        {% if error %}<div class="login-error" id="sign-in-error" role="alert" tabindex="-1"><strong>Unable to sign in</strong><p>{{ error }}</p></div>{% endif %}
+        <form method="post" action="{{ url_for('login', next=request.args.get('next')) }}" id="login-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <label for="username">Username</label>
+            <input id="username" name="username" autocomplete="username" placeholder="University username" required maxlength="100" value="{{ request.form.get('username', '') }}"{% if error %} aria-describedby="sign-in-error"{% endif %}>
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" placeholder="Password" required maxlength="256"{% if error %} aria-describedby="sign-in-error"{% endif %}>
+            <label class="login-show" for="show-password"><input id="show-password" type="checkbox" aria-controls="password">Show password</label>
+            <button type="submit">Sign in</button>
+        </form>
+    </main>
+</body>
+</html>

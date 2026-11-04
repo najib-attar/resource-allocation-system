@@ -1,4 +1,5 @@
-{% extends 'base.html' %}
+{% extends 'student_service_base.html' %}
 {% block title %}Calendar Unavailable | University Scheduling{% endblock %}
 {% block page_heading %}Calendar unavailable{% endblock %}
-{% block content %}<section class="panel"><p role="alert">{{ message }}</p><a class="button-secondary" href="{{ url_for('calendar.index') }}">Return to calendar</a></section>{% endblock %}
+{% block service_eyebrow %}Calendar / Check selection{% endblock %}
+{% block service_content %}<section class="panel"><h2>Please check your calendar selection</h2><p role="alert">{{ message }}</p><a class="button-secondary" href="{{ url_for('calendar.index') }}">Return to calendar</a></section>{% endblock %}

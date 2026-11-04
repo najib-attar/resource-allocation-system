@@ -1,0 +1,25 @@
+Page ID,Group,Screen,Backend route/template mapping,Status,Implementation safeguards
+home,Home,Student Home,student.home,Existing,Illustrative counts must be replaced by authorized read-model data; never conflate pending with confirmed.
+activity,My Activity,My Activity,Proposed aggregate; existing per-service indexes,Proposed UI,Requires explicit backend aggregate or user-scoped linked read model; do not invent cross-service access.
+appointments,Appointments,Appointments,appointments.index,Existing,
+appointment-new,Appointments,New appointment,appointments.new,Existing,"Preserve CSRF, date matching, availability errors, stale suggestions, duration, multi-professor, optional invitees, manual times; no fabricated professor schedule."
+appointment-detail,Appointments,Appointment details,appointments.detail,Existing,Must be role/participant scoped; show only allowed actions. Recheck calendar on confirmation.
+appointment-invite,Appointments,Appointment invitation,appointments.detail / appointments.decline,Existing,
+rooms,Rooms,Room requests,rooms.index,Existing,
+room-new,Rooms,New room request,rooms.new,Existing,"Preserve ranked room selection and authorization, participant registration, recurrence, explicit policy consent, faculty approval, mandatory constraints."
+room-detail,Rooms,Room request details,rooms.detail,Existing,
+room-availability,Rooms,Room availability,rooms.availability,Existing,
+equipment,Equipment,Equipment requests,equipment.index,Existing,
+equipment-catalog,Equipment,Equipment catalog,equipment.catalog,Existing,Never equate due date or intent with verified physical return; no automatic partial approval of exact quantities.
+equipment-detail,Equipment,Equipment loan details,equipment.detail,Existing,
+waiting,Waiting Lists,Waiting lists,waiting.index,Existing,
+waiting-detail,Waiting Lists,Waiting-list details,waiting.detail,Existing,
+waiting-policy,Waiting Lists,Waiting-list policy,waiting.policy,Existing,
+feedback,Feedback,Feedback & issues,feedback.index,Existing,No unrestricted global report creation: new report is tied to eligible booking/loan and participant permissions.
+feedback-new,Feedback,Report resource issue,feedback.new,Existing,
+feedback-detail,Feedback,Feedback report details,feedback.detail,Existing,
+calendar,Calendar,University calendar,calendar.index,Existing,
+my-schedule,Calendar,My schedule & blocks,appointments.calendar,Existing,
+inbox,Inbox,Notifications,notifications.index,Existing,
+login,Login,Sign in,login POST,Existing,"Only username, password and CSRF; no signup/recovery without backend; preserve error and session flows."
+states,Design System,State gallery,Design guidance only,Design reference,

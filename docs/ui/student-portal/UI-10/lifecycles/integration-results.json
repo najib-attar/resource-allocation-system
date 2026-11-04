@@ -1,0 +1,20 @@
+{
+  "checks": [
+    "Student: role redirect, original shell, privilege denial, invalid CSRF rejection and real logout/session removal.",
+    "Instructor: role redirect, original shell, privilege denial, invalid CSRF rejection and real logout/session removal.",
+    "TeachingAssistant: role redirect, original shell, privilege denial, invalid CSRF rejection and real logout/session removal.",
+    "Staff: role redirect, original shell, privilege denial, invalid CSRF rejection and real logout/session removal.",
+    "Administrator: role redirect, original shell, privilege denial, invalid CSRF rejection and real logout/session removal.",
+    "Appointment combination 0: professors 2; invitees ; real form submission, unanimous confirmation, optional decline where applicable, calendar addition/removal, reschedule reset, cancellation.",
+    "Appointment combination 1: professors 2,3; invitees ; real form submission, unanimous confirmation, optional decline where applicable, calendar addition/removal, reschedule reset, cancellation.",
+    "Appointment combination 2: professors 2; invitees 4,5; real form submission, unanimous confirmation, optional decline where applicable, calendar addition/removal, reschedule reset, cancellation.",
+    "Appointment combination 3: professors 2,3; invitees 4,5; real form submission, unanimous confirmation, optional decline where applicable, calendar addition/removal, reschedule reset, cancellation.",
+    "Professor rejection persisted and displayed to organizer with history.",
+    "Custodian-only actual handover, borrower intent, extension request and approval, partial then full inspected return persisted; borrower never received custody controls.",
+    "Room actual registered participant access, faculty approval, optional professor acceptance, calendar publication and organizer cancellation persisted.",
+    "Recurring room partial: empty irrelevant one-time start disabled; actual weekly preview/submission and faculty selected-date approval/rejection and occurrence cancellation persisted.",
+    "Recurring room all: empty irrelevant one-time start disabled; actual weekly preview/submission and faculty all-date approval and cancellation persisted."
+  ],
+  "errors": [],
+  "expectedNegativeResponses": []
+}

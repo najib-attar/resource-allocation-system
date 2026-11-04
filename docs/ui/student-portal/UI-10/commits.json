@@ -1,0 +1,18 @@
+[
+  {
+    "sha": "5a9c376126e980e18eb79fbab562e42717b9a87f",
+    "subject": "refactor(ui): remove verified unused student prototype components"
+  },
+  {
+    "sha": "6bf2b3c431ea021546a16f4dd3622bdfaf86675f",
+    "subject": "fix(ui): correct recurring request controls and equipment result focus"
+  },
+  {
+    "sha": "0a1017f180f53c7bf502845ea207d912a757067c",
+    "subject": "refactor(ui): remove remaining unused booking style selectors"
+  },
+  {
+    "sha": "09a02c87ca0e3071f25439cfcac4c4605af72685",
+    "subject": "test(ui): trace student controls and verify live PostgreSQL workflows"
+  }
+]

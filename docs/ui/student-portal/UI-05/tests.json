@@ -1,0 +1,83 @@
+{
+  "modules": [
+    "test_equipment",
+    "test_equipment_web",
+    "test_recurring_workflows.RecurringEquipmentWorkflowTests",
+    "test_recurring_views.RecurringEquipmentViewsTests",
+    "test_recurring_policy.RecurringEquipmentPolicyTests"
+  ],
+  "expected": 52,
+  "run": 52,
+  "passed": 52,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 270.25,
+  "results": {
+    "test_recurring_views.RecurringEquipmentViewsTests": {
+      "modules": [
+        "test_recurring_views.RecurringEquipmentViewsTests"
+      ],
+      "run": 5,
+      "passed": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 92.81,
+      "exitCode": 0,
+      "expected": 5
+    },
+    "test_equipment_web": {
+      "modules": [
+        "test_equipment_web"
+      ],
+      "run": 7,
+      "passed": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 97.02,
+      "exitCode": 0,
+      "expected": 7
+    },
+    "test_recurring_workflows.RecurringEquipmentWorkflowTests": {
+      "modules": [
+        "test_recurring_workflows.RecurringEquipmentWorkflowTests"
+      ],
+      "run": 10,
+      "passed": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 161.61,
+      "exitCode": 0,
+      "expected": 10
+    },
+    "test_recurring_policy.RecurringEquipmentPolicyTests": {
+      "modules": [
+        "test_recurring_policy.RecurringEquipmentPolicyTests"
+      ],
+      "run": 9,
+      "passed": 9,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 119.05,
+      "exitCode": 0,
+      "expected": 9
+    },
+    "test_equipment": {
+      "modules": [
+        "test_equipment"
+      ],
+      "run": 21,
+      "passed": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 265.47,
+      "exitCode": 0,
+      "expected": 21
+    }
+  }
+}

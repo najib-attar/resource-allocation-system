@@ -167,6 +167,15 @@ An unavailable database never falls back to legacy CSV results.
 
 ## Verification and limitations
 
+The student-facing Campus Space rollout covers the existing service hubs, forms,
+details, private reports, calendar views, personal blocks and notification actions.
+Its [feature matrix](../docs/ui/student-portal/coverage.md),
+[route inventory](../docs/ui/student-portal/UI-09/routes.md) and
+[acceptance report](../docs/ui/student-portal/acceptance-report.md) document preserved
+backend contracts, exact test results and real Flask screenshots. The new
+student-only error presentation preserves HTTP status and retry headers; business
+services and authentication are unchanged.
+
 Install dependencies, build the backend and configure a disposable
 `TEST_DATABASE_URL`, then run:
 

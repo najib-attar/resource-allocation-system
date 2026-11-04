@@ -1,0 +1,10 @@
+{
+  "phase": "UI-05",
+  "results": [
+    "Catalog selection, real recommendation, changed-selection warning, normal submit/cancel; overdue partial-return detail, return intent without inventory release, extension request and hidden custodian controls; unauthorized physical handover/return rejected with CSRF present; signed complete recurring preview invalidated on edits, rechecked before submission, recurring request/cancellation persisted."
+  ],
+  "browserErrors": [],
+  "httpErrors": [],
+  "consoleErrors": [],
+  "failedRequests": []
+}

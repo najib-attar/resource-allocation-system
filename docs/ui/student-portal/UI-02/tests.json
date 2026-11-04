@@ -1,0 +1,14 @@
+{
+  "modules": [
+    "test_student_portal_ui",
+    "test_appointment_foundation",
+    "test_identity_sessions",
+    "test_appointments.AppointmentWebTests"
+  ],
+  "run": 31,
+  "passed": 31,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 111.09
+}

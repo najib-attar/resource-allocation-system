@@ -1,0 +1,43 @@
+{
+  "phase": "UI-07",
+  "results": [
+    "student/feedback: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "student/feedback-new: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "student/feedback-detail: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "student/feedback-ineligible: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "student/feedback-private: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "student/feedback-invalid: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed",
+    "empty/feedback: 1440/768/390/320px, status, privacy, keyboard, focus, overflow, POST CSRF passed"
+  ],
+  "browserErrors": [],
+  "screenshots": [
+    "empty-feedback-1440.png",
+    "empty-feedback-320.png",
+    "empty-feedback-390.png",
+    "empty-feedback-768.png",
+    "feedback-1440.png",
+    "feedback-320.png",
+    "feedback-390.png",
+    "feedback-768.png",
+    "feedback-detail-1440.png",
+    "feedback-detail-320.png",
+    "feedback-detail-390.png",
+    "feedback-detail-768.png",
+    "feedback-ineligible-1440.png",
+    "feedback-ineligible-320.png",
+    "feedback-ineligible-390.png",
+    "feedback-ineligible-768.png",
+    "feedback-invalid-1440.png",
+    "feedback-invalid-320.png",
+    "feedback-invalid-390.png",
+    "feedback-invalid-768.png",
+    "feedback-new-1440.png",
+    "feedback-new-320.png",
+    "feedback-new-390.png",
+    "feedback-new-768.png",
+    "feedback-private-1440.png",
+    "feedback-private-320.png",
+    "feedback-private-390.png",
+    "feedback-private-768.png"
+  ]
+}

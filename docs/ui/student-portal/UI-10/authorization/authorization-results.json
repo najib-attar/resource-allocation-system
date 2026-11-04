@@ -1,0 +1,789 @@
+{
+  "checks": 92,
+  "results": [
+    {
+      "actor": "anonymous",
+      "method": "POST",
+      "url": "/login",
+      "status": 400,
+      "expected": 400,
+      "label": "Missing login CSRF rejected before authentication"
+    },
+    {
+      "actor": "anonymous",
+      "method": "POST",
+      "url": "/login",
+      "status": 401,
+      "expected": 401,
+      "label": "Incorrect credentials rejected; username retained; password cleared"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/appointments/2/cancel",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/appointments/2/reschedule",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/appointments/2/decline-invitation",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/appointments/2/decision",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 2,
+      "method": "POST",
+      "url": "/appointments/4/decision",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/rooms/2/revise",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/rooms/2/decision",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/rooms/2/cancel",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/rooms/3/occurrences/1/cancel",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/rooms/2/invitation",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/rooms/2/decision",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/rooms/2/invitation",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/equipment/2/approve",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/equipment/2/reject",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/equipment/2/decision",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/equipment/4/handover",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/equipment/1/return",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/equipment/1/approve-extension",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/equipment/1/reject-extension",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/equipment/2/approve",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/equipment/2/reject",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/equipment/2/decision",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/equipment/4/handover",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/equipment/1/return",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/equipment/1/approve-extension",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/equipment/1/reject-extension",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/equipment/2/cancel",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/equipment/1/intend-return",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/equipment/1/extension",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/equipment/3/cancel-occurrence",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/waiting-lists/1/cancel",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/waiting-lists/1/review",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/waiting-lists/1/review",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/waiting-lists/priority/room/2",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/waiting-lists/priority/equipment/2",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/waiting-lists/priority/room/2",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/waiting-lists/priority/equipment/2",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/feedback/1/update",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/feedback/1/update",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/feedback/1/update",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/appointments/calendar",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 9,
+      "method": "POST",
+      "url": "/appointments/calendar",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 5,
+      "method": "POST",
+      "url": "/notifications/read",
+      "status": 403,
+      "expected": 403,
+      "label": "Authorization rejection"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/appointments/2/cancel",
+      "status": 409,
+      "expected": 409,
+      "label": "Stale revision rejected without cancellation"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/rooms/2/cancel",
+      "status": 409,
+      "expected": 409,
+      "label": "Stale revision rejected without cancellation"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/equipment/1/cancel",
+      "status": 409,
+      "expected": 409,
+      "label": "Borrowed equipment cannot be cancelled instead of physically returned"
+    },
+    {
+      "actor": 1,
+      "method": "POST",
+      "url": "/appointments/2/cancel",
+      "status": 400,
+      "expected": 400,
+      "label": "Missing resource CSRF rejected"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/appointments/1",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/rooms/1",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/rooms/2/revise",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/equipment/1",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/waiting-lists/1",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/feedback/1",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/feedback/new/equipment/1",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "url": "/appointments/4",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/appointments/4",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "url": "/appointments/4",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 9,
+      "method": "GET",
+      "url": "/appointments/4",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 7,
+      "method": "GET",
+      "url": "/appointments/4",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 6,
+      "method": "GET",
+      "url": "/appointments/4",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "url": "/appointments/new",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "url": "/rooms/new",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 2,
+      "method": "GET",
+      "url": "/equipment/catalog",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 9,
+      "method": "GET",
+      "url": "/appointments/new",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 9,
+      "method": "GET",
+      "url": "/rooms/new",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 9,
+      "method": "GET",
+      "url": "/equipment/catalog",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 7,
+      "method": "GET",
+      "url": "/appointments/new",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 7,
+      "method": "GET",
+      "url": "/rooms/new",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 7,
+      "method": "GET",
+      "url": "/equipment/catalog",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 6,
+      "method": "GET",
+      "url": "/appointments/new",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 6,
+      "method": "GET",
+      "url": "/rooms/new",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 6,
+      "method": "GET",
+      "url": "/equipment/catalog",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "url": "/appointments/availability",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "url": "/appointments/calendar-setup",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "url": "/rooms/configuration",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "url": "/equipment/inventory/1",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "url": "/equipment/custodians",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "url": "/waiting-lists/configuration",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "url": "/calendar/publications",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 1,
+      "method": "GET",
+      "url": "/users",
+      "status": 403,
+      "expected": 403,
+      "label": "Private or privileged read rejected"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/appointments/",
+      "status": 200,
+      "expected": 200,
+      "label": "Authorized index/feed/calendar contains no unrelated private records"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/rooms/",
+      "status": 200,
+      "expected": 200,
+      "label": "Authorized index/feed/calendar contains no unrelated private records"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/equipment/",
+      "status": 200,
+      "expected": 200,
+      "label": "Authorized index/feed/calendar contains no unrelated private records"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/waiting-lists/",
+      "status": 200,
+      "expected": 200,
+      "label": "Authorized index/feed/calendar contains no unrelated private records"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/feedback/",
+      "status": 200,
+      "expected": 200,
+      "label": "Authorized index/feed/calendar contains no unrelated private records"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/calendar/?view=week&date=2030-01-07",
+      "status": 200,
+      "expected": 200,
+      "label": "Authorized index/feed/calendar contains no unrelated private records"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/appointments/calendar?month=2030-01&week=2030-01-07",
+      "status": 200,
+      "expected": 200,
+      "label": "Authorized index/feed/calendar contains no unrelated private records"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/notifications/",
+      "status": 200,
+      "expected": 200,
+      "label": "Authorized index/feed/calendar contains no unrelated private records"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/notifications/feed",
+      "status": 200,
+      "expected": 200,
+      "label": "Authorized index/feed/calendar contains no unrelated private records"
+    },
+    {
+      "actor": 5,
+      "method": "GET",
+      "url": "/rooms/availability/302?date=2030-01-08",
+      "status": 200,
+      "expected": 200,
+      "label": "Authorized room busy/free discloses no event titles"
+    }
+  ],
+  "sessionChecks": [
+    {
+      "check": "Unsafe next rejected",
+      "target": "https://example.invalid/",
+      "actualPath": "/student/",
+      "cookie": {
+        "httpOnly": true,
+        "sameSite": "Lax",
+        "secure": false
+      }
+    },
+    {
+      "check": "Unsafe next rejected",
+      "target": "//example.invalid/",
+      "actualPath": "/student/",
+      "cookie": {
+        "httpOnly": true,
+        "sameSite": "Lax",
+        "secure": false
+      }
+    },
+    {
+      "check": "Unsafe next rejected",
+      "target": "/\\example.invalid/",
+      "actualPath": "/student/",
+      "cookie": {
+        "httpOnly": true,
+        "sameSite": "Lax",
+        "secure": false
+      }
+    },
+    {
+      "check": "Same-origin next preserved",
+      "target": "/calendar/?view=week&date=2030-01-07",
+      "actualPath": "/calendar/",
+      "cookie": {
+        "httpOnly": true,
+        "sameSite": "Lax",
+        "secure": false
+      }
+    }
+  ],
+  "browserErrors": [],
+  "notes": [
+    "Every resource POST uses the caller’s actual valid CSRF token except the explicitly missing-CSRF case.",
+    "No credential, session-cookie value, CSRF token or private report body is recorded.",
+    "The Python runner independently records PostgreSQL state after each real POST; authorization rejection must leave resource state unchanged."
+  ]
+}

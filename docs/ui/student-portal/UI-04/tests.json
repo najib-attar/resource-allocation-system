@@ -1,0 +1,15 @@
+{
+  "modules": [
+    "test_room_requests",
+    "test_recurrence",
+    "test_recurring_workflows.RecurringRoomWorkflowTests",
+    "test_recurring_views.RecurringRoomViewsTests",
+    "test_recurring_policy.RecurringRoomPolicyTests"
+  ],
+  "run": 68,
+  "passed": 68,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 489.91
+}

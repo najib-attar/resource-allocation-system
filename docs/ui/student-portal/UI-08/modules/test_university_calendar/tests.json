@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_university_calendar"
+  ],
+  "run": 21,
+  "passed": 21,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 211.53
+}

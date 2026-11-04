@@ -25,13 +25,3 @@
 <span class="ui-badge ui-badge--{{ tone }}"><span class="ui-status-dot" aria-hidden="true"></span>{{ label }}</span>
 {%- endmacro %}
 
-{% macro stat_card(label, value, note, href, symbol='calendar', tone='teal') -%}
-<a class="ui-stat-card" href="{{ href }}">
-    <span class="ui-stat-top"><span>{{ label }}</span><span class="ui-icon-tile ui-icon-tile--{{ tone }}">{{ icon(symbol) }}</span></span>
-    <strong class="ui-stat-value">{{ value }}</strong><span class="ui-stat-note">{{ note }}</span>
-</a>
-{%- endmacro %}
-
-{% macro section_heading(title, href='', label='View all') -%}
-<div class="ui-section-heading"><h2>{{ title }}</h2>{% if href %}<a class="ui-text-link" href="{{ href }}">{{ label }} {{ icon('arrow', 16) }}</a>{% endif %}</div>
-{%- endmacro %}

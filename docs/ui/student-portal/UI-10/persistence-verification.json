@@ -1,0 +1,1806 @@
+{
+  "status": "PASS",
+  "required": [
+    "lifecycles",
+    "UI-03",
+    "UI-04",
+    "UI-05",
+    "UI-06",
+    "UI-07",
+    "UI-08",
+    "browser",
+    "authorization",
+    "loading",
+    "equipment-lifecycles"
+  ],
+  "missing": [],
+  "failures": [],
+  "groups": {
+    "lifecycles": {
+      "posts": 67,
+      "successful": 62,
+      "rejected": 5,
+      "operations": [
+        {
+          "index": 0,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 1,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 2,
+          "path": "/logout",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 3,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 4,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 5,
+          "path": "/logout",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 6,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 7,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 8,
+          "path": "/logout",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 9,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 10,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 11,
+          "path": "/logout",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 12,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 13,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 14,
+          "path": "/logout",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 15,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 16,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 17,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 18,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 19,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 20,
+          "path": "/appointments/times",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 21,
+          "path": "/appointments/new",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 22,
+          "path": "/appointments/5/decision",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, commitments, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 23,
+          "path": "/appointments/5/reschedule",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, commitments, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 24,
+          "path": "/appointments/5/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, notificationReadStates, notifications"
+        },
+        {
+          "index": 25,
+          "path": "/appointments/times",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 26,
+          "path": "/appointments/new",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 27,
+          "path": "/appointments/6/decision",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 28,
+          "path": "/appointments/6/decision",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, commitments, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 29,
+          "path": "/appointments/6/reschedule",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, commitments, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 30,
+          "path": "/appointments/6/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, notificationReadStates, notifications"
+        },
+        {
+          "index": 31,
+          "path": "/appointments/times",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 32,
+          "path": "/appointments/new",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, invitations, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 33,
+          "path": "/appointments/7/decision",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, commitments, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 34,
+          "path": "/appointments/7/decline-invitation",
+          "status": 302,
+          "verification": "expected committed mutation: invitations, notificationReadStates, notifications"
+        },
+        {
+          "index": 35,
+          "path": "/appointments/7/reschedule",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, commitments, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 36,
+          "path": "/appointments/7/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, notificationReadStates, notifications"
+        },
+        {
+          "index": 37,
+          "path": "/appointments/times",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 38,
+          "path": "/appointments/new",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, invitations, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 39,
+          "path": "/appointments/8/decision",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 40,
+          "path": "/appointments/8/decision",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, commitments, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 41,
+          "path": "/appointments/8/decline-invitation",
+          "status": 302,
+          "verification": "expected committed mutation: invitations, notificationReadStates, notifications"
+        },
+        {
+          "index": 42,
+          "path": "/appointments/8/reschedule",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, commitments, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 43,
+          "path": "/appointments/8/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, notificationReadStates, notifications"
+        },
+        {
+          "index": 44,
+          "path": "/appointments/times",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 45,
+          "path": "/appointments/new",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 46,
+          "path": "/appointments/9/decision",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 47,
+          "path": "/equipment/4/handover",
+          "status": 302,
+          "verification": "expected committed mutation: assets, equipment, notificationReadStates, notifications"
+        },
+        {
+          "index": 48,
+          "path": "/equipment/4/intend-return",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications"
+        },
+        {
+          "index": 49,
+          "path": "/equipment/4/extension",
+          "status": 302,
+          "verification": "expected committed mutation: extensions, notificationReadStates, notifications"
+        },
+        {
+          "index": 50,
+          "path": "/equipment/4/approve-extension",
+          "status": 302,
+          "verification": "expected committed mutation: assets, equipment, extensions, notificationReadStates, notifications"
+        },
+        {
+          "index": 51,
+          "path": "/equipment/4/return",
+          "status": 302,
+          "verification": "expected committed mutation: assets, equipment, notificationReadStates, notifications"
+        },
+        {
+          "index": 52,
+          "path": "/equipment/4/return",
+          "status": 302,
+          "verification": "expected committed mutation: assets, equipment, notificationReadStates, notifications"
+        },
+        {
+          "index": 53,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 54,
+          "path": "/rooms/new",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, roomInvitations, rooms"
+        },
+        {
+          "index": 55,
+          "path": "/rooms/6/decision",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, roomReservations, rooms"
+        },
+        {
+          "index": 56,
+          "path": "/rooms/6/invitation",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, roomInvitations"
+        },
+        {
+          "index": 57,
+          "path": "/rooms/6/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, roomReservations, rooms"
+        },
+        {
+          "index": 58,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 59,
+          "path": "/rooms/new",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, occurrences, rooms, series"
+        },
+        {
+          "index": 60,
+          "path": "/rooms/7/decision",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, occurrences, roomReservations, rooms"
+        },
+        {
+          "index": 61,
+          "path": "/rooms/7/decision",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, occurrences"
+        },
+        {
+          "index": 62,
+          "path": "/rooms/7/occurrences/5/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, occurrences, roomReservations, rooms"
+        },
+        {
+          "index": 63,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 64,
+          "path": "/rooms/new",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, occurrences, rooms, series"
+        },
+        {
+          "index": 65,
+          "path": "/rooms/8/decision",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, occurrences, roomReservations, rooms"
+        },
+        {
+          "index": 66,
+          "path": "/rooms/8/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, occurrences, roomReservations, rooms"
+        }
+      ],
+      "inputSha256": {
+        "persistence.json": "ccd52f3460d1c810a43f39ed95e5d051bb08e88c69da4625db7e15150e47ffc8",
+        "post-states.json": "c6279c1caedde31dfe457ea8b330ac332438a33385cff56934949dc55bf9478e"
+      },
+      "changesAfterLastPost": []
+    },
+    "UI-03": {
+      "posts": 9,
+      "successful": 8,
+      "rejected": 1,
+      "operations": [
+        {
+          "index": 0,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 1,
+          "path": "/appointments/times",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 2,
+          "path": "/appointments/times",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 3,
+          "path": "/appointments/new",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, invitations, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 4,
+          "path": "/appointments/5/reschedule",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 5,
+          "path": "/appointments/5/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, notificationReadStates, notifications"
+        },
+        {
+          "index": 6,
+          "path": "/appointments/3/decline-invitation",
+          "status": 302,
+          "verification": "expected committed mutation: invitations, notificationReadStates, notifications"
+        },
+        {
+          "index": 7,
+          "path": "/appointments/2/reschedule",
+          "status": 302,
+          "verification": "expected committed mutation: appointments, notificationReadStates, notifications, professors"
+        },
+        {
+          "index": 8,
+          "path": "/appointments/new",
+          "status": 409,
+          "verification": "rejected: no captured domain or notification changes"
+        }
+      ],
+      "inputSha256": {
+        "persistence.json": "397b273a6d6b37633a05c4c1050e89b371da6f25b50ed9d3198d42cb45a6e5ce",
+        "post-states.json": "df6ec93df1582a495064c4788321d9fab918888b932f694f70901f19a962ae44"
+      },
+      "changesAfterLastPost": []
+    },
+    "UI-04": {
+      "posts": 12,
+      "successful": 12,
+      "rejected": 0,
+      "operations": [
+        {
+          "index": 0,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 1,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 2,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 3,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 4,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 5,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 6,
+          "path": "/rooms/new",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, roomInvitations, rooms"
+        },
+        {
+          "index": 7,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 8,
+          "path": "/rooms/6/revise",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, roomInvitations, rooms"
+        },
+        {
+          "index": 9,
+          "path": "/rooms/6/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, rooms"
+        },
+        {
+          "index": 10,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 11,
+          "path": "/rooms/3/occurrences/2/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, occurrences, roomReservations"
+        }
+      ],
+      "inputSha256": {
+        "persistence.json": "5905031acf7e84e9ef70a70610befc983abb47e5061eff7068d17c36f4f7c928",
+        "post-states.json": "1ef03f4e3b33c8e0e23bbd5593179cb7115aa38fdcb4c28e51fe6c46db950fc8"
+      },
+      "changesAfterLastPost": []
+    },
+    "UI-05": {
+      "posts": 12,
+      "successful": 10,
+      "rejected": 2,
+      "operations": [
+        {
+          "index": 0,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 1,
+          "path": "/equipment/catalog",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 2,
+          "path": "/equipment/catalog",
+          "status": 302,
+          "verification": "expected committed mutation: equipment, notificationReadStates, notifications"
+        },
+        {
+          "index": 3,
+          "path": "/equipment/5/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: equipment, notificationReadStates, notifications"
+        },
+        {
+          "index": 4,
+          "path": "/equipment/1/handover",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 5,
+          "path": "/equipment/1/return",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 6,
+          "path": "/equipment/1/intend-return",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications"
+        },
+        {
+          "index": 7,
+          "path": "/equipment/1/extension",
+          "status": 302,
+          "verification": "expected committed mutation: extensions, notificationReadStates, notifications"
+        },
+        {
+          "index": 8,
+          "path": "/equipment/catalog",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 9,
+          "path": "/equipment/catalog",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 10,
+          "path": "/equipment/catalog",
+          "status": 302,
+          "verification": "expected committed mutation: equipment, notificationReadStates, notifications, occurrences, series"
+        },
+        {
+          "index": 11,
+          "path": "/equipment/6/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: equipment, notificationReadStates, notifications, occurrences"
+        }
+      ],
+      "inputSha256": {
+        "persistence.json": "c6a51fc47cfa3d668863f3406c08f0050d6461696826d9463f5ca0a27cc6b3a1",
+        "post-states.json": "b48329b06528ba5a98d836f325b2a809446b094041df50544e01808b1cae1904"
+      },
+      "changesAfterLastPost": []
+    },
+    "UI-06": {
+      "posts": 9,
+      "successful": 8,
+      "rejected": 1,
+      "operations": [
+        {
+          "index": 0,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 1,
+          "path": "/waiting-lists/1/review",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 2,
+          "path": "/waiting-lists/refresh",
+          "status": 302,
+          "verification": "expected committed mutation: "
+        },
+        {
+          "index": 3,
+          "path": "/waiting-lists/1/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, rooms, waiting"
+        },
+        {
+          "index": 4,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 5,
+          "path": "/rooms/new",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, rooms, waiting"
+        },
+        {
+          "index": 6,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 7,
+          "path": "/waiting-lists/2/review",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, waiting"
+        },
+        {
+          "index": 8,
+          "path": "/rooms/4/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, roomReservations, rooms, waiting"
+        }
+      ],
+      "inputSha256": {
+        "persistence.json": "4a88383d8e8e959185c843eb4cf19518175e6d53c6832969532446366e04ed58",
+        "post-states.json": "b913693f9b4502db6c13c07488e0428d11ee2c99af9ef2665d501df2cdd73cc4"
+      },
+      "changesAfterLastPost": []
+    },
+    "UI-07": {
+      "posts": 8,
+      "successful": 7,
+      "rejected": 1,
+      "operations": [
+        {
+          "index": 0,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 1,
+          "path": "/feedback/new/equipment/1",
+          "status": 302,
+          "verification": "expected committed mutation: feedback, feedbackEvents, notificationReadStates, notifications"
+        },
+        {
+          "index": 2,
+          "path": "/feedback/2/update",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 3,
+          "path": "/feedback/2/update",
+          "status": 302,
+          "verification": "expected committed mutation: feedback, feedbackEvents, notificationReadStates, notifications"
+        },
+        {
+          "index": 4,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 5,
+          "path": "/feedback/2/update",
+          "status": 302,
+          "verification": "expected committed mutation: feedback, feedbackEvents, notificationReadStates, notifications"
+        },
+        {
+          "index": 6,
+          "path": "/feedback/2/update",
+          "status": 302,
+          "verification": "expected committed mutation: feedback, feedbackEvents, notificationReadStates, notifications"
+        },
+        {
+          "index": 7,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        }
+      ],
+      "inputSha256": {
+        "persistence.json": "32f1a4180c14236ab79be49133fc1f2df43d812e25dd02f8a8742fd26960365d",
+        "post-states.json": "12ef5beb069bd6d22f2aeaa8b414368199a89fad6034498a0371a926ee576c01"
+      },
+      "changesAfterLastPost": []
+    },
+    "UI-08": {
+      "posts": 8,
+      "successful": 6,
+      "rejected": 2,
+      "operations": [
+        {
+          "index": 0,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 1,
+          "path": "/appointments/calendar",
+          "status": 302,
+          "verification": "expected committed mutation: blocks"
+        },
+        {
+          "index": 2,
+          "path": "/appointments/calendar",
+          "status": 302,
+          "verification": "expected committed mutation: blocks"
+        },
+        {
+          "index": 3,
+          "path": "/appointments/calendar",
+          "status": 409,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 4,
+          "path": "/notifications/read",
+          "status": 200,
+          "verification": "expected committed mutation: notificationReadStates, notifications"
+        },
+        {
+          "index": 5,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 6,
+          "path": "/notifications/read",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 7,
+          "path": "/notifications/read",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications"
+        }
+      ],
+      "inputSha256": {
+        "persistence.json": "6cdc9e3a9ead568effa2d7ca031f597420207d2abfa4e22f3c29c856ae867026",
+        "post-states.json": "f0b6bb9c6f32593de0fa11bce2c6021d6aed797904bea9b24de227daa093517d"
+      },
+      "changesAfterLastPost": []
+    },
+    "browser": {
+      "posts": 67,
+      "successful": 11,
+      "rejected": 56,
+      "operations": [
+        {
+          "index": 0,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 1,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 2,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 3,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 4,
+          "path": "/appointments/new",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 5,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 6,
+          "path": "/appointments/2/cancel",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 7,
+          "path": "/appointments/2/reschedule",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 8,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 9,
+          "path": "/appointments/3/decline-invitation",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 10,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 11,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 12,
+          "path": "/rooms/new",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 13,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 14,
+          "path": "/rooms/1/cancel",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 15,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 16,
+          "path": "/rooms/2/cancel",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 17,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 18,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 19,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 20,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 21,
+          "path": "/rooms/2/revise",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 22,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 23,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 24,
+          "path": "/rooms/3/occurrences/1/cancel",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 25,
+          "path": "/rooms/3/occurrences/2/cancel",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 26,
+          "path": "/rooms/3/cancel",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 27,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 28,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 29,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 30,
+          "path": "/equipment/catalog",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 31,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 32,
+          "path": "/equipment/1/intend-return",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 33,
+          "path": "/equipment/1/extension",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 34,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 35,
+          "path": "/equipment/2/cancel",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 36,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 37,
+          "path": "/equipment/3/cancel-occurrence",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 38,
+          "path": "/equipment/3/cancel-occurrence",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 39,
+          "path": "/equipment/3/cancel",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 40,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 41,
+          "path": "/waiting-lists/refresh",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 42,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 43,
+          "path": "/waiting-lists/1/cancel",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 44,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 45,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 46,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 47,
+          "path": "/feedback/new/equipment/1",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 48,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 49,
+          "path": "/feedback/1/update",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 50,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 51,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 52,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 53,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 54,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 55,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 56,
+          "path": "/appointments/calendar",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 57,
+          "path": "/appointments/calendar",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 58,
+          "path": "/logout",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 59,
+          "path": "/notifications/read",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 60,
+          "path": "/appointments/2/cancel",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 61,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 62,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 63,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 64,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 65,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 66,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        }
+      ],
+      "inputSha256": {
+        "persistence.json": "d7310d8902d734d3f0af317a0cb0d442ab2a12c9c119de0651ecfe28d0c2ee6d",
+        "post-states.json": "75a23608ab2767987216d3ca8d475919ddd523ee320e839e5c0d313467c21a72"
+      },
+      "changesAfterLastPost": []
+    },
+    "authorization": {
+      "posts": 59,
+      "successful": 10,
+      "rejected": 49,
+      "operations": [
+        {
+          "index": 0,
+          "path": "/login",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 1,
+          "path": "/login",
+          "status": 401,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 2,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 3,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 4,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 5,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 6,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 7,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 8,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 9,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 10,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 11,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 12,
+          "path": "/appointments/2/cancel",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 13,
+          "path": "/appointments/2/reschedule",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 14,
+          "path": "/appointments/2/decline-invitation",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 15,
+          "path": "/appointments/2/decision",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 16,
+          "path": "/appointments/4/decision",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 17,
+          "path": "/rooms/2/revise",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 18,
+          "path": "/rooms/2/decision",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 19,
+          "path": "/rooms/2/cancel",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 20,
+          "path": "/rooms/3/occurrences/1/cancel",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 21,
+          "path": "/rooms/2/invitation",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 22,
+          "path": "/rooms/2/decision",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 23,
+          "path": "/rooms/2/invitation",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 24,
+          "path": "/equipment/2/approve",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 25,
+          "path": "/equipment/2/reject",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 26,
+          "path": "/equipment/2/decision",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 27,
+          "path": "/equipment/4/handover",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 28,
+          "path": "/equipment/1/return",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 29,
+          "path": "/equipment/1/approve-extension",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 30,
+          "path": "/equipment/1/reject-extension",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 31,
+          "path": "/equipment/2/approve",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 32,
+          "path": "/equipment/2/reject",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 33,
+          "path": "/equipment/2/decision",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 34,
+          "path": "/equipment/4/handover",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 35,
+          "path": "/equipment/1/return",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 36,
+          "path": "/equipment/1/approve-extension",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 37,
+          "path": "/equipment/1/reject-extension",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 38,
+          "path": "/equipment/2/cancel",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 39,
+          "path": "/equipment/1/intend-return",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 40,
+          "path": "/equipment/1/extension",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 41,
+          "path": "/equipment/3/cancel-occurrence",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 42,
+          "path": "/waiting-lists/1/cancel",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 43,
+          "path": "/waiting-lists/1/review",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 44,
+          "path": "/waiting-lists/1/review",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 45,
+          "path": "/waiting-lists/priority/room/2",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 46,
+          "path": "/waiting-lists/priority/equipment/2",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 47,
+          "path": "/waiting-lists/priority/room/2",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 48,
+          "path": "/waiting-lists/priority/equipment/2",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 49,
+          "path": "/feedback/1/update",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 50,
+          "path": "/feedback/1/update",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 51,
+          "path": "/feedback/1/update",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 52,
+          "path": "/appointments/calendar",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 53,
+          "path": "/appointments/calendar",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 54,
+          "path": "/notifications/read",
+          "status": 403,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 55,
+          "path": "/appointments/2/cancel",
+          "status": 409,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 56,
+          "path": "/rooms/2/cancel",
+          "status": 409,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 57,
+          "path": "/equipment/1/cancel",
+          "status": 409,
+          "verification": "rejected: no captured domain or notification changes"
+        },
+        {
+          "index": 58,
+          "path": "/appointments/2/cancel",
+          "status": 400,
+          "verification": "rejected: no captured domain or notification changes"
+        }
+      ],
+      "inputSha256": {
+        "persistence.json": "8dd90531820a808d07d4c3a2a021be63f4d34675203c5fae1aa0407594819dac",
+        "post-states.json": "945f0ad1406fc292ae136355e2271cea9383984193af7cd88e5e8a84caa8558b"
+      },
+      "changesAfterLastPost": []
+    },
+    "loading": {
+      "posts": 3,
+      "successful": 3,
+      "rejected": 0,
+      "operations": [
+        {
+          "index": 0,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 1,
+          "path": "/appointments/times",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 2,
+          "path": "/rooms/candidates",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        }
+      ],
+      "inputSha256": {
+        "persistence.json": "26115f091f2d2ec2a521452c23c705b736cb3d205be78bce4f3510937c379229",
+        "post-states.json": "5d63029ed8d7c9309bfd84ca3beba637ade2e5ddc5e51aa931be064f32d95e0f"
+      },
+      "changesAfterLastPost": []
+    },
+    "equipment-lifecycles": {
+      "posts": 21,
+      "successful": 21,
+      "rejected": 0,
+      "operations": [
+        {
+          "index": 0,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 1,
+          "path": "/login",
+          "status": 302,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 2,
+          "path": "/equipment/catalog",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 3,
+          "path": "/equipment/catalog",
+          "status": 302,
+          "verification": "expected committed mutation: equipment, notificationReadStates, notifications"
+        },
+        {
+          "index": 4,
+          "path": "/equipment/5/approve",
+          "status": 302,
+          "verification": "expected committed mutation: assets, equipment, notificationReadStates, notifications"
+        },
+        {
+          "index": 5,
+          "path": "/equipment/5/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: assets, equipment, notificationReadStates, notifications"
+        },
+        {
+          "index": 6,
+          "path": "/equipment/catalog",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 7,
+          "path": "/equipment/catalog",
+          "status": 302,
+          "verification": "expected committed mutation: equipment, notificationReadStates, notifications"
+        },
+        {
+          "index": 8,
+          "path": "/equipment/6/reject",
+          "status": 302,
+          "verification": "expected committed mutation: equipment, notificationReadStates, notifications"
+        },
+        {
+          "index": 9,
+          "path": "/equipment/catalog",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 10,
+          "path": "/equipment/catalog",
+          "status": 302,
+          "verification": "expected committed mutation: equipment, notificationReadStates, notifications, occurrences, series"
+        },
+        {
+          "index": 11,
+          "path": "/equipment/7/decision",
+          "status": 302,
+          "verification": "expected committed mutation: assets, equipment, notificationReadStates, notifications, occurrences"
+        },
+        {
+          "index": 12,
+          "path": "/equipment/7/decision",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, occurrences"
+        },
+        {
+          "index": 13,
+          "path": "/equipment/7/cancel-occurrence",
+          "status": 302,
+          "verification": "expected committed mutation: assets, equipment, notificationReadStates, notifications, occurrences"
+        },
+        {
+          "index": 14,
+          "path": "/equipment/catalog",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 15,
+          "path": "/equipment/catalog",
+          "status": 302,
+          "verification": "expected committed mutation: equipment, notificationReadStates, notifications"
+        },
+        {
+          "index": 16,
+          "path": "/equipment/8/approve",
+          "status": 302,
+          "verification": "expected committed mutation: assets, equipment, notificationReadStates, notifications"
+        },
+        {
+          "index": 17,
+          "path": "/equipment/catalog",
+          "status": 200,
+          "verification": "session action or recommendations: domain rows unchanged"
+        },
+        {
+          "index": 18,
+          "path": "/equipment/catalog",
+          "status": 302,
+          "verification": "expected committed mutation: equipment, notificationReadStates, notifications, waiting"
+        },
+        {
+          "index": 19,
+          "path": "/waiting-lists/2/review",
+          "status": 302,
+          "verification": "expected committed mutation: notificationReadStates, notifications, waiting"
+        },
+        {
+          "index": 20,
+          "path": "/equipment/8/cancel",
+          "status": 302,
+          "verification": "expected committed mutation: assets, equipment, notificationReadStates, notifications, waiting"
+        }
+      ],
+      "inputSha256": {
+        "persistence.json": "43bc5482b57fce0491df615a59496a540b3b4be57e247ae1260cb792dab48dd3",
+        "post-states.json": "e7478cff0b35fd439f3a81288c8d368f610fa43d2253237517621de4c7fab02d"
+      },
+      "changesAfterLastPost": []
+    }
+  },
+  "posts": 275,
+  "successful": 158,
+  "rejected": 117,
+  "scope": "Captured committed domain rows and notifications; authentication internals, exact participant authorization and calendar display are covered separately by live browser and service regressions."
+}

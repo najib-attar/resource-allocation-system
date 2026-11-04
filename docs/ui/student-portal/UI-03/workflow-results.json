@@ -1,0 +1,8 @@
+{
+  "phase": "UI-03",
+  "results": [
+    "Multiple professors and optional student invitation submitted through real form; recommendations loaded; changed input cleared selection; offline error disabled submission; manual proposal accepted; reschedule reset approvals; cancellation persisted; invitee decline preserved organizer controls; mandatory office hours and private availability access enforced.",
+    "Synthetic browser-created appointment: /appointments/5"
+  ],
+  "browserErrors": []
+}

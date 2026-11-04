@@ -1,0 +1,69 @@
+{
+  "modules": [
+    "test_university_calendar",
+    "test_personal_schedule",
+    "test_calendar_loading",
+    "test_notifications"
+  ],
+  "expected": 50,
+  "run": 50,
+  "passed": 50,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 215.38,
+  "results": {
+    "test_calendar_loading": {
+      "modules": [
+        "test_calendar_loading"
+      ],
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 16.16,
+      "exitCode": 0,
+      "expected": 3
+    },
+    "test_personal_schedule": {
+      "modules": [
+        "test_personal_schedule"
+      ],
+      "run": 15,
+      "passed": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 55.05,
+      "exitCode": 0,
+      "expected": 15
+    },
+    "test_notifications": {
+      "modules": [
+        "test_notifications"
+      ],
+      "run": 11,
+      "passed": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 138.02,
+      "exitCode": 0,
+      "expected": 11
+    },
+    "test_university_calendar": {
+      "modules": [
+        "test_university_calendar"
+      ],
+      "run": 21,
+      "passed": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 211.53,
+      "exitCode": 0,
+      "expected": 21
+    }
+  }
+}

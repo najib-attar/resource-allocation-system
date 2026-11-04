@@ -1,0 +1,32 @@
+[
+  {
+    "actor": 1,
+    "url": "/student/",
+    "status": 200,
+    "endpoint": "student.home"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/notifications/",
+    "status": 200,
+    "endpoint": "notifications.index"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/calendar",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/",
+    "status": 200,
+    "endpoint": "appointments.index"
+  }
+]

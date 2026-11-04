@@ -1,0 +1,2162 @@
+[
+  {
+    "actor": 1,
+    "url": "/student/",
+    "status": 200,
+    "endpoint": "student.home"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/notifications/",
+    "status": 200,
+    "endpoint": "notifications.index"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/calendar",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/",
+    "status": 200,
+    "endpoint": "appointments.index"
+  },
+  {
+    "actor": 1,
+    "url": "/rooms/",
+    "status": 200,
+    "endpoint": "rooms.index"
+  },
+  {
+    "actor": 1,
+    "url": "/equipment/",
+    "status": 200,
+    "endpoint": "equipment.index"
+  },
+  {
+    "actor": 1,
+    "url": "/waiting-lists/",
+    "status": 200,
+    "endpoint": "waiting.index"
+  },
+  {
+    "actor": 1,
+    "url": "/feedback/",
+    "status": 200,
+    "endpoint": "feedback.index"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/new",
+    "status": 200,
+    "endpoint": "appointments.new"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/1",
+    "status": 200,
+    "endpoint": "appointments.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/2",
+    "status": 200,
+    "endpoint": "appointments.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/3",
+    "status": 200,
+    "endpoint": "appointments.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/rooms/1",
+    "status": 200,
+    "endpoint": "rooms.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/rooms/2",
+    "status": 200,
+    "endpoint": "rooms.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-07",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-08",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-09",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-10",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-11",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=week&date=2030-01-07",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-07",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 1,
+    "url": "/rooms/new",
+    "status": 200,
+    "endpoint": "rooms.new"
+  },
+  {
+    "actor": 1,
+    "url": "/rooms/5",
+    "status": 200,
+    "endpoint": "rooms.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/rooms/3",
+    "status": 200,
+    "endpoint": "rooms.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/rooms/availability/302?date=2030-01-08",
+    "status": 200,
+    "endpoint": "rooms.availability"
+  },
+  {
+    "actor": 1,
+    "url": "/rooms/2/revise",
+    "status": 200,
+    "endpoint": "rooms.revise"
+  },
+  {
+    "actor": 1,
+    "url": "/rooms/availability/302?date=2030-01-09",
+    "status": 200,
+    "endpoint": "rooms.availability"
+  },
+  {
+    "actor": 1,
+    "url": "/rooms/availability/302?date=2030-01-17",
+    "status": 200,
+    "endpoint": "rooms.availability"
+  },
+  {
+    "actor": 1,
+    "url": "/equipment/catalog",
+    "status": 200,
+    "endpoint": "equipment.catalog"
+  },
+  {
+    "actor": 1,
+    "url": "/equipment/4",
+    "status": 200,
+    "endpoint": "equipment.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/equipment/3",
+    "status": 200,
+    "endpoint": "equipment.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/equipment/2",
+    "status": 200,
+    "endpoint": "equipment.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/equipment/1",
+    "status": 200,
+    "endpoint": "equipment.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/waiting-lists/policy",
+    "status": 200,
+    "endpoint": "waiting.policy"
+  },
+  {
+    "actor": 1,
+    "url": "/feedback/new/equipment/1",
+    "status": 200,
+    "endpoint": "feedback.new"
+  },
+  {
+    "actor": 1,
+    "url": "/waiting-lists/1",
+    "status": 200,
+    "endpoint": "waiting.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/feedback/?scope=mine",
+    "status": 200,
+    "endpoint": "feedback.index"
+  },
+  {
+    "actor": 1,
+    "url": "/feedback/1",
+    "status": 200,
+    "endpoint": "feedback.detail"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=month&date=2029-12-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=month&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=month&date=2030-02-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=month&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=week&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-01&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-02&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-05&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-06&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-15&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-16&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-17&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-18&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-19&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-20&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-21&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-22&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-23&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-24&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-25&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-26&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-27&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-28&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-29&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-30&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-02-01&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-02-02&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-02-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=week&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=week&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=week&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=published",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=published",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=published",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=month&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=published",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=week&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=published",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=published",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/academic/1?date=2030-01-08",
+    "status": 200,
+    "endpoint": "calendar.academic"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/calendar?month=2030-01&week=2029-12-31",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-14",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-21",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-28",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 5,
+    "url": "/student/",
+    "status": 200,
+    "endpoint": "student.home"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/notifications/",
+    "status": 200,
+    "endpoint": "notifications.index"
+  },
+  {
+    "actor": 5,
+    "url": "/appointments/calendar",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 5,
+    "url": "/appointments/",
+    "status": 200,
+    "endpoint": "appointments.index"
+  },
+  {
+    "actor": 5,
+    "url": "/rooms/",
+    "status": 200,
+    "endpoint": "rooms.index"
+  },
+  {
+    "actor": 5,
+    "url": "/equipment/",
+    "status": 200,
+    "endpoint": "equipment.index"
+  },
+  {
+    "actor": 5,
+    "url": "/waiting-lists/",
+    "status": 200,
+    "endpoint": "waiting.index"
+  },
+  {
+    "actor": 5,
+    "url": "/feedback/",
+    "status": 200,
+    "endpoint": "feedback.index"
+  },
+  {
+    "actor": 5,
+    "url": "/appointments/new",
+    "status": 200,
+    "endpoint": "appointments.new"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=day&date=2030-01-07",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=day&date=2030-01-08",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=day&date=2030-01-09",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=day&date=2030-01-10",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=day&date=2030-01-11",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=week&date=2030-01-07",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-07",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 5,
+    "url": "/rooms/new",
+    "status": 200,
+    "endpoint": "rooms.new"
+  },
+  {
+    "actor": 5,
+    "url": "/equipment/catalog",
+    "status": 200,
+    "endpoint": "equipment.catalog"
+  },
+  {
+    "actor": 5,
+    "url": "/waiting-lists/policy",
+    "status": 200,
+    "endpoint": "waiting.policy"
+  },
+  {
+    "actor": 5,
+    "url": "/feedback/?scope=mine",
+    "status": 200,
+    "endpoint": "feedback.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=week&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=week&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=week&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=month&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=week&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 5,
+    "url": "/appointments/calendar?month=2030-01&week=2029-12-31",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 5,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-14",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 5,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-21",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 5,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-28",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 8,
+    "url": "/student/",
+    "status": 200,
+    "endpoint": "student.home"
+  },
+  {
+    "actor": 8,
+    "url": "/calendar/",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 8,
+    "url": "/notifications/",
+    "status": 200,
+    "endpoint": "notifications.index"
+  },
+  {
+    "actor": 8,
+    "url": "/appointments/calendar",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 8,
+    "url": "/calendar/?view=week&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 8,
+    "url": "/calendar/?view=week&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 8,
+    "url": "/calendar/?view=week&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 8,
+    "url": "/calendar/?view=month&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 8,
+    "url": "/calendar/?view=week&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 8,
+    "url": "/calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 8,
+    "url": "/calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 8,
+    "url": "/calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 8,
+    "url": "/calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 8,
+    "url": "/calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 8,
+    "url": "/calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 8,
+    "url": "/calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 8,
+    "url": "/appointments/calendar?month=2030-01&week=2029-12-31",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 8,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-07",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 8,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-14",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 8,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-21",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 8,
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-28",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": "2",
+    "url": "/",
+    "status": 200,
+    "endpoint": "index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/appointments/",
+    "status": 200,
+    "endpoint": "appointments.index"
+  },
+  {
+    "actor": "2",
+    "url": "/rooms/",
+    "status": 200,
+    "endpoint": "rooms.index"
+  },
+  {
+    "actor": "2",
+    "url": "/equipment/",
+    "status": 200,
+    "endpoint": "equipment.index"
+  },
+  {
+    "actor": "2",
+    "url": "/waiting-lists/",
+    "status": 200,
+    "endpoint": "waiting.index"
+  },
+  {
+    "actor": "2",
+    "url": "/feedback/",
+    "status": 200,
+    "endpoint": "feedback.index"
+  },
+  {
+    "actor": "2",
+    "url": "/appointments/calendar",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": "2",
+    "url": "/appointments/availability",
+    "status": 200,
+    "endpoint": "appointments.availability"
+  },
+  {
+    "actor": "2",
+    "url": "/appointments/1",
+    "status": 200,
+    "endpoint": "appointments.detail"
+  },
+  {
+    "actor": "2",
+    "url": "/appointments/2",
+    "status": 200,
+    "endpoint": "appointments.detail"
+  },
+  {
+    "actor": "2",
+    "url": "/appointments/calendar?month=2030-01&week=2029-12-31",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": "2",
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-07",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": "2",
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-14",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": "2",
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-21",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": "2",
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-28",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": "2",
+    "url": "/rooms/2",
+    "status": 200,
+    "endpoint": "rooms.detail"
+  },
+  {
+    "actor": "2",
+    "url": "/waiting-lists/policy",
+    "status": 200,
+    "endpoint": "waiting.policy"
+  },
+  {
+    "actor": "2",
+    "url": "/feedback/?scope=mine",
+    "status": 200,
+    "endpoint": "feedback.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=month&date=2029-12-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=month&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=month&date=2030-02-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=month&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=week&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-01&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-02&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-05&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-06&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-15&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-16&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-17&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-18&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-19&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-20&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-21&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-22&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-23&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-24&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-25&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-26&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-27&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-28&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-29&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-30&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-01-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-02-01&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-02-02&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "2",
+    "url": "/calendar/?view=day&date=2030-02-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "6",
+    "url": "/",
+    "status": 200,
+    "endpoint": "index"
+  },
+  {
+    "actor": "6",
+    "url": "/calendar/",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "6",
+    "url": "/appointments/",
+    "status": 200,
+    "endpoint": "appointments.index"
+  },
+  {
+    "actor": "6",
+    "url": "/rooms/",
+    "status": 200,
+    "endpoint": "rooms.index"
+  },
+  {
+    "actor": "6",
+    "url": "/equipment/",
+    "status": 200,
+    "endpoint": "equipment.index"
+  },
+  {
+    "actor": "6",
+    "url": "/waiting-lists/",
+    "status": 200,
+    "endpoint": "waiting.index"
+  },
+  {
+    "actor": "6",
+    "url": "/feedback/",
+    "status": 200,
+    "endpoint": "feedback.index"
+  },
+  {
+    "actor": "6",
+    "url": "/appointments/calendar",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": "6",
+    "url": "/add-request",
+    "status": 200,
+    "endpoint": "add_request"
+  },
+  {
+    "actor": "6",
+    "url": "/requests",
+    "status": 200,
+    "endpoint": "requests"
+  },
+  {
+    "actor": "6",
+    "url": "/allocation-summary",
+    "status": 200,
+    "endpoint": "allocation_summary"
+  },
+  {
+    "actor": "6",
+    "url": "/schedules",
+    "status": 200,
+    "endpoint": "schedules"
+  },
+  {
+    "actor": "6",
+    "url": "/users",
+    "status": 200,
+    "endpoint": "users"
+  },
+  {
+    "actor": "6",
+    "url": "/spaces",
+    "status": 200,
+    "endpoint": "spaces"
+  },
+  {
+    "actor": "6",
+    "url": "/raw-data",
+    "status": 200,
+    "endpoint": "raw_data"
+  },
+  {
+    "actor": "6",
+    "url": "/appointments/calendar-setup",
+    "status": 200,
+    "endpoint": "appointments.bindings"
+  },
+  {
+    "actor": "6",
+    "url": "/rooms/configuration",
+    "status": 200,
+    "endpoint": "rooms.configuration"
+  },
+  {
+    "actor": "6",
+    "url": "/calendar/publications",
+    "status": 200,
+    "endpoint": "calendar.publications"
+  },
+  {
+    "actor": "6",
+    "url": "/equipment/custodians",
+    "status": 200,
+    "endpoint": "equipment.custodians"
+  },
+  {
+    "actor": "6",
+    "url": "/waiting-lists/configuration",
+    "status": 200,
+    "endpoint": "waiting.configuration"
+  },
+  {
+    "actor": "6",
+    "url": "/add-request?type=CommitteeMeeting",
+    "status": 200,
+    "endpoint": "add_request"
+  },
+  {
+    "actor": "6",
+    "url": "/request/1",
+    "status": 200,
+    "endpoint": "request_detail"
+  },
+  {
+    "actor": "6",
+    "url": "/schedules?type=space",
+    "status": 200,
+    "endpoint": "schedules"
+  },
+  {
+    "actor": "6",
+    "url": "/schedules?type=user",
+    "status": 200,
+    "endpoint": "schedules"
+  },
+  {
+    "actor": "6",
+    "url": "/waiting-lists/policy",
+    "status": 200,
+    "endpoint": "waiting.policy"
+  },
+  {
+    "actor": "7",
+    "url": "/",
+    "status": 200,
+    "endpoint": "index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/appointments/",
+    "status": 200,
+    "endpoint": "appointments.index"
+  },
+  {
+    "actor": "7",
+    "url": "/rooms/",
+    "status": 200,
+    "endpoint": "rooms.index"
+  },
+  {
+    "actor": "7",
+    "url": "/equipment/",
+    "status": 200,
+    "endpoint": "equipment.index"
+  },
+  {
+    "actor": "7",
+    "url": "/waiting-lists/",
+    "status": 200,
+    "endpoint": "waiting.index"
+  },
+  {
+    "actor": "7",
+    "url": "/feedback/",
+    "status": 200,
+    "endpoint": "feedback.index"
+  },
+  {
+    "actor": "7",
+    "url": "/appointments/calendar",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": "7",
+    "url": "/rooms/1",
+    "status": 200,
+    "endpoint": "rooms.detail"
+  },
+  {
+    "actor": "7",
+    "url": "/rooms/2",
+    "status": 200,
+    "endpoint": "rooms.detail"
+  },
+  {
+    "actor": "7",
+    "url": "/rooms/4",
+    "status": 200,
+    "endpoint": "rooms.detail"
+  },
+  {
+    "actor": "7",
+    "url": "/rooms/5",
+    "status": 200,
+    "endpoint": "rooms.detail"
+  },
+  {
+    "actor": "7",
+    "url": "/rooms/3",
+    "status": 200,
+    "endpoint": "rooms.detail"
+  },
+  {
+    "actor": "7",
+    "url": "/rooms/availability/302?date=2030-01-09",
+    "status": 200,
+    "endpoint": "rooms.availability"
+  },
+  {
+    "actor": "7",
+    "url": "/equipment/inventory/1",
+    "status": 200,
+    "endpoint": "equipment.inventory"
+  },
+  {
+    "actor": "7",
+    "url": "/equipment/4",
+    "status": 200,
+    "endpoint": "equipment.detail"
+  },
+  {
+    "actor": "7",
+    "url": "/equipment/3",
+    "status": 200,
+    "endpoint": "equipment.detail"
+  },
+  {
+    "actor": "7",
+    "url": "/equipment/2",
+    "status": 200,
+    "endpoint": "equipment.detail"
+  },
+  {
+    "actor": "7",
+    "url": "/equipment/1",
+    "status": 200,
+    "endpoint": "equipment.detail"
+  },
+  {
+    "actor": "7",
+    "url": "/waiting-lists/policy",
+    "status": 200,
+    "endpoint": "waiting.policy"
+  },
+  {
+    "actor": "7",
+    "url": "/waiting-lists/1",
+    "status": 200,
+    "endpoint": "waiting.detail"
+  },
+  {
+    "actor": "7",
+    "url": "/feedback/?scope=mine",
+    "status": 200,
+    "endpoint": "feedback.index"
+  },
+  {
+    "actor": "7",
+    "url": "/feedback/?scope=managed",
+    "status": 200,
+    "endpoint": "feedback.index"
+  },
+  {
+    "actor": "7",
+    "url": "/feedback/1",
+    "status": 200,
+    "endpoint": "feedback.detail"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=month&date=2029-12-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=month&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=month&date=2030-02-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=month&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=week&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-01&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-02&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-05&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-06&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-15&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-16&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-17&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-18&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-19&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-20&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-21&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-22&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-23&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-24&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-25&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-26&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-27&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-28&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-29&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-30&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-01-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-02-01&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-02-02&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "7",
+    "url": "/calendar/?view=day&date=2030-02-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/",
+    "status": 200,
+    "endpoint": "index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/appointments/",
+    "status": 200,
+    "endpoint": "appointments.index"
+  },
+  {
+    "actor": "9",
+    "url": "/rooms/",
+    "status": 200,
+    "endpoint": "rooms.index"
+  },
+  {
+    "actor": "9",
+    "url": "/equipment/",
+    "status": 200,
+    "endpoint": "equipment.index"
+  },
+  {
+    "actor": "9",
+    "url": "/waiting-lists/",
+    "status": 200,
+    "endpoint": "waiting.index"
+  },
+  {
+    "actor": "9",
+    "url": "/feedback/",
+    "status": 200,
+    "endpoint": "feedback.index"
+  },
+  {
+    "actor": "9",
+    "url": "/appointments/calendar",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": "9",
+    "url": "/appointments/calendar?month=2030-01&week=2029-12-31",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": "9",
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-07",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": "9",
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-14",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": "9",
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-21",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": "9",
+    "url": "/appointments/calendar?month=2030-01&week=2030-01-28",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": "9",
+    "url": "/waiting-lists/policy",
+    "status": 200,
+    "endpoint": "waiting.policy"
+  },
+  {
+    "actor": "9",
+    "url": "/feedback/?scope=mine",
+    "status": 200,
+    "endpoint": "feedback.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=month&date=2029-12-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=month&date=2026-11-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=month&date=2030-02-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=month&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=week&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-01&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-02&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-05&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-06&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-15&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-16&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-17&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-18&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-19&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-20&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-21&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-22&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-23&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-24&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-25&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-26&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-27&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-28&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-29&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-30&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-01-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-02-01&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-02-02&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": "9",
+    "url": "/calendar/?view=day&date=2030-02-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "http://127.0.0.1:47327/student/",
+    "status": 200,
+    "endpoint": "student.home"
+  },
+  {
+    "actor": 1,
+    "url": "http://127.0.0.1:47327/calendar/",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "http://127.0.0.1:47327/notifications/",
+    "status": 200,
+    "endpoint": "notifications.index"
+  },
+  {
+    "actor": 1,
+    "url": "http://127.0.0.1:47327/appointments/calendar",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 1,
+    "url": "http://127.0.0.1:47327/equipment/",
+    "status": 200,
+    "endpoint": "equipment.index"
+  }
+]

@@ -1,12 +1,13 @@
-{% extends 'base.html' %}
+{% extends 'student_service_base.html' %}
 {% from 'components/ui.html' import icon, badge %}
 {% block page_heading %}Schedule an Appointment{% endblock %}
 {% block title %}Schedule an Appointment | University Scheduling{% endblock %}
 {% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='prototype.css') }}">{% endblock %}
-{% block content %}
+{% block service_eyebrow %}Appointments / New{% endblock %}
+{% block service_intro %}Select your professors, meeting details and an available time.{% endblock %}
+{% block service_actions %}<a class="service-button" href="{{ url_for('appointments.index') }}">Back to appointments</a>{% endblock %}
+{% block service_content %}
 <div class="portal-prototype booking-prototype">
-    <a class="ui-back-link" href="{{ url_for('appointments.index') }}">&larr; Back to my appointments</a>
-    <div class="booking-page-heading"><p class="ui-overline">Professor appointments</p><h2>A conversation starts here.</h2><p>Choose who to meet, tell us why, then find a time that works.</p></div>
     {% if not directory.faculties %}<div class="ui-alert ui-alert--warning" role="alert">{{ icon('info') }}No faculty hierarchy is configured. Ask an administrator to configure faculty/department membership before scheduling.</div>{% endif %}
     <div class="booking-layout">
         <form method="post" id="appointment-form" class="booking-form" aria-describedby="booking-rules">

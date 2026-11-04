@@ -1,0 +1,292 @@
+status,file,kind
+M,.gitignore,reference / documentation / evidence
+M,README.md,reference / documentation / evidence
+M,docs/architecture/frontend-design.md,reference / documentation / evidence
+A,docs/design/campus-space/README.md,reference / documentation / evidence
+A,docs/design/campus-space/index.html,reference / documentation / evidence
+A,docs/design/campus-space/previews/appointment-new_desktop.png,reference / documentation / evidence
+A,docs/design/campus-space/previews/appointment-new_mobile.png,reference / documentation / evidence
+A,docs/design/campus-space/previews/calendar_desktop.png,reference / documentation / evidence
+A,docs/design/campus-space/previews/calendar_mobile.png,reference / documentation / evidence
+A,docs/design/campus-space/previews/design_overview.png,reference / documentation / evidence
+A,docs/design/campus-space/previews/equipment-catalog_desktop.png,reference / documentation / evidence
+A,docs/design/campus-space/previews/equipment-catalog_mobile.png,reference / documentation / evidence
+A,docs/design/campus-space/previews/feedback-new_desktop.png,reference / documentation / evidence
+A,docs/design/campus-space/previews/home_desktop.png,reference / documentation / evidence
+A,docs/design/campus-space/previews/home_mobile.png,reference / documentation / evidence
+A,docs/design/campus-space/previews/login_desktop.png,reference / documentation / evidence
+A,docs/design/campus-space/previews/login_mobile.png,reference / documentation / evidence
+A,docs/design/campus-space/previews/room-new_desktop.png,reference / documentation / evidence
+A,docs/design/campus-space/previews/waiting_desktop.png,reference / documentation / evidence
+A,docs/design/campus-space/reference-previous/STUDENT_PORTAL_V4_HANDOFF.md,reference / documentation / evidence
+A,docs/design/campus-space/reference-previous/UI_02_login_implementation_handoff.md,reference / documentation / evidence
+A,docs/design/campus-space/reference-previous/campus_space_login_concept.html,reference / documentation / evidence
+A,docs/design/campus-space/reference-previous/student_portal_concept_v4.html,reference / documentation / evidence
+A,docs/design/campus-space/screen_inventory.csv,reference / documentation / evidence
+A,docs/design/campus-space/test-results.json,reference / documentation / evidence
+A,docs/ui/student-portal-ui01/README.md,reference / documentation / evidence
+A,docs/ui/student-portal/README.md,reference / documentation / evidence
+A,docs/ui/student-portal/UI-01/browser-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-01/controls-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-01/empty-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-01/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-02/browser-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-02/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-03/README.md,reference / documentation / evidence
+A,docs/ui/student-portal/UI-03/appointment-detail-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-03/appointment-detail-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-03/appointment-invalid-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-03/appointment-new-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-03/appointment-new-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-03/appointments-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-03/appointments-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-03/browser-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-03/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-03/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-04/README.md,reference / documentation / evidence
+A,docs/ui/student-portal/UI-04/browser-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-04/room-availability-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-04/room-availability-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-04/room-detail-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-04/room-detail-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-04/room-new-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-04/room-new-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-04/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-04/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-05/README.md,reference / documentation / evidence
+A,docs/ui/student-portal/UI-05/browser-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-05/equipment-catalog-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-05/equipment-catalog-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-05/equipment-loan-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-05/equipment-loan-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-05/equipment-request-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-05/equipment-request-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-05/modules/test_equipment/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-05/modules/test_equipment_web/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-05/modules/test_recurring_policy_RecurringEquipmentPolicyTests/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-05/modules/test_recurring_views_RecurringEquipmentViewsTests/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-05/modules/test_recurring_workflows_RecurringEquipmentWorkflowTests/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-05/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-05/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-06/README.md,reference / documentation / evidence
+A,docs/ui/student-portal/UI-06/browser-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-06/modules/test_waiting_lists_WaitingEquipmentTests/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-06/modules/test_waiting_lists_WaitingRoomTests/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-06/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-06/verified/modules/test_waiting_lists_WaitingEquipmentTests/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-06/verified/modules/test_waiting_lists_WaitingRoomTests/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-06/verified/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-06/waiting-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-06/waiting-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-06/waiting-detail-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-06/waiting-detail-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-06/waiting-policy-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-06/waiting-policy-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-06/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-07/README.md,reference / documentation / evidence
+A,docs/ui/student-portal/UI-07/browser-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-07/feedback-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-07/feedback-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-07/feedback-detail-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-07/feedback-detail-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-07/feedback-invalid-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-07/feedback-new-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-07/feedback-new-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-07/modules/test_resource_feedback_FeedbackEquipmentTests/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-07/modules/test_resource_feedback_FeedbackRoomTests/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-07/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-07/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/README.md,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/browser-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/calendar-day-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/calendar-day-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/calendar-month-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/calendar-month-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/calendar-week-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/calendar-week-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/inbox-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/inbox-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/modules/test_calendar_loading/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/modules/test_notifications/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/modules/test_personal_schedule/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/modules/test_university_calendar/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/warning-calendar-week-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-08/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-09/README.md,reference / documentation / evidence
+A,docs/ui/student-portal/UI-09/routes.md,reference / documentation / evidence
+A,docs/ui/student-portal/UI-09/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/appointment-submitted-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/available-times-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/deleted-selector-checks.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/destinations.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-03/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/deleted-selector-checks.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/destinations.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/ranked-room-candidates-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-04/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/deleted-selector-checks.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/destinations.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/partial-return-and-extension-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-05/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/deleted-selector-checks.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/destinations.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/waiting-assigned-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-06/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-07/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-07/deleted-selector-checks.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-07/destinations.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-07/feedback-staff-response-workflow.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-07/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/deleted-selector-checks.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/destinations.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/UI-08/workflow-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/acceptance-regression/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/acceptance-regression/tests.txt,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/authorization/authorization-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/authorization/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/browser-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/control-summary.csv,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/csrf-error-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/deleted-selector-checks.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/destinations.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/fault-cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-home-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-home-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-login-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-login-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-schedule-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/final-schedule-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/role-6-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/role-7-1440.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/browser/service-unavailable-320.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/changed-files.csv,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/cleanup-regression/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/cleanup-verification.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/commits.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/concurrency-check/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/concurrency-check/tests.txt,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/concurrency-isolated/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/concurrency-isolated/tests.txt,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/contracts/contracts.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/contracts/routes.csv,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/contracts/routes.md,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/contrast.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/control-regression/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/cpp-tests.txt,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/dead-code.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/design-integrity.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/environment.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/equipment-lifecycle-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/equipment-queue-assigned.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/equipment-queue-preapproved-unassigned.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/equipment-lifecycles/recurring-selected-approval.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/final-regression/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/final-regression/tests.txt,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/integration-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/physical-complete-return.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/physical-partial-return.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/professor-rejection.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/room-recurring-all.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/lifecycles/room-recurring-partial.png,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/loading/cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/loading/loading-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/persistence-verification.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/regression/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/report-consolidation.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/run-context.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/screenshot-verification.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/source-audit.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/source-controls.csv,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/traceability.md,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/verified-regression/tests.json,reference / documentation / evidence
+A,docs/ui/student-portal/UI-10/verified-regression/tests.txt,reference / documentation / evidence
+A,docs/ui/student-portal/acceptance-report.md,reference / documentation / evidence
+A,docs/ui/student-portal/acceptance-results.json,reference / documentation / evidence
+A,docs/ui/student-portal/artifact-cleanup.csv,reference / documentation / evidence
+A,docs/ui/student-portal/artifact-cleanup.json,reference / documentation / evidence
+A,docs/ui/student-portal/changed-files.csv,reference / documentation / evidence
+A,docs/ui/student-portal/commits.json,reference / documentation / evidence
+A,docs/ui/student-portal/coverage.md,reference / documentation / evidence
+A,docs/ui/student-portal/integration-verification.json,reference / documentation / evidence
+A,docs/ui/student-portal/screen-coverage.csv,reference / documentation / evidence
+A,docs/ui/student-portal/screen-coverage.md,reference / documentation / evidence
+A,docs/ui/student-portal/screenshots.json,reference / documentation / evidence
+A,docs/ui/student-portal/screenshots.md,reference / documentation / evidence
+M,tests/test_frontend_prototype.py,production / tests
+A,tests/test_student_portal_ui.py,production / tests
+A,tests/ui/audit_authorization.cjs,production / tests
+A,tests/ui/audit_equipment_lifecycles.cjs,production / tests
+A,tests/ui/audit_integrations.cjs,production / tests
+A,tests/ui/audit_portal_browser.cjs,production / tests
+A,tests/ui/audit_portal_sources.py,production / tests
+A,tests/ui/audit_student_routes.py,production / tests
+A,tests/ui/capture_portal.cjs,production / tests
+A,tests/ui/capture_student_portal.cjs,production / tests
+A,tests/ui/check_loading_states.cjs,production / tests
+A,tests/ui/check_student_controls.cjs,production / tests
+A,tests/ui/control_audit.cjs,production / tests
+A,tests/ui/exercise_portal.cjs,production / tests
+A,tests/ui/portal_preview.py,production / tests
+A,tests/ui/run_integration_audit.py,production / tests
+A,tests/ui/run_portal_parallel.py,production / tests
+A,tests/ui/run_portal_tests.py,production / tests
+A,tests/ui/student_portal_preview.py,production / tests
+A,tests/ui/verify_audit_persistence.py,production / tests
+M,web/README.md,production / tests
+M,web/app.py,production / tests
+M,web/static/equipment.js,production / tests
+A,web/static/feedback.js,production / tests
+A,web/static/login.css,production / tests
+A,web/static/login.js,production / tests
+M,web/static/prototype.css,production / tests
+M,web/static/recurrence.js,production / tests
+M,web/static/rooms.js,production / tests
+M,web/static/shell.js,production / tests
+A,web/static/student-home.css,production / tests
+A,web/static/student-services.css,production / tests
+A,web/static/student-shell.css,production / tests
+M,web/static/style.css,production / tests
+M,web/templates/_personal_timetable.html,production / tests
+D,web/templates/_student_appointment_card.html,production / tests
+M,web/templates/appointment_calendar.html,production / tests
+M,web/templates/appointment_detail.html,production / tests
+M,web/templates/appointment_error.html,production / tests
+M,web/templates/appointment_new.html,production / tests
+M,web/templates/appointments.html,production / tests
+M,web/templates/base.html,production / tests
+M,web/templates/calendar_academic_detail.html,production / tests
+M,web/templates/calendar_error.html,production / tests
+M,web/templates/components/_calendar_event.html,production / tests
+M,web/templates/components/_navigation.html,production / tests
+M,web/templates/components/_notification_items.html,production / tests
+A,web/templates/components/student_services.html,production / tests
+M,web/templates/components/ui.html,production / tests
+M,web/templates/equipment_catalog.html,production / tests
+M,web/templates/equipment_detail.html,production / tests
+M,web/templates/equipment_error.html,production / tests
+M,web/templates/equipment_requests.html,production / tests
+M,web/templates/feedback_detail.html,production / tests
+M,web/templates/feedback_list.html,production / tests
+M,web/templates/feedback_new.html,production / tests
+M,web/templates/login.html,production / tests
+M,web/templates/notifications.html,production / tests
+M,web/templates/room_availability.html,production / tests
+M,web/templates/room_request_detail.html,production / tests
+M,web/templates/room_request_new.html,production / tests
+M,web/templates/room_requests.html,production / tests
+A,web/templates/student_error.html,production / tests
+M,web/templates/student_home.html,production / tests
+A,web/templates/student_service_base.html,production / tests
+M,web/templates/university_calendar.html,production / tests
+M,web/templates/waiting_detail.html,production / tests
+M,web/templates/waiting_lists.html,production / tests
+M,web/templates/waiting_policy.html,production / tests

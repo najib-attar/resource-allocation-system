@@ -1,0 +1,3293 @@
+{
+  "baselineHead": "998d54dc60207c2fea5434cda0fe68235a566187",
+  "branch": "design/student-portal",
+  "inventoryState": "Current UI-10 working-tree file contents for paths changed by UI-01 through UI-09; not baseline content hashes.",
+  "commits": [
+    "998d54dc60207c2fea5434cda0fe68235a566187 docs(ui): finalize student portal acceptance report and complete verification packet",
+    "d060c7a350dc9bdd4b045b399043693d12bb2042 feat(ui): verify complete student portal integration and safe error presentation",
+    "2d745fadf9f16dde5dfc40137e042e36de654be8 feat(ui): complete student calendars personal schedule and notification inbox",
+    "cad6b8d8411d1993d8f13de27d3bdd076300e6ff feat(ui): redesign private feedback with eligible reporting and accessible controls",
+    "84d649ba19c0037b0c9b7106e197934b080091e6 feat(ui): redesign waiting lists with explicit preapproval and assignment states",
+    "e7c5aad4df1cdce12da3b6593a8b597d466d5fef feat(ui): redesign equipment borrowing and preserve physical loan lifecycle",
+    "581e9b08ec4753d0be32cbe9f50a60eca2e240e8 feat(ui): redesign student rooms and preserve recurring reservation controls",
+    "caf972b94b8f3d653cf3fef7466eb70f2c9ef0fd feat(ui): redesign student appointments with approval progress and preserved workflows",
+    "42f3a926e7627f51af5e89d3c7c80e30c06a03e8 feat(ui): implement approved minimal login with accessible validation",
+    "548d69c26a4aa1758a14c2302e51db333d5e4241 docs(ui): import approved student portal design and verify UI-01 coverage",
+    "e01eba693c1d8c4a19e6e8a6cf8c271596ebe7a5 test(ui): verify student portal flows and preserve mobile keyboard focus",
+    "cfb84d2ffb574eb0536172034a021926f642599d feat(ui): implement responsive student home with authorized activity",
+    "fb5b07a2ba547aa20ac7ff3065491d0e0da52c57 feat(ui): add student workspace navigation and responsive shell"
+  ],
+  "templateReferences": {
+    "_personal_timetable.html": [],
+    "add_request.html": [
+      "base.html"
+    ],
+    "allocation_summary.html": [
+      "base.html"
+    ],
+    "appointment_availability.html": [
+      "base.html"
+    ],
+    "appointment_bindings.html": [
+      "base.html"
+    ],
+    "appointment_calendar.html": [
+      "_personal_timetable.html",
+      "student_service_base.html"
+    ],
+    "appointment_detail.html": [
+      "components/_activity_history.html",
+      "components/student_services.html",
+      "student_service_base.html"
+    ],
+    "appointment_error.html": [
+      "student_service_base.html"
+    ],
+    "appointment_new.html": [
+      "components/ui.html",
+      "student_service_base.html"
+    ],
+    "appointments.html": [
+      "components/student_services.html",
+      "components/ui.html",
+      "student_service_base.html"
+    ],
+    "base.html": [
+      "components/_account_controls.html",
+      "components/_navigation.html",
+      "components/ui.html"
+    ],
+    "calendar_academic_detail.html": [
+      "student_service_base.html"
+    ],
+    "calendar_error.html": [
+      "student_service_base.html"
+    ],
+    "calendar_publications.html": [
+      "base.html"
+    ],
+    "components/_account_controls.html": [
+      "components/ui.html"
+    ],
+    "components/_activity_history.html": [],
+    "components/_calendar_event.html": [],
+    "components/_navigation.html": [
+      "components/ui.html"
+    ],
+    "components/_notification_items.html": [],
+    "components/_priority_override.html": [],
+    "components/_recurrence_fields.html": [],
+    "components/_series_decision.html": [],
+    "components/_waiting_consent.html": [],
+    "components/_waiting_status.html": [],
+    "components/student_services.html": [],
+    "components/ui.html": [],
+    "equipment_catalog.html": [
+      "components/_recurrence_fields.html",
+      "components/_waiting_consent.html",
+      "student_service_base.html"
+    ],
+    "equipment_custodians.html": [
+      "base.html"
+    ],
+    "equipment_detail.html": [
+      "components/_activity_history.html",
+      "components/_priority_override.html",
+      "components/_series_decision.html",
+      "components/_waiting_status.html",
+      "components/student_services.html",
+      "student_service_base.html"
+    ],
+    "equipment_error.html": [
+      "student_service_base.html"
+    ],
+    "equipment_inventory.html": [
+      "base.html"
+    ],
+    "equipment_requests.html": [
+      "components/student_services.html",
+      "components/ui.html",
+      "student_service_base.html"
+    ],
+    "feedback_detail.html": [
+      "components/_activity_history.html",
+      "components/student_services.html",
+      "student_service_base.html"
+    ],
+    "feedback_list.html": [
+      "components/student_services.html",
+      "components/ui.html",
+      "student_service_base.html"
+    ],
+    "feedback_new.html": [
+      "student_service_base.html"
+    ],
+    "index.html": [
+      "base.html"
+    ],
+    "login.html": [],
+    "notifications.html": [
+      "components/_notification_items.html",
+      "student_service_base.html"
+    ],
+    "raw_data.html": [
+      "base.html"
+    ],
+    "request_added.html": [
+      "base.html"
+    ],
+    "request_detail.html": [
+      "base.html"
+    ],
+    "requests.html": [
+      "base.html"
+    ],
+    "room_availability.html": [
+      "student_service_base.html"
+    ],
+    "room_configuration.html": [
+      "base.html"
+    ],
+    "room_request_detail.html": [
+      "components/_activity_history.html",
+      "components/_priority_override.html",
+      "components/_series_decision.html",
+      "components/_waiting_status.html",
+      "components/student_services.html",
+      "student_service_base.html"
+    ],
+    "room_request_new.html": [
+      "components/_recurrence_fields.html",
+      "components/_waiting_consent.html",
+      "student_service_base.html"
+    ],
+    "room_requests.html": [
+      "components/student_services.html",
+      "components/ui.html",
+      "student_service_base.html"
+    ],
+    "schedules.html": [
+      "base.html"
+    ],
+    "spaces.html": [
+      "table.html"
+    ],
+    "student_error.html": [
+      "student_service_base.html"
+    ],
+    "student_home.html": [
+      "base.html",
+      "components/ui.html"
+    ],
+    "student_service_base.html": [
+      "base.html"
+    ],
+    "table.html": [
+      "base.html"
+    ],
+    "university_calendar.html": [
+      "components/_calendar_event.html",
+      "student_service_base.html"
+    ],
+    "users.html": [
+      "base.html"
+    ],
+    "waiting_configuration.html": [
+      "base.html"
+    ],
+    "waiting_detail.html": [
+      "components/_activity_history.html",
+      "components/_priority_override.html",
+      "components/student_services.html",
+      "student_service_base.html"
+    ],
+    "waiting_lists.html": [
+      "components/student_services.html",
+      "components/ui.html",
+      "student_service_base.html"
+    ],
+    "waiting_policy.html": [
+      "student_service_base.html"
+    ]
+  },
+  "routeTemplates": [
+    {
+      "file": "web/app.py",
+      "line": 808,
+      "template": "index.html"
+    },
+    {
+      "file": "web/app.py",
+      "line": 877,
+      "template": "add_request.html"
+    },
+    {
+      "file": "web/app.py",
+      "line": 911,
+      "template": "request_added.html"
+    },
+    {
+      "file": "web/app.py",
+      "line": 952,
+      "template": "request_detail.html"
+    },
+    {
+      "file": "web/app.py",
+      "line": 985,
+      "template": "allocation_summary.html"
+    },
+    {
+      "file": "web/app.py",
+      "line": 1000,
+      "template": "schedules.html"
+    },
+    {
+      "file": "web/app.py",
+      "line": 1018,
+      "template": "users.html"
+    },
+    {
+      "file": "web/app.py",
+      "line": 1032,
+      "template": "spaces.html"
+    },
+    {
+      "file": "web/app.py",
+      "line": 1037,
+      "template": "requests.html"
+    },
+    {
+      "file": "web/app.py",
+      "line": 1042,
+      "template": "raw_data.html"
+    },
+    {
+      "file": "web/app.py",
+      "line": 197,
+      "template": "student_error.html"
+    },
+    {
+      "file": "web/appointment_routes.py",
+      "line": 79,
+      "template": "appointments.html"
+    },
+    {
+      "file": "web/appointment_routes.py",
+      "line": 92,
+      "template": "appointment_new.html"
+    },
+    {
+      "file": "web/appointment_routes.py",
+      "line": 117,
+      "template": "appointment_detail.html"
+    },
+    {
+      "file": "web/appointment_routes.py",
+      "line": 158,
+      "template": "appointment_availability.html"
+    },
+    {
+      "file": "web/appointment_routes.py",
+      "line": 174,
+      "template": "appointment_calendar.html"
+    },
+    {
+      "file": "web/appointment_routes.py",
+      "line": 194,
+      "template": "appointment_bindings.html"
+    },
+    {
+      "file": "web/appointment_routes.py",
+      "line": 69,
+      "template": "appointment_error.html"
+    },
+    {
+      "file": "web/appointment_routes.py",
+      "line": 75,
+      "template": "appointment_error.html"
+    },
+    {
+      "file": "web/equipment_routes.py",
+      "line": 53,
+      "template": "equipment_requests.html"
+    },
+    {
+      "file": "web/equipment_routes.py",
+      "line": 97,
+      "template": "equipment_catalog.html"
+    },
+    {
+      "file": "web/equipment_routes.py",
+      "line": 105,
+      "template": "equipment_detail.html"
+    },
+    {
+      "file": "web/equipment_routes.py",
+      "line": 161,
+      "template": "equipment_inventory.html"
+    },
+    {
+      "file": "web/equipment_routes.py",
+      "line": 170,
+      "template": "equipment_custodians.html"
+    },
+    {
+      "file": "web/equipment_routes.py",
+      "line": 44,
+      "template": "equipment_error.html"
+    },
+    {
+      "file": "web/equipment_routes.py",
+      "line": 48,
+      "template": "equipment_error.html"
+    },
+    {
+      "file": "web/feedback_routes.py",
+      "line": 57,
+      "template": "feedback_new.html"
+    },
+    {
+      "file": "web/feedback_routes.py",
+      "line": 31,
+      "template": "appointment_error.html"
+    },
+    {
+      "file": "web/feedback_routes.py",
+      "line": 35,
+      "template": "appointment_error.html"
+    },
+    {
+      "file": "web/feedback_routes.py",
+      "line": 44,
+      "template": "feedback_list.html"
+    },
+    {
+      "file": "web/feedback_routes.py",
+      "line": 61,
+      "template": "feedback_detail.html"
+    },
+    {
+      "file": "web/notification_routes.py",
+      "line": 28,
+      "template": "notifications.html"
+    },
+    {
+      "file": "web/notification_routes.py",
+      "line": 33,
+      "template": "components/_notification_items.html"
+    },
+    {
+      "file": "web/room_request_routes.py",
+      "line": 66,
+      "template": "room_requests.html"
+    },
+    {
+      "file": "web/room_request_routes.py",
+      "line": 74,
+      "template": "room_availability.html"
+    },
+    {
+      "file": "web/room_request_routes.py",
+      "line": 86,
+      "template": "room_request_new.html"
+    },
+    {
+      "file": "web/room_request_routes.py",
+      "line": 106,
+      "template": "room_request_detail.html"
+    },
+    {
+      "file": "web/room_request_routes.py",
+      "line": 119,
+      "template": "room_request_new.html"
+    },
+    {
+      "file": "web/room_request_routes.py",
+      "line": 171,
+      "template": "room_configuration.html"
+    },
+    {
+      "file": "web/room_request_routes.py",
+      "line": 56,
+      "template": "appointment_error.html"
+    },
+    {
+      "file": "web/room_request_routes.py",
+      "line": 62,
+      "template": "appointment_error.html"
+    },
+    {
+      "file": "web/security.py",
+      "line": 97,
+      "template": "login.html"
+    },
+    {
+      "file": "web/student_routes.py",
+      "line": 25,
+      "template": "student_home.html"
+    },
+    {
+      "file": "web/student_routes.py",
+      "line": 14,
+      "template": "appointment_error.html"
+    },
+    {
+      "file": "web/student_routes.py",
+      "line": 18,
+      "template": "appointment_error.html"
+    },
+    {
+      "file": "web/university_calendar_routes.py",
+      "line": 38,
+      "template": "university_calendar.html"
+    },
+    {
+      "file": "web/university_calendar_routes.py",
+      "line": 42,
+      "template": "calendar_academic_detail.html"
+    },
+    {
+      "file": "web/university_calendar_routes.py",
+      "line": 57,
+      "template": "calendar_publications.html"
+    },
+    {
+      "file": "web/university_calendar_routes.py",
+      "line": 21,
+      "template": "calendar_error.html"
+    },
+    {
+      "file": "web/university_calendar_routes.py",
+      "line": 25,
+      "template": "calendar_error.html"
+    },
+    {
+      "file": "web/waiting_list_routes.py",
+      "line": 32,
+      "template": "waiting_policy.html"
+    },
+    {
+      "file": "web/waiting_list_routes.py",
+      "line": 92,
+      "template": "waiting_configuration.html"
+    },
+    {
+      "file": "web/waiting_list_routes.py",
+      "line": 18,
+      "template": "appointment_error.html"
+    },
+    {
+      "file": "web/waiting_list_routes.py",
+      "line": 22,
+      "template": "appointment_error.html"
+    },
+    {
+      "file": "web/waiting_list_routes.py",
+      "line": 28,
+      "template": "waiting_lists.html"
+    },
+    {
+      "file": "web/waiting_list_routes.py",
+      "line": 36,
+      "template": "waiting_detail.html"
+    }
+  ],
+  "dynamicReferences": [
+    {
+      "file": "web\\app.py",
+      "line": 787,
+      "kind": "render_template"
+    }
+  ],
+  "unreachableTemplates": [],
+  "unusedCssClassCandidates": {
+    "calendar.css": [
+      "category-appointment",
+      "category-equipment",
+      "category-personal",
+      "category-room",
+      "state-cancelled",
+      "state-overdue",
+      "state-pending",
+      "state-rejected"
+    ],
+    "login.css": [],
+    "prototype.css": [
+      "ui-badge--danger",
+      "ui-badge--success",
+      "ui-badge--warning"
+    ],
+    "shell.css": [],
+    "student-home.css": [],
+    "student-services.css": [
+      "service-status-danger",
+      "service-status-success"
+    ],
+    "student-shell.css": [],
+    "style.css": [
+      "badge-approved",
+      "badge-pending",
+      "badge-rejected",
+      "event-optional-invitation",
+      "event-personal-block",
+      "event-room-booking",
+      "event-university",
+      "page-message-success",
+      "schedule-slot-allocated",
+      "schedule-slot-busy",
+      "schedule-slot-free",
+      "stat-card-approved",
+      "stat-card-pending",
+      "stat-card-rejected"
+    ],
+    "tokens.css": []
+  },
+  "note": "Candidates alone are not deletion proof. Dynamic JS classes, all roles, inherited states and browser coverage must be reviewed.",
+  "changedFileInventory": [
+    {
+      "file": "README.md",
+      "bytes": 29578,
+      "sha256": "63568a73425af93af46f236dc4693de78848a9ef1add24ea21628e20054624f0"
+    },
+    {
+      "file": "docs/architecture/frontend-design.md",
+      "bytes": 17921,
+      "sha256": "ca55c723d288c25a11b140e7278b7d712e4537943c907e8c58a1cb76bf6c7e50"
+    },
+    {
+      "file": "docs/design/campus-space/README.md",
+      "bytes": 6867,
+      "sha256": "ddbd05a21320216121527cfd538165e378b0f25b8abcd6560ec5cbcb28bce594"
+    },
+    {
+      "file": "docs/design/campus-space/index.html",
+      "bytes": 76613,
+      "sha256": "388325989cc5ceba2a0402cd531af701f8d7fb4bc593702360547315757225c7"
+    },
+    {
+      "file": "docs/design/campus-space/previews/appointment-new_desktop.png",
+      "bytes": 119952,
+      "sha256": "e917fd6c39604a04944e2743a611cebff62acf4b2bcecdbf92b10535209c52b1"
+    },
+    {
+      "file": "docs/design/campus-space/previews/appointment-new_mobile.png",
+      "bytes": 89921,
+      "sha256": "eddb62d069b05664d322b78cefb2641919b7170fe6c409481b4c5394b59879d9"
+    },
+    {
+      "file": "docs/design/campus-space/previews/calendar_desktop.png",
+      "bytes": 101533,
+      "sha256": "9066a66c94a9a5864e28eae272516aa510d4f96b6de75f4e1004482332586499"
+    },
+    {
+      "file": "docs/design/campus-space/previews/calendar_mobile.png",
+      "bytes": 75827,
+      "sha256": "c669b768d1b39a83957ee218b1e86c23f95df06833867b170e54a67bb33dfb42"
+    },
+    {
+      "file": "docs/design/campus-space/previews/design_overview.png",
+      "bytes": 184188,
+      "sha256": "7838e3153688b8593c93c9d6ab86c2dc9d690096a7a762d836391552c2c09dba"
+    },
+    {
+      "file": "docs/design/campus-space/previews/equipment-catalog_desktop.png",
+      "bytes": 112360,
+      "sha256": "5ff729a9e607093bb710817540862fdb08e1f7792102e9d35eb4353bdb0b0997"
+    },
+    {
+      "file": "docs/design/campus-space/previews/equipment-catalog_mobile.png",
+      "bytes": 82641,
+      "sha256": "f41831a621a10746c0148793783c54ee855c8d224ab0d0f572c2f626550ef91e"
+    },
+    {
+      "file": "docs/design/campus-space/previews/feedback-new_desktop.png",
+      "bytes": 76770,
+      "sha256": "edf43a8056591331494149cf12ec216e514c59b252a9120be75725aa9087f271"
+    },
+    {
+      "file": "docs/design/campus-space/previews/home_desktop.png",
+      "bytes": 122333,
+      "sha256": "fd44986659c5b473b74474a6c09b4b0d2bcd4b63d7fb10d6a76af2cfe990c5a8"
+    },
+    {
+      "file": "docs/design/campus-space/previews/home_mobile.png",
+      "bytes": 87466,
+      "sha256": "8218db4f7c656e378f758339c8eb2b68c1e6e8c820498328d6ffc8aaa89935c6"
+    },
+    {
+      "file": "docs/design/campus-space/previews/login_desktop.png",
+      "bytes": 39627,
+      "sha256": "a7f6d504dfb3af345a68d3eb655fd159bded8a69cb8a215b07d6a9b519e3e01d"
+    },
+    {
+      "file": "docs/design/campus-space/previews/login_mobile.png",
+      "bytes": 33396,
+      "sha256": "c8c72f28c4aa501b07ceb16b6cb91751a3e162d63f16acef412de08e89e9862e"
+    },
+    {
+      "file": "docs/design/campus-space/previews/room-new_desktop.png",
+      "bytes": 132897,
+      "sha256": "1b61562e4ffff0f6ec466c2e70f722f89831cdfa2d903e7ca3957138f2c39a5d"
+    },
+    {
+      "file": "docs/design/campus-space/previews/waiting_desktop.png",
+      "bytes": 86104,
+      "sha256": "c26645d6124ac2be6ade7efa17a12aea229d15f6b32ef3d1de9be890aae5dc9b"
+    },
+    {
+      "file": "docs/design/campus-space/reference-previous/STUDENT_PORTAL_V4_HANDOFF.md",
+      "bytes": 4300,
+      "sha256": "8e0dbc39ba72093c91f792ed1bb4b42b1588558ea68ba9360bdd12b60bd6529b"
+    },
+    {
+      "file": "docs/design/campus-space/reference-previous/UI_02_login_implementation_handoff.md",
+      "bytes": 2658,
+      "sha256": "65eabd13a9a978682d924f806200bc7d396ec354ac85d1125425b403813cf1a2"
+    },
+    {
+      "file": "docs/design/campus-space/reference-previous/campus_space_login_concept.html",
+      "bytes": 5381,
+      "sha256": "1b921859370d02beb8785144a1e62eeb0385d5fa3dca9f358a2456060435ad02"
+    },
+    {
+      "file": "docs/design/campus-space/reference-previous/student_portal_concept_v4.html",
+      "bytes": 31481,
+      "sha256": "eac19edc3164da82eac1f53eed53df0b1586f67bfcd2fc6e2eb5506586430f34"
+    },
+    {
+      "file": "docs/design/campus-space/screen_inventory.csv",
+      "bytes": 2704,
+      "sha256": "1e8bd75f88deb25d9d549a97775f1b12b4d16cc8178c0af80bd881474144a7cd"
+    },
+    {
+      "file": "docs/design/campus-space/test-results.json",
+      "bytes": 103,
+      "sha256": "93b12aebe6379bcaafecdf72068bccdacfbf5524f890a4e4315e4ab6d1b33237"
+    },
+    {
+      "file": "docs/ui/student-portal-ui01/README.md",
+      "bytes": 8574,
+      "sha256": "f4376159526b8ee4cba3a77dc7ba0b8274cf84837468ac7413b293534c779955"
+    },
+    {
+      "file": "docs/ui/student-portal-ui01/browser-results.json",
+      "bytes": 1256,
+      "sha256": "db205832fbf44be9f69eef119940e6d1f1b06a793d8af5843b8f158fd18349bb"
+    },
+    {
+      "file": "docs/ui/student-portal-ui01/controls-results.json",
+      "bytes": 793,
+      "sha256": "b1999298d26da351bf291953cba5fa4424cd99efb38f8c71b3fdfe40cd3ec54f"
+    },
+    {
+      "file": "docs/ui/student-portal-ui01/empty-1440.png",
+      "bytes": 95531,
+      "sha256": "5e549759f1bd5e84496cd976d47265c0fa002b2e4edd24a26266cc0df120e131"
+    },
+    {
+      "file": "docs/ui/student-portal-ui01/empty-320.png",
+      "bytes": 72800,
+      "sha256": "acef41b6362705a1cfbe0ddc385c52d28a2dd0c1d294c2b787f66fccc85e4578"
+    },
+    {
+      "file": "docs/ui/student-portal-ui01/empty-390.png",
+      "bytes": 72823,
+      "sha256": "ff219d8560b413d3a1031805301c4412682bc4d03f511f6529d42a88844736df"
+    },
+    {
+      "file": "docs/ui/student-portal-ui01/empty-768.png",
+      "bytes": 77410,
+      "sha256": "f6324c74d44735367371eb60df90cbe85335e0a5d71707ea794d8a8e47984698"
+    },
+    {
+      "file": "docs/ui/student-portal-ui01/populated-1440.png",
+      "bytes": 122747,
+      "sha256": "d062b6c3f471ba54f6ca34c265349db60a603a714048f4be25c77db2284b446a"
+    },
+    {
+      "file": "docs/ui/student-portal-ui01/populated-320.png",
+      "bytes": 96721,
+      "sha256": "83850a8e2d85206cb8333aa4d9abadfc3811de0b24ec3d8ceacce5d8ceba6160"
+    },
+    {
+      "file": "docs/ui/student-portal-ui01/populated-390.png",
+      "bytes": 96947,
+      "sha256": "df1f3ca290489efc280b29f8dde17641535e76353f4fde23a325a1771afdc644"
+    },
+    {
+      "file": "docs/ui/student-portal-ui01/populated-768.png",
+      "bytes": 100596,
+      "sha256": "a3baab0ca94d8e6a19d322a0f9b7c604c77f8e746fcd73547a0ba23dc087e1ce"
+    },
+    {
+      "file": "docs/ui/student-portal-ui01/python-results.json",
+      "bytes": 441,
+      "sha256": "b711ef47b10261df3b8f6f2f742b54b766acd5c300eaf80e171e1a044fa75e31"
+    },
+    {
+      "file": "docs/ui/student-portal/README.md",
+      "bytes": 3950,
+      "sha256": "04b503ffeba95f111a619a98497dcdd0f56982ff1f15953c30046ea4667647ff"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-01/browser-results.json",
+      "bytes": 1256,
+      "sha256": "db205832fbf44be9f69eef119940e6d1f1b06a793d8af5843b8f158fd18349bb"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-01/controls-results.json",
+      "bytes": 793,
+      "sha256": "b1999298d26da351bf291953cba5fa4424cd99efb38f8c71b3fdfe40cd3ec54f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-01/empty-1440.png",
+      "bytes": 95531,
+      "sha256": "5e549759f1bd5e84496cd976d47265c0fa002b2e4edd24a26266cc0df120e131"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-01/empty-320.png",
+      "bytes": 72800,
+      "sha256": "acef41b6362705a1cfbe0ddc385c52d28a2dd0c1d294c2b787f66fccc85e4578"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-01/empty-390.png",
+      "bytes": 72823,
+      "sha256": "ff219d8560b413d3a1031805301c4412682bc4d03f511f6529d42a88844736df"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-01/empty-768.png",
+      "bytes": 77410,
+      "sha256": "f6324c74d44735367371eb60df90cbe85335e0a5d71707ea794d8a8e47984698"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-01/populated-1440.png",
+      "bytes": 123096,
+      "sha256": "b78203345f48ebdab404aed1f3b3b7bfa9880b2fed2b9454e2b047cec3cff9f1"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-01/populated-320.png",
+      "bytes": 96965,
+      "sha256": "d56894573d50674033005e613905124dbfadffb3aa038f6aa2a59158ca06832e"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-01/populated-390.png",
+      "bytes": 97275,
+      "sha256": "248541488c20e6e186daf41060db98e438ca2a500e69ba1238a88125f54adfb4"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-01/populated-768.png",
+      "bytes": 100935,
+      "sha256": "61f68d985a8af0d804e0ac7f1ebcea381d5b11d47f65a2b960e117bedcf86bfe"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-01/tests.json",
+      "bytes": 224,
+      "sha256": "316720ba125c2101ba977a43a803ccc88bb4cb066e35b0584601b8b685a18099"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-01/tests.txt",
+      "bytes": 6195,
+      "sha256": "85bf9e0a74f991c25ad6d4872b9382276ffe88639d94e3ae308f16c416e042a3"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-02/browser-results.json",
+      "bytes": 1113,
+      "sha256": "587653293c5a8f070fefc20eb056d16a77814d6666242d30024b1cef8b4b53d8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-02/login-1440.png",
+      "bytes": 19557,
+      "sha256": "4cb12aede8f8088cd30c30e4da8f2c66f8b0d2b4b90df350d208efaca3522a42"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-02/login-320.png",
+      "bytes": 15077,
+      "sha256": "eb5b07c430ee89571a68e280fab32a57fa302749ba082aaac364b2870de81de9"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-02/login-390.png",
+      "bytes": 15539,
+      "sha256": "e3eec8fb57533ffbeb890863e7ea3a5f509ba85487d9ec7ba04621c0094818c4"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-02/login-768.png",
+      "bytes": 17554,
+      "sha256": "af0654183fa153076ca849f4761d8c6df9429eff5fd36f50aec1081de1ab58a8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-02/login-error-1440.png",
+      "bytes": 24228,
+      "sha256": "8f03b62cf817c94f1fe301605738210f3ba3f663df18d19385d93273d517c972"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-02/login-error-320.png",
+      "bytes": 18840,
+      "sha256": "384d50bbc2492b9dc7c25de03dd40472887842ffdd9713674e2a139f94dcc856"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-02/login-error-390.png",
+      "bytes": 19381,
+      "sha256": "2fc267914de8308a93008655b2a66c4711e9ab5e5efff4c79a2b41f45a534d0b"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-02/login-error-768.png",
+      "bytes": 22099,
+      "sha256": "89acc506071b5ce80926e7f7d29195cd34a14b63421b63b8f1bd0e6c5585c4af"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-02/tests.json",
+      "bytes": 275,
+      "sha256": "4d7aafc977120e379161e30d4dd1897df802a317c6bcd38dc8c4153ff08f93dc"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-02/tests.txt",
+      "bytes": 5900,
+      "sha256": "e6fc4372ea2ffd2d944bef7a565fef9d7ab9367d1cf174c55647aa33d5f3d62a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/README.md",
+      "bytes": 1518,
+      "sha256": "f7d26c228e794a8426169ad4ed2a717657e9da89d9176d4166f0640d7c5fba9f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-detail-1440.png",
+      "bytes": 91921,
+      "sha256": "af06e8a9e4c584b0f95e0c487cd448d867907870c4d91ef0172ba93ac6fd5994"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-detail-320.png",
+      "bytes": 66956,
+      "sha256": "d238a8f0cad92c384c1dfabb8898e45f9e1eda656f2d242208e363695300a503"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-detail-390.png",
+      "bytes": 66853,
+      "sha256": "a40bf6a1f380fbb57b11dbea800c10e1da371702fc08bd759ebfc1f08ec5f67c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-detail-768.png",
+      "bytes": 70812,
+      "sha256": "79613f4bfdaba06c4e24ec782f7b1ca1fc6d4169ed1245b89f621fc67057319d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-invalid-1440.png",
+      "bytes": 42036,
+      "sha256": "6d17e868ccd4b9409091bea45d1cb89e06fba46201ef68e3934a8d58eabbd4fb"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-invalid-320.png",
+      "bytes": 23703,
+      "sha256": "fb373c70576be70fea6e89dbb0cccd2db48a9a08df33ef6f779227a16a1e7ffc"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-invalid-390.png",
+      "bytes": 24018,
+      "sha256": "3a9ff4366955669db82fb65fce52b19b3b65e465140e62babb789c9f32c2e189"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-invalid-768.png",
+      "bytes": 25670,
+      "sha256": "d06c3e7ad561144c4c36e23540adb7035b209adf59c8d73844f8c7e32eb71441"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-invitation-1440.png",
+      "bytes": 84929,
+      "sha256": "ccc0c83c504482246c68a5e787a81802c6b65ae52c81df92a144643f7c15a94a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-invitation-320.png",
+      "bytes": 61794,
+      "sha256": "26346fb6817ba12f1ee8722573322f5a613d1e86e013f8419afd796e0429dcf0"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-invitation-390.png",
+      "bytes": 62367,
+      "sha256": "55759a2e04e77cf78b532d0fe7736af7fba768ad5180caba70d3ab8abc38e503"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-invitation-768.png",
+      "bytes": 65030,
+      "sha256": "6765ae07c413e9aeaef3af629e7ce954b12ce44a0a8388a647d9be50ccf6149a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-new-1440.png",
+      "bytes": 112137,
+      "sha256": "f0b931df841c7214e8e28bfbc3f2dc1bd4c5adc463194a7545391ebe695d7285"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-new-320.png",
+      "bytes": 87713,
+      "sha256": "3314158d753a03ca7ff48357a22f3fee4f611008c9bb2698185c9d15eed126ce"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-new-390.png",
+      "bytes": 89063,
+      "sha256": "a862b1fe8cff6164f75fa1888a00a55e76ab562820d6f3f5d6d67131b7747ae5"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-new-768.png",
+      "bytes": 85253,
+      "sha256": "885fb36c06dfa4650b320ab35f9930255056b08c87cedbd5ddc7943dad51e4a2"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-private-1440.png",
+      "bytes": 42631,
+      "sha256": "3c4c625452e2cac30461c295f2f3d2cb82a7c4f269845a476fa0a3d5f5059709"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-private-320.png",
+      "bytes": 24397,
+      "sha256": "b3c68bc1e46e4e961f38d6f19b552023c43e0cb1c1f7b2e7e77191156d453358"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-private-390.png",
+      "bytes": 24603,
+      "sha256": "45d2bea3be2256141119e5c48f3017aa9395153603fcd4a6d19ffc85071d451d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-private-768.png",
+      "bytes": 26274,
+      "sha256": "e751ba3c7bc439752da20d9fe027120932eaf5a5caacc1ace3c0e87e9de1b7cc"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointment-submitted-workflow.png",
+      "bytes": 63929,
+      "sha256": "cd4eb1c4ee136070fb60364876dd8333bf654c11923d7d7d402296557c013e3a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointments-1440.png",
+      "bytes": 70092,
+      "sha256": "881dd338681f2eed282dba7c50d6022f7de98eda1f1ab490a6b47adb7f0870b2"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointments-320.png",
+      "bytes": 47025,
+      "sha256": "3353dfc6cd545ed4ae638c73b16a66cb6550e4e31216e11d249e87dfa96bf3a0"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointments-390.png",
+      "bytes": 47860,
+      "sha256": "3d59c9a549874e4d3b58203333f946d62cee4a11f89c1ee95c3223694ddf2738"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/appointments-768.png",
+      "bytes": 49690,
+      "sha256": "a3e3f8b385af0ca6c701d4f0945d916637f12aafd9ba400c5ff2ce43c098f492"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/availability-offline-workflow.png",
+      "bytes": 106695,
+      "sha256": "b5491b468e0f5502dd8966ae219f69de346cd85feb7900dc33d67d6437116f77"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/available-times-workflow.png",
+      "bytes": 122260,
+      "sha256": "5d0e2b4888f817cd7dac51add11830f6e402825dd87b265b074ddc9b1a60cea1"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/browser-results.json",
+      "bytes": 1836,
+      "sha256": "f0cf8190255c8bb168a6479145ae8c6973cf5a81998d8ef890b6d328cb5a86ba"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/empty-appointments-1440.png",
+      "bytes": 46182,
+      "sha256": "2a2288330df6144ae253a1eb722f233774165a30c6549090383568782df4c2ad"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/empty-appointments-320.png",
+      "bytes": 27760,
+      "sha256": "67e872febf3c0cf3370f5c49e6e1578857b91d3de83c70d8e31d14c6a8d0b703"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/empty-appointments-390.png",
+      "bytes": 28108,
+      "sha256": "34a9af54c485c4467eb2da9fef7a363c96211fde9ba98c493356b6afaf23437b"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/empty-appointments-768.png",
+      "bytes": 29914,
+      "sha256": "a5d79c16c2161d55723a3be0272b2c62e9d80b044f5c57158f781bc1f77e6b7b"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/tests.json",
+      "bytes": 254,
+      "sha256": "2288d0f735007b58eaf30c26bc169923be7e6b493caca224a4db000f24399a81"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/tests.txt",
+      "bytes": 9060,
+      "sha256": "815700519adda00a31ca3ecafeba5f47ff3d7e0508aee923628d210e85c940d9"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-03/workflow-results.json",
+      "bytes": 496,
+      "sha256": "8a2ce583991d152eee3f159a61e1b109d8e0ec13e23ea46b25360746104b2aec"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/README.md",
+      "bytes": 1669,
+      "sha256": "13a06fce2acd130f4deccdb9bce5292220a64129a38fff6ce229317792a199d2"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/browser-results.json",
+      "bytes": 2270,
+      "sha256": "050dd1a0d22b5853ea6c8572dc0bfbf934509ca1b658d9c84599e2cccf34c938"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/empty-rooms-1440.png",
+      "bytes": 46078,
+      "sha256": "2c7676f1e5b62048a92ce6f850609f20de67c8e754a186fa918ff7dc6536a191"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/empty-rooms-320.png",
+      "bytes": 28495,
+      "sha256": "67abccf738202256eff74cea805e0d80df5272d26baab240bc010b187feb3593"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/empty-rooms-390.png",
+      "bytes": 28916,
+      "sha256": "e7d06242ff5ede1adcf91f5e4810c1dc1bab12ee3767a414199d872d1f2ec28f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/empty-rooms-768.png",
+      "bytes": 30788,
+      "sha256": "c5963ef5560f30b0dd7f06d83337be8bbf70b0937a35b989e42dd40b16e144a2"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/ranked-room-candidates-workflow.png",
+      "bytes": 131924,
+      "sha256": "85eeca45390b373e293b49b1bfa1375bd3385e043e145e68dbd988b2aff79115"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-availability-1440.png",
+      "bytes": 53557,
+      "sha256": "9e93eb0f4119c500d134dfe05a3d7d475e961a8ced29162701d0ae34a734febf"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-availability-320.png",
+      "bytes": 33518,
+      "sha256": "148b97783187f418e9bd82869ae689f446882b5eb69a12f18a6ab1d0c4bfded0"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-availability-390.png",
+      "bytes": 34200,
+      "sha256": "49b80e7cdde40e7f48800cea5b325158db02c2b2c8679013519ed39bd6204fae"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-availability-768.png",
+      "bytes": 35773,
+      "sha256": "f1fbb41ea8585c7d8388999f59c340171f440ecfde5c8f8472031e042fdc13ab"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-detail-1440.png",
+      "bytes": 103301,
+      "sha256": "0764c990cb911efe37c33a708fe9b9f9491061bec67f05c18600c0c82b7f95f4"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-detail-320.png",
+      "bytes": 79654,
+      "sha256": "c0ae703314ddb745f480b42dbb6de8df9483392707deedfa4d816079e4e95307"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-detail-390.png",
+      "bytes": 80101,
+      "sha256": "1a8e194491c03eaff627276c7e1bf275dd4405fc42cfa8e944b19bc85e726d3c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-detail-768.png",
+      "bytes": 80651,
+      "sha256": "c942169adccbbe46e47bfb969f015d09444b50f05cfafe2e9da4f89f930cfe37"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-forbidden-1440.png",
+      "bytes": 41870,
+      "sha256": "b89eb6cae3911fd93635712a0712f11db7c4c3c62f9ed8122dbf115e99c63557"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-forbidden-320.png",
+      "bytes": 24076,
+      "sha256": "e5e1165b9661020ce3f896dfcc9e7e5b51a41725a985bf8c3ba15c4d0a7e4b49"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-forbidden-390.png",
+      "bytes": 24442,
+      "sha256": "090803ac347fbadb1d53229e0b92e2e51a6bf7cc3ae8871a02f26d608f85b011"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-forbidden-768.png",
+      "bytes": 25969,
+      "sha256": "933ed9ac1b7fadf19582f19180d1484ccfb387b91698a37ba807d2791c7715af"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-invalid-1440.png",
+      "bytes": 41139,
+      "sha256": "2b6d2ad4399918060293fa85bd2385e3b260777116e0102c8cabddbe612e6bfa"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-invalid-320.png",
+      "bytes": 23162,
+      "sha256": "29c71c7e2e330792681720ad88b168ba30b00a728985722bf415348bea1056f1"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-invalid-390.png",
+      "bytes": 23272,
+      "sha256": "c16201a837bf5c07f697340d5bcf4f7a6a3cf7a889ec337f67852dd192ef00cd"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-invalid-768.png",
+      "bytes": 24888,
+      "sha256": "132d4d34b1092afee303e82834c1bc0c2c7c30491b4e73d44b72df7b26a835df"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-new-1440.png",
+      "bytes": 100856,
+      "sha256": "d8cdad6eac7cb89f903e1f2a10bcd1df023d8887683de4e3b16c85e9b87ea644"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-new-320.png",
+      "bytes": 81100,
+      "sha256": "cace078cfa1e96ec215cde71d00d6f766c7edfdecd1426cd04aed8acea231b8f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-new-390.png",
+      "bytes": 81894,
+      "sha256": "99d614b18d2549d3cc2e7d4367be896ee983d68a5ed7a66e112a1c34afed3794"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-new-768.png",
+      "bytes": 81113,
+      "sha256": "e6a699a38f6bcddc7ec96cbd20512448ac67072cfedf443248680d739b3ba940"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-offline-workflow.png",
+      "bytes": 99834,
+      "sha256": "ffe158afcba0a5bf13cc324f3a65715b38e614e3ef701e863f6f186f8345d2da"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-pending-1440.png",
+      "bytes": 87581,
+      "sha256": "5763e7dbdde4766c1808548863e5745c5c261f57f9da1997e28a7b40c9c61565"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-pending-320.png",
+      "bytes": 63780,
+      "sha256": "6338a4eeecfa9833105e6c2a678f2190c775426350cd34da88127a295146f704"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-pending-390.png",
+      "bytes": 64392,
+      "sha256": "35218c5a3e5f194afe3d399366204e5ea2b12d38ed69ce98ca8250c8b0980c92"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-pending-768.png",
+      "bytes": 69073,
+      "sha256": "c0d75515f69efb1199fa63681720259d4d48b6bf88d8dcc81edec4a111a65313"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-revise-1440.png",
+      "bytes": 98744,
+      "sha256": "c85e8bc48062c9eb200b64455377b649886bea9bd508f8c0323adde22aa49d00"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-revise-320.png",
+      "bytes": 78805,
+      "sha256": "5c4a73a126fb5e9a69214fd9f8811563da52a6c04183eed11653d9a6162f682e"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-revise-390.png",
+      "bytes": 79076,
+      "sha256": "0a8fea6fd856e33deca080bffc96c210f9bf4aa51cd36e3db11d2d563fbf136e"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-revise-768.png",
+      "bytes": 78019,
+      "sha256": "a5e518ce25bd3ca423d5741c63c8abffc79a5888ace8ecaa1e76d192bd339605"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-series-1440.png",
+      "bytes": 120900,
+      "sha256": "35fd96ceefdc213c6d799e6dac17b7056f5d0c7cac4e8d839c1255e04e65d3ba"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-series-320.png",
+      "bytes": 91187,
+      "sha256": "3cc6d99a8ef0510dfaae6282436475ca5acfec2ebc69ce105dadba9d591e1714"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-series-390.png",
+      "bytes": 89725,
+      "sha256": "3bf5f3d38f334038282d23c7245780561a4416b6f5acb51bcad7d4d652434086"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-series-768.png",
+      "bytes": 98069,
+      "sha256": "c360e6d0eb93608ce5077c33b3bc91d6a86bb72b48827cbdd421f45bf78f54dc"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-submitted-workflow.png",
+      "bytes": 72287,
+      "sha256": "12af9d5a0fbab7c9acba0383f3591f3d958eac1acdc8b2c33745f339fd16ed8b"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/room-unavailable-workflow.png",
+      "bytes": 110313,
+      "sha256": "57f8baf3f3cd25073486e8a0b12ddfb575329d476c3143f19d2ce05863deabf3"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/rooms-1440.png",
+      "bytes": 73025,
+      "sha256": "55212f4e79ef1b7b466e98a109e54ca980c461cfabba82d5c239f2b6516e7ef5"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/rooms-320.png",
+      "bytes": 51039,
+      "sha256": "71fa43f07894eb50b1c2e955141d7dd3f90e82bf1bf0f8e2fbbb479da307c355"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/rooms-390.png",
+      "bytes": 51442,
+      "sha256": "a93e291c6bee7c69f62193d45f1b92ccc773fe99cb947fc8ddb4d1e22905de12"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/rooms-768.png",
+      "bytes": 51216,
+      "sha256": "413ba272fdf3c275d447edd394e29b85da64589559bf120b6a082932f6317f05"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/tests.json",
+      "bytes": 350,
+      "sha256": "b3229ab5318db61bffc7cf3a69bfe28ec0eb3669487f70a043de124049902264"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/tests.txt",
+      "bytes": 11853,
+      "sha256": "0717330ec0705e2d16532400b0ba1e00fcc91d0dd46de7b75860ed101c8407c5"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-04/workflow-results.json",
+      "bytes": 450,
+      "sha256": "1442383beb0caf3c9dd059ee5ce1ce629e704a29ca1a712feff9b27d1e88bd80"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/README.md",
+      "bytes": 1495,
+      "sha256": "7a1a4cda45c8fedc4f3102256f190e5863096d0b0dd273a7a3b54d655305ee79"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/browser-results.json",
+      "bytes": 2236,
+      "sha256": "a6e3a7b5a9b767dee07c17571402bf775e60f1b53f3dd42a2abe32e686567a56"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/empty-equipment-1440.png",
+      "bytes": 46111,
+      "sha256": "a761b21b634524d731ea33addbdca543fa459b206dbf29dc03b767d1f3a9df57"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/empty-equipment-320.png",
+      "bytes": 28057,
+      "sha256": "f361fd559a9ad919fc7175e3c299a7e457570bbcc2a73ded8eaa01cd47836912"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/empty-equipment-390.png",
+      "bytes": 28436,
+      "sha256": "3ebc69987077f1d0daab31a63531e0f7d915eef987661bac0c53c8e04e45b767"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/empty-equipment-768.png",
+      "bytes": 30081,
+      "sha256": "c3e20bfff6f8db51dee02f8810a2a85e7ffb502f46bd46e0693ac014a075cc47"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-1440.png",
+      "bytes": 90272,
+      "sha256": "71ac89b313003bedad91e92fe0e17065268a9aa98b4cd593af3c123e45b47029"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-320.png",
+      "bytes": 66347,
+      "sha256": "8c934fa0230c7b064f4950fbcae00e94cb6473dd6bd4eae4c0be95e5b252c82c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-390.png",
+      "bytes": 66056,
+      "sha256": "54d88e010679765ffa112a3a7b42050bfc451c112b47a70d2106c506bcef6741"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-768.png",
+      "bytes": 70279,
+      "sha256": "44514ab45e4d44ca8f65ce0ca00de0a0fb2defebf03f669247fa72a592684041"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-catalog-1440.png",
+      "bytes": 91092,
+      "sha256": "d1732ce526b7788b6240f66175be986a0174c031f4f43de378591e572a3e5b21"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-catalog-320.png",
+      "bytes": 68054,
+      "sha256": "cf60e76af2b61933788ad3bd0daac99195035a90ae980f0702b202ac645a68fc"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-catalog-390.png",
+      "bytes": 69135,
+      "sha256": "cd214d262e9fb70b10b15db008670397c74f663269f50b8562e32a645167474c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-catalog-768.png",
+      "bytes": 70102,
+      "sha256": "012f99f7cdd5fd1af2cb8144342707a5ebb2c385c87b4270d949917ca198c4ee"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-forbidden-1440.png",
+      "bytes": 42124,
+      "sha256": "221acc193afdd817801177e925266263bcdc04e24fc13a6b9f48b66bb1561f55"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-forbidden-320.png",
+      "bytes": 25410,
+      "sha256": "5fbcbc69f50e3f0f23921d38d6480e16a309589d7b55547eb9b2bc3d85b2b5d5"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-forbidden-390.png",
+      "bytes": 25033,
+      "sha256": "1f50a04543342539f39880ab519b2f189a77f350749b5a05142f51037d1d82b7"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-forbidden-768.png",
+      "bytes": 26520,
+      "sha256": "9a0a53e1cdcc05f393298f34d1b34efa8a589157885b5f125d3cbbe197ca8b90"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-invalid-1440.png",
+      "bytes": 42100,
+      "sha256": "19a84f1976b3b9b8c6f1830d860e1c4f52a945a1501eba40f865f6488bd94d67"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-invalid-320.png",
+      "bytes": 25091,
+      "sha256": "05df07065833e7653a4c9043691f5a0cf95c6f1549f6fb01c376a3a4ac22a7c5"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-invalid-390.png",
+      "bytes": 24899,
+      "sha256": "646c0d3b370f0f2043dde5b6de4156b1b028d1500836c9a104e2e45c5a7a373c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-invalid-768.png",
+      "bytes": 26512,
+      "sha256": "b1b2575f9315523e1c5eafb5ff0623567f7a3f43443343cc8a8b19db9b3a52a8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-loan-1440.png",
+      "bytes": 134318,
+      "sha256": "c6f6dd39c536f0f2ea851709c2d4a227ed58cdcd047eabb910d47df6f2947887"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-loan-320.png",
+      "bytes": 102610,
+      "sha256": "46c2d3ee0b92febf525290da3204ddc035ef76eccd196857150529240118e852"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-loan-390.png",
+      "bytes": 104967,
+      "sha256": "07fc7bf9906aaedfb6c4cd34e739088c51e203658ddbee2054ebb38ee3ffb78e"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-loan-768.png",
+      "bytes": 110218,
+      "sha256": "348b05a87c8cad2ab8856cf0886b01a7f6110d0592d924ecafba2ed109b06f97"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-recommendation-workflow.png",
+      "bytes": 87282,
+      "sha256": "0da8e1c8bf770029a4898a7c04137f8fcfda5d50c9772cc2a72b161973b56ea2"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-recurring-preview-workflow.png",
+      "bytes": 142344,
+      "sha256": "de139fad80614d5e89c0b58670601da4c4b1a15ccd8b6a1cf5fb56edad6143ab"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-recurring-submitted-workflow.png",
+      "bytes": 61580,
+      "sha256": "9c6567dcc1ae76a3bfd4b0e0850803aae42f0dd45f9c7d28c09adfda5eebaa2c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-request-1440.png",
+      "bytes": 61055,
+      "sha256": "a63b3a8ea1f7475fb6549a44861d5ca9b57f7d2d9c60edbc8c70e9339f589d51"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-request-320.png",
+      "bytes": 39486,
+      "sha256": "3f3208b5f62b0c615c265f090d4d7b6f21105900c3cf96a1cbca237eb7aa551b"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-request-390.png",
+      "bytes": 39658,
+      "sha256": "c1a6548117cdb3ffb99a2ee88ad4340075cb7328d86c3e06fbb49cf7f8a93e25"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-request-768.png",
+      "bytes": 44402,
+      "sha256": "b6b5ff92c93a9b31365dc267f05d8414657dccc5c34bd04a6660708e4e284242"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-series-1440.png",
+      "bytes": 108297,
+      "sha256": "51441c500a90ab2503974581a4a7867658b235138a7657bcc73b14685ddf4078"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-series-320.png",
+      "bytes": 80169,
+      "sha256": "7413c721a0cc9b2a6844cbbf1ce616bd93a62ac7dc09a1be0be51e34140f3cee"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-series-390.png",
+      "bytes": 80578,
+      "sha256": "af15d7974168b806a1689a0d4437c37ec665046cbbb276523e3d868f3405cce6"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-series-768.png",
+      "bytes": 88683,
+      "sha256": "afbc95a050709c278cc62c3fbe651b86a121275730cda1f181978353bad3319d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/equipment-submitted-workflow.png",
+      "bytes": 39905,
+      "sha256": "b65a56d4f6516d6bdb085d4099e0e75d15356f0db76550d112cec65ee1ec8507"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/modules/test_equipment/tests.json",
+      "bytes": 154,
+      "sha256": "5e4d966930824354962e5e160d536014a7967ff8bd066a8408d9ba493669fba3"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/modules/test_equipment/tests.txt",
+      "bytes": 3552,
+      "sha256": "16f9fd4870fb5a8bea6b646ddbc54a0a1b74ec4af36e9be9d50c155f34c6f38b"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/modules/test_equipment_web/tests.json",
+      "bytes": 155,
+      "sha256": "21eb8488352657b3c61c4a26463e4c77ccb2c58cb380ce3abcda40f63fcc9dec"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/modules/test_equipment_web/tests.txt",
+      "bytes": 1299,
+      "sha256": "6e786050a28bcd07845d2e08906268f346a2f529368384ab5291d6510993e36f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/modules/test_recurring_policy_RecurringEquipmentPolicyTests/tests.json",
+      "bytes": 189,
+      "sha256": "238b7c45d1e434792c5ec81c887bca0b4dbdc96919d8b38eebf3ac3d2a63cc74"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/modules/test_recurring_policy_RecurringEquipmentPolicyTests/tests.txt",
+      "bytes": 1787,
+      "sha256": "3aa62cb721baf8ccb8380b0df1f30b27787a721b2b87d531336fc5696c2d6bcf"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/modules/test_recurring_views_RecurringEquipmentViewsTests/tests.json",
+      "bytes": 186,
+      "sha256": "fbca87083d8538b7f02d0317f7860aa21854f75b64bb5daadd1710f2840a0478"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/modules/test_recurring_views_RecurringEquipmentViewsTests/tests.txt",
+      "bytes": 1070,
+      "sha256": "a9498005d6a0287bcb41e11c94b49b343feb9f812a2695927cec81e931a9cba5"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/modules/test_recurring_workflows_RecurringEquipmentWorkflowTests/tests.json",
+      "bytes": 196,
+      "sha256": "4a0fa941714dd09dcb75b4bb62a2288a7f412ef31ba863dfd5431e028fd5e64c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/modules/test_recurring_workflows_RecurringEquipmentWorkflowTests/tests.txt",
+      "bytes": 2096,
+      "sha256": "07ecf44f8fb11d4344a5a6d67aac5a9dc5d1066098ae88e2a85195c889e92235"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/partial-return-and-extension-workflow.png",
+      "bytes": 101652,
+      "sha256": "6eb77334e142711cb887ee202b3c630edd3cae71ebff28e929f906c84ba3e587"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/tests.json",
+      "bytes": 1939,
+      "sha256": "7790484d947d458e12f1fb96d49c0bf14b9fe4a9735ce0cb1cfedd3a410d99fb"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/tests.txt",
+      "bytes": 9812,
+      "sha256": "209f29f152375275e5828ada9266f79331b56fe49dbec09d3f446d25cc128cee"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-05/workflow-results.json",
+      "bytes": 475,
+      "sha256": "5ac128824bca31c5757d0e04355ffce353037102882cad91b77ce6915c763bdd"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/README.md",
+      "bytes": 1591,
+      "sha256": "acd71e6b9f42deda055b25091125d312b837b3e168845b1e5a3a2770d1752fb8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/browser-results.json",
+      "bytes": 1483,
+      "sha256": "53192f1acb8e50bd51e99bfbd1f5febe38d8cad0f3a8518f4baa592fd2daf896"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/empty-waiting-1440.png",
+      "bytes": 54228,
+      "sha256": "00050807c00cf172c8e0d4fa01719cdce04e56f58075918b17d8670e8cf688b5"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/empty-waiting-320.png",
+      "bytes": 34715,
+      "sha256": "4df4495b5d273973e53666c4ce4c2750e78281fe00a0eb79894de0d1610598b5"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/empty-waiting-390.png",
+      "bytes": 35515,
+      "sha256": "9d2ce8f06002f68aa5570a776709ee09e9cde53d3d7cdf902a8fbfb0712aa0fa"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/empty-waiting-768.png",
+      "bytes": 37272,
+      "sha256": "4277585599695319299b90f597fda04a4bd1e7785286b76d7c3615b5961548ab"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/modules/test_waiting_lists_WaitingEquipmentTests/tests.json",
+      "bytes": 180,
+      "sha256": "0d16baee7673fdb531346b89f6d92eac982371d12c8c9b1653e6c246fd7cde78"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/modules/test_waiting_lists_WaitingEquipmentTests/tests.txt",
+      "bytes": 3908,
+      "sha256": "2a75086a68f0a6c894c27e8bc47c8d759d4af15f60978eceebf0493b1fc0bb9a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/modules/test_waiting_lists_WaitingRoomTests/tests.json",
+      "bytes": 175,
+      "sha256": "74715c399d6080727fb5c9911fa1821f9850eed56e546d4f7657bbf7ddf54fa4"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/modules/test_waiting_lists_WaitingRoomTests/tests.txt",
+      "bytes": 5244,
+      "sha256": "caec6c0d54a01728fb0f951dbfad37ab9bc5421669f4d3361deefab76d34d906"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/tests.json",
+      "bytes": 881,
+      "sha256": "e1499bae423639a5d9b6a570a10123b236fb7694fb5aa0f5a4b4381eb60d4c15"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/tests.txt",
+      "bytes": 9154,
+      "sha256": "29ad035985225987b3c232aee9a5c84764bb76cec040aab94f44b44336b88609"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/verified/modules/test_waiting_lists_WaitingEquipmentTests/tests.json",
+      "bytes": 179,
+      "sha256": "f49802bb26823f90572664c5401a7d4cf5e3a5a376475ae7960e8b77b0972714"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/verified/modules/test_waiting_lists_WaitingEquipmentTests/tests.txt",
+      "bytes": 3908,
+      "sha256": "e80f283e53996f079669a5ee4ac495a9083a371450b839c0f63e73f396d98893"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/verified/modules/test_waiting_lists_WaitingRoomTests/tests.json",
+      "bytes": 175,
+      "sha256": "0adb886626a6bcdf724447ffc403acb02cba7c0eb7b2926443cc0867f9c610ad"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/verified/modules/test_waiting_lists_WaitingRoomTests/tests.txt",
+      "bytes": 5244,
+      "sha256": "5c13c85e9d3f50005d58b7ed086d5ea0bbe9408b28a4294919f052b0c5b89d82"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/verified/tests.json",
+      "bytes": 881,
+      "sha256": "e1499bae423639a5d9b6a570a10123b236fb7694fb5aa0f5a4b4381eb60d4c15"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/verified/tests.txt",
+      "bytes": 9154,
+      "sha256": "29ad035985225987b3c232aee9a5c84764bb76cec040aab94f44b44336b88609"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-1440.png",
+      "bytes": 55973,
+      "sha256": "5aa697d9c45f8758359ffe45d9a8f86fd284f6e6868a203a3712de66acfbaf24"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-320.png",
+      "bytes": 34946,
+      "sha256": "f8ebee3e6ef5cfe423d1ffda075efae927cae846ca721df4dbff27cd385b2e36"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-390.png",
+      "bytes": 36172,
+      "sha256": "4144a0eb70ec8719182d8c00fc56e0882c0437031bfe2f845b62ebcf41e90ec9"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-768.png",
+      "bytes": 39097,
+      "sha256": "02f1b7e24b7b6585e0f182354343859d367e1107229b4ae6f7376285511dfc3d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-assigned-1440.png",
+      "bytes": 91669,
+      "sha256": "7d9cf152a383c75cf6baf44654eae851b91f97ecc9be83d5b4f30de09d4d8237"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-assigned-320.png",
+      "bytes": 69823,
+      "sha256": "ec0b3246c20c7b2f783609da1ec90b1d3388113d5ca95cd895e10632d8f5ff28"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-assigned-390.png",
+      "bytes": 69337,
+      "sha256": "cf03be23728b451ae264b0e5b47aa4f7bdf690a2fb3c6d3e62b1c2d10d0c8ba8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-assigned-768.png",
+      "bytes": 67650,
+      "sha256": "427daa872feb8dcbfa37d6560edf1af06916804c73ae33ea58ef6d47a9932c08"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-detail-1440.png",
+      "bytes": 93820,
+      "sha256": "9e4863df21a1dd89e3816dec383ac3c1d4a3332bd45cc0e3d18a03d089d005b8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-detail-320.png",
+      "bytes": 73256,
+      "sha256": "b7aa6c775b4aa4b848a1baa21d5f2f38e341c10a4b674fdfa56604bfe3225f14"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-detail-390.png",
+      "bytes": 71225,
+      "sha256": "278623ca6a1a5a5b6d1760e6387e634b0802d724732f7bca59e3173b905f0640"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-detail-768.png",
+      "bytes": 76947,
+      "sha256": "0fee458f132e366a7e08b7afc52c187c396278008599df7529af83092340ed6e"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-forbidden-1440.png",
+      "bytes": 41798,
+      "sha256": "bd32fa2e2c23b89721df9d6e137e0dfd52217c0a550e765a32f8deb3d3ebeee2"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-forbidden-320.png",
+      "bytes": 24003,
+      "sha256": "826a4770dc31fef9c297df20929226e48202081810845fa986076e95efa5e7a3"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-forbidden-390.png",
+      "bytes": 24392,
+      "sha256": "649282a703d7e46098391bd7e0da0d3733fac74537e07be5ffa97369479dbb97"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-forbidden-768.png",
+      "bytes": 25903,
+      "sha256": "41d88af1e59e23ed028a2270ccc1eea159de345322c00b080d0678d9af1e1a24"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-inaccessible-1440.png",
+      "bytes": 41554,
+      "sha256": "be689a9afd49eaa956b149662033176e9bd32f063c3647c12ac4fab6102c20d4"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-inaccessible-320.png",
+      "bytes": 24150,
+      "sha256": "95029248ed864f020ca97fe611acf3bfd519311f87300a00e5d2050ec03e29b6"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-inaccessible-390.png",
+      "bytes": 24641,
+      "sha256": "845c8e613ee334ae4aa170107559a9ece30c8dce018c906e40516d5dfc760a95"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-inaccessible-768.png",
+      "bytes": 26060,
+      "sha256": "ef872e5fb040b77ab78609be8fb53029a2ed08ea36fd77caccd1e694eb36fb0f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-policy-1440.png",
+      "bytes": 120220,
+      "sha256": "cbd568acb3cba8607cbc4c54548a5964abeb5f01cd2678792071c6b6f708c5d4"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-policy-320.png",
+      "bytes": 89664,
+      "sha256": "56dfd47a008dc689165c5b4ce3618638d07740b12afeed279b6cf046c6c47d42"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-policy-390.png",
+      "bytes": 86820,
+      "sha256": "49cdff743b7a75a49af951fdf72dad38e7950a61004e6b7277f375251b7340b1"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-policy-768.png",
+      "bytes": 93395,
+      "sha256": "169df1f579778464a49e19afb769d7cc266b2d1712fc2c60bbaa8d1f3c655355"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/waiting-withdrawn-workflow.png",
+      "bytes": 68339,
+      "sha256": "36c14d1666a1671b3b5fba1ccdc8bc1adc708e92ac6bed3a3d9e86caf0821993"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-06/workflow-results.json",
+      "bytes": 546,
+      "sha256": "6979ae32f7ba4a53d2ca5842d64c76bfae802edfc0874fa7f0ed7f69528f997a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/README.md",
+      "bytes": 1330,
+      "sha256": "77cd0203827bae5e034e3e6b7adafb4f5fb7438110f3863ffd47be576cd71519"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/browser-results.json",
+      "bytes": 1721,
+      "sha256": "b453ddc096b32572d7a594f240321497276d6f3011228c449b81cdba59d017c8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/empty-feedback-1440.png",
+      "bytes": 71553,
+      "sha256": "4351dcd7d3503fe97fe077f3863c333031bf75527c26862c0fa2591935b2ca36"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/empty-feedback-320.png",
+      "bytes": 52262,
+      "sha256": "aa2157eb8d5911fdd354c05caaafcbb3f95f2f3944b36520e2de4bc3e6e27e1d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/empty-feedback-390.png",
+      "bytes": 53661,
+      "sha256": "3b3d58d6e2a78e5edbb369e1d6c0d7b1c5e29089974bfe9e9ef9bdac89a0125d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/empty-feedback-768.png",
+      "bytes": 51682,
+      "sha256": "026f482fc13813907715d360d6a04c2d81278633399fe8e29c5760722fbe920e"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-1440.png",
+      "bytes": 76231,
+      "sha256": "314f9994ee8ae717f6f1d024129493837bc577861c0e52255dc941d77a051155"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-320.png",
+      "bytes": 56596,
+      "sha256": "d0d78ff46208f65de3d00dd951f8052e7c2f1904978ac6d14d2dbd3c4aba93d4"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-390.png",
+      "bytes": 57554,
+      "sha256": "af57c5783ad19063983da27e27c52a427cc9d99ee26203e2ef86f45514bf0ff6"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-768.png",
+      "bytes": 53414,
+      "sha256": "8509769abfbe99687fb14e76f69a4b4f96145fef999efe613c76194751427f80"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-detail-1440.png",
+      "bytes": 87394,
+      "sha256": "97b6371e90b26c0473cb364d58badf0cae894e58d49da39809537e80949a45c8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-detail-320.png",
+      "bytes": 62650,
+      "sha256": "faed9401e83d3fd81471e2cd7a23c8d0d1a023d5cad4f64e5f1c72629472ad0d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-detail-390.png",
+      "bytes": 64541,
+      "sha256": "73c03cae112aa794749e8e7ba454e1df7f54db1864c2f6d0333225da2f3e4859"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-detail-768.png",
+      "bytes": 67872,
+      "sha256": "c5b7e932d8c5903126b372e6f3ba9f9a640e23b178c3bc6b6ecdbf2cbe4a16dd"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-ineligible-1440.png",
+      "bytes": 42610,
+      "sha256": "56ba9e7707a4a5c922cf87e67b1a831080f354579fbc5701f39fe1c63ef35293"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-ineligible-320.png",
+      "bytes": 25077,
+      "sha256": "f265d0051d849c750d426b1de9187077fe17e7cbea1f53a3cca064b7d68a283c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-ineligible-390.png",
+      "bytes": 25145,
+      "sha256": "222cc9266fff6fd8335ddff64ae46cf669a8c07f37884d6db6975febaa4ab0ce"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-ineligible-768.png",
+      "bytes": 26753,
+      "sha256": "1e524b4d370a9a63d950bc85de65ddf21ca5bb560b35a043ef87ce90beb9e720"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-invalid-1440.png",
+      "bytes": 40396,
+      "sha256": "66e0033bdcf978600ee83cd600202fb9895c60153fcadd27c59ad6cce2901cf9"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-invalid-320.png",
+      "bytes": 22811,
+      "sha256": "96b93d6858b6752ecd5ec63be4a062e340dcc65f4c965426ea9b4182f80ba316"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-invalid-390.png",
+      "bytes": 23300,
+      "sha256": "5292489aba9b365bdd48e2664b1c1d38a40999f522e588381b2affb51e026218"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-invalid-768.png",
+      "bytes": 24932,
+      "sha256": "24ead1379eefa4f6f91911c098b9aad653398bb2b5a318c25305a3044099dafd"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-new-1440.png",
+      "bytes": 75612,
+      "sha256": "754f7a4a6fd4fac6509c9286ad0273b048b2ecf8818be0e9106e23562f573aab"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-new-320.png",
+      "bytes": 54666,
+      "sha256": "b501bf7755d06b7ff2194a64acbbbc753197051b42c1e3f807b01d8fed4c466d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-new-390.png",
+      "bytes": 54571,
+      "sha256": "5d88d2a79935dcb1f0d33ff3a87e6f1252e4e1edba91f3ec10b5849a0bc0022b"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-new-768.png",
+      "bytes": 56618,
+      "sha256": "8a16b50f2cd340ad8164486dd78cd8ce8a41453d4c6a141b3be89d444e8840a8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-private-1440.png",
+      "bytes": 41856,
+      "sha256": "40b390ca5c18aee36a50c56e466648d14c7c1a396ae7faaa3cd2ed6393d27ba2"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-private-320.png",
+      "bytes": 24004,
+      "sha256": "67de0968dd94dcf4a5873ea659ffdc02843fc3fba47c688e6e699146f4b00a83"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-private-390.png",
+      "bytes": 24561,
+      "sha256": "ca9b23afbaa9d46e9c110c416a32845d06e94060f3a295018c4fef63dba3b75f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-private-768.png",
+      "bytes": 26005,
+      "sha256": "86172c364d6d63b8d1d7b478a3ed160d80ae51ddaac18a39b20c485e5ac493f4"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-resolved-workflow.png",
+      "bytes": 72212,
+      "sha256": "8cdf7d8404578411e63dde0f424c8e6d30aa555e84a853edafba9dc2e8a472fb"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-staff-response-workflow.png",
+      "bytes": 71482,
+      "sha256": "9ee5d35168a57b1aacd5ec7700d37c0c13afd476751ad2cc07d287b8ec06633e"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/feedback-submitted-workflow.png",
+      "bytes": 54015,
+      "sha256": "5ef9187dee10e27aa007d71cf9bba55f93daa4d5a1da7e6ecb1bb443f03d4aac"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/modules/test_resource_feedback_FeedbackEquipmentTests/tests.json",
+      "bytes": 182,
+      "sha256": "ecb583ee5647e2a4f25f8c6d8c210787198727a79ea2b30a2f53a7348b7b94a7"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/modules/test_resource_feedback_FeedbackEquipmentTests/tests.txt",
+      "bytes": 1632,
+      "sha256": "f9fd069e00dbd31be4488b9ad73c8484a550451ad4d5f88ea8f158d5150e1897"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/modules/test_resource_feedback_FeedbackRoomTests/tests.json",
+      "bytes": 180,
+      "sha256": "0b515d38217ad4d87ae8f47418d5baeb2c10cb8146e3c8588867b01a8f1eaa84"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/modules/test_resource_feedback_FeedbackRoomTests/tests.txt",
+      "bytes": 3922,
+      "sha256": "16c64ca8e0927e8f0ace90ed99b90b805e608879d01f3cc316d0eaf2d7ac4bde"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/tests.json",
+      "bytes": 908,
+      "sha256": "42a9f611c68397ec7c82cdca1888f8b6403d7115783a6315d18794c0245532b2"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/tests.txt",
+      "bytes": 5556,
+      "sha256": "b344fceb8c73cda6fce46e992c0fd22325e3031b7ccf33519954c47ebc8a13bb"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-07/workflow-results.json",
+      "bytes": 491,
+      "sha256": "7f4547a8be95b9fdd01cc64491a7c2a435082f1607b6dbc58f9318ea0a43615a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/README.md",
+      "bytes": 2060,
+      "sha256": "790f0a8fcfe71b5a5c2348cc2e458ca25a336fe4cd674baa1b86b0b25b721a72"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/browser-results.json",
+      "bytes": 3375,
+      "sha256": "b69358026e353db025e31c25f9bc07812343a5268bb3b1585ecfba487ffe7964"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-academic-1440.png",
+      "bytes": 48259,
+      "sha256": "d73d0b48684eeaa4f381fdff3fe381f530c2d1898e7c85956a50071f61c472db"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-academic-320.png",
+      "bytes": 30195,
+      "sha256": "48107ef2be1d1d3c444d56b4fafdb9e27b1d97230f6646b39468cfd6debd17c9"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-academic-390.png",
+      "bytes": 30751,
+      "sha256": "3bd95301aa9737e0358d6b0b715933cef9caf655a2a4131aa643b4397f7c22c2"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-academic-768.png",
+      "bytes": 32232,
+      "sha256": "7090fc61b0f31150f37fbf72cae5a3a79eea6d1f6bb36aafb332f06608fb395a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-day-1440.png",
+      "bytes": 120746,
+      "sha256": "532aecc4f13ab81e87428d593808a2c1277d68ab690e9fb6e9d3afacd1883d43"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-day-320.png",
+      "bytes": 90064,
+      "sha256": "5a89720c24580071d3a55adddb5b55db8ac25965faf76469c3d4ef0628bb4a82"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-day-390.png",
+      "bytes": 90460,
+      "sha256": "0b4a1e6637f6d89cdd025d83eda9519d7056d77004ecbb5076f7972aaa339274"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-day-768.png",
+      "bytes": 83466,
+      "sha256": "d9b3f9ccaac9921ccf37c400cedb7acc359e2cad619b71581739531e3199fb77"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-equipment-filter-workflow.png",
+      "bytes": 98544,
+      "sha256": "d62deb1ede044f348b5bec6448cd59fda5567cf91d756d122d572c3cbe7faa68"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-invalid-1440.png",
+      "bytes": 39710,
+      "sha256": "efbc1997608c8e39b44deb44f5fe2e94dc434c641bd1556927d3d7d99d923459"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-invalid-320.png",
+      "bytes": 21608,
+      "sha256": "45a3d8be526459582a0b5e993701232686c639af8b75e72f2dc8a71b1afdd580"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-invalid-390.png",
+      "bytes": 21952,
+      "sha256": "aef96e8faff6e01ff6f758deee0047f0c3c161b1165f3c9ff2506705ec189a26"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-invalid-768.png",
+      "bytes": 23699,
+      "sha256": "0e8683b0d5798fcd4c8c850acf232c83f76d78c0ec9b1819acdabb4c4f048efd"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-month-1440.png",
+      "bytes": 209682,
+      "sha256": "009953620fa1d82f65cfe2e43e2521f761c4a092ab3f11eb3a06c94493e488af"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-month-320.png",
+      "bytes": 180414,
+      "sha256": "81645bcff86402cc8df0a07658e88ec2b699b93099cd53623b967328af0b7eee"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-month-390.png",
+      "bytes": 182298,
+      "sha256": "3cb34026dc7648d0010f8bc8d32efc7d979405f5da0b61a40fbd3ea2ddb62469"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-month-768.png",
+      "bytes": 174586,
+      "sha256": "a09b011d2f7375041e1f6fdb93c7d81f35e3543bbb29a0392e4299ed56a6348a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-private-1440.png",
+      "bytes": 38739,
+      "sha256": "80bfdd3efb5d6b8f9cf0ffeeedadf8b22ee61f128778594ec2b5f5d01e7c2506"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-private-320.png",
+      "bytes": 20717,
+      "sha256": "cc4b32a75ef76d3bbf14bae504c40e384cdb969dee297a98fd0a7ae26d5cd130"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-private-390.png",
+      "bytes": 20957,
+      "sha256": "dce48fd4509f3319f9e832ad2e2588c79b64f060dbcd469a9cd09362d434f3df"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-private-768.png",
+      "bytes": 22719,
+      "sha256": "b36242cc1063addb1f8d138dc83a51c5b90aca2173168137323649bf17337a98"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-published-1440.png",
+      "bytes": 100261,
+      "sha256": "50d75b1d9619b57e450ffe330270366c07f5eca2baf828fb551c839ddd382370"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-published-320.png",
+      "bytes": 72423,
+      "sha256": "88825f39ad7731a04d0fc0cbd8dc902cc964f378476bd8d4cde3aded82e724df"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-published-390.png",
+      "bytes": 72715,
+      "sha256": "eff5d54713ee5f710d271ac92fa977e95e2739039bff4dd6cd4eaf8f3a588bfa"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-published-768.png",
+      "bytes": 65280,
+      "sha256": "83afa8ac09c6d88d6e2e32b19b9aa01305446ac746601622686e1dbebf04acb2"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-week-1440.png",
+      "bytes": 149616,
+      "sha256": "955336f290f31a3caa76bee323eef898370d6e9f20835e7c7368d35221354969"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-week-320.png",
+      "bytes": 136222,
+      "sha256": "2d9d7adaa30cd9e74100601fb7f6f3830ea7aca4c12b756d5306adccd4c25f91"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-week-390.png",
+      "bytes": 137335,
+      "sha256": "0f9a17d5e9d700e23c84e01cfc838cd6e84645d13389d9d8dabdaec89c3d9ec4"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/calendar-week-768.png",
+      "bytes": 133748,
+      "sha256": "392eab84a2d471afd5ba5eca0b6c3c7bba4505a0cffca568654cd83836066dea"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/empty-calendar-month-1440.png",
+      "bytes": 97378,
+      "sha256": "205e706b0938d214e96f5a693bd01065b2e2f78c0658c3ae86ce4ac0b4cf3463"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/empty-calendar-month-320.png",
+      "bytes": 91453,
+      "sha256": "c590754bd9e86114a53bdfd5e8cc30f83275f2cabff26f11446f21349178a65f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/empty-calendar-month-390.png",
+      "bytes": 91376,
+      "sha256": "44af3366441fed97d7c0ebe191ffb8b0c7f8c8bd18b8b56d3b612250f16374dd"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/empty-calendar-month-768.png",
+      "bytes": 72653,
+      "sha256": "4c09840ab1fec227e9a91ec70580bcf7043aee844bab320b331942ed5868ce07"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/empty-inbox-1440.png",
+      "bytes": 44516,
+      "sha256": "c858bdf46ac39da8cd60a9f4a717d5a3b32ace331edb2735a4906532c53b6b35"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/empty-inbox-320.png",
+      "bytes": 27265,
+      "sha256": "d6f94ee277c93135604e761471c5822c816c238cdbaa635a3ef65821befd565a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/empty-inbox-390.png",
+      "bytes": 27418,
+      "sha256": "a7969f2b08f7aef6720d1265fe19720e8e422e3c8fe25fb8a418ca11326168c9"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/empty-inbox-768.png",
+      "bytes": 28970,
+      "sha256": "49f3986eecc8608204a5c00f717d12de7b625410341f71ac8d2f7a157addd38d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/inbox-1440.png",
+      "bytes": 212803,
+      "sha256": "00732ac073155c64bec368454f9be9848e34bc235357ff0a5546060d6054a289"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/inbox-320.png",
+      "bytes": 173993,
+      "sha256": "b459d6b110a0ab43adb411cbe3e20ff19a69682ad2559bfbf381d13a05a8bc87"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/inbox-390.png",
+      "bytes": 174841,
+      "sha256": "892d5883e104cc57a8268c82983e9ec90007918a32194651043a245a1074d7e6"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/inbox-768.png",
+      "bytes": 183141,
+      "sha256": "9061a6dde80102f1fe17100beaa829bcb4f38c265824ee4a86656b7c8e50b8fc"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/inbox-all-read-workflow.png",
+      "bytes": 168507,
+      "sha256": "2c51f719db84f681cea8977e0572e3c14b2ebd3a25f70768836afdbc90703654"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/inbox-read-and-unread-workflow.png",
+      "bytes": 174513,
+      "sha256": "e15da3c67be0aa8b53631e6af5da1790fdb999fd6bd092aaa7aa4fb0b7733b5d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/modules/test_calendar_loading/tests.json",
+      "bytes": 158,
+      "sha256": "db12721e5354f44e81fd86d3345556daa3b3037f64fb1fbb3e494d0f70526e22"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/modules/test_calendar_loading/tests.txt",
+      "bytes": 639,
+      "sha256": "1d914af95840121ad5a3b8dcad12785ad9de2345aa3483b5122eaae8bfbc6a43"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/modules/test_notifications/tests.json",
+      "bytes": 158,
+      "sha256": "9b091b32a8d9dc156fb553b340f0327c522619404f56dc43fc552ba1e5f67b2f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/modules/test_notifications/tests.txt",
+      "bytes": 2086,
+      "sha256": "809b216b0d2ee35117b353cf1692dd3cd5a4e9d161a2da1faa114c1e47e0a9d5"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/modules/test_personal_schedule/tests.json",
+      "bytes": 161,
+      "sha256": "83d61e76e1ee3f285a268bc3fd6376892e3c1851935e436414b85580080812f3"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/modules/test_personal_schedule/tests.txt",
+      "bytes": 2993,
+      "sha256": "98066c6ac638ae62c6e423339080ee51e8804865f6a83f5d818f18d695ebd713"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/modules/test_university_calendar/tests.json",
+      "bytes": 164,
+      "sha256": "f82fec66bcc1f3ac134c7251c75fc37668433c2dc3346d5c098c043b89908393"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/modules/test_university_calendar/tests.txt",
+      "bytes": 4084,
+      "sha256": "bebee02e8b808b4f2539c11ef66a7e13314d2ee6ac5f773f7a02d6d43ee6b829"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/personal-block-added-workflow.png",
+      "bytes": 91203,
+      "sha256": "415b97ee127ae24325ef97832b1328de939e8134c7ac3ef76571bbd169a0b271"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/personal-block-conflict-workflow.png",
+      "bytes": 25399,
+      "sha256": "b4e4f13cdbe721b4c4a09c1367a7924d1e0c581a65bce51f50945189df4c80aa"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/schedule-1440.png",
+      "bytes": 107739,
+      "sha256": "8b51d6b36337feaefa1cdc4c8f270e027bd28c25006084b60b0325242258a22d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/schedule-320.png",
+      "bytes": 81944,
+      "sha256": "2200f565c69faace292aa5c49bf6fa45a4d38ac21096995ecf6e906884ec742c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/schedule-390.png",
+      "bytes": 83889,
+      "sha256": "2378ba70f5c2faa2a5edc198789bb44346298e02cbbe39403577c9e8199f87d8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/schedule-768.png",
+      "bytes": 80203,
+      "sha256": "c7ce48c40d9ece7026d838df93254892d786f0476ce02dc448149f43f5c41cda"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/tests.json",
+      "bytes": 1393,
+      "sha256": "efea2dfb2bcc7c59ff2292decc5462747de3c9da88822394351d9cc4985a9fc1"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/tests.txt",
+      "bytes": 9808,
+      "sha256": "252997df8a11644f664513f5a540e6200feba5b07e884b05665ef48f3824bc61"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/warning-calendar-month-1440.png",
+      "bytes": 103572,
+      "sha256": "2c589b6492a6b9fda300a231bec19ec79ad8ac2b0731deefc1427a76165726d8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/warning-calendar-month-320.png",
+      "bytes": 96443,
+      "sha256": "dc9c1cdf2cdeade136f51f8ac5e789944b30f30736b1cadad549c7dfe7c44a12"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/warning-calendar-month-390.png",
+      "bytes": 96382,
+      "sha256": "1807b19f7a0ac1f7a6373c3c9dd872d1c1a7b2ae3efb26af712a87fe3321fb7c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/warning-calendar-month-768.png",
+      "bytes": 80650,
+      "sha256": "3c83ce55642418542f4d8d8a2ac9758d6e6cd29103f761f221e28478196267ab"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/warning-calendar-week-1440.png",
+      "bytes": 106633,
+      "sha256": "819f08c761e1ce978d118487e782c4b23c2c4e33123149555e88f8887d44e63a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/warning-calendar-week-320.png",
+      "bytes": 98973,
+      "sha256": "28e95ee9965e79733a8c3c6cf48198b767825acab095790c15895860c7ac37ab"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/warning-calendar-week-390.png",
+      "bytes": 98368,
+      "sha256": "30fcb6ac30431ef104be7d2f41a6c9d4d6fe9d4b58a7f8efddc63334d892a466"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/warning-calendar-week-768.png",
+      "bytes": 98463,
+      "sha256": "578da4d69d35241a023ce4dfc376b1b7ab727144dca66d0e539565df4bb7ea81"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/warning-schedule-1440.png",
+      "bytes": 96899,
+      "sha256": "9d0f7f7c5693e44a53d1ab0d70352099fa2dd15bfe537c5262f3314fc857fee1"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/warning-schedule-320.png",
+      "bytes": 72191,
+      "sha256": "0295760de64dad9548eedc36d403fce5805b989ee38f023ea481403970e473fe"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/warning-schedule-390.png",
+      "bytes": 74342,
+      "sha256": "7080b01f0bef95472ab832a2062ad448892b09bd13c639ba744608c7426cbde7"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/warning-schedule-768.png",
+      "bytes": 73211,
+      "sha256": "8581885a6de39a2d81d318d5706d887abf54761c237388df97633c039ce26988"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-08/workflow-results.json",
+      "bytes": 528,
+      "sha256": "00a83847c924137ce3b3a9223e922948d45915366ca373ea2fb3153eb487c756"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/README.md",
+      "bytes": 3717,
+      "sha256": "9104fd3fd1cd23f5690a0fc519657c8b56b0d0d9c77ce17da70428813fd42d0f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/browser-results.json",
+      "bytes": 4535,
+      "sha256": "5fc78570f016fb38a19de0cc78a3451b8246a744db92c1d78fa1321249f4b090"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/cleanup.json",
+      "bytes": 817,
+      "sha256": "b8d5312921482514ee33ed27825dfb96e7d16701bd98da4fe807a549b78931c1"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/contracts.json",
+      "bytes": 6133,
+      "sha256": "72987aeea0b015ffe6a193ab9448338b6861c1d1311e68defab37c640d39bd5d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/contrast.json",
+      "bytes": 1266,
+      "sha256": "ee0d708960d4a2ddd34a93d035636449544d3e8374ea3c045ef7cf31b701620a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/cpp-tests.txt",
+      "bytes": 18506,
+      "sha256": "b5ac4dd4c20c5046b9bb1484a6a1b8566d17e5da5e8520347b15559a8937862a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/csrf-error-320.png",
+      "bytes": 22793,
+      "sha256": "e49fd019400837cc9ed373ad328aa4160d1bfe7dbc8f1cc09ed37a282118f3db"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/final-home-1440.png",
+      "bytes": 128726,
+      "sha256": "b35cddabdbb3b0a43491bc01819cb53ec8c2fbfc9a04e2ba7bb68f50a4a996b0"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/final-home-320.png",
+      "bytes": 99764,
+      "sha256": "bee2742d7dab0c76316dc001c223797291699a0356d46b9f282c0a59524f0bd4"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/final-home-390.png",
+      "bytes": 102703,
+      "sha256": "755c5a42277fb37ac5d574976d9ddafb4c82357015868e755538dc64412d39e0"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/final-home-768.png",
+      "bytes": 107667,
+      "sha256": "d329dbe13a2c2f8e83cc6151af0000194f2c850d4ce0c66aa4d16fe9787574ff"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/final-login-1440.png",
+      "bytes": 19583,
+      "sha256": "97cdd723299801f7f6bfd9ec70c194e17274c07e7dfebf30655f3f3ccf961651"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/final-login-320.png",
+      "bytes": 15108,
+      "sha256": "82fafd7313383943367c2271ef27b8cea8ee366d7aaa04381f074774f9a32070"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/final-login-390.png",
+      "bytes": 15563,
+      "sha256": "441f3a091a074a4f0f8cff1f2522ec3bfea5a3cf07f05ac2fc9539ed6256f9b2"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/final-login-768.png",
+      "bytes": 17574,
+      "sha256": "361115cb566c86046d66eab0b692d6f0244e0f9ac94b953d4ae9473e4d1334f8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/final-schedule-1440.png",
+      "bytes": 107873,
+      "sha256": "fa539219c94bcdaf5b35fdc9d3b3a31109dfd7bd687dc0aee30a8d223bff3830"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/final-schedule-320.png",
+      "bytes": 81914,
+      "sha256": "e1cf5e44ba97220f9d1a0aa6db1d9b98f7908a023e4a2f7297337209c69035ab"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/final-schedule-390.png",
+      "bytes": 83825,
+      "sha256": "1790a88abfb56244a3f8dee59109974d9074a9b786275a39874e32cadee03788"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/final-schedule-768.png",
+      "bytes": 80238,
+      "sha256": "356f141d236cc167914b7b4dd946a01c759c6713074fb8bd11de3d626e15f330"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/loading-results.json",
+      "bytes": 857,
+      "sha256": "362769dbea88048a987cff253601102946f8563eb92bd83f81c089a1dd905608"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_application_entrypoints/tests.json",
+      "bytes": 165,
+      "sha256": "87cb16f6c2418af78f01ca0478fc6ff73f74170d575e4132388427443ae803a4"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_application_entrypoints/tests.txt",
+      "bytes": 1070,
+      "sha256": "0c3284750f7c0e53ebe3500166f78d99c325eadbd296ebb67f4225fea027aa39"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_appointment_foundation/tests.json",
+      "bytes": 164,
+      "sha256": "adce07f288cc782b23fc292772e1e4bfc15531689b22b2ee2f1b7f34798c0b96"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_appointment_foundation/tests.txt",
+      "bytes": 1236,
+      "sha256": "456022321e9a6c30f48f46a662d5c92247bce7948c9d8b621d46211803c5e747"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_appointment_protocol/tests.json",
+      "bytes": 161,
+      "sha256": "4e34c7793477b59e8c1184cdbf6ce23ae715b9bc4ffbfb2f5fa64132c3deee8d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_appointment_protocol/tests.txt",
+      "bytes": 1076,
+      "sha256": "3f8e22aca32aeb9a36e0c52d279d54afb976cb20471df0ce472833cf9cf16a6c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_appointments/tests.json",
+      "bytes": 157,
+      "sha256": "9e933608d4adf078ca7bf9d37ebf48e14ffb4ea071af6492f1b7e131059777a1"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_appointments/tests.txt",
+      "bytes": 4371,
+      "sha256": "f87bbc141f9ae51b4baaf55d734f58c39e73978772d1cd3f45d4fdab49bd5833"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_backend_executable/tests.json",
+      "bytes": 386,
+      "sha256": "59fba7771fbfaea80dca685675cf05c744d02ec5b7ece6a31ad9d9d07d57baad"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_backend_executable/tests.txt",
+      "bytes": 3268,
+      "sha256": "a34a46332b068b97f877d17277e444689c0f1ebd65939e734b23d5365dab07d8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_calendar_loading/tests.json",
+      "bytes": 158,
+      "sha256": "5c7428011ccc50638e3dd2b9b08165617468dcbbfb1b1a4b9cd2f19956eb59cc"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_calendar_loading/tests.txt",
+      "bytes": 639,
+      "sha256": "a17c3fc4d901841bcb1ced9e47727c4143cf7170367281b978afaeaaee32c91d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_cost_policy_persistence/tests.json",
+      "bytes": 168,
+      "sha256": "2256dbac9993c54faa2ab1c34dd982b5c745ce9e8ba277aee80e6995d0f99309"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_cost_policy_persistence/tests.txt",
+      "bytes": 5960,
+      "sha256": "c9f50c17c5f2782b47a3ca7fc1a30acac042304c42ddd8de1bb04d8879c4177f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_cost_policy_values/tests.json",
+      "bytes": 161,
+      "sha256": "2c98417677a92b33a219eb51471e1b42fbb44bf444eb7a3b953c201c9e1716f7"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_cost_policy_values/tests.txt",
+      "bytes": 2367,
+      "sha256": "771cc30b64395f2e02907f131e4a1aff28802c60f1eaa89623b197f3aa9a421b"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_csv_cli/tests.json",
+      "bytes": 147,
+      "sha256": "c9bd31721e3903df64e2df09cb5bccb06d77685505647dfb588b6339ac85451e"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_csv_cli/tests.txt",
+      "bytes": 253,
+      "sha256": "3f76a61fd2f53eced55233afd824de031f43d2997161f1ec7e1e21a4af75bbcd"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_csv_contract/tests.json",
+      "bytes": 153,
+      "sha256": "bd797d40ef46f628ef777bd58c0f3732fb29c733277b6e1327e07089f939cf22"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_csv_contract/tests.txt",
+      "bytes": 574,
+      "sha256": "c09f95a314c902de03895bec74666db623777bc632c7d35fdce064929d9de8f5"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_database_diagrams/tests.json",
+      "bytes": 158,
+      "sha256": "b4152e48da3d775ae25c4ff6d4aa78843541b4ab68bd0b1b3503f0127b49ddfb"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_database_diagrams/tests.txt",
+      "bytes": 270,
+      "sha256": "b75b82a4db9703f904e2212ac18daf59db581caa0b9232ae63d9e5f9ac10d2c1"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_engine_gateway/tests.json",
+      "bytes": 158,
+      "sha256": "ee1712c5e606ccbc1b4ae63ff04dcf71550db488dbbe55931f783030bb7ddb04"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_engine_gateway/tests.txt",
+      "bytes": 3671,
+      "sha256": "b951392949ca403f80d532f61b626892f08064ef86fc9036ecafed01ec27b10f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_equipment/tests.json",
+      "bytes": 154,
+      "sha256": "2025dd491af55a4b4eae1cc85b4711a5c3051db1d11b9007d5819a24364a6bfa"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_equipment/tests.txt",
+      "bytes": 3552,
+      "sha256": "47bc431da9c7b4e0395af8005854a902f4e8d17b096b5433ca345ab3c5e8df07"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_equipment_web/tests.json",
+      "bytes": 155,
+      "sha256": "be29f7eb1093e89070e7d00a67409d09103239c5194d3b6b10bdaca55b833df8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_equipment_web/tests.txt",
+      "bytes": 1299,
+      "sha256": "5760cf0a38a4d2c8ebfc1a2073b034b5909847e552e01a4d43e4f819c71dfa55"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_frontend_prototype/tests.json",
+      "bytes": 160,
+      "sha256": "2cb7ebd35ebdb6017002582bb1196dfa984742633265ea77033b6243df8007ca"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_frontend_prototype/tests.txt",
+      "bytes": 1604,
+      "sha256": "96cb192e818e60f3b9d16115823a1f669996aa13ca5e53447d3dc45c3dd9b49a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_identity_sessions/tests.json",
+      "bytes": 159,
+      "sha256": "518a1924a56d0b8be2cf8f3ebfee577b1a536155adf40f0443d3c1d8a820c3ca"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_identity_sessions/tests.txt",
+      "bytes": 1684,
+      "sha256": "588f32be61815e75754eece8ddcc465018678345e1f0f9c883cc806d225fbc35"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_local_demo/tests.json",
+      "bytes": 153,
+      "sha256": "9db821811f1162692f0f2b60fa2382d8255115c79fcd03575707f01e3be76e01"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_local_demo/tests.txt",
+      "bytes": 985,
+      "sha256": "34e8c18404368ae95eb82953d389555b3139e7d75b857baf689041ac63574661"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_notifications/tests.json",
+      "bytes": 158,
+      "sha256": "73c128c35c9e8c42c480f06220b4aa0e95da84f15f4dd1bc8b791489029d7125"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_notifications/tests.txt",
+      "bytes": 2086,
+      "sha256": "3cfe01b79720bf3be114c9a17a7c6ed020e2fa49acf3ae0451b31810c51b6516"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_persistence_boundaries/tests.json",
+      "bytes": 163,
+      "sha256": "0ec7bab7e8e6bd3c3ddc0a37427c819b0929fa125964bee1ed650f936eb47f34"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_persistence_boundaries/tests.txt",
+      "bytes": 672,
+      "sha256": "3e1a0123f4e0ab28b9b9ce3d3b4fc224c103a4d692fe07a8bfc645727455dc26"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_personal_schedule/tests.json",
+      "bytes": 160,
+      "sha256": "f073309ae845bef60664bb3ff609444c33cd517fc6238a214437c5be2c307844"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_personal_schedule/tests.txt",
+      "bytes": 2993,
+      "sha256": "8100fca86a524e5d755e06bfe08671f21bf4614451c5827a39ed39ca256555f4"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_completion/tests.json",
+      "bytes": 163,
+      "sha256": "54ec9fe936d64fa1cd4d1f3daaf63878571bc6151f1ea06aed061c238c63d8f4"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_completion/tests.txt",
+      "bytes": 3721,
+      "sha256": "e080c5941d9d0ce1fa38939b8730399963c8d49c933490f0b9c850acfb8708c8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_concurrency/tests.json",
+      "bytes": 165,
+      "sha256": "8fb19b8a8f59a7df60234e35bee2065b138e693a79049d58b661933f3cbd4e7c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_concurrency/tests.txt",
+      "bytes": 2982,
+      "sha256": "af2789c7f620b7555a5eca927e866f1b2510b4fe07973bc58fe3d01e0c2857fb"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_demo/tests.json",
+      "bytes": 155,
+      "sha256": "97eabc3055416866736807d75bdbaf13e19aad975906856cf07a2ef642e27958"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_demo/tests.txt",
+      "bytes": 941,
+      "sha256": "0275c6b6c525a8b9dd0d032a00d25f79141e850eddef6888de21214c733bf492"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_foundation/tests.json",
+      "bytes": 161,
+      "sha256": "3dc550906191fd4682082d1ee3e42b735b22ce81f400a8566d9a9a69a2371557"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_foundation/tests.txt",
+      "bytes": 1332,
+      "sha256": "70ddff68ffc5d9ca9f9683acdd2f80148844bdf2890df36df922b57e089e11e8"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_import/tests.json",
+      "bytes": 159,
+      "sha256": "ca3cd20d8196a7a653191e520cbcb2591ab8702eddbc4f187605867b7dbbe5c3"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_import/tests.txt",
+      "bytes": 1841,
+      "sha256": "6120dcc431e949fb93500205ea477088ccd22435f7cc0103b8c06f9259bf10ee"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_quality/tests.json",
+      "bytes": 160,
+      "sha256": "9cd46b7ec2efd98635d91eed7b6015a85400836e4a9ec7c828b036466ebf4b07"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_quality/tests.txt",
+      "bytes": 1934,
+      "sha256": "505adcfe244bd4d329ef9a9ac5af7b671edd2e247d155e17a6862ebd71c01859"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_recovery/tests.json",
+      "bytes": 160,
+      "sha256": "1d6a8a7bea5f991c3f63a0030e416d7ed5779cc46307bac26a3bfa87fe4a5fb2"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_recovery/tests.txt",
+      "bytes": 914,
+      "sha256": "7d8772e3a0e5f401b2ce3718fa928f74acb147bf8576ba0a141fa5210b7a1d51"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_runtime_independence/tests.json",
+      "bytes": 171,
+      "sha256": "81ded5be1f72397ce303f37a87ef55a4d8bc36198b9d3b0ed5c6e315c7eaa37d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_runtime_independence/tests.txt",
+      "bytes": 778,
+      "sha256": "ee313d623135ebe8ca5c0fb288d890200efb0693a5d3d9aef04ea4bf5a7c76a7"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_text_contract/tests.json",
+      "bytes": 164,
+      "sha256": "99c636aa8c38527ef5f97cccaa825ecc52ed1619ff030c372e2c900f80cb1329"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_text_contract/tests.txt",
+      "bytes": 299,
+      "sha256": "c439b1d4434db425222e7d92ab985b20b594c88c23f6586e1545e266a4e37f27"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_web/tests.json",
+      "bytes": 153,
+      "sha256": "6b4e80e6810da077e41975d8cc211f14f2353a8d06adf9165b322b234eb6516b"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_web/tests.txt",
+      "bytes": 1608,
+      "sha256": "c7ea0f252d34bc83d9bd6aee452f1cfa21e3457e783f323b8b7877ae575e0efe"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_workflow/tests.json",
+      "bytes": 161,
+      "sha256": "3ce9f701e8e224e7302431ac370703eceed5ba429813a13f1eebe4a7e79dab60"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_postgres_workflow/tests.txt",
+      "bytes": 2133,
+      "sha256": "9f79ff1d55da01502cfa5b13cb317177301b17def2a3ca19ba371d73b116968c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_preference_values/tests.json",
+      "bytes": 160,
+      "sha256": "8003717a80d2d88364f9cdb7e8b56a3d2c7e35b277dc1e53bda7f1107f17f5ad"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_preference_values/tests.txt",
+      "bytes": 1984,
+      "sha256": "c607d3494c1b3a186a924c70cb5ebca558dbe4c19cefdde30ef4ec7a6367a262"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_recurrence/tests.json",
+      "bytes": 153,
+      "sha256": "b46fea5078acc035751ca4d99b97da9e39c74c6d1523375713a126167bd744a2"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_recurrence/tests.txt",
+      "bytes": 2586,
+      "sha256": "3c133ef0b01e658330bf9c47bad920f5c35d2dc59583a15ff8548f2acee6708f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_recurring_persistence/tests.json",
+      "bytes": 163,
+      "sha256": "fb95e2e279a9a958f3eab322bdf9e5b1c4bdd52f9b0fb1a391b361bcaeeaef7c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_recurring_persistence/tests.txt",
+      "bytes": 1174,
+      "sha256": "295d979d36ff793799774b4adc79afa1abe390dc4136c4fa325e309dc98a5a98"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_recurring_policy/tests.json",
+      "bytes": 161,
+      "sha256": "4710a1f0d06de410e9a5bcd3b64320a0f1fc9fd17cbd90487dbd8e5ad5951106"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_recurring_policy/tests.txt",
+      "bytes": 4590,
+      "sha256": "cbc5dce16daac23956fb9b0d81852914d06f0497337b3cdf454e3c9b65f75217"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_recurring_views/tests.json",
+      "bytes": 160,
+      "sha256": "205abe0165c31f6cf2a66f7551ba7b9ff737a697dfaf9e6131767eeaabb5e47f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_recurring_views/tests.txt",
+      "bytes": 1987,
+      "sha256": "caa30e7eefebf89add1ca9238a4c64fdace4cd7aeecbaed0955fe2a7de821d48"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_recurring_workflows/tests.json",
+      "bytes": 164,
+      "sha256": "a412b73e2d5df4e14ba5b3d0c805a7326600734cddd8ef2ee14cb9fd75cbe43c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_recurring_workflows/tests.txt",
+      "bytes": 4800,
+      "sha256": "5531ef4c29a5a59d45b323c749a070bfac9aa6fd83a09b1edc518979acf33f9b"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_resource_feedback/tests.json",
+      "bytes": 162,
+      "sha256": "6f3cfe65947408e586d99d1f1876d7afaaffd05d9f1d77ff1b4d44b98dd3ae98"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_resource_feedback/tests.txt",
+      "bytes": 5450,
+      "sha256": "53e255fd14e82e715401f71debb3d042663070a3ff3b3918272bc4e703934e4f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_room_foundation/tests.json",
+      "bytes": 157,
+      "sha256": "8758cd9cc4daa3c66b20f05358af4ff18875679b10c2332d428969eee1f0c901"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_room_foundation/tests.txt",
+      "bytes": 814,
+      "sha256": "da468b7c744779827b1883911e020f0c9ca28a3c8cc66e206767afeca2f2c96b"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_room_requests/tests.json",
+      "bytes": 158,
+      "sha256": "039e42153ee273a8b281681a97b11251fa91ded2da37e84524b2deac84739636"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_room_requests/tests.txt",
+      "bytes": 3316,
+      "sha256": "f81020e617ebf7284ac4c4c8a98bd482364fd4a5b7fd750526814e3f2cafec5d"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_save_only_confirmation/tests.json",
+      "bytes": 167,
+      "sha256": "7575848fa8278127828b1e3f1eef85ec8ab517df5659bf8ae7db35d3fa0223de"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_save_only_confirmation/tests.txt",
+      "bytes": 2066,
+      "sha256": "ea189d2cc275eaccdff123175f3dbba430f4beaaed20382f133f6e2981a7ac35"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_scheduling_preferences/tests.json",
+      "bytes": 167,
+      "sha256": "14e4ce33fbbff0ffa72fde60429ea8b413e52f447307a141539df5ec9f7f5336"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_scheduling_preferences/tests.txt",
+      "bytes": 7899,
+      "sha256": "2d3ffdbac2aa654765ace40fbe5aae5cb25dbf81509ea7dc72b93571fd105c0a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_service_examples/tests.json",
+      "bytes": 159,
+      "sha256": "dee31c399439efbad9f084a0b2bea933ebddd6fd6e5aaedffa8419b85ef24341"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_service_examples/tests.txt",
+      "bytes": 1093,
+      "sha256": "55a397363fc63b3b89b019627bc33998121d995b179c7932eff0497ca0a9b7bb"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_student_dashboard/tests.json",
+      "bytes": 162,
+      "sha256": "c051e7d06a7c62512efbf669619f1db18b2830fdbe57691695ab423961e4998e"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_student_dashboard/tests.txt",
+      "bytes": 2889,
+      "sha256": "8b4b13cd3ee7a81df6e20a4cb356d505e17177f58827ea463fc936a89c940377"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_student_portal_ui/tests.json",
+      "bytes": 160,
+      "sha256": "37dfe0f73d71f3400ac41c86c8f25ab3b10fe6334f201f3383de3379ebf04287"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_student_portal_ui/tests.txt",
+      "bytes": 3104,
+      "sha256": "ef0534fcf93697d90fd5230a37ce1374ea8769bbaad6c94c3f2f87c8d07fc5a4"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_university_calendar/tests.json",
+      "bytes": 164,
+      "sha256": "077cc22c4b3870074b7c5842625a648a8c99210b4cdd742ebbe896a51b260c5b"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_university_calendar/tests.txt",
+      "bytes": 4084,
+      "sha256": "effe99170aee91efbaf71353892d6aa9c364850805d349bd2800e163f7f6292c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_waiting_lists/tests.json",
+      "bytes": 158,
+      "sha256": "adbb960ca8076c3331e23936eb80c3a23341b5a78a6f0fce25b8edf1f354f7fb"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/modules/test_waiting_lists/tests.txt",
+      "bytes": 9046,
+      "sha256": "15f78148467114d6a65a2e88c662e7688ded51146c566e19fa385e7c7b8e74dc"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/role-2-1440.png",
+      "bytes": 125251,
+      "sha256": "0da5eb22421f5f9dad7e3fd88a8796c3b9685f9a107a8a4ecf2efd4b9fe5e75a"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/role-2-390.png",
+      "bytes": 85898,
+      "sha256": "f80a9e4ddd0ba65127ddca7980cb18c494e22590624557648ebdf84731ff1bd9"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/role-6-1440.png",
+      "bytes": 87687,
+      "sha256": "95f8ac11763d2144d1d9830b14fdb15b97fca25ab8b2e6682ce567209779b345"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/role-6-390.png",
+      "bytes": 59038,
+      "sha256": "d6de685e91bd4a64a7a95756b5fe425e625e2f4a457b623562966855243c74ba"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/role-7-1440.png",
+      "bytes": 296554,
+      "sha256": "46a0f5d9d075a22c7993707b47341c56d9d3429ac91c07551d2fb24d50855e77"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/role-7-390.png",
+      "bytes": 230952,
+      "sha256": "39548f623b58f216885e0082f8bd973e20be4a815513e899bf5a98879048a7f9"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/routes.csv",
+      "bytes": 8038,
+      "sha256": "5bb6ee0009f3918000080da078a4d471aaefafb9075dd0f531b58925f9e61850"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/routes.md",
+      "bytes": 9010,
+      "sha256": "f351a076578fabfc10dab7eb292c6e59659aeb6a4bb46afe227eeb71f5bc177f"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/service-unavailable-1440.png",
+      "bytes": 43729,
+      "sha256": "47584c92a52130e7632a9c33508adae7550e669dbbc1168fd93e2e121d3aef67"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/service-unavailable-320.png",
+      "bytes": 25015,
+      "sha256": "61334c7990a75ce7512e0c6a642c72b1aede8f6afdb50bdc7b43dfc0cb31c723"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/service-unavailable-390.png",
+      "bytes": 25575,
+      "sha256": "1494b7234cce61c46426eba82b9c703ed48038eacec77379295127010b7ff99c"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/service-unavailable-768.png",
+      "bytes": 26372,
+      "sha256": "ff31ca93209787fcf12879e5e63dd25183b93576a3f4690587877f32fbca1d1e"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/tests.json",
+      "bytes": 15032,
+      "sha256": "f4c1b6e133296127de79d2b5261b570a3c646e590cf0c852246fab16d8911c09"
+    },
+    {
+      "file": "docs/ui/student-portal/UI-09/tests.txt",
+      "bytes": 115087,
+      "sha256": "991bc98ab3dc318c32175874f6559fcae4626a2ce876ca5c567b2e9356c6853c"
+    },
+    {
+      "file": "docs/ui/student-portal/acceptance-report.md",
+      "bytes": 14066,
+      "sha256": "cdab94d1cd9af201803acbdb1cd8c22708c405be07b563899b5b9589afd4ade4"
+    },
+    {
+      "file": "docs/ui/student-portal/acceptance-results.json",
+      "bytes": 18777,
+      "sha256": "240136ba51dfeb9d3042adaa64505fd102c370c6bd68d7ffa38fb997daff64ef"
+    },
+    {
+      "file": "docs/ui/student-portal/changed-files.csv",
+      "bytes": 69099,
+      "sha256": "b13593b33e73d9a28d546a4d4494fb02b57db1697c5130b5c063028c1424bd9b"
+    },
+    {
+      "file": "docs/ui/student-portal/commits.json",
+      "bytes": 4854,
+      "sha256": "c50b163e3320402c44fc4a14bfa07d7dd3e0ca714764a4925a3e68b0490c4503"
+    },
+    {
+      "file": "docs/ui/student-portal/coverage.md",
+      "bytes": 12265,
+      "sha256": "602a039cd81aa156cf076eb0ab6eab47535c9a685151d18a839e8bf5f76036d8"
+    },
+    {
+      "file": "docs/ui/student-portal/screen-coverage.csv",
+      "bytes": 10730,
+      "sha256": "2ae5389b20515b3ea8700c13ad338b7137926d799f4f7a0d74298441f4b5a8cc"
+    },
+    {
+      "file": "docs/ui/student-portal/screen-coverage.md",
+      "bytes": 7637,
+      "sha256": "2f2748c931f895f350e700a2acc2362f8845a00575d7354cfd141d6fc15abc36"
+    },
+    {
+      "file": "docs/ui/student-portal/screenshots.json",
+      "bytes": 70948,
+      "sha256": "0a2ec7c838e636b18d8443023314643def662e16871780b1e3b6f544680a13b1"
+    },
+    {
+      "file": "docs/ui/student-portal/screenshots.md",
+      "bytes": 31191,
+      "sha256": "370b8f3200f3d4c833cc68cd78edbf2cf57266ce53f6ae43e51951dab89437bf"
+    },
+    {
+      "file": "tests/test_frontend_prototype.py",
+      "bytes": 10555,
+      "sha256": "e929596961dffa51c808adb9adb089e29ca384f54f4b39523983ed59f4571c0b"
+    },
+    {
+      "file": "tests/test_student_portal_ui.py",
+      "bytes": 18352,
+      "sha256": "aaaec95123e58f24212bb4d0e329a14371bbb4150445b7e9dac65c29dc8dfc86"
+    },
+    {
+      "file": "tests/ui/audit_portal_browser.cjs",
+      "bytes": 15318,
+      "sha256": "1f7bb36d0d5f2a0fb70165278de77d9a0255302abfbdc17ba6003eacd5d11a7f"
+    },
+    {
+      "file": "tests/ui/audit_student_routes.py",
+      "bytes": 6194,
+      "sha256": "ad996ee1bb0223b407dd5baad895d48ae8f48397c5400a27047f684388e29a93"
+    },
+    {
+      "file": "tests/ui/capture_portal.cjs",
+      "bytes": 10836,
+      "sha256": "4f83fb38768f4b4c5cb23f9e6916bd9cd0966eafc2207eb885b4ca69512f908a"
+    },
+    {
+      "file": "tests/ui/capture_student_portal.cjs",
+      "bytes": 5664,
+      "sha256": "4ac91f6032b4c3728ce3c6eef756654679e2d584d780af490ba2fb0715cf9b8a"
+    },
+    {
+      "file": "tests/ui/check_loading_states.cjs",
+      "bytes": 4786,
+      "sha256": "1cbaf3f53cf64afc8337454e933f33c48886264aa26c3c43015e7dea176bb5d0"
+    },
+    {
+      "file": "tests/ui/check_student_controls.cjs",
+      "bytes": 6591,
+      "sha256": "04552d1694993191174ebba4a24e6ac725a47bd73d434c2ed48ddfd9cde0bddf"
+    },
+    {
+      "file": "tests/ui/exercise_portal.cjs",
+      "bytes": 31171,
+      "sha256": "280c735c15f443ca439c461a370c60220c39b54b3da751e80b9368ea33bd33f9"
+    },
+    {
+      "file": "tests/ui/portal_preview.py",
+      "bytes": 9245,
+      "sha256": "3a1817cb5a3dcf5f1805f19706989b7fa85dcb09d9833ec5ed6152e6eb859a0c"
+    },
+    {
+      "file": "tests/ui/run_portal_parallel.py",
+      "bytes": 3123,
+      "sha256": "65e9b06a0ef80d8618cc9ddffae5ee919c525945cea9862d551aacd23e204c4d"
+    },
+    {
+      "file": "tests/ui/run_portal_tests.py",
+      "bytes": 1350,
+      "sha256": "b4a7e67bae90853c7c5b6c27a6338daa0c334fec1905cc2746573046721aef44"
+    },
+    {
+      "file": "tests/ui/student_portal_preview.py",
+      "bytes": 3639,
+      "sha256": "979697e84e459b260a6fd13d4ef0d1e481fa91b53a9f450159ef8f18e5e7094d"
+    },
+    {
+      "file": "web/README.md",
+      "bytes": 11212,
+      "sha256": "c9a4c70a70aa5b282e931db0f41797ad749efebce240fa901a48e1e2491a3f42"
+    },
+    {
+      "file": "web/app.py",
+      "bytes": 37456,
+      "sha256": "a39fa414792321cb7ebfbde0723462273db02b88ec30fa7d8ba93ccf5a6ff8f1"
+    },
+    {
+      "file": "web/static/equipment.js",
+      "bytes": 1863,
+      "sha256": "bf4aafc84f14c6c740ab39996227d59a9e0164ad9fc6bcc8a09113eea0aaf854"
+    },
+    {
+      "file": "web/static/feedback.js",
+      "bytes": 1123,
+      "sha256": "21b41ae8f87e93b7cc565252b6d6cb7801cc5f580f0824469c880be72ca10998"
+    },
+    {
+      "file": "web/static/login.css",
+      "bytes": 2424,
+      "sha256": "41986a0b5366b7a30265746af68139a2ca17d0af4b1b61219509491801d3d0f2"
+    },
+    {
+      "file": "web/static/login.js",
+      "bytes": 568,
+      "sha256": "e9a4971830bf9cbbba03a23436408518aee193b480223cac411b0eb22864e26b"
+    },
+    {
+      "file": "web/static/rooms.js",
+      "bytes": 7707,
+      "sha256": "75fb36a3e73a67168d254a2d6839a19865b303b67c387cdac75285abd0a6d518"
+    },
+    {
+      "file": "web/static/shell.js",
+      "bytes": 2873,
+      "sha256": "1ce0515d0541465d16b986f5f689bc048c70a43472e908ddf30ec8fc761fc211"
+    },
+    {
+      "file": "web/static/student-home.css",
+      "bytes": 10172,
+      "sha256": "47efb9ba9e1366a02bb0e41674f71a03d28316526975b113de87012d85a0a732"
+    },
+    {
+      "file": "web/static/student-services.css",
+      "bytes": 15027,
+      "sha256": "8d6de8964a9572208993803f229c557660bc52d2986e3c18583c7bd524f2f950"
+    },
+    {
+      "file": "web/static/student-shell.css",
+      "bytes": 5286,
+      "sha256": "aea8b686a0ffade3cd830ec854d30c6863a53ddfd6987b4a739426f4245075a3"
+    },
+    {
+      "file": "web/templates/_personal_timetable.html",
+      "bytes": 5214,
+      "sha256": "7b900662f5df3f906063927acf4e9b43548b8a92761dd6728489b0bbc1496334"
+    },
+    {
+      "file": "web/templates/appointment_calendar.html",
+      "bytes": 1961,
+      "sha256": "8427dcac5af2d24e082b377c3b48320b77e6e2b36826366c0c6cfd487bb84914"
+    },
+    {
+      "file": "web/templates/appointment_detail.html",
+      "bytes": 4415,
+      "sha256": "82fe42e080882a6cc22045efd247bc9e1a058819ac460a98712850b361360773"
+    },
+    {
+      "file": "web/templates/appointment_error.html",
+      "bytes": 947,
+      "sha256": "827c767d20e82042424f1a24ad1af26ada1387b3ed2e7e78c298f45dba31e659"
+    },
+    {
+      "file": "web/templates/appointment_new.html",
+      "bytes": 8654,
+      "sha256": "3f6f9891f036efa0b8f38943f65584f1c8315a1da39cf85474ce99ff308f2fa1"
+    },
+    {
+      "file": "web/templates/appointments.html",
+      "bytes": 1891,
+      "sha256": "58c0350dd887890e270781aaa4af117607d687b135de83edb39b155a666fb9c8"
+    },
+    {
+      "file": "web/templates/base.html",
+      "bytes": 4017,
+      "sha256": "41a0060f4c2f8226b2c55298e45cbd7b93ddf8909985fefe307a281b5dfef578"
+    },
+    {
+      "file": "web/templates/calendar_academic_detail.html",
+      "bytes": 1275,
+      "sha256": "119f371ffbcced549bd029e44e6763fd705e85775dc26861d134e2780ef23d30"
+    },
+    {
+      "file": "web/templates/calendar_error.html",
+      "bytes": 492,
+      "sha256": "c481a66bd39896d5b32bb72e58812582bd6246b1c7682a5298b0607597e87de3"
+    },
+    {
+      "file": "web/templates/components/_calendar_event.html",
+      "bytes": 1028,
+      "sha256": "0c1700e17f5fce4df533d33dcef0f300f2258bf677b5c1acd7041139767b29e7"
+    },
+    {
+      "file": "web/templates/components/_navigation.html",
+      "bytes": 3824,
+      "sha256": "56843ca85df1ece1d7b8bd3b2f51ccaceb3ca6b7726e25db60fd1f43da5cba26"
+    },
+    {
+      "file": "web/templates/components/_notification_items.html",
+      "bytes": 1189,
+      "sha256": "7ae02f0ba68b4fc6e2fa0d4345735f459bcd60caaaf7f29b5251cc869f6353c9"
+    },
+    {
+      "file": "web/templates/components/student_services.html",
+      "bytes": 485,
+      "sha256": "3925b31f9e780bde9dbf26a9cb7e88eb21c84f7910850a37decde7368202727f"
+    },
+    {
+      "file": "web/templates/equipment_catalog.html",
+      "bytes": 6725,
+      "sha256": "526cf83f7a2a87eccde025a4907b63789e03a48059cf5f4f44d957ee731d7d7f"
+    },
+    {
+      "file": "web/templates/equipment_detail.html",
+      "bytes": 10734,
+      "sha256": "227f70354ff3ce3e2e854e7ffaccf9fd0d66cde806a23a5e01e62e65664debfa"
+    },
+    {
+      "file": "web/templates/equipment_error.html",
+      "bytes": 722,
+      "sha256": "2e13f8f9fe020d8d3bb63a7967ab6b2a3ef263c2b7f0e071d2dbb6448134fbd7"
+    },
+    {
+      "file": "web/templates/equipment_requests.html",
+      "bytes": 2453,
+      "sha256": "9c63111502737c0a970f98092fc9b1be52757efec3e269cda64be469fae2678f"
+    },
+    {
+      "file": "web/templates/feedback_detail.html",
+      "bytes": 3781,
+      "sha256": "570b0a280b8fb6e9d6349ae75b8ff1f0755572d784b81d8ae9eeada9bd25ded4"
+    },
+    {
+      "file": "web/templates/feedback_list.html",
+      "bytes": 3350,
+      "sha256": "0b5c3e1b969c89a959bcf0d56f02e6839fbcb642ba425266ea1eb8e0e62c78fd"
+    },
+    {
+      "file": "web/templates/feedback_new.html",
+      "bytes": 3015,
+      "sha256": "c99ed9d4d4f2b9f261a31da4c66934d86909b542342a59ebcb771d49c22a3acc"
+    },
+    {
+      "file": "web/templates/login.html",
+      "bytes": 2052,
+      "sha256": "c9c8e554215f7c133108f07b3a7f87057ee789a71d35fe4b4d028cd127727778"
+    },
+    {
+      "file": "web/templates/notifications.html",
+      "bytes": 1093,
+      "sha256": "19845fd54a20ebef97e2669123636b9d2975e083f78698503c33b79c26262ce8"
+    },
+    {
+      "file": "web/templates/room_availability.html",
+      "bytes": 1619,
+      "sha256": "9cc72dcce353e613abd23d7877530cbde9af158610e34a53d29566a6f67e1706"
+    },
+    {
+      "file": "web/templates/room_request_detail.html",
+      "bytes": 6923,
+      "sha256": "9d0f1ace42198382ff49e50b425da139fb2f46e2102cf0533da24a7aeacf6b51"
+    },
+    {
+      "file": "web/templates/room_request_new.html",
+      "bytes": 7017,
+      "sha256": "ccdbec77f3da00dc6f02ffccaf71c0ef4780b04bd09c40b6a588ca33ad55f96c"
+    },
+    {
+      "file": "web/templates/room_requests.html",
+      "bytes": 1952,
+      "sha256": "2bdfe8ea41c60b5841a9c92a09743f2d90e5b9c96ae80cb19300ad93dd58df7b"
+    },
+    {
+      "file": "web/templates/student_error.html",
+      "bytes": 647,
+      "sha256": "018ecb3cdc0b3795f5eada296095f592f13bcbd93cfaab929af1a0c8163017c1"
+    },
+    {
+      "file": "web/templates/student_home.html",
+      "bytes": 9879,
+      "sha256": "1023570a63dcaf208e0a79d3ad0cc97f7138768f65ab5430d3c74d4139e2b28a"
+    },
+    {
+      "file": "web/templates/student_service_base.html",
+      "bytes": 638,
+      "sha256": "b72c9025e31bcd2546c6faaa7acbb7238532bcc5f529e0cff6058b7a66943c28"
+    },
+    {
+      "file": "web/templates/university_calendar.html",
+      "bytes": 6104,
+      "sha256": "9ba041056695645763bb4bc4f426dea1eb7c4c0bf36fff2a6dc4664b6c166283"
+    },
+    {
+      "file": "web/templates/waiting_detail.html",
+      "bytes": 4016,
+      "sha256": "80f4761c36a0165a6cb2a5b116cc1858adb905be47ec608950e5d8476fa24a3f"
+    },
+    {
+      "file": "web/templates/waiting_lists.html",
+      "bytes": 2422,
+      "sha256": "cbf8fb8b70e1299811dd4118a13a2fdfff3ca68e60a59c59bf2c104fb20c3c79"
+    },
+    {
+      "file": "web/templates/waiting_policy.html",
+      "bytes": 3179,
+      "sha256": "946f6ed8e1b7a698d35c3348901b1dfd4fcd5dbcb1d7de583f34ed561d269fab"
+    }
+  ]
+}

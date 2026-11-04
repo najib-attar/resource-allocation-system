@@ -1,0 +1,681 @@
+{
+  "modules": [
+    "test_application_entrypoints",
+    "test_appointment_foundation",
+    "test_appointment_protocol",
+    "test_appointments",
+    "test_backend_executable",
+    "test_calendar_loading",
+    "test_cost_policy_persistence",
+    "test_cost_policy_values",
+    "test_csv_cli",
+    "test_csv_contract",
+    "test_database_diagrams",
+    "test_engine_gateway",
+    "test_equipment",
+    "test_equipment_web",
+    "test_frontend_prototype",
+    "test_identity_sessions",
+    "test_local_demo",
+    "test_notifications",
+    "test_persistence_boundaries",
+    "test_personal_schedule",
+    "test_postgres_completion",
+    "test_postgres_concurrency",
+    "test_postgres_demo",
+    "test_postgres_foundation",
+    "test_postgres_import",
+    "test_postgres_quality",
+    "test_postgres_recovery",
+    "test_postgres_runtime_independence",
+    "test_postgres_text_contract",
+    "test_postgres_web",
+    "test_postgres_workflow",
+    "test_preference_values",
+    "test_recurrence",
+    "test_recurring_persistence",
+    "test_recurring_policy",
+    "test_recurring_views",
+    "test_recurring_workflows",
+    "test_resource_feedback",
+    "test_room_foundation",
+    "test_room_requests",
+    "test_save_only_confirmation",
+    "test_scheduling_preferences",
+    "test_service_examples",
+    "test_student_dashboard",
+    "test_student_portal_ui",
+    "test_university_calendar",
+    "test_waiting_lists"
+  ],
+  "expected": 617,
+  "run": 617,
+  "passed": 614,
+  "failures": 1,
+  "errors": 1,
+  "skipped": [
+    {
+      "test": "test_linux_execute_permission_is_checked (test_backend_executable.BackendExecutableTests.test_linux_execute_permission_is_checked)",
+      "reason": "POSIX permission check runs on Linux."
+    }
+  ],
+  "seconds": 1991.86,
+  "results": {
+    "test_appointment_protocol": {
+      "modules": [
+        "test_appointment_protocol"
+      ],
+      "run": 5,
+      "passed": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 8.84,
+      "exitCode": 0,
+      "expected": 5
+    },
+    "test_backend_executable": {
+      "modules": [
+        "test_backend_executable"
+      ],
+      "run": 21,
+      "passed": 20,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [
+        {
+          "test": "test_linux_execute_permission_is_checked (test_backend_executable.BackendExecutableTests.test_linux_execute_permission_is_checked)",
+          "reason": "POSIX permission check runs on Linux."
+        }
+      ],
+      "seconds": 18.33,
+      "exitCode": 0,
+      "expected": 21
+    },
+    "test_calendar_loading": {
+      "modules": [
+        "test_calendar_loading"
+      ],
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 17.38,
+      "exitCode": 0,
+      "expected": 3
+    },
+    "test_cost_policy_values": {
+      "modules": [
+        "test_cost_policy_values"
+      ],
+      "run": 13,
+      "passed": 13,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 0.26,
+      "exitCode": 0,
+      "expected": 13
+    },
+    "test_application_entrypoints": {
+      "modules": [
+        "test_application_entrypoints"
+      ],
+      "run": 5,
+      "passed": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 25.11,
+      "exitCode": 0,
+      "expected": 5
+    },
+    "test_csv_contract": {
+      "modules": [
+        "test_csv_contract"
+      ],
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 1.76,
+      "exitCode": 0,
+      "expected": 3
+    },
+    "test_csv_cli": {
+      "modules": [
+        "test_csv_cli"
+      ],
+      "run": 1,
+      "passed": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 0.51,
+      "exitCode": 0,
+      "expected": 1
+    },
+    "test_database_diagrams": {
+      "modules": [
+        "test_database_diagrams"
+      ],
+      "run": 1,
+      "passed": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 0.38,
+      "exitCode": 0,
+      "expected": 1
+    },
+    "test_appointment_foundation": {
+      "modules": [
+        "test_appointment_foundation"
+      ],
+      "run": 6,
+      "passed": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 44.31,
+      "exitCode": 0,
+      "expected": 6
+    },
+    "test_engine_gateway": {
+      "modules": [
+        "test_engine_gateway"
+      ],
+      "run": 24,
+      "passed": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 19.77,
+      "exitCode": 0,
+      "expected": 24
+    },
+    "test_frontend_prototype": {
+      "modules": [
+        "test_frontend_prototype"
+      ],
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 49.72,
+      "exitCode": 0,
+      "expected": 8
+    },
+    "test_identity_sessions": {
+      "modules": [
+        "test_identity_sessions"
+      ],
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 58.39,
+      "exitCode": 0,
+      "expected": 8
+    },
+    "test_equipment_web": {
+      "modules": [
+        "test_equipment_web"
+      ],
+      "run": 7,
+      "passed": 7,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 87.72,
+      "exitCode": 0,
+      "expected": 7
+    },
+    "test_persistence_boundaries": {
+      "modules": [
+        "test_persistence_boundaries"
+      ],
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 2.42,
+      "exitCode": 0,
+      "expected": 3
+    },
+    "test_personal_schedule": {
+      "modules": [
+        "test_personal_schedule"
+      ],
+      "run": 15,
+      "passed": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 91.89,
+      "exitCode": 0,
+      "expected": 15
+    },
+    "test_appointments": {
+      "modules": [
+        "test_appointments"
+      ],
+      "run": 24,
+      "passed": 24,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 248.51,
+      "exitCode": 0,
+      "expected": 24
+    },
+    "test_local_demo": {
+      "modules": [
+        "test_local_demo"
+      ],
+      "run": 5,
+      "passed": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 131.0,
+      "exitCode": 0,
+      "expected": 5
+    },
+    "test_postgres_demo": {
+      "modules": [
+        "test_postgres_demo"
+      ],
+      "run": 5,
+      "passed": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 41.64,
+      "exitCode": 0,
+      "expected": 5
+    },
+    "test_notifications": {
+      "modules": [
+        "test_notifications"
+      ],
+      "run": 11,
+      "passed": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 174.12,
+      "exitCode": 0,
+      "expected": 11
+    },
+    "test_postgres_foundation": {
+      "modules": [
+        "test_postgres_foundation"
+      ],
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 18.47,
+      "exitCode": 0,
+      "expected": 8
+    },
+    "test_postgres_import": {
+      "modules": [
+        "test_postgres_import"
+      ],
+      "run": 10,
+      "passed": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 56.49,
+      "exitCode": 0,
+      "expected": 10
+    },
+    "test_equipment": {
+      "modules": [
+        "test_equipment"
+      ],
+      "run": 21,
+      "passed": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 357.75,
+      "exitCode": 0,
+      "expected": 21
+    },
+    "test_postgres_completion": {
+      "modules": [
+        "test_postgres_completion"
+      ],
+      "run": 21,
+      "passed": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 155.74,
+      "exitCode": 0,
+      "expected": 21
+    },
+    "test_postgres_concurrency": {
+      "modules": [
+        "test_postgres_concurrency"
+      ],
+      "run": 15,
+      "passed": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 149.51,
+      "exitCode": 0,
+      "expected": 15
+    },
+    "test_postgres_quality": {
+      "modules": [
+        "test_postgres_quality"
+      ],
+      "run": 11,
+      "passed": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 78.41,
+      "exitCode": 0,
+      "expected": 11
+    },
+    "test_postgres_text_contract": {
+      "modules": [
+        "test_postgres_text_contract"
+      ],
+      "run": 1,
+      "passed": 1,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 11.28,
+      "exitCode": 0,
+      "expected": 1
+    },
+    "test_preference_values": {
+      "modules": [
+        "test_preference_values"
+      ],
+      "run": 11,
+      "passed": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 0.58,
+      "exitCode": 0,
+      "expected": 11
+    },
+    "test_cost_policy_persistence": {
+      "modules": [
+        "test_cost_policy_persistence"
+      ],
+      "run": 31,
+      "passed": 31,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 432.72,
+      "exitCode": 0,
+      "expected": 31
+    },
+    "test_recurrence": {
+      "modules": [
+        "test_recurrence"
+      ],
+      "run": 16,
+      "passed": 16,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 0.47,
+      "exitCode": 0,
+      "expected": 16
+    },
+    "test_postgres_runtime_independence": {
+      "modules": [
+        "test_postgres_runtime_independence"
+      ],
+      "run": 3,
+      "passed": 3,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 63.52,
+      "exitCode": 0,
+      "expected": 3
+    },
+    "test_postgres_web": {
+      "modules": [
+        "test_postgres_web"
+      ],
+      "run": 8,
+      "passed": 8,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 60.69,
+      "exitCode": 0,
+      "expected": 8
+    },
+    "test_postgres_workflow": {
+      "modules": [
+        "test_postgres_workflow"
+      ],
+      "run": 12,
+      "passed": 12,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 113.06,
+      "exitCode": 0,
+      "expected": 12
+    },
+    "test_postgres_recovery": {
+      "modules": [
+        "test_postgres_recovery"
+      ],
+      "run": 4,
+      "passed": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 161.31,
+      "exitCode": 0,
+      "expected": 4
+    },
+    "test_recurring_persistence": {
+      "modules": [
+        "test_recurring_persistence"
+      ],
+      "run": 6,
+      "passed": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 110.73,
+      "exitCode": 0,
+      "expected": 6
+    },
+    "test_room_foundation": {
+      "modules": [
+        "test_room_foundation"
+      ],
+      "run": 4,
+      "passed": 4,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 29.91,
+      "exitCode": 0,
+      "expected": 4
+    },
+    "test_recurring_views": {
+      "modules": [
+        "test_recurring_views"
+      ],
+      "run": 10,
+      "passed": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 187.19,
+      "exitCode": 0,
+      "expected": 10
+    },
+    "test_save_only_confirmation": {
+      "modules": [
+        "test_save_only_confirmation"
+      ],
+      "run": 10,
+      "passed": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 74.19,
+      "exitCode": 0,
+      "expected": 10
+    },
+    "test_service_examples": {
+      "modules": [
+        "test_service_examples"
+      ],
+      "run": 5,
+      "passed": 5,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 126.83,
+      "exitCode": 0,
+      "expected": 5
+    },
+    "test_room_requests": {
+      "modules": [
+        "test_room_requests"
+      ],
+      "run": 18,
+      "passed": 18,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 288.55,
+      "exitCode": 0,
+      "expected": 18
+    },
+    "test_student_portal_ui": {
+      "modules": [
+        "test_student_portal_ui"
+      ],
+      "run": 19,
+      "passed": 18,
+      "failures": 1,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 1.3,
+      "exitCode": 1,
+      "expected": 19
+    },
+    "test_scheduling_preferences": {
+      "modules": [
+        "test_scheduling_preferences"
+      ],
+      "run": 40,
+      "passed": 40,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 219.77,
+      "exitCode": 0,
+      "expected": 40
+    },
+    "test_recurring_policy": {
+      "modules": [
+        "test_recurring_policy"
+      ],
+      "run": 25,
+      "passed": 25,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 459.33,
+      "exitCode": 0,
+      "expected": 25
+    },
+    "test_recurring_workflows": {
+      "modules": [
+        "test_recurring_workflows"
+      ],
+      "run": 25,
+      "passed": 24,
+      "failures": 0,
+      "errors": 1,
+      "skipped": [],
+      "seconds": 464.56,
+      "exitCode": 1,
+      "expected": 25
+    },
+    "test_student_dashboard": {
+      "modules": [
+        "test_student_dashboard"
+      ],
+      "run": 14,
+      "passed": 14,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 162.5,
+      "exitCode": 0,
+      "expected": 14
+    },
+    "test_resource_feedback": {
+      "modules": [
+        "test_resource_feedback"
+      ],
+      "run": 31,
+      "passed": 31,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 494.52,
+      "exitCode": 0,
+      "expected": 31
+    },
+    "test_university_calendar": {
+      "modules": [
+        "test_university_calendar"
+      ],
+      "run": 21,
+      "passed": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 320.36,
+      "exitCode": 0,
+      "expected": 21
+    },
+    "test_waiting_lists": {
+      "modules": [
+        "test_waiting_lists"
+      ],
+      "run": 49,
+      "passed": 49,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 1061.67,
+      "exitCode": 0,
+      "expected": 49
+    }
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_waiting_lists.WaitingEquipmentTests"
+  ],
+  "run": 20,
+  "passed": 20,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 267.62
+}

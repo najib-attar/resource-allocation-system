@@ -1,0 +1,44 @@
+[
+  {
+    "actor": 1,
+    "url": "/student/",
+    "status": 200,
+    "endpoint": "student.home"
+  },
+  {
+    "actor": 1,
+    "url": "/calendar/",
+    "status": 200,
+    "endpoint": "calendar.index"
+  },
+  {
+    "actor": 1,
+    "url": "/notifications/",
+    "status": 200,
+    "endpoint": "notifications.index"
+  },
+  {
+    "actor": 1,
+    "url": "/appointments/calendar",
+    "status": 200,
+    "endpoint": "appointments.calendar"
+  },
+  {
+    "actor": 1,
+    "url": "/equipment/",
+    "status": 200,
+    "endpoint": "equipment.index"
+  },
+  {
+    "actor": 1,
+    "url": "/waiting-lists/policy",
+    "status": 200,
+    "endpoint": "waiting.policy"
+  },
+  {
+    "actor": 1,
+    "url": "/feedback/new/equipment/1",
+    "status": 200,
+    "endpoint": "feedback.new"
+  }
+]

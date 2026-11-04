@@ -1,0 +1,494 @@
+template,line,tag,name,type,id,value,href,form,attributes
+_personal_timetable.html,4,input,month,month,schedule-month,{{ schedule.month }},,"{""method"": ""get"", ""action"": ""{{ url_for(endpoint) }}""}","{""required"": null}"
+_personal_timetable.html,4,button,,submit,,,,"{""method"": ""get"", ""action"": ""{{ url_for(endpoint) }}""}",{}
+_personal_timetable.html,6,a,,,,,"{{ url_for(endpoint, month=schedule.month, week=week.isoformat()) }}",{},"{""aria-current"": ""page""}"
+_personal_timetable.html,9,a,,,,,"{{ url_for('appointments.detail',appointment_id=event.appointmentId) }}",{},{}
+_personal_timetable.html,9,a,,,,,"{{ url_for('rooms.detail',request_id=event.roomRequestId) }}",{},{}
+_personal_timetable.html,16,a,,,,,"{{ url_for('appointments.detail', appointment_id=event.appointmentId) }}",{},{}
+_personal_timetable.html,16,a,,,,,"{{ url_for('rooms.detail',request_id=event.roomRequestId) }}",{},{}
+_personal_timetable.html,22,summary,,,,,,{},{}
+_personal_timetable.html,22,a,,,,,"{{ url_for('appointments.detail', appointment_id=event.appointmentId) }}",{},{}
+_personal_timetable.html,22,a,,,,,"{{ url_for('rooms.detail',request_id=event.roomRequestId) }}",{},{}
+add_request.html,28,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,29,input,submissionKey,hidden,,{{ submission_key }},,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,35,select,requestType,,requestTypeSelect,,,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}","{""required"": null}"
+add_request.html,46,select,userId,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}","{""required"": null}"
+add_request.html,59,select,spaceId,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}","{""required"": null}"
+add_request.html,73,input,participantCount,number,,"{{ form_data.get('participantCount', '') }}",,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}","{""required"": null}"
+add_request.html,79,select,requiredFeature,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,90,select,requiredBuilding,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,101,input,title,text,,"{{ form_data.get('title', '') }}",,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}","{""required"": null}"
+add_request.html,107,select,purpose,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}","{""required"": null}"
+add_request.html,152,select,day,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,164,select,startTime,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,176,select,endTime,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,194,input,timeData,text,,"{{ form_data.get('timeData', '') }}",,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,205,input,courseCode,text,,"{{ form_data.get('courseCode', '') }}",,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,211,input,courseName,text,,"{{ form_data.get('courseName', '') }}",,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,217,select,examType,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,228,select,canSplitAcrossRooms,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,249,input,requiredParticipantIds,checkbox,,{{ participant_id }},,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,254,input,participantRole_{{ participant_id }},text,,"{{ form_data.get('participantRole_' ~ participant_id, 'Participant') }}",,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,266,button,submitAction,submit,,save,,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,267,button,submitAction,submit,,save_run,,"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,268,a,,,,,{{ url_for('schedules') }},"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+add_request.html,269,a,,,,,{{ url_for('requests') }},"{""method"": ""post"", ""action"": ""{{ url_for('add_request') }}""}",{}
+allocation_summary.html,116,a,,,,,"{{ url_for('request_detail', request_id=item.request_id) }}",{},{}
+allocation_summary.html,118,a,,,,,"{{ url_for('schedules', type='space', id=item.assigned_rooms[0].space_id) }}",{},{}
+allocation_summary.html,188,a,,,,,"{{ url_for('schedules', type='space', id=room.space_id) }}",{},{}
+appointment_availability.html,4,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_availability.html,4,input,action,hidden,,hours,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_availability.html,5,select,day,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_availability.html,6,input,startTime,time,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+appointment_availability.html,6,input,endTime,time,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+appointment_availability.html,7,input,validFrom,date,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+appointment_availability.html,7,input,validUntil,date,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+appointment_availability.html,8,input,excludedDates,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_availability.html,8,button,,submit,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_availability.html,10,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_availability.html,10,input,action,hidden,,remove-hours,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_availability.html,10,input,id,hidden,,{{ row.id }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_availability.html,10,button,,submit,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_bindings.html,4,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_bindings.html,5,input,periodName,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+appointment_bindings.html,5,input,fromDate,date,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+appointment_bindings.html,5,input,untilDate,date,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+appointment_bindings.html,6,select,busyId,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_bindings.html,7,select,requestId,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_bindings.html,8,input,weekStart,date,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_bindings.html,8,input,excludedDates,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_bindings.html,8,button,,submit,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_calendar.html,7,a,,,,,{{ url_for('calendar.index') }},{},{}
+appointment_calendar.html,11,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_calendar.html,11,input,action,hidden,,block,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_calendar.html,12,input,start,datetime-local,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+appointment_calendar.html,12,input,end,datetime-local,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+appointment_calendar.html,12,input,reason,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_calendar.html,12,button,,submit,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_calendar.html,14,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_calendar.html,14,input,action,hidden,,unblock,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_calendar.html,14,input,id,hidden,,{{ row.id }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_calendar.html,14,button,,submit,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""aria-label"": ""Remove block: {{ row.reason or row.start|university_time }}""}"
+appointment_detail.html,7,a,,,,,{{ url_for('appointments.index') }},{},{}
+appointment_detail.html,21,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('appointments.decision', appointment_id=item.id) }}""}",{}
+appointment_detail.html,21,input,revision,hidden,,{{ item.revision }},,"{""method"": ""post"", ""action"": ""{{ url_for('appointments.decision', appointment_id=item.id) }}""}",{}
+appointment_detail.html,22,button,decision,,,approve,,"{""method"": ""post"", ""action"": ""{{ url_for('appointments.decision', appointment_id=item.id) }}""}",{}
+appointment_detail.html,22,button,decision,,,decline,,"{""method"": ""post"", ""action"": ""{{ url_for('appointments.decision', appointment_id=item.id) }}""}",{}
+appointment_detail.html,24,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('appointments.cancel', appointment_id=item.id) }}""}",{}
+appointment_detail.html,24,input,revision,hidden,,{{ item.revision }},,"{""method"": ""post"", ""action"": ""{{ url_for('appointments.cancel', appointment_id=item.id) }}""}",{}
+appointment_detail.html,24,button,,submit,,,,"{""method"": ""post"", ""action"": ""{{ url_for('appointments.cancel', appointment_id=item.id) }}""}",{}
+appointment_detail.html,26,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('appointments.reschedule', appointment_id=item.id) }}""}",{}
+appointment_detail.html,26,input,revision,hidden,,{{ item.revision }},,"{""method"": ""post"", ""action"": ""{{ url_for('appointments.reschedule', appointment_id=item.id) }}""}",{}
+appointment_detail.html,26,input,start,datetime-local,,,,"{""method"": ""post"", ""action"": ""{{ url_for('appointments.reschedule', appointment_id=item.id) }}""}","{""required"": null}"
+appointment_detail.html,26,button,,submit,,,,"{""method"": ""post"", ""action"": ""{{ url_for('appointments.reschedule', appointment_id=item.id) }}""}",{}
+appointment_detail.html,28,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('appointments.decline', appointment_id=item.id) }}""}",{}
+appointment_detail.html,28,button,,submit,,,,"{""method"": ""post"", ""action"": ""{{ url_for('appointments.decline', appointment_id=item.id) }}""}",{}
+appointment_error.html,6,a,,,,,{{ url_for(recovery[0]) }},{},{}
+appointment_new.html,8,a,,,,,{{ url_for('appointments.index') }},{},{}
+appointment_new.html,14,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_new.html,20,select,facultyId,,faculty,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""aria-describedby"": ""faculty-help"", ""required"": null}"
+appointment_new.html,24,summary,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""aria-labelledby"": ""professor-picker-label""}"
+appointment_new.html,25,input,,search,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_new.html,26,input,professorIds,checkbox,,{{ item.id }},,"{""method"": ""post"", ""action"": ""current endpoint""}","{""disabled"": null}"
+appointment_new.html,30,summary,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""aria-labelledby"": ""student-picker-label""}"
+appointment_new.html,31,input,,search,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_new.html,32,input,invitedIds,checkbox,,{{ item.id }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_new.html,40,textarea,purpose,,appointment-purpose,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""aria-describedby"": ""purpose-help"", ""required"": null}"
+appointment_new.html,42,input,duration,number,appointment-duration,30,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""aria-describedby"": ""duration-help"", ""required"": null}"
+appointment_new.html,43,input,appointmentDate,date,appointment-date,{{ today }},,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+appointment_new.html,49,button,,button,find-times,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""data-url"": ""{{ url_for('appointments.times') }}""}"
+appointment_new.html,52,input,start,hidden,appointment-start,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_new.html,53,summary,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+appointment_new.html,53,input,,time,manual-time,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""aria-describedby"": ""manual-time-help""}"
+appointment_new.html,55,button,,submit,submit-appointment,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""disabled"": null}"
+appointments.html,10,a,,,,,{{ url_for('appointments.new') }},{},{}
+appointments.html,15,a,,,,,"{{ url_for('appointments.detail', appointment_id=item.id) }}",{},{}
+base.html,18,a,,,,,#main-content,{},{}
+base.html,21,a,,,,,{{ url_for('student.home' if g.principal.role == 'Student' and not g.principal.administrator else 'index') }},{},{}
+base.html,24,button,,button,,,,{},"{""data-navigation-close"": null, ""aria-label"": ""Close navigation"", ""hidden"": null}"
+base.html,32,button,,button,,,,{},"{""data-navigation-toggle"": null, ""aria-label"": ""Open navigation"", ""aria-expanded"": ""false"", ""aria-controls"": ""app-sidebar"", ""hidden"": null}"
+base.html,33,a,,,,,{{ url_for('student.home') }},{},{}
+calendar_academic_detail.html,7,a,,,,,{{ url_for('calendar.index') }},{},{}
+calendar_academic_detail.html,8,a,,,,,{{ url_for('calendar.index') }},{},{}
+calendar_error.html,5,a,,,,,{{ url_for('calendar.index') }},{},{}
+calendar_publications.html,4,a,,,,,{{ url_for('appointments.bindings') }},{},{}
+calendar_publications.html,5,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+calendar_publications.html,5,input,id,hidden,,{{ row.id }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+calendar_publications.html,5,select,visibility,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+calendar_publications.html,5,select,instructor,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+calendar_publications.html,5,button,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+components/_account_controls.html,7,button,,button,,,,{},"{""aria-label"": ""Notifications"", ""aria-expanded"": ""false"", ""aria-controls"": ""notification-panel""}"
+components/_account_controls.html,12,button,,button,,,,{},"{""data-mark-all"": null, ""disabled"": null}"
+components/_account_controls.html,15,a,,,,,{{ url_for('notifications.index') }},{},{}
+components/_account_controls.html,17,a,,,,,{{ url_for('notifications.index') }},{},{}
+components/_account_controls.html,20,summary,,,,,,{},"{""aria-label"": ""Account menu for {{ display_name }}""}"
+components/_account_controls.html,27,a,,,,,{{ url_for('calendar.index') }},{},{}
+components/_account_controls.html,28,a,,,,,{{ url_for('appointments.calendar') }},{},{}
+components/_account_controls.html,29,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('logout') }}""}",{}
+components/_account_controls.html,29,button,,submit,,,,"{""method"": ""post"", ""action"": ""{{ url_for('logout') }}""}",{}
+components/_calendar_event.html,2,a,,,,,{{ event.url }},{},"{""data-event-id"": ""{{ event.id }}""}"
+components/_navigation.html,4,a,,,,,{{ url_for(endpoint) }},{},"{""aria-current"": ""page""}"
+components/_navigation.html,11,a,,,,,{{ url_for('student.home') }}#my-activity,{},{}
+components/_navigation.html,12,a,,,,,{{ url_for('calendar.index') }},{},"{""aria-label"": ""University Calendar"", ""aria-current"": ""page""}"
+components/_navigation.html,28,summary,,,,,,{},{}
+components/_notification_items.html,4,a,,,,,{{ item.url }},{},"{""data-notification-id"": ""{{ item.id }}""}"
+components/_priority_override.html,1,summary,,,,,,{},{}
+components/_priority_override.html,2,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('waiting.priority',kind=kind,request_id=request_id) }}""}",{}
+components/_priority_override.html,2,select,priority,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('waiting.priority',kind=kind,request_id=request_id) }}""}",{}
+components/_priority_override.html,2,textarea,reason,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('waiting.priority',kind=kind,request_id=request_id) }}""}","{""required"": null}"
+components/_priority_override.html,2,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('waiting.priority',kind=kind,request_id=request_id) }}""}",{}
+components/_recurrence_fields.html,3,select,reservationMode,,,,,{},{}
+components/_recurrence_fields.html,5,select,academicPeriod,,,,,{},{}
+components/_recurrence_fields.html,7,select,approvalMode,,,,,{},{}
+components/_recurrence_fields.html,9,input,recurrenceStart,date,,"{{ request.form.get('recurrenceStart',today|default(start[:10] if start is defined else '')) }}",,{},{}
+components/_recurrence_fields.html,9,input,recurrenceEnd,date,,"{{ request.form.get('recurrenceEnd','') }}",,{},{}
+components/_recurrence_fields.html,9,input,recurrenceTime,time,,"{{ request.form.get('recurrenceTime','10:00') }}",,{},{}
+components/_recurrence_fields.html,10,input,recurrenceDays,checkbox,,{{ loop.index }},,{},{}
+components/_series_decision.html,4,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.decision',request_id=item.id) if kind == 'room' else url_for('equipment.transition',request_id=item.id,action='decision') }}""}",{}
+components/_series_decision.html,4,input,revision,hidden,,{{ item.revision }},,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.decision',request_id=item.id) if kind == 'room' else url_for('equipment.transition',request_id=item.id,action='decision') }}""}",{}
+components/_series_decision.html,5,input,selectedDates,hidden,,1,,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.decision',request_id=item.id) if kind == 'room' else url_for('equipment.transition',request_id=item.id,action='decision') }}""}",{}
+components/_series_decision.html,5,input,occurrenceIds,checkbox,,{{ occurrence.id }},,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.decision',request_id=item.id) if kind == 'room' else url_for('equipment.transition',request_id=item.id,action='decision') }}""}",{}
+components/_series_decision.html,6,textarea,reason,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.decision',request_id=item.id) if kind == 'room' else url_for('equipment.transition',request_id=item.id,action='decision') }}""}",{}
+components/_series_decision.html,6,button,decision,,,approve,,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.decision',request_id=item.id) if kind == 'room' else url_for('equipment.transition',request_id=item.id,action='decision') }}""}",{}
+components/_series_decision.html,6,button,decision,,,reject,,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.decision',request_id=item.id) if kind == 'room' else url_for('equipment.transition',request_id=item.id,action='decision') }}""}",{}
+components/_waiting_consent.html,1,input,policyVersion,hidden,,{{ waiting_policy.version }},,{},{}
+components/_waiting_consent.html,4,a,,,,,{{ url_for('waiting.policy') }},{},{}
+components/_waiting_consent.html,5,input,acceptWaiting,checkbox,,yes,,{},{}
+components/_waiting_status.html,2,a,,,,,"{{ url_for('waiting.detail',entry_id=waiting.id) }}",{},{}
+equipment_catalog.html,6,a,,,,,{{ url_for('equipment.index') }},{},{}
+equipment_catalog.html,9,input,start,datetime-local,,{{ start }},,"{""method"": ""get"", ""action"": ""{{ url_for('equipment.catalog') }}""}","{""required"": null}"
+equipment_catalog.html,9,input,due,datetime-local,,{{ due }},,"{""method"": ""get"", ""action"": ""{{ url_for('equipment.catalog') }}""}","{""required"": null}"
+equipment_catalog.html,9,button,,,,,,"{""method"": ""get"", ""action"": ""{{ url_for('equipment.catalog') }}""}",{}
+equipment_catalog.html,11,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.catalog') }}""}",{}
+equipment_catalog.html,11,input,submission_key,hidden,,{{ submission_key }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.catalog') }}""}",{}
+equipment_catalog.html,12,input,previewToken,hidden,,{{ preview_token }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.catalog') }}""}",{}
+equipment_catalog.html,13,input,start,hidden,,{{ start }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.catalog') }}""}",{}
+equipment_catalog.html,13,input,due,hidden,,{{ due }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.catalog') }}""}",{}
+equipment_catalog.html,16,select,faculty,,equipment-faculty,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.catalog') }}""}","{""required"": null}"
+equipment_catalog.html,22,input,qty_{{ item.id }},number,,"{{ request.form.get('qty_' ~ item.id, '0') }}",,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.catalog') }}""}","{""aria-label"": ""Quantity for {{ item.name }}""}"
+equipment_catalog.html,23,summary,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.catalog') }}""}",{}
+equipment_catalog.html,23,input,spec_{{ item.id }},,,"{{ request.form.get('spec_' ~ item.id, '{}') }}",,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.catalog') }}""}",{}
+equipment_catalog.html,25,textarea,purpose,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.catalog') }}""}","{""required"": null}"
+equipment_catalog.html,25,textarea,notes,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.catalog') }}""}",{}
+equipment_catalog.html,26,button,action,,,recommend,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.catalog') }}""}",{}
+equipment_catalog.html,26,button,action,,,submit,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.catalog') }}""}",{}
+equipment_catalog.html,27,summary,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.catalog') }}""}",{}
+equipment_catalog.html,27,button,action,,,wait,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.catalog') }}""}","{""disabled"": null, ""aria-describedby"": ""equipment-waiting-reason""}"
+equipment_custodians.html,6,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_custodians.html,6,select,faculty,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+equipment_custodians.html,6,select,custodian,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+equipment_custodians.html,6,button,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_detail.html,5,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action=action) }}""}",{}
+equipment_detail.html,5,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action=action) }}""}",{}
+equipment_detail.html,8,a,,,,,{{ url_for('equipment.index') }},{},{}
+equipment_detail.html,20,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='cancel-occurrence') }}""}",{}
+equipment_detail.html,20,input,occurrenceId,hidden,,{{ occurrence.id }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='cancel-occurrence') }}""}",{}
+equipment_detail.html,20,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='cancel-occurrence') }}""}",{}
+equipment_detail.html,21,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='handover') }}""}",{}
+equipment_detail.html,21,input,occurrenceId,hidden,,{{ occurrence.id }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='handover') }}""}",{}
+equipment_detail.html,21,textarea,condition,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='handover') }}""}","{""required"": null}"
+equipment_detail.html,21,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='handover') }}""}",{}
+equipment_detail.html,23,a,,,,,"{{ url_for('feedback.new',kind='equipment',booking_id=item.id) }}",{},{}
+equipment_detail.html,26,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='approve') }}""}",{}
+equipment_detail.html,26,input,reason,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='approve') }}""}",{}
+equipment_detail.html,26,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='approve') }}""}",{}
+equipment_detail.html,27,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='reject') }}""}",{}
+equipment_detail.html,27,input,reason,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='reject') }}""}",{}
+equipment_detail.html,27,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='reject') }}""}",{}
+equipment_detail.html,28,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='handover') }}""}",{}
+equipment_detail.html,28,textarea,condition,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='handover') }}""}","{""required"": null}"
+equipment_detail.html,28,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='handover') }}""}",{}
+equipment_detail.html,33,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='return') }}""}",{}
+equipment_detail.html,34,input,unitIds,checkbox,,{{ unit.id }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='return') }}""}",{}
+equipment_detail.html,35,select,condition,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='return') }}""}",{}
+equipment_detail.html,35,textarea,notes,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='return') }}""}",{}
+equipment_detail.html,35,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='return') }}""}",{}
+equipment_detail.html,36,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='extension') }}""}",{}
+equipment_detail.html,36,select,occurrenceId,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='extension') }}""}","{""required"": null}"
+equipment_detail.html,36,input,due,datetime-local,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='extension') }}""}","{""required"": null}"
+equipment_detail.html,36,textarea,reason,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='extension') }}""}","{""required"": null}"
+equipment_detail.html,36,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='extension') }}""}",{}
+equipment_detail.html,38,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='approve-extension') }}""}",{}
+equipment_detail.html,38,input,extensionId,hidden,,{{ e.id }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='approve-extension') }}""}",{}
+equipment_detail.html,38,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='approve-extension') }}""}",{}
+equipment_detail.html,38,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='reject-extension') }}""}",{}
+equipment_detail.html,38,input,extensionId,hidden,,{{ e.id }},,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='reject-extension') }}""}",{}
+equipment_detail.html,38,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('equipment.transition',request_id=item.id,action='reject-extension') }}""}",{}
+equipment_error.html,5,a,,,,,{{ url_for('equipment.index') }},{},{}
+equipment_error.html,5,a,,,,,{{ url_for('equipment.catalog') }},{},{}
+equipment_inventory.html,5,a,,,,,{{ url_for('equipment.index') }},{},{}
+equipment_inventory.html,6,a,,,,,"{{ url_for('equipment.detail',request_id=key) }}",{},{}
+equipment_inventory.html,8,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,8,input,action,hidden,,type,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,8,input,name,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+equipment_inventory.html,8,input,category,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+equipment_inventory.html,8,textarea,description,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,8,textarea,specifications,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,8,input,max_days,number,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+equipment_inventory.html,8,textarea,pickup,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,8,select,eligible_faculties,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,8,button,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,9,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,9,input,action,hidden,,unit,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,9,select,type_id,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+equipment_inventory.html,9,input,asset_tag,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+equipment_inventory.html,9,select,condition,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,9,button,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,10,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,10,input,action,hidden,,condition,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,10,select,unit_id,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+equipment_inventory.html,10,select,condition,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,10,textarea,notes,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+equipment_inventory.html,10,button,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,11,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,11,input,action,hidden,,policy,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,11,select,type_id,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+equipment_inventory.html,11,input,max_days,number,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+equipment_inventory.html,11,input,enabled,checkbox,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_inventory.html,11,button,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+equipment_requests.html,13,a,,,,,{{ url_for('equipment.catalog') }},{},{}
+equipment_requests.html,14,a,,,,,"{{ url_for('equipment.inventory',faculty_id=faculty.id) }}",{},{}
+equipment_requests.html,15,a,,,,,{{ url_for('equipment.custodians') }},{},{}
+equipment_requests.html,19,a,,,,,"{{ url_for('equipment.detail',request_id=item.id) }}",{},{}
+feedback_detail.html,7,a,,,,,{{ url_for('feedback.index') }},{},{}
+feedback_detail.html,13,a,,,,,"{{ url_for('rooms.detail',request_id=item.bookingId) if item.kind == 'room' else url_for('equipment.detail',request_id=item.bookingId) }}",{},{}
+feedback_detail.html,14,a,,,,,"{{ url_for('rooms.configuration') if item.kind == 'room' else url_for('equipment.inventory',faculty_id=item.facultyId) }}",{},{}
+feedback_detail.html,16,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('feedback.update',report_id=item.id) }}""}",{}
+feedback_detail.html,16,input,revision,hidden,,{{ item.revision }},,"{""method"": ""post"", ""action"": ""{{ url_for('feedback.update',report_id=item.id) }}""}",{}
+feedback_detail.html,16,input,action_key,hidden,,{{ action_key }},,"{""method"": ""post"", ""action"": ""{{ url_for('feedback.update',report_id=item.id) }}""}",{}
+feedback_detail.html,16,input,action,hidden,,review,,"{""method"": ""post"", ""action"": ""{{ url_for('feedback.update',report_id=item.id) }}""}",{}
+feedback_detail.html,17,select,status,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('feedback.update',report_id=item.id) }}""}",{}
+feedback_detail.html,17,select,priority,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('feedback.update',report_id=item.id) }}""}",{}
+feedback_detail.html,18,textarea,response,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('feedback.update',report_id=item.id) }}""}","{""required"": null}"
+feedback_detail.html,18,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('feedback.update',report_id=item.id) }}""}",{}
+feedback_detail.html,19,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('feedback.update',report_id=item.id) }}""}",{}
+feedback_detail.html,19,input,revision,hidden,,{{ item.revision }},,"{""method"": ""post"", ""action"": ""{{ url_for('feedback.update',report_id=item.id) }}""}",{}
+feedback_detail.html,19,input,action_key,hidden,,{{ action_key }},,"{""method"": ""post"", ""action"": ""{{ url_for('feedback.update',report_id=item.id) }}""}",{}
+feedback_detail.html,19,input,action,hidden,,reply,,"{""method"": ""post"", ""action"": ""{{ url_for('feedback.update',report_id=item.id) }}""}",{}
+feedback_detail.html,19,textarea,response,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('feedback.update',report_id=item.id) }}""}","{""required"": null}"
+feedback_detail.html,19,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('feedback.update',report_id=item.id) }}""}",{}
+feedback_list.html,9,a,,,,,"{{ url_for('feedback.index',scope='mine') }}",{},{}
+feedback_list.html,9,a,,,,,"{{ url_for('feedback.index',scope='managed') }}",{},{}
+feedback_list.html,10,input,scope,hidden,,{{ scope }},,"{""method"": ""get"", ""action"": ""current endpoint""}",{}
+feedback_list.html,11,select,status,,,,,"{""method"": ""get"", ""action"": ""current endpoint""}",{}
+feedback_list.html,12,select,category,,,,,"{""method"": ""get"", ""action"": ""current endpoint""}",{}
+feedback_list.html,13,select,kind,,,,,"{""method"": ""get"", ""action"": ""current endpoint""}",{}
+feedback_list.html,14,select,resource,,,,,"{""method"": ""get"", ""action"": ""current endpoint""}",{}
+feedback_list.html,14,button,,,,,,"{""method"": ""get"", ""action"": ""current endpoint""}",{}
+feedback_list.html,15,a,,,,,"{{ url_for('feedback.detail',report_id=item.id) }}",{},{}
+feedback_list.html,16,a,,,,,{{ url_for('rooms.index') }},{},{}
+feedback_list.html,16,a,,,,,{{ url_for('equipment.index') }},{},{}
+feedback_new.html,6,a,,,,,"{{ url_for('rooms.detail',request_id=context.bookingId) if context.kind == 'room' else url_for('equipment.detail',request_id=context.bookingId) }}",{},{}
+feedback_new.html,10,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+feedback_new.html,10,input,submission_key,hidden,,{{ submission_key }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+feedback_new.html,11,select,resourceId,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+feedback_new.html,12,select,category,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+feedback_new.html,14,textarea,description,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+feedback_new.html,15,input,urgent,checkbox,,yes,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+feedback_new.html,16,button,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+feedback_new.html,16,a,,,,,"{{ url_for('rooms.detail',request_id=context.bookingId) if context.kind == 'room' else url_for('equipment.detail',request_id=context.bookingId) }}","{""method"": ""post"", ""action"": ""current endpoint""}",{}
+index.html,18,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('run_allocation') }}""}",{}
+index.html,19,button,,submit,,,,"{""method"": ""post"", ""action"": ""{{ url_for('run_allocation') }}""}",{}
+index.html,21,a,,,,,{{ url_for('add_request') }},{},{}
+index.html,22,a,,,,,"{{ url_for('add_request', type='CommitteeMeeting') }}",{},{}
+index.html,31,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('set_strategy') }}""}",{}
+index.html,33,select,strategy,,strategy,,,"{""method"": ""post"", ""action"": ""{{ url_for('set_strategy') }}""}",{}
+index.html,40,button,,submit,,,,"{""method"": ""post"", ""action"": ""{{ url_for('set_strategy') }}""}",{}
+index.html,67,a,,,,,{{ url_for('requests') }},{},{}
+index.html,83,a,,,,,"{{ url_for('request_detail', request_id=item.request_id) }}",{},{}
+index.html,101,a,,,,,{{ url_for('add_request') }},{},{}
+index.html,102,a,,,,,"{{ url_for('add_request', type='CommitteeMeeting') }}",{},{}
+index.html,103,a,,,,,{{ url_for('allocation_summary') }},{},{}
+index.html,104,a,,,,,"{{ url_for('schedules', type='space') }}",{},{}
+index.html,105,a,,,,,"{{ url_for('schedules', type='user') }}",{},{}
+index.html,106,a,,,,,{{ url_for('raw_data') }},{},{}
+login.html,12,a,,,,,#main-content,{},{}
+login.html,20,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('login', next=request.args.get('next')) }}""}",{}
+login.html,22,input,username,,username,"{{ request.form.get('username', '') }}",,"{""method"": ""post"", ""action"": ""{{ url_for('login', next=request.args.get('next')) }}""}","{""required"": null, ""aria-describedby"": ""sign-in-error""}"
+login.html,24,input,password,password,password,,,"{""method"": ""post"", ""action"": ""{{ url_for('login', next=request.args.get('next')) }}""}","{""required"": null, ""aria-describedby"": ""sign-in-error""}"
+login.html,25,input,,checkbox,show-password,,,"{""method"": ""post"", ""action"": ""{{ url_for('login', next=request.args.get('next')) }}""}","{""aria-controls"": ""password""}"
+login.html,26,button,,submit,,,,"{""method"": ""post"", ""action"": ""{{ url_for('login', next=request.args.get('next')) }}""}",{}
+notifications.html,9,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('notifications.read') }}""}",{}
+notifications.html,9,input,throughId,hidden,,{{ inbox.throughId }},,"{""method"": ""post"", ""action"": ""{{ url_for('notifications.read') }}""}",{}
+raw_data.html,18,a,,,,,"{{ url_for('raw_data', file=file.filename) }}",{},{}
+request_added.html,89,a,,,,,"{{ url_for('request_detail', request_id=request_id) }}",{},{}
+request_added.html,90,a,,,,,"{{ url_for('add_request', type='CommitteeMeeting') if request_row and request_row.get('requestType') == 'CommitteeMeeting' else url_for('add_request') }}",{},{}
+request_added.html,91,a,,,,,"{{ url_for('allocation_summary', highlight=request_id) }}",{},{}
+request_added.html,92,a,,,,,"{{ url_for('requests', highlight=request_id) }}",{},{}
+request_added.html,94,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('run_allocation_now', request_id=request_id) }}""}",{}
+request_added.html,95,button,,submit,,,,"{""method"": ""post"", ""action"": ""{{ url_for('run_allocation_now', request_id=request_id) }}""}",{}
+request_detail.html,17,a,,,,,{{ url_for('requests') }},{},{}
+request_detail.html,35,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('run_allocation_now', request_id=item.request_id) }}""}",{}
+request_detail.html,36,button,,submit,,,,"{""method"": ""post"", ""action"": ""{{ url_for('run_allocation_now', request_id=item.request_id) }}""}",{}
+request_detail.html,38,a,,,,,"{{ url_for('allocation_summary', highlight=item.request_id) }}",{},{}
+request_detail.html,39,a,,,,,"{{ url_for('requests', highlight=item.request_id) }}",{},{}
+request_detail.html,126,a,,,,,"{{ url_for('schedules', type='space', id=room.space_id) }}",{},{}
+requests.html,13,a,,,,,{{ url_for('add_request') }},{},{}
+requests.html,22,input,q,search,,{{ query }},,"{""method"": ""get"", ""action"": ""{{ url_for('requests') }}""}",{}
+requests.html,26,select,type,,,,,"{""method"": ""get"", ""action"": ""{{ url_for('requests') }}""}",{}
+requests.html,36,select,status,,,,,"{""method"": ""get"", ""action"": ""{{ url_for('requests') }}""}",{}
+requests.html,43,button,,submit,,,,"{""method"": ""get"", ""action"": ""{{ url_for('requests') }}""}",{}
+requests.html,44,a,,,,,{{ url_for('requests') }},"{""method"": ""get"", ""action"": ""{{ url_for('requests') }}""}",{}
+requests.html,72,a,,,,,"{{ url_for('request_detail', request_id=item.request_id) }}",{},{}
+room_availability.html,5,a,,,,,{{ url_for('rooms.new') }},{},{}
+room_availability.html,5,a,,,,,{{ url_for('rooms.index') }},{},{}
+room_availability.html,6,input,date,date,,{{ calendar.date.isoformat() }},,"{""method"": ""get"", ""action"": ""current endpoint""}","{""required"": null}"
+room_availability.html,6,button,,,,,,"{""method"": ""get"", ""action"": ""current endpoint""}",{}
+room_configuration.html,6,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,6,input,action,hidden,,approver,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,7,select,faculty,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+room_configuration.html,8,select,approver,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+room_configuration.html,8,button,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,11,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,11,input,action,hidden,,policy,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,12,select,roomId,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+room_configuration.html,13,select,faculty,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+room_configuration.html,14,input,enabled,checkbox,,yes,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,15,input,categories,checkbox,,{{ value }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,16,input,restricted,checkbox,,yes,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,16,input,allowedUsers,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,16,button,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,20,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,20,input,action,hidden,,close,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,21,select,roomId,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+room_configuration.html,22,input,start,datetime-local,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+room_configuration.html,22,input,end,datetime-local,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+room_configuration.html,23,input,reason,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,23,button,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,24,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,24,input,action,hidden,,reopen,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,24,input,closureId,hidden,,{{ row.id }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_configuration.html,24,button,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_detail.html,8,a,,,,,{{ url_for('rooms.index') }},{},{}
+room_request_detail.html,11,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.cancel_occurrence',request_id=item.id,occurrence_id=occurrence.id) }}""}",{}
+room_request_detail.html,11,input,revision,hidden,,{{ item.revision }},,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.cancel_occurrence',request_id=item.id,occurrence_id=occurrence.id) }}""}",{}
+room_request_detail.html,11,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.cancel_occurrence',request_id=item.id,occurrence_id=occurrence.id) }}""}",{}
+room_request_detail.html,13,a,,,,,"{{ url_for('feedback.new',kind='room',booking_id=item.id) }}",{},{}
+room_request_detail.html,16,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.decision',request_id=item.id) }}""}",{}
+room_request_detail.html,16,input,revision,hidden,,{{ item.revision }},,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.decision',request_id=item.id) }}""}",{}
+room_request_detail.html,16,button,decision,,,approve,,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.decision',request_id=item.id) }}""}",{}
+room_request_detail.html,16,textarea,reason,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.decision',request_id=item.id) }}""}",{}
+room_request_detail.html,16,button,decision,,,reject,,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.decision',request_id=item.id) }}""}",{}
+room_request_detail.html,17,a,,,,,"{{ url_for('rooms.revise',request_id=item.id) }}",{},{}
+room_request_detail.html,18,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.cancel',request_id=item.id) }}""}",{}
+room_request_detail.html,18,input,revision,hidden,,{{ item.revision }},,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.cancel',request_id=item.id) }}""}",{}
+room_request_detail.html,18,button,,submit,,,,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.cancel',request_id=item.id) }}""}",{}
+room_request_detail.html,20,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.invitation',request_id=item.id) }}""}",{}
+room_request_detail.html,20,input,revision,hidden,,{{ item.revision }},,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.invitation',request_id=item.id) }}""}",{}
+room_request_detail.html,20,button,response,,,accept,,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.invitation',request_id=item.id) }}""}",{}
+room_request_detail.html,20,button,response,,,decline,,"{""method"": ""post"", ""action"": ""{{ url_for('rooms.invitation',request_id=item.id) }}""}",{}
+room_request_detail.html,21,a,,,,,"{{ url_for('rooms.availability',room_id=item.roomId,date=calendar_date) }}",{},{}
+room_request_detail.html,21,a,,,,,{{ url_for('rooms.index') }},{},{}
+room_request_new.html,6,a,,,,,"{{ url_for('rooms.detail',request_id=item.id) if item else url_for('rooms.index') }}",{},{}
+room_request_new.html,10,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,10,input,revision,hidden,,{{ item.revision }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,11,input,submission_key,hidden,,{{ submission_key }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,13,select,category,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+room_request_new.html,14,input,count,number,,{{ item.count if item else 5 }},,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+room_request_new.html,15,input,purpose,,,{{ item.purpose if item else '' }},,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+room_request_new.html,16,textarea,description,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,17,input,club,,,{{ item.club if item else '' }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,19,input,start,datetime-local,,"{{ item.start|university_time|replace(' ','T') if item else today+'T10:00' }}",,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+room_request_new.html,19,input,duration,number,,{{ item.duration if item else 60 }},,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+room_request_new.html,21,input,features,checkbox,,{{ feature }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,22,select,faculty,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,23,select,building,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,25,summary,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,25,input,,search,room-professor-search,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,25,input,professorIds,checkbox,,{{ professor.id }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,26,summary,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,26,input,participantIds,checkbox,,{{ student.id }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,27,button,,button,find-rooms,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,27,input,roomId,hidden,selected-room,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,29,button,,submit,submit-room,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""disabled"": null}"
+room_request_new.html,31,select,waitingFaculty,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_request_new.html,33,button,action,,,wait,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+room_requests.html,8,a,,,,,{{ url_for('rooms.new') }},{},{}
+room_requests.html,8,a,,,,,{{ url_for('rooms.configuration') }},{},{}
+room_requests.html,9,a,,,,,"{{ url_for('rooms.detail',request_id=item.id) }}",{},{}
+schedules.html,10,a,,,,,{{ url_for('appointments.calendar') }},{},{}
+schedules.html,18,a,,,,,"{{ url_for('schedules', type='user') }}",{},{}
+schedules.html,19,a,,,,,"{{ url_for('schedules', type='space') }}",{},{}
+schedules.html,26,input,type,hidden,,user,,"{""method"": ""get"", ""action"": ""{{ url_for('schedules') }}""}",{}
+schedules.html,29,select,id,,user-id,,,"{""method"": ""get"", ""action"": ""{{ url_for('schedules') }}""}",{}
+schedules.html,34,button,,submit,,,,"{""method"": ""get"", ""action"": ""{{ url_for('schedules') }}""}",{}
+schedules.html,39,input,type,hidden,,space,,"{""method"": ""get"", ""action"": ""{{ url_for('schedules') }}""}",{}
+schedules.html,42,select,id,,space-id,,,"{""method"": ""get"", ""action"": ""{{ url_for('schedules') }}""}",{}
+schedules.html,47,button,,submit,,,,"{""method"": ""get"", ""action"": ""{{ url_for('schedules') }}""}",{}
+schedules.html,151,a,,,,,"{{ url_for('request_detail', request_id=event.request_id) }}",{},{}
+student_error.html,8,a,,,,,{{ url_for(recovery[0]) }},{},{}
+student_home.html,18,a,,,,,{{ url_for('appointments.index') }},{},{}
+student_home.html,22,a,,,,,{{ url_for('rooms.index') }},{},{}
+student_home.html,23,a,,,,,{{ url_for('equipment.index') }},{},{}
+student_home.html,26,a,,,,,{{ url_for('waiting.index') }},{},{}
+student_home.html,27,a,,,,,{{ url_for('feedback.index') }},{},{}
+student_home.html,29,a,,,,,{{ url_for('appointments.new') }},{},{}
+student_home.html,43,a,,,,,"{{ url_for('rooms.detail', request_id=item.id) if item.symbol == 'room' else url_for('appointments.detail', appointment_id=item.id) }}",{},{}
+student_home.html,53,a,,,,,"{{ url_for('appointments.detail', appointment_id=home.nextMeeting.id) }}",{},{}
+student_home.html,60,a,,,,,"{{ url_for('calendar.index', view='day', date=day.date.isoformat()) }}",{},"{""aria-current"": ""date"", ""aria-label"": ""{{ day.date.strftime('%A, %d %B') }}, {{ day.entries|length }} entries""}"
+student_home.html,67,a,,,,,"{{ url_for('appointments.detail', appointment_id=event.appointmentId) }}",{},{}
+student_home.html,67,a,,,,,"{{ url_for('rooms.detail', request_id=event.roomRequestId) }}",{},{}
+student_home.html,70,a,,,,,"{{ url_for('calendar.index', view='week', date=home.weekStart.isoformat()) }}",{},{}
+student_home.html,72,a,,,,,{{ url_for('calendar.index') }},{},{}
+student_home.html,73,a,,,,,"{{ url_for('appointments.calendar', month=home.schedule.month, week=home.weekStart.isoformat()) }}",{},{}
+student_service_base.html,6,a,,,,,{{ url_for('student.home') }},{},{}
+university_calendar.html,8,a,,,,,{{ url_for('appointments.calendar') }},{},{}
+university_calendar.html,11,a,,,,,{{ url_for('appointments.calendar') }},{},{}
+university_calendar.html,11,a,,,,,{{ url_for('calendar.publications') }},{},{}
+university_calendar.html,13,a,,,,,{{ calendar_link(day=calendar.previous) }},{},{}
+university_calendar.html,13,a,,,,,{{ calendar_link(day=calendar.today) }},{},{}
+university_calendar.html,13,a,,,,,{{ calendar_link(day=calendar.next) }},{},{}
+university_calendar.html,14,a,,,,,{{ calendar_link(view=view) }},{},{}
+university_calendar.html,15,input,filtered,hidden,,1,,"{""method"": ""get"", ""action"": ""current endpoint""}",{}
+university_calendar.html,15,input,view,hidden,,{{ calendar.view }},,"{""method"": ""get"", ""action"": ""current endpoint""}",{}
+university_calendar.html,16,input,date,date,,{{ calendar.date }},,"{""method"": ""get"", ""action"": ""current endpoint""}","{""required"": null}"
+university_calendar.html,16,select,scope,,,,,"{""method"": ""get"", ""action"": ""current endpoint""}",{}
+university_calendar.html,16,button,,,,,,"{""method"": ""get"", ""action"": ""current endpoint""}",{}
+university_calendar.html,17,input,category,checkbox,,{{ key }},,"{""method"": ""get"", ""action"": ""current endpoint""}",{}
+university_calendar.html,18,input,state,checkbox,,{{ key }},,"{""method"": ""get"", ""action"": ""current endpoint""}",{}
+university_calendar.html,25,a,,,,,"{{ calendar_link(view='day',day=day.date) }}",{},{}
+university_calendar.html,27,a,,,,,"{{ calendar_link(view='day',day=day.date) }}",{},{}
+university_calendar.html,28,a,,,,,"{{ calendar_link(view='day',day=day.date) }}",{},{}
+users.html,21,select,role,,role,,,"{""method"": ""get"", ""action"": ""{{ url_for('users') }}""}",{}
+users.html,26,button,,submit,,,,"{""method"": ""get"", ""action"": ""{{ url_for('users') }}""}",{}
+users.html,28,a,,,,,{{ url_for('users') }},"{""method"": ""get"", ""action"": ""{{ url_for('users') }}""}",{}
+waiting_configuration.html,5,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+waiting_configuration.html,5,input,noticeMinutes,number,,{{ policy.noticeMinutes or '' }},,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+waiting_configuration.html,5,button,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+waiting_configuration.html,5,a,,,,,{{ url_for('waiting.policy') }},{},{}
+waiting_configuration.html,6,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+waiting_configuration.html,6,input,action,hidden,,reservation-policy,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+waiting_configuration.html,6,input,{{ kind }}_{{ key }},number,,"{{ policy.limits.get(kind,{}).get(key,'') }}",,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+waiting_configuration.html,6,input,priorities,,,"{{ policy.priorities|join(',') }}",,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+waiting_configuration.html,6,button,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+waiting_configuration.html,7,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+waiting_configuration.html,7,input,action,hidden,,semester,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+waiting_configuration.html,7,input,name,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+waiting_configuration.html,7,input,start,date,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+waiting_configuration.html,7,input,end,date,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+waiting_configuration.html,7,button,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+waiting_configuration.html,8,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+waiting_configuration.html,8,input,action,hidden,,bind-series,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+waiting_configuration.html,8,select,kind,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+waiting_configuration.html,8,input,requestId,number,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+waiting_configuration.html,8,select,periodId,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}","{""required"": null}"
+waiting_configuration.html,8,button,,,,,,"{""method"": ""post"", ""action"": ""current endpoint""}",{}
+waiting_detail.html,7,a,,,,,{{ url_for('waiting.index') }},{},{}
+waiting_detail.html,16,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('waiting.review',entry_id=item.id) }}""}",{}
+waiting_detail.html,16,textarea,reason,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('waiting.review',entry_id=item.id) }}""}",{}
+waiting_detail.html,16,button,decision,,,approve,,"{""method"": ""post"", ""action"": ""{{ url_for('waiting.review',entry_id=item.id) }}""}",{}
+waiting_detail.html,16,button,decision,,,reject,,"{""method"": ""post"", ""action"": ""{{ url_for('waiting.review',entry_id=item.id) }}""}",{}
+waiting_detail.html,17,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('waiting.cancel',entry_id=item.id) }}""}",{}
+waiting_detail.html,17,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('waiting.cancel',entry_id=item.id) }}""}",{}
+waiting_detail.html,18,a,,,,,"{{ url_for('rooms.detail' if item.kind == 'room' else 'equipment.detail',request_id=item.requestId) }}",{},{}
+waiting_detail.html,19,a,,,,,{{ url_for('waiting.index') }},{},{}
+waiting_detail.html,19,a,,,,,{{ url_for('waiting.policy') }},{},{}
+waiting_lists.html,8,a,,,,,{{ url_for('waiting.policy') }},{},{}
+waiting_lists.html,10,a,,,,,{{ url_for('waiting.policy') }},{},{}
+waiting_lists.html,12,a,,,,,{{ url_for('rooms.new') }},{},{}
+waiting_lists.html,12,a,,,,,{{ url_for('equipment.catalog') }},{},{}
+waiting_lists.html,12,input,csrf_token,hidden,,{{ csrf_token() }},,"{""method"": ""post"", ""action"": ""{{ url_for('waiting.refresh') }}""}",{}
+waiting_lists.html,12,button,,,,,,"{""method"": ""post"", ""action"": ""{{ url_for('waiting.refresh') }}""}",{}
+waiting_lists.html,14,a,,,,,"{{ url_for('waiting.detail',entry_id=item.id) }}",{},{}
+waiting_policy.html,6,a,,,,,{{ url_for('waiting.index') }},{},{}
+waiting_policy.html,14,a,,,,,{{ url_for('waiting.index') }},{},{}

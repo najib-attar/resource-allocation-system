@@ -10,6 +10,7 @@ if not __package__:
 from sqlalchemy.exc import SQLAlchemyError
 
 from flask import Flask, g, has_request_context, redirect, render_template, request, url_for
+from werkzeug.exceptions import HTTPException
 
 from .allocation_workflow import execute_allocation
 from .database_result_adapter import DatabaseResultAdapter
@@ -177,9 +178,42 @@ def pin_database_view():
         current_results()
 
 
+def student_error_response(message, status, headers=None):
+    """Present existing failures to students without changing status or authority."""
+    principal = getattr(g, "principal", None) if has_request_context() else None
+    if principal is None or principal.role != "Student" or principal.administrator:
+        return None
+    recovery = {
+        "appointments": ("appointments.index", "appointments"),
+        "rooms": ("rooms.index", "room requests"),
+        "equipment": ("equipment.index", "equipment requests"),
+        "waiting": ("waiting.index", "waiting lists"),
+        "feedback": ("feedback.index", "feedback"),
+        "calendar": ("calendar.index", "calendar"),
+        "notifications": ("notifications.index", "Inbox"),
+    }.get(request.blueprint, ("student.home", "Home"))
+    if request.endpoint == "appointments.calendar":
+        recovery = ("appointments.calendar", "My Schedule")
+    return render_template("student_error.html", message=message, status=status, recovery=recovery), status, {
+        "Cache-Control": "private, no-store", **(headers or {})}
+
+
+@app.errorhandler(HTTPException)
+def student_http_error(error):
+    if error.code is not None and error.code >= 400:
+        presentation = student_error_response(error.description, error.code)
+        if presentation is not None:
+            response = error.get_response()
+            response.set_data(presentation[0])
+            response.content_type = "text/html; charset=utf-8"
+            response.headers.update(presentation[2])
+            return response
+    return error
+
+
 @app.errorhandler(DatabaseBusy)
 def database_busy(error):
-    return str(error), 503, {"Retry-After": "2"}
+    return student_error_response("This service is busy. Please try again shortly.", 503, {"Retry-After": "2"}) or (str(error), 503, {"Retry-After": "2"})
 
 
 @app.errorhandler(DatabaseConfigurationError)
@@ -187,18 +221,18 @@ def database_busy(error):
 @app.errorhandler(EngineIntegrationError)
 def application_error(error):
     app.logger.error("Application operation failed: %s", error)
-    return f"Application operation failed: {error}", 503
+    return student_error_response("Application operation failed. Please try again shortly.", 503) or (f"Application operation failed: {error}", 503)
 
 
 @app.errorhandler(SQLAlchemyError)
 def database_error(error):
     app.logger.error("Database operation failed (%s).", type(error).__name__)
-    return "Database operation failed. Check PostgreSQL configuration and migrations; previous results remain active.", 503
+    return student_error_response("Database operation failed. Please try again shortly.", 503) or ("Database operation failed. Check PostgreSQL configuration and migrations; previous results remain active.", 503)
 
 
 @app.errorhandler(SubmissionConflict)
 def submission_conflict(error):
-    return str(error), 409
+    return student_error_response(str(error), 409) or (str(error), 409)
 
 
 def current_strategy():

@@ -1,0 +1,14 @@
+{
+  "modules": [
+    "test_frontend_prototype",
+    "test_student_portal_ui",
+    "test_recurring_views",
+    "test_equipment_web"
+  ],
+  "run": 41,
+  "passed": 41,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 191.24
+}

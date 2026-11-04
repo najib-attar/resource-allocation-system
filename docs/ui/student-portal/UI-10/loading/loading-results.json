@@ -1,0 +1,33 @@
+{
+  "method": "Synchronous observation at the native fetch call, followed by the unchanged real network request; no response mocks or delays.",
+  "notifications": [
+    {
+      "kind": "notifications",
+      "message": "Loading updates...",
+      "markDisabled": true
+    }
+  ],
+  "appointments": [
+    {
+      "kind": "appointments",
+      "busy": "true",
+      "refreshDisabled": true,
+      "submitDisabled": true,
+      "selected": "",
+      "message": "Checking your calendar and required professors' availability..."
+    }
+  ],
+  "rooms": [
+    {
+      "kind": "rooms",
+      "busy": "true",
+      "refreshDisabled": true,
+      "submitDisabled": true,
+      "selected": "",
+      "message": "Checking policies and academic, appointment and room commitments..."
+    }
+  ],
+  "realAppointmentChoices": 31,
+  "realRoomCandidates": 3,
+  "passed": true
+}

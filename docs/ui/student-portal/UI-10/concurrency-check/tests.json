@@ -1,0 +1,11 @@
+{
+  "modules": [
+    "test_recurring_workflows.RecurringEquipmentWorkflowTests.test_concurrent_identical_equipment_series_submission_is_idempotent"
+  ],
+  "run": 1,
+  "passed": 0,
+  "failures": 0,
+  "errors": 1,
+  "skipped": [],
+  "seconds": 21.19
+}

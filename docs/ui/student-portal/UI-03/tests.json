@@ -1,0 +1,14 @@
+{
+  "modules": [
+    "test_appointments",
+    "test_appointment_protocol",
+    "test_frontend_prototype",
+    "test_student_portal_ui"
+  ],
+  "run": 49,
+  "passed": 49,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 148.53
+}

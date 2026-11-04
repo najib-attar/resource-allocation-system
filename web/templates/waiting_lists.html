@@ -1,11 +1,16 @@
-{% extends 'base.html' %}
+{% extends 'student_service_base.html' %}
+{% from 'components/ui.html' import icon %}
+{% from 'components/student_services.html' import status %}
 {% block title %}Resource Waiting Lists{% endblock %}
 {% block page_heading %}Resource waiting lists{% endblock %}
-{% block content %}<section class="panel"><h2>Requests waiting for compatible availability</h2>
+{% block service_eyebrow %}Waiting lists{% endblock %}
+{% block service_intro %}Follow unavailable resource requests, faculty review and compatible openings.{% endblock %}
+{% block service_actions %}<a class="service-button" href="{{ url_for('waiting.policy') }}">Waiting-list policy</a>{% endblock %}
+{% block service_content %}<section class="panel"><h2>Requests waiting for compatible availability</h2>
 <p>Pre-approval does not reserve a resource. Positions are contextual, not guarantees. <a href="{{ url_for('waiting.policy') }}">Read the policy</a>.</p>
 {% if not policy.noticeMinutes %}<p role="status">Automatic assignment is disabled: administration must configure minimum advance notice.</p>{% endif %}
 <div class="equipment-actions">{% if g.principal.role == 'Student' %}<a class="button-primary" href="{{ url_for('rooms.new') }}">Find a room</a><a class="button-secondary" href="{{ url_for('equipment.catalog') }}">Find equipment</a>{% endif %}<form method="post" action="{{ url_for('waiting.refresh') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="button-secondary">Recheck my authorized queues</button></form></div></section>
-<section class="panel"><div class="table-wrap"><table><thead><tr><th>Request</th><th>Faculty</th><th>Interval</th><th>Review status</th><th>Position</th></tr></thead><tbody>
-{% for item in items %}<tr><td><a href="{{ url_for('waiting.detail',entry_id=item.id) }}">{{ item.purpose }}</a><br>{{ item.kind|title }}{% if item.canReview %} &middot; {{ item.owner|person_name }}{% endif %}</td><td>{{ item.faculty }}</td><td>{{ item.start|university_time }}<br>{{ item.end|university_time }}</td><td><span class="status-badge">{{ item.status }}</span></td><td>{{ item.positionLabel ~ ' #' ~ item.position if item.position else ('Assignment paused' if item.status == 'Preapproved' else 'Not active') }}</td></tr>
-{% else %}<tr><td colspan="5">No waiting requests are visible to your account. Unavailable eligible requests can join from the room or equipment form.</td></tr>{% endfor %}
-</tbody></table></div></section>{% endblock %}
+<section class="panel"><h2>Your queues</h2><div class="service-list">
+{% for item in items %}<article class="service-row"><span class="service-row-icon">{{ icon('room' if item.kind == 'room' else 'equipment',18) }}</span><div><small class="service-row-kind">{{ item.kind|title }} &middot; {{ item.faculty }}{% if item.canReview %} &middot; {{ item.owner|person_name }}{% endif %}</small><h3><a href="{{ url_for('waiting.detail',entry_id=item.id) }}">{{ item.purpose }}</a></h3><p>{{ item.start|university_time }} &ndash; {{ item.end|university_time }}</p><p>{{ item.positionLabel ~ ' #' ~ item.position if item.position else ('Assignment paused' if item.status == 'Preapproved' else 'Not active') }}</p></div>{{ status(item.status) }}</article>
+{% else %}<div class="service-empty"><h3>No waiting requests are visible to your account.</h3><p>Unavailable eligible requests can join from the room or equipment form.</p></div>{% endfor %}
+</div></section>{% endblock %}

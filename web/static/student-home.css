@@ -1,0 +1,116 @@
+/* Student Home only; service interiors and other roles retain their styles. */
+.student-home {
+    --student-ink: #23313c;
+    --student-muted: #596d7b;
+    --student-line: #e0e7eb;
+    --student-blue: #204b69;
+    color: var(--student-ink);
+    font-family: "Avenir Next", "Segoe UI", Arial, sans-serif;
+    max-width: 1260px;
+    margin: 0 auto;
+}
+.student-home .student-eyebrow { margin: 0; font-size: 10px; letter-spacing: .15em; text-transform: uppercase; font-weight: 700; color: #2b6282; }
+.student-welcome { margin-bottom: 38px; }
+.student-welcome :is(h1, h2) { font-size: clamp(29px, 2.8vw, 38px); letter-spacing: -1.5px; line-height: 1.15; font-weight: 650; margin: 14px 0; }
+.student-welcome > p:not(.student-eyebrow) { font-size: 13px; color: var(--student-muted); line-height: 1.6; margin: 0; }
+.student-welcome-meta { margin-top: 17px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 20px; font-size: 11px; color: var(--student-muted); }
+.student-home-columns { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr); gap: 40px; align-items: start; }
+.student-home-columns > *, .student-home-secondary > * { min-width: 0; }
+.student-section-heading { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px 14px; margin-bottom: 19px; }
+.student-section-heading h2 { font-size: 19px; font-weight: 650; letter-spacing: -.4px; margin: 0; }
+.student-section-heading > span { font-size: 10px; color: var(--student-muted); }
+.student-service { border: 1px solid var(--student-line); border-radius: 12px; position: relative; }
+.student-service h3 { font-size: 16px; font-weight: 650; letter-spacing: -.2px; line-height: 1.3; margin: 0 0 9px; }
+.student-service p:not(.student-eyebrow) { font-size: 12px; line-height: 1.6; color: var(--student-muted); margin: 0; }
+.student-service a { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--student-blue); margin-top: 20px; min-height: 32px; text-decoration: none; }
+.student-service a:hover, .student-inline-link:hover, .student-schedule-link:hover { text-decoration: underline; }
+.student-service-appointments { background: #eaf2f7; border-color: #dbe7ed; min-height: 186px; display: flex; align-items: center; overflow: hidden; }
+.student-service-appointments::before, .student-service-appointments::after { content: ""; position: absolute; border: 1px solid #cfdee7; border-radius: 50%; pointer-events: none; }
+.student-service-appointments::before { width: 180px; height: 180px; right: -70px; top: -60px; }
+.student-service-appointments::after { width: 115px; height: 115px; right: 38px; bottom: -71px; }
+.student-service-copy { padding: 25px 26px 19px; flex: 1; z-index: 1; }
+.student-service-copy .student-eyebrow { margin-bottom: 10px; }
+.student-service-copy h3 { font-size: 23px; letter-spacing: -.6px; }
+.student-service-art { flex: 0 0 100px; width: 100px; height: 100px; margin-right: 20px; color: #477a96; }
+.student-service-pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin-top: 17px; }
+.student-service-pair .student-service { padding: 22px; display: flex; flex-direction: column; align-items: flex-start; }
+.student-service-pair .student-service a { margin-top: auto; padding-top: 14px; }
+.student-service-rooms { background: #f7f1e7; border-color: #ece6dc; }
+.student-service-rooms a, .student-service-rooms .student-service-icon { color: #795733; }
+.student-service-equipment { background: #e8f1ec; border-color: #dce8e0; }
+.student-service-equipment a, .student-service-equipment .student-service-icon { color: #376958; }
+.student-service-icon { display: grid; place-items: center; width: 35px; height: 35px; border: 1px solid currentColor; border-radius: 10px; margin-bottom: 17px; }
+.student-more-services { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border: 1px solid var(--student-line); border-radius: 12px; margin-top: 18px; }
+.student-more-services a { position: relative; padding: 21px; color: var(--student-ink); text-decoration: none; border-radius: 12px; }
+.student-more-services a + a { border-left: 1px solid var(--student-line); }
+.student-more-services strong { display: block; font-size: 13px; padding-right: 17px; }
+.student-more-services span { display: block; font-size: 11px; line-height: 1.6; color: var(--student-muted); margin-top: 8px; }
+.student-more-services .ui-icon { position: absolute; right: 15px; top: 22px; color: var(--student-blue); }
+.student-more-services a:hover { background: #f5f8fa; }
+.student-schedule-link { display: inline-flex; align-items: center; gap: 5px; min-height: 44px; margin-top: 10px; color: var(--student-blue); font-size: 12px; text-decoration: none; }
+.student-activity { scroll-margin-top: 24px; }
+.student-activity:focus { outline: 2px solid var(--student-blue); outline-offset: 8px; }
+.student-activity-list { border-top: 1px solid var(--student-line); }
+.student-activity-row { display: grid; grid-template-columns: 35px minmax(0, 1fr); gap: 12px; padding: 17px 0; border-bottom: 1px solid var(--student-line); }
+.student-activity-icon { width: 35px; height: 35px; display: grid; place-items: center; border-radius: 9px; background: #eaf2f7; color: #2b6282; }
+.student-activity-icon-room { background: #f7f1e7; color: #795733; }
+.student-activity-row h3 { font-size: 12px; line-height: 1.55; margin: 0; font-weight: 650; overflow-wrap: anywhere; }
+.student-activity-row h3 a { color: inherit; text-decoration: none; }
+.student-activity-row h3 a:hover { text-decoration: underline; }
+.student-activity-meta { font-size: 11px; line-height: 1.6; color: var(--student-muted); margin: 5px 0 0; }
+.student-request-status { display: inline-block; font-size: 11px; line-height: 1.6; margin-top: 8px; color: #795733; }
+.student-request-status::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: currentColor; margin-right: 6px; vertical-align: middle; }
+.student-request-status.is-confirmed { color: #376958; }
+.student-caption { font-size: 11px; color: var(--student-muted); line-height: 1.65; margin: 12px 0; }
+.student-caption a { color: var(--student-blue); }
+.student-inline-link { display: inline-flex; gap: 4px; align-items: center; min-height: 32px; color: var(--student-blue); font-weight: 650; font-size: 12px; text-decoration: none; }
+.student-empty { padding: 25px 4px; color: var(--student-muted); }
+.student-empty > .ui-icon { color: #376958; }
+.student-empty h3 { font-size: 15px; color: var(--student-ink); margin: 12px 0 7px; }
+.student-empty p, .student-calendar-empty { font-size: 12px; line-height: 1.65; margin: 0; }
+.student-planning { margin-top: 32px; }
+.student-week-preview { border: 1px solid var(--student-line); border-radius: 12px; padding: 18px 20px; }
+.student-week-range { font-size: 11px; margin: 0 0 12px; color: var(--student-muted); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; }
+.student-week-days { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+.student-week-days a { display: flex; flex-direction: column; align-items: center; gap: 7px; padding: 10px 0 7px; color: var(--student-muted); border-radius: 7px; font-size: 10px; text-decoration: none; }
+.student-week-days strong { font-size: 17px; color: var(--student-ink); }
+.student-week-days .is-today, .student-week-days a:hover { background: #eaf2f7; color: var(--student-blue); }
+.student-week-days .is-today strong { color: var(--student-blue); }
+.student-day-marker { width: 4px; height: 4px; border-radius: 50%; }
+.student-day-marker.has-entries { background: #2b6282; }
+.student-week-events { border-top: 1px solid var(--student-line); margin-top: 13px; padding-top: 13px; }
+.student-week-event { padding: 0 0 12px; overflow-wrap: anywhere; }
+.student-week-event p { margin: 0 0 4px; font-size: 10px; color: var(--student-muted); line-height: 1.6; }
+.student-week-event > a, .student-week-event > strong { font-size: 12px; font-weight: 650; line-height: 1.5; color: var(--student-blue); }
+.student-week-event > span { display: block; font-size: 10px; line-height: 1.5; color: var(--student-muted); margin-top: 4px; }
+.student-calendar-empty { color: var(--student-muted); padding: 4px 0 13px; }
+.student-home .student-calendar-warning { display: flex; align-items: flex-start; gap: 8px; border: 1px solid #dec9a9; border-radius: 8px; padding: 12px; color: #765022; background: #fff7e9; font-size: 12px; line-height: 1.6; margin-top: 14px; }
+@media (max-width: 1200px) {
+    .student-home-columns { grid-template-columns: minmax(0, 1fr); gap: 34px; }
+    .student-home-secondary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
+    .student-planning { margin-top: 0; }
+}
+@media (max-width: 600px) {
+    .student-welcome { margin-bottom: 29px; }
+    .student-welcome :is(h1, h2) { font-size: 29px; letter-spacing: -1.2px; }
+    .student-welcome > p:not(.student-eyebrow) { font-size: 12px; }
+    .student-home-secondary { grid-template-columns: minmax(0, 1fr); gap: 29px; }
+    .student-section-heading h2 { font-size: 18px; }
+    .student-section-heading { margin-bottom: 18px; }
+    .student-service-copy { padding: 23px 18px 18px; }
+    .student-service-copy p:not(.student-eyebrow) { font-size: 11px; }
+    .student-service-art { flex-basis: 73px; width: 73px; height: 73px; margin-right: 9px; }
+    .student-service-pair { gap: 11px; }
+    .student-service-pair .student-service { padding: 17px; }
+    .student-service h3 { font-size: 15px; }
+    .student-service-copy h3 { font-size: 20px; }
+    .student-service p:not(.student-eyebrow) { font-size: 11px; }
+    .student-more-services a { padding: 17px; }
+    .student-more-services .ui-icon { right: 10px; top: 19px; }
+}
+@media (max-width: 360px) {
+    .student-service-pair, .student-more-services { grid-template-columns: minmax(0, 1fr); }
+    .student-more-services a + a { border-left: 0; border-top: 1px solid var(--student-line); }
+    .student-service-art { display: none; }
+    .student-week-preview { padding-inline: 15px; }
+}

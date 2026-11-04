@@ -1,0 +1,19 @@
+{
+  "against": "#ffffff",
+  "colors": {
+    "mainText": "#23313c",
+    "secondaryText": "#596d7b",
+    "primary": "#204b69",
+    "controlBoundary": "#7d8f9c",
+    "focus": "#176fbd"
+  },
+  "ratios": {
+    "mainText": 13.325,
+    "secondaryText": 5.387,
+    "primary": 9.244,
+    "controlBoundary": 3.343,
+    "focus": 5.192
+  },
+  "passed": true,
+  "scope": "Current student palette against white; text minimum 4.5, control/focus boundary minimum 3. Not an accessibility certification."
+}

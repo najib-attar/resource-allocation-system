@@ -1,0 +1,21 @@
+{
+  "database": "ui01_test at 127.0.0.1:55461",
+  "knownReviewSchemas": [
+    "ras_test_2264e08f07604492a3ab68c7d71cc7e2",
+    "ras_test_34e339e5eb014c9487073c7c52d2ea92",
+    "ras_test_38546164ac444bceaad51ab73eaba8d2",
+    "ras_test_56529ef462004e8f9089ab16048252bd",
+    "ras_test_617305f236f54e92b15a41ef3f90f48b",
+    "ras_test_6694157332864559bc95ec155a5353da",
+    "ras_test_6bd1386adad8426f8fff6cbd5fb27e93",
+    "ras_test_78925c1f2d0846ad8f70fe41f696027d",
+    "ras_test_910317d3c74f4ead80178c3b0ca7c859",
+    "ras_test_9e2e1cb3beba4766af64e6357252e3a0",
+    "ras_test_c5fc23703b2f4b9e89298d73ac6a90ec",
+    "ras_test_ebf1a5397b3047c69e038f30b6cc7d8e"
+  ],
+  "remainingKnownReviewSchemas": [],
+  "remainingCompleteUi10ReviewRosters": [],
+  "verified": true,
+  "method": "Read-only pg_namespace lookup plus exact nine-identity UI-10 roster check. No schema was deleted by this check; unrelated schemas and the existing test cluster were preserved."
+}
