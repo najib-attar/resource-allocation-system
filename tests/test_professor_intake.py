@@ -5,7 +5,8 @@ from auth_fixtures import authorized_client
 from test_professor_services import ProfessorFixture
 from web import app as web_app
 from web.academic_eligibility import EligibilityService
-from web.persistence.models import ApplicationState, ResourceRequest, RequestEligibility, User
+from web.persistence.models import ApplicationState, ResourceRequest, RequestEligibility, User, EligibilityEvent, RequestHistory
+from sqlalchemy import func,select
 
 
 class ProfessorIntakeTests(ProfessorFixture):
@@ -115,6 +116,28 @@ class ProfessorIntakeTests(ProfessorFixture):
         self.assertEqual(response.get_json()['item']['eligibilityStatus'],'Pending Eligibility Review')
         with self.database.transaction() as session:session.get(User,3).status='inactive'
         self.assertEqual(self.client.post('/professor/requests/new',data=self.form('CommitteeMeeting')).status_code,400)
+
+    def test_malformed_optional_participants_return_json_errors_without_persistence(self):
+        def persisted():
+            with self.database.transaction(read_only=True) as session:
+                state=session.get(ApplicationState,1)
+                return [session.scalar(select(func.count()).select_from(model)) for model in
+                    (ResourceRequest,RequestEligibility,EligibilityEvent,RequestHistory)]+[state.input_revision,state.active_run_id]
+        before=persisted()
+        payload=dict(type='OneTime',spaceId=302,participantCount=5,title='Synthetic JSON input',purpose='Audit validation',
+            slots=[dict(day=7,startMinutes=600,endMinutes=660)],submissionKey=uuid.uuid4().hex)
+        for kind in ('OneTime','Recurring'):
+            for value in (None,'',{},False,0):
+                with self.subTest(kind=kind,participants=value):
+                    response=self.client.post('/professor/academic-requests',json=dict(payload,type=kind,participants=value))
+                    self.assertEqual(response.status_code,400)
+                    self.assertIn('Participants must be a list',response.get_json()['error'])
+                    self.assertEqual(persisted(),before)
+        # Invalid attempts do not consume the submission key; a valid empty list still works.
+        response=self.client.post('/professor/academic-requests',json=dict(payload,participants=[]))
+        self.assertEqual(response.status_code,201)
+        self.assertEqual(response.get_json()['item']['eligibilityStatus'],'Pending Eligibility Review')
+        self.assertEqual(response.get_json()['item']['participants'],[])
 
     def test_active_published_requests_are_read_only_after_eligibility_rejection(self):
         from datetime import date

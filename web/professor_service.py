@@ -151,6 +151,8 @@ class ProfessorService:
             raise ProfessorRequestError('Use supported academic request fields; identity and review decisions come from the server.')
         if not isinstance(submission_key,str) or not re.fullmatch('[0-9a-f]{32}',submission_key):
             raise ProfessorRequestError('Use a valid submission key. Refresh the form.')
+        if 'participants' in values and not isinstance(values['participants'],list):
+            raise ProfessorRequestError('Participants must be a list of required committee participants.')
         with self.database.transaction() as session:
             state_row(session,True)
             self._instructor(session,actor)
