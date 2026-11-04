@@ -1,4 +1,5 @@
 status,file,kind
+M,.gitignore,reference / documentation / evidence
 M,README.md,reference / documentation / evidence
 M,docs/architecture/frontend-design.md,reference / documentation / evidence
 A,docs/design/campus-space/README.md,reference / documentation / evidence
@@ -215,6 +216,7 @@ A,docs/ui/student-portal/artifact-cleanup.json,reference / documentation / evide
 A,docs/ui/student-portal/changed-files.csv,reference / documentation / evidence
 A,docs/ui/student-portal/commits.json,reference / documentation / evidence
 A,docs/ui/student-portal/coverage.md,reference / documentation / evidence
+A,docs/ui/student-portal/integration-verification.json,reference / documentation / evidence
 A,docs/ui/student-portal/screen-coverage.csv,reference / documentation / evidence
 A,docs/ui/student-portal/screen-coverage.md,reference / documentation / evidence
 A,docs/ui/student-portal/screenshots.json,reference / documentation / evidence

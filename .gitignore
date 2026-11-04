@@ -53,3 +53,13 @@ cmake-build-release/
 /docs/iteration-reports/Iteration_41.md
 /docs/iteration-reports/*_progress.md
 /docs/architecture/csv-cleanup.md
+
+# Raw Student acceptance captures are reproducible local evidence. Keep only
+# deliberately reviewed representatives and compact summaries in Git.
+/docs/ui/student-portal/**/modules/
+/docs/ui/student-portal/**/post-states.json
+/docs/ui/student-portal/**/persistence.json
+/docs/ui/student-portal/**/controls.json
+/docs/ui/student-portal/**/tests.txt
+/docs/ui/student-portal/**/*.png
+/docs/ui/student-portal-ui01/*.png

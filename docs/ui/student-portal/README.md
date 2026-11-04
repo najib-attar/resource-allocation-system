@@ -64,3 +64,5 @@ Set `PLAYWRIGHT_NODE_MODULE` when using a bundled Playwright installation.
 `PORTAL_BUILD_DIR` separates metadata for independent runs. Run
 `tests/ui/verify_audit_persistence.py` after all modes, plus
 `audit_portal_sources.py` and `audit_student_routes.py UI-10/contracts`.
+
+Generated raw POST/state dumps, per-module copies and additional captures are ignored locally after the integration cleanup. Existing tracked final output and representative images remain tracked. Review a new representative before deliberately adding it with `git add -f`; retain compact aggregate summaries rather than bulk raw output.
