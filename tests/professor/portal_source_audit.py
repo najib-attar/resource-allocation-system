@@ -70,7 +70,28 @@ def main():
         'web/account_service.py','web/appointment_service.py','web/room_request_service.py','web/equipment_service.py',
         'web/calendar_service.py','web/university_calendar.py','web/personal_schedule_service.py',
         'web/notification_service.py','web/student_routes.py','web/student_dashboard_service.py','requirements.txt']
-    assert not git('diff',BASE,'--',*protected)
+    # The separately authorized logout correction adds persistence, without
+    # changing academic eligibility, allocation or the other protected services.
+    logout_files={'web/account_service.py','web/persistence/models.py',
+        'migrations/versions/0051b_logged_out_sessions.py'}
+    changed_protected=set(git('diff','--name-only',BASE,'--',*protected).splitlines())
+    new_protected={path for path in git('ls-files','--others','--exclude-standard').splitlines()
+        if path.startswith(('migrations/','web/persistence/'))}
+    assert changed_protected | new_protected <= logout_files
+    old_models={n.name:ast.dump(n,include_attributes=False) for n in ast.parse(
+        git('show',BASE+':web/persistence/models.py')).body if isinstance(n,ast.ClassDef)}
+    new_models={n.name:ast.dump(n,include_attributes=False) for n in ast.parse(
+        (ROOT/'web/persistence/models.py').read_text(encoding='utf-8')).body if isinstance(n,ast.ClassDef)}
+    assert all(new_models.get(name)==source for name,source in old_models.items())
+    assert set(new_models)-set(old_models)=={'LoggedOutSession'}
+    def account_methods(source):
+        return {n.name:ast.dump(n,include_attributes=False) for cls in ast.parse(source).body
+            if isinstance(cls,ast.ClassDef) and cls.name=='AccountService'
+            for n in cls.body if isinstance(n,ast.FunctionDef)}
+    old_account=account_methods(git('show',BASE+':web/account_service.py'))
+    new_account=account_methods((ROOT/'web/account_service.py').read_text(encoding='utf-8'))
+    assert all(new_account.get(name)==source for name,source in old_account.items() if name!='identity')
+    assert set(new_account)-set(old_account)=={'_valid_session_token','_session_digest','revoke_session'}
     original_gateway=git('show',BASE+':web/engine_gateway.py')
     old_guard=("            guard = getattr(snapshot, 'assert_allocation_ready', None)\n"
         "            if guard is not None:\n                guard()\n")
@@ -125,7 +146,10 @@ def main():
     assert service_source.count(input_guard)==1
     after=class_methods(service_source.replace(input_guard,''))
     assert all(before[key]==after[key] for key in before if key!='directory')
-    report=dict(frontendBase=BASE,reviewedMain=REVIEW_BASE,unchangedMainResearchAndGovernance=inherited_main,unchangedProtectedSources=protected,
+    report=dict(frontendBase=BASE,reviewedMain=REVIEW_BASE,unchangedMainResearchAndGovernance=inherited_main,
+        protectedSourceGroups=protected,approvedLogoutCorrections=sorted(logout_files),
+        otherProtectedSourcesUnchanged=True,allExistingModelDefinitionsPreserved=True,
+        existingAccountMethodsPreservedExceptSessionIdentity=True,
         gatewayOnlyChange='Canonical repository input types and unbound guard invocation; all wire protocols and validators unchanged',
         studentHomeUnchangedApartFromAssetPath=True,sharedCss=css,professorBusinessMethodsUnchanged=True,
         approvedInputValidation='Optional participants must be a list; malformed input returns 400 before persistence',
@@ -141,7 +165,7 @@ def main():
     (ROOT/'docs/professor-services/portal-source-audit.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
     screenshots,changed=delivery_inventory()
     print(json.dumps(dict(templates=len(edges),unreferenced=0,baselineTestsRetained=prior,currentTests=current,
-        protectedSourcesUnchanged=len(protected),screenshotsVerified=screenshots,changedFiles=changed)))
+        protectedSourceGroupsReviewed=len(protected),screenshotsVerified=screenshots,changedFiles=changed)))
 
 
 if __name__=='__main__':main()

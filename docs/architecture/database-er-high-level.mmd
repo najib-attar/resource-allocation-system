@@ -114,6 +114,11 @@ erDiagram
         integer busy_slot_id FK "nullable"
         integer request_id FK "nullable"
     }
+    logged_out_session {
+        integer user_id PK,FK
+        integer session_version PK
+        varchar_64 token_digest PK
+    }
     login_account {
         integer user_id PK,FK
     }
@@ -301,6 +306,7 @@ erDiagram
     busy_slot o|--o{ legacy_calendar_binding : busy_slot_id
     academic_period ||--o{ legacy_calendar_binding : period_id
     resource_request o|--o{ legacy_calendar_binding : request_id
+    university_user ||--o{ logged_out_session : user_id
     university_user ||--o| login_account : user_id
     equipment_event o|--o{ notification : equipment_event_id
     feedback_event o|--o{ notification : feedback_event_id

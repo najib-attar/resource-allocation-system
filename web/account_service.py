@@ -2,13 +2,15 @@
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
+import hashlib
 import re
 import secrets
 
 from sqlalchemy import select
+from sqlalchemy.dialects.postgresql import insert
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from .persistence.models import LoginAccount, Role, User
+from .persistence.models import LoggedOutSession, LoginAccount, Role, User
 from .persistence.repository import PersistenceError
 
 
@@ -82,13 +84,15 @@ class AccountService:
             account.failed_attempts, account.locked_until = 0, None
             return self._principal(session, account)
 
-    def identity(self, user_id, version, *, session=None):
+    def identity(self, user_id, version, *, session=None, session_token=None):
         """Read persisted identity in the caller's clean transaction without owning it."""
         if type(user_id) is not int or type(version) is not int:
             return None
+        if session_token is not None and not self._valid_session_token(session_token):
+            return None
         if session is None:
             with self.database.transaction(read_only=True) as owned:
-                return self.identity(user_id, version, session=owned)
+                return self.identity(user_id, version, session=owned, session_token=session_token)
         with session.no_autoflush:
             if not session.is_active or session.new or session.dirty or session.deleted:
                 return None
@@ -96,7 +100,33 @@ class AccountService:
             account = session.get(LoginAccount, user_id, populate_existing=True)
             if account is None or account.session_version != version:
                 return None
+            if session_token is not None and session.get(LoggedOutSession,
+                    (user_id, version, self._session_digest(session_token)), populate_existing=True) is not None:
+                return None
             return self._principal(session, account, refresh=True)
+
+    @staticmethod
+    def _valid_session_token(token):
+        return isinstance(token, str) and re.fullmatch(r'[A-Za-z0-9_-]{32,128}', token) is not None
+
+    @staticmethod
+    def _session_digest(token):
+        # The existing random CSRF nonce uniquely identifies a signed login.
+        # Persist only its digest; neither cookies nor CSRF secrets are stored.
+        return hashlib.sha256(token.encode('ascii')).hexdigest()
+
+    def revoke_session(self, user_id, version, token):
+        """Commit one login's denial before clearing its browser cookie; idempotent."""
+        if (type(user_id) is not int or type(version) is not int or user_id <= 0 or version <= 0
+                or not self._valid_session_token(token)):
+            raise PersistenceError('Invalid session identity. Sign in again.')
+        with self.database.transaction() as session:
+            # Serialize with global account reset/revocation, not other users.
+            session.get(LoginAccount, user_id, with_for_update=True)
+            # A concurrent global reset can already have invalidated this login;
+            # retain its denial even if the account is later reprovisioned.
+            session.execute(insert(LoggedOutSession).values(user_id=user_id, session_version=version,
+                token_digest=self._session_digest(token)).on_conflict_do_nothing())
 
     def revoke(self, user_id):
         with self.database.transaction() as session:

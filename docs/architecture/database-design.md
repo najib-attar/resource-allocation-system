@@ -1,8 +1,19 @@
 # PostgreSQL application persistence and dated calendars
 
+## Durable logout revocation (0051b)
+
+The schema now has **62 application tables** plus Alembic. `logged_out_session`
+records one signed login's denial using university identity, account generation,
+SHA-256 nonce digest and server logout time. It contains no cookie or plaintext
+CSRF token. Logout commits before clearing the cookie; each subsequent authenticated
+HTTP request checks the record. A delayed cookie refresh cannot restore access.
+Other browser logins and the existing global account-revocation mechanism remain
+independent. Denials survive account deletion/reprovisioning. A populated downgrade
+refuses denial loss. See [rollout and retention requirements](../database-operations.md).
+
 ## Academic eligibility review (0051a)
 
-The schema now has **61 application tables** plus Alembic. `request_eligibility`
+That revision brought the schema to **61 application tables** plus Alembic. `request_eligibility`
 stores independent human review, provenance, reviewed request revision and review
 version. `eligibility_event` holds immutable review/invalidation history.
 `allocation_eligibility` binds each run to its reviewed request revisions.

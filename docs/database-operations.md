@@ -1,8 +1,34 @@
 # PostgreSQL setup and safe operations
 
-## Current schema (0051a)
+## Current schema (0051b)
 
-The current source head is `0051a`: 61 application tables plus Alembic. It adds
+Revision `0051b` adds `logged_out_session` (62 application tables plus Alembic).
+Logout commits a denial for the signed login's random nonce before clearing the
+cookie. Authentication checks that denial on every request, including a cookie
+refreshed by an older in-flight response. Only a SHA-256 nonce digest, university
+identity, account generation and logout time are stored. Passwords, other browser
+logins, the eight-hour sliding lifetime and all reservations are unchanged.
+
+The additive upgrade starts with an empty table. Matching authentication code
+requires one fresh login for cookies issued before the fix: historical logouts
+cannot be reconstructed safely. Passwords and stored application data are
+preserved. New signed logins carry a format marker and a random CSRF nonce used
+to identify their session. A malformed or missing nonce requires signing in again.
+Keep denials durable: refreshed cookies can arrive after logout, so their signing
+time alone is insufficient for safely expiring a denial. There is no automatic
+purge. Rows survive account deletion/reprovisioning and must not be manually
+deleted to roll back the fix. An empty downgrade is supported; a populated
+downgrade refuses to reactivate logged-out cookies. Review retention/compaction
+separately before introducing an absolute per-login expiry or deletion procedure.
+
+Stop all old workers, back up, upgrade, then start matching code; mixed old/new
+authentication workers are unsafe. No operational database was migrated during
+verification. The local synthetic demo launcher applies the additive upgrade on
+restart without reseeding existing accounts or appointments.
+
+## Academic eligibility (0051a)
+
+That revision brought the schema to 61 application tables plus Alembic. It adds
 academic eligibility/provenance, immutable review history, per-run revision proof
 and a declared faculty-context field. Existing requests become Legacy/Pending
 Eligibility Review; none is approved automatically. Existing published results and

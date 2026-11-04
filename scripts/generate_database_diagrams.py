@@ -46,6 +46,7 @@ PURPOSES = {
     "meeting_suggestion": "Ranked structured time/resource alternatives returned by C++.",
     "request_history": "Timestamped save/import/decision events with optional run provenance.",
     "login_account": "Trusted login identity, password hash, administration grant, revocation and throttling.",
+    "logged_out_session": "Durable per-login denial keyed by account generation and SHA-256 nonce digest; prevents signed-cookie replay after logout without ending other logins.",
     "academic_period": "Explicit named calendar validity and timezone; no inferred legacy dates.",
     "legacy_calendar_binding": "Explicit period/planning-week association for an undated busy slot or request.",
     "professor_availability": "Bounded weekly published office-hour patterns and date exceptions.",
@@ -81,6 +82,7 @@ MAIN_TABLES |= {"login_account", "academic_period", "legacy_calendar_binding", "
                 "appointment_invitation", "appointment_commitment", "professor_availability", "calendar_block"}
 MAIN_TABLES |= {"room_policy", "faculty_room_approver", "student_room_request", "room_reservation", "room_invitation", "room_organizer_commitment"}
 MAIN_TABLES.add("notification")
+MAIN_TABLES.add("logged_out_session")
 MAIN_TABLES |= {'request_eligibility','eligibility_event','allocation_eligibility'}
 MAIN_TABLES.add("scheduling_preference_revision")
 MAIN_TABLES |= {'scheduling_cost_policy_revision', 'scheduling_cost_policy_event',

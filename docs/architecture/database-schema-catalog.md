@@ -1,6 +1,6 @@
 # Physical schema catalog
 
-Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 61 application tables.
+Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 62 application tables.
 
 Foreign keys use PostgreSQL **NO ACTION** unless explicitly marked RESTRICT; no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
 ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.
@@ -576,6 +576,22 @@ Explicit period/planning-week association for an undated busy slot or request.
 - Index: `ix_legacy_calendar_binding_busy_slot_id (busy_slot_id)`.
 - Index: `ix_legacy_calendar_binding_period_id (period_id)`.
 - Index: `ix_legacy_calendar_binding_request_id (request_id)`.
+
+## logged_out_session
+
+Durable per-login denial keyed by account generation and SHA-256 nonce digest; prevents signed-cookie replay after logout without ending other logins.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| user_id | integer | PK; FK -> university_user.id | no | - |
+| session_version | integer | PK | no | - |
+| token_digest | varchar(64) | PK | no | - |
+| logged_out_at | timestamp with time zone | - | no | now() |
+
+- Primary key: `user_id, session_version, token_digest`.
+- Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
+- Check: `session_version > 0`.
+- Check: `token_digest ~ '^[0-9a-f]{64}$'`.
 
 ## login_account
 

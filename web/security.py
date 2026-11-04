@@ -42,7 +42,12 @@ def init_security(app, database_provider):
         g.authenticated_database_url = None
         if "user_id" in session:
             database = database_provider()
-            g.principal = AccountService(database).identity(session.get("user_id"), session.get("session_version"))
+            token = session.get("csrf")
+            # Old cookies predate durable logout and cannot prove they were not
+            # already logged out. Require one fresh login when activating the fix.
+            if session.get("login_format") == 2 and isinstance(token, str) and token:
+                g.principal = AccountService(database).identity(session.get("user_id"),
+                    session.get("session_version"), session_token=token)
             if g.principal is None:
                 session.clear()
             else:
@@ -95,6 +100,7 @@ def init_security(app, database_provider):
                 session.clear()
                 session.permanent = True
                 session["user_id"], session["session_version"] = principal.user_id, principal.session_version
+                session["login_format"] = 2
                 csrf_token()
                 target = request.args.get("next", "")
                 if not target.startswith("/") or target.startswith("//") or "\\" in target:
@@ -104,5 +110,7 @@ def init_security(app, database_provider):
 
     @app.post("/logout")
     def logout():
+        AccountService(database_provider()).revoke_session(g.principal.user_id,
+            g.principal.session_version, session["csrf"])
         session.clear()
         return redirect(url_for("login"))

@@ -99,7 +99,7 @@ class LegacyEligibilityMigrationTests(PostgresTestCase):
             command.downgrade(Config(str(ROOT/'alembic.ini')),'0050b')
         self.assert_original()
         with self.database.transaction(read_only=True) as session:
-            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')),'0051a')
+            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')),self.head_revision)
             self.assertEqual(session.get(RequestEligibility,1).status,'Eligible')
 
 
@@ -118,6 +118,6 @@ class EmptyEligibilityMigrationTests(PostgresTestCase):
             schema=inspect(session.connection())
             self.assertTrue(schema.has_table('request_eligibility'))
             self.assertIn('faculty_declaration',{c['name'] for c in schema.get_columns('resource_request')})
-            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')),'0051a')
+            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')),self.head_revision)
             self.assertEqual(session.scalar(text('SELECT count(*) FROM request_eligibility')),0)
             self.assertEqual(session.scalar(text('SELECT count(*) FROM eligibility_event')),0)

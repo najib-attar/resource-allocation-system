@@ -456,6 +456,19 @@ class LoginAccount(Base):
     locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
+class LoggedOutSession(Base):
+    """Durable denial of one signed browser session, including late responses."""
+    __tablename__ = "logged_out_session"
+    __table_args__ = (
+        CheckConstraint("session_version > 0", name="ck_logout_session_version"),
+        CheckConstraint("token_digest ~ '^[0-9a-f]{64}$'", name="ck_logout_token_digest"),
+    )
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True)
+    session_version: Mapped[int] = mapped_column(Integer, primary_key=True)
+    token_digest: Mapped[str] = mapped_column(String(64), primary_key=True)
+    logged_out_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
 class AcademicPeriod(Base):
     __tablename__ = "academic_period"
     __table_args__ = (CheckConstraint("start_date <= end_date"),)

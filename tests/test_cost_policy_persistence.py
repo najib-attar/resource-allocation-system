@@ -372,10 +372,10 @@ class PolicyMigrationTests(PostgresTestCase):
     def test_additive_empty_upgrade_and_schema_drift(self):
         before = set(inspect(self.database.engine).get_table_names()); self.actor()
         self.migrate('upgrade', 'head')
-        self.assertEqual(set(inspect(self.database.engine).get_table_names()) - before, set(TABLES) | {'request_eligibility','eligibility_event','allocation_eligibility'})
+        self.assertEqual(set(inspect(self.database.engine).get_table_names()) - before, set(TABLES) | {'request_eligibility','eligibility_event','allocation_eligibility','logged_out_session'})
         with self.database.transaction(read_only=True) as session:
             self.assertTrue(all(session.scalar(text('SELECT count(*) FROM ' + table)) == 0 for table in TABLES))
-            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), '0051a')
+            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), self.head_revision)
         self.migrate('check', None)
 
     def test_empty_downgrade_and_reupgrade_preserve_existing_identity(self):
@@ -390,7 +390,7 @@ class PolicyMigrationTests(PostgresTestCase):
         with self.assertRaisesRegex(RuntimeError, 'history'): self.migrate('downgrade', '0050a')
         with self.database.transaction(read_only=True) as session:
             self.assertEqual(session.scalar(select(func.count()).select_from(Authority)), 1)
-            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), '0051a')
+            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), self.head_revision)
 
     def test_downgrade_waits_for_committed_append_then_refuses_history_loss(self):
         self.actor(); self.migrate('upgrade', 'head')
@@ -473,7 +473,7 @@ class PolicyMigrationTests(PostgresTestCase):
         with self.assertRaisesRegex(RuntimeError, 'history'): self.migrate('downgrade', '0050a')
         with self.database.transaction(read_only=True) as session:
             self.assertEqual(session.get(Head, 1).version, 0)
-            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), '0051a')
+            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), self.head_revision)
 
     def test_downgrade_lock_order_with_concurrent_decision_append_has_no_lost_history(self):
         self.actor(); self.migrate('upgrade', 'head')
@@ -498,4 +498,4 @@ class PolicyMigrationTests(PostgresTestCase):
             with self.assertRaisesRegex(RuntimeError, 'history'): downgrade.result(timeout=10)
         with self.database.transaction(read_only=True) as session:
             self.assertEqual(session.scalar(select(func.count()).select_from(Event)), 1)
-            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), '0051a')
+            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), self.head_revision)
