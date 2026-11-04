@@ -1,9 +1,13 @@
 {
-  "reviewedBase": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+  "reviewedBase": "196933506469ae25d3214a91ef2fd457356d096d",
   "frontendBase": "5a7f0b012308dea87e15c390519122f8248699f4",
   "inheritedStudentBase": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
   "professorBranch": "codex/professor-services-v1",
   "files": [
+    {
+      "status": "M",
+      "path": ".gitignore"
+    },
     {
       "status": "A",
       "path": "Codex-Professor-Handoff.md"
@@ -50,15 +54,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-01-recheck/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-01-redirect-recheck/tests.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-01-redirect-recheck/tests.txt"
     },
     {
       "status": "A",
@@ -66,15 +62,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-01/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-02-error-recheck/tests.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-02-error-recheck/tests.txt"
     },
     {
       "status": "A",
@@ -82,15 +70,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-02/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-03/tests.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-03/tests.txt"
     },
     {
       "status": "A",
@@ -98,15 +78,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-04-field-recheck/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-04/tests.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-04/tests.txt"
     },
     {
       "status": "A",
@@ -114,23 +86,11 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-05-stale-recheck/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-05/tests.json"
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-05/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-06/tests.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-06/tests.txt"
     },
     {
       "status": "A",
@@ -139,10 +99,6 @@
     {
       "status": "A",
       "path": "docs/professor-services/PROF-UI-08/browser-diagnostic/cleanup.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/academic-event-1440.png"
     },
     {
       "status": "A",
@@ -174,10 +130,6 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/browser-output.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/browser/browser-results.json"
     },
     {
@@ -186,7 +138,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/control-trace.json"
+      "path": "docs/professor-services/PROF-UI-08/browser/control-summary.csv"
     },
     {
       "status": "A",
@@ -219,22 +171,6 @@
     {
       "status": "A",
       "path": "docs/professor-services/PROF-UI-08/browser/eligible-confirmation-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/equipment-history-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/equipment-history-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/feedback-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/feedback-320.png"
     },
     {
       "status": "A",
@@ -294,10 +230,6 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/invalid-week-1440.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/browser/invalid-week-320.png"
     },
     {
@@ -330,19 +262,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/private-error-1440.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/browser/private-error-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/published-readonly-error-1440.png"
     },
     {
       "status": "A",
@@ -398,35 +318,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/student-appointments-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/student-appointments-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/student-calendar-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/student-calendar-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/student-equipment-1440.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/browser/student-equipment-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/student-feedback-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/student-feedback-320.png"
     },
     {
       "status": "A",
@@ -438,43 +330,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/student-inbox-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/student-inbox-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/student-rooms-1440.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/browser/student-rooms-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/student-waiting-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/student-waiting-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/waiting-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/waiting-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/waiting-policy-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/browser/waiting-policy-320.png"
     },
     {
       "status": "A",
@@ -502,10 +358,6 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/corrections-recheck/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/cpp-tests.txt"
     },
     {
@@ -514,55 +366,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/academic-calendar-filtered.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/appointment-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/appointment-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/appointments-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/appointments-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/browser-output.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/existing-workflows/browser-results.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/calendar-day-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/calendar-day-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/calendar-month-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/calendar-month-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/calendar-week-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/calendar-week-320.png"
     },
     {
       "status": "A",
@@ -570,59 +374,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/controls.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/hours-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/hours-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/hours-with-exclusion.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/inbox-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/inbox-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/own-dated-block.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/existing-workflows/persistence-verification.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/reschedule-invalidated-approvals.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/room-invitation-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/room-invitation-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/schedule-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/existing-workflows/schedule-320.png"
     },
     {
       "status": "A",
@@ -630,15 +382,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/final-regression/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/focused/tests.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/focused/tests.txt"
     },
     {
       "status": "A",
@@ -650,31 +394,11 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/gateway-recheck/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/input-probe-before.json"
     },
     {
       "status": "A",
       "path": "docs/professor-services/PROF-UI-08/inventory-integrity.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/legacy-gate/academic-list-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/legacy-gate/academic-list-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/legacy-gate/allocated-academic-request.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/legacy-gate/browser-output.txt"
     },
     {
       "status": "A",
@@ -686,55 +410,11 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/legacy-gate/legacy-detail-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/legacy-gate/legacy-detail-320.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/legacy-gate/legacy-rejected-reservation-preserved.png"
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/legacy-gate/legacy-review-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/legacy-gate/legacy-review-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/legacy-gate/new-CommitteeMeeting-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/legacy-gate/new-Exam-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/legacy-gate/new-OneTime-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/legacy-gate/new-Recurring-320.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/legacy-gate/persistence-verification.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/legacy-gate/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/legacy-gate/review-queue-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/legacy-gate/review-queue-320.png"
     },
     {
       "status": "A",
@@ -746,10 +426,6 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/browser-output.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/browser-results.json"
     },
     {
@@ -758,35 +434,11 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/empty-home-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/empty-home-1440.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/empty-home-320.png"
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/empty-home-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/empty-home-768.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/persistence-verification.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-02/browser-output.txt"
     },
     {
       "status": "A",
@@ -806,31 +458,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-02/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/block-conflict-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/block-conflict-1440.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/block-conflict-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/block-conflict-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/block-conflict-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/browser-output.txt"
     },
     {
       "status": "A",
@@ -846,15 +474,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/post-states.json"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/protected-hours-removal-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-04/browser-output.txt"
     },
     {
       "status": "A",
@@ -866,19 +486,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-04/invalid-academic-form-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-04/invalid-academic-form-1440.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-04/invalid-academic-form-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-04/invalid-academic-form-390.png"
     },
     {
       "status": "A",
@@ -887,14 +495,6 @@
     {
       "status": "A",
       "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-04/persistence-verification.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-04/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/browser-output.txt"
     },
     {
       "status": "A",
@@ -910,35 +510,11 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/rejected-eligibility-still-allocated-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/rejected-eligibility-still-allocated-1440.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/rejected-eligibility-still-allocated-320.png"
     },
     {
       "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/rejected-eligibility-still-allocated-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/rejected-eligibility-still-allocated-768.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/revision-reset-eligibility.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-06/browser-output.txt"
     },
     {
       "status": "A",
@@ -955,10 +531,6 @@
     {
       "status": "A",
       "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-06/persistence-verification.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/PROF-UI-08/phases/PROF-UI-06/post-states.json"
     },
     {
       "status": "A",
@@ -1006,31 +578,15 @@
     },
     {
       "status": "A",
+      "path": "docs/professor-services/artifact-cleanup.csv"
+    },
+    {
+      "status": "A",
+      "path": "docs/professor-services/artifact-cleanup.json"
+    },
+    {
+      "status": "A",
       "path": "docs/professor-services/backend-artifact.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/academic-calendar-filtered.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/appointment-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/appointment-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/appointments-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/appointments-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/browser-output.txt"
     },
     {
       "status": "A",
@@ -1038,59 +594,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/browser/calendar-day-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/calendar-day-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/calendar-month-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/calendar-month-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/calendar-week-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/calendar-week-320.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/browser/cleanup.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/controls.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/hours-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/hours-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/hours-with-exclusion.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/inbox-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/inbox-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/own-dated-block.png"
     },
     {
       "status": "A",
@@ -1098,59 +602,11 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/browser/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/reschedule-invalidated-approvals.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/room-invitation-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/room-invitation-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/schedule-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/browser/schedule-320.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/calendar-preservation-recheck/tests.json"
     },
     {
       "status": "A",
-      "path": "docs/professor-services/calendar-preservation-recheck/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/changed-files.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/cpp-tests.txt"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/academic-list-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/academic-list-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/allocated-academic-request.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/browser-output.txt"
     },
     {
       "status": "A",
@@ -1162,71 +618,11 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/eligibility-browser/legacy-detail-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/legacy-detail-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/legacy-rejected-reservation-preserved.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/legacy-review-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/legacy-review-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/new-CommitteeMeeting-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/new-Exam-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/new-OneTime-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/new-Recurring-320.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/eligibility-browser/persistence-verification.json"
     },
     {
       "status": "A",
-      "path": "docs/professor-services/eligibility-browser/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/review-queue-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/review-queue-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/reviewed-queue-after-publication.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-browser/revision-requires-review.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/eligibility-compatibility/tests.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-compatibility/tests.txt"
     },
     {
       "status": "A",
@@ -1238,19 +634,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/eligibility-core/tests.txt"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-cpp-tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/eligibility-final-regression/tests.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/eligibility-final-regression/tests.txt"
     },
     {
       "status": "A",
@@ -1258,15 +642,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/eligibility-full-regression/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/existing-contracts/tests.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/existing-contracts/tests.txt"
     },
     {
       "status": "A",
@@ -1275,10 +651,6 @@
     {
       "status": "A",
       "path": "docs/professor-services/gate-verified/tests.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/gate-verified/tests.txt"
     },
     {
       "status": "A",
@@ -1294,23 +666,11 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/intake-integration/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/owner-reads-final/tests.json"
     },
     {
       "status": "A",
-      "path": "docs/professor-services/owner-reads-final/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/owner-reads/tests.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/owner-reads/tests.txt"
     },
     {
       "status": "A",
@@ -1322,19 +682,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/portal-acceptance-regression/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/portal-backend-preflight/tests.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal-backend-preflight/tests.txt"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal-cpp-tests.txt"
     },
     {
       "status": "A",
@@ -1342,23 +690,11 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/portal-final-regression/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/portal-service-examples-recheck/tests.json"
     },
     {
       "status": "A",
-      "path": "docs/professor-services/portal-service-examples-recheck/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/portal-source-audit.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/browser-output.txt"
     },
     {
       "status": "A",
@@ -1370,175 +706,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/empty-home-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/empty-home-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/empty-home-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/empty-home-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/empty-home-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/home-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/home-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/home-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/home-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/home-768.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/portal/PROF-UI-01/persistence-verification.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/role-6-calendar-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/role-6-calendar-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/role-6-calendar-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/role-6-calendar-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/role-6-calendar-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/role-7-calendar-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/role-7-calendar-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/role-7-calendar-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/role-7-calendar-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/role-7-calendar-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/role-9-calendar-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/role-9-calendar-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/role-9-calendar-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/role-9-calendar-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/role-9-calendar-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/student-home-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/student-home-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/student-home-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/student-home-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-01/student-home-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/appointment-detail-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/appointment-detail-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/appointment-detail-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/appointment-detail-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/appointment-detail-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/appointments-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/appointments-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/appointments-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/appointments-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/appointments-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/browser-output.txt"
     },
     {
       "status": "A",
@@ -1550,59 +718,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/empty-appointments-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/empty-appointments-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/empty-appointments-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/empty-appointments-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/empty-appointments-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/history-after-decisions.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/portal/PROF-UI-02/persistence-verification.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-02/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/block-conflict-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/block-conflict-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/block-conflict-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/block-conflict-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/block-conflict-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/browser-output.txt"
     },
     {
       "status": "A",
@@ -1614,99 +730,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/empty-office-hours-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/empty-office-hours-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/empty-office-hours-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/empty-office-hours-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/empty-office-hours-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/empty-schedule-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/empty-schedule-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/empty-schedule-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/empty-schedule-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/empty-schedule-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/office-hours-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/office-hours-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/office-hours-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/office-hours-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/office-hours-768.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/portal/PROF-UI-03/persistence-verification.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/protected-hours-removal-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/schedule-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/schedule-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/schedule-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/schedule-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-03/schedule-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/browser-output.txt"
     },
     {
       "status": "A",
@@ -1718,155 +742,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/invalid-academic-form-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/invalid-academic-form-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/invalid-academic-form-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/invalid-academic-form-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/invalid-academic-form-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-CommitteeMeeting-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-CommitteeMeeting-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-CommitteeMeeting-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-CommitteeMeeting-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-CommitteeMeeting-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-Exam-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-Exam-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-Exam-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-Exam-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-Exam-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-OneTime-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-OneTime-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-OneTime-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-OneTime-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-OneTime-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-Recurring-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-Recurring-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-Recurring-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-Recurring-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/new-Recurring-768.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/portal/PROF-UI-04/persistence-verification.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-04/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/academic-list-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/academic-list-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/academic-list-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/academic-list-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/academic-list-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/allocated-request-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/allocated-request-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/allocated-request-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/allocated-request-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/allocated-request-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/browser-output.txt"
     },
     {
       "status": "A",
@@ -1878,139 +754,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/empty-academic-list-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/empty-academic-list-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/empty-academic-list-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/empty-academic-list-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/empty-academic-list-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/pending-review-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/pending-review-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/pending-review-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/pending-review-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/pending-review-768.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/portal/PROF-UI-05/persistence-verification.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/rejected-eligibility-still-allocated-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/rejected-eligibility-still-allocated-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/rejected-eligibility-still-allocated-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/rejected-eligibility-still-allocated-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/rejected-eligibility-still-allocated-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/revise-as-exam-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/revise-as-exam-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/revise-as-exam-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/revise-as-exam-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/revise-as-exam-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/revision-reset-eligibility.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/unallocated-request-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/unallocated-request-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/unallocated-request-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/unallocated-request-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-05/unallocated-request-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/academic-calendar-detail-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/academic-calendar-detail-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/academic-calendar-detail-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/academic-calendar-detail-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/academic-calendar-detail-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/browser-output.txt"
     },
     {
       "status": "A",
@@ -2018,155 +762,11 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/calendar-day-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/calendar-day-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/calendar-day-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/calendar-day-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/calendar-day-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/calendar-month-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/calendar-month-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/calendar-month-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/calendar-month-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/calendar-month-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/calendar-week-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/calendar-week-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/calendar-week-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/calendar-week-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/calendar-week-768.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/portal/PROF-UI-06/cleanup.json"
     },
     {
       "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/empty-inbox-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/empty-inbox-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/empty-inbox-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/empty-inbox-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/empty-inbox-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/inbox-1024.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/inbox-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/inbox-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/inbox-390.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/inbox-768.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/inbox-all-read.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/portal/PROF-UI-06/persistence-verification.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-06/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/academic-event-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/academic-event-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/allocated-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/allocated-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/appointment-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/appointment-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/appointments-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/appointments-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/browser-output.txt"
     },
     {
       "status": "A",
@@ -2178,263 +778,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/control-trace.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/day-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/day-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/equipment-history-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/equipment-history-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/feedback-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/feedback-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/form-CommitteeMeeting-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/form-CommitteeMeeting-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/form-Exam-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/form-Exam-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/form-OneTime-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/form-OneTime-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/form-Recurring-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/form-Recurring-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/home-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/home-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/hours-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/hours-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/inbox-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/inbox-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/invalid-week-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/invalid-week-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/month-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/month-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/pending-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/pending-320.png"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/portal/PROF-UI-07/persistence-verification.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/post-states.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/private-error-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/private-error-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/published-readonly-error-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/published-readonly-error-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/requests-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/requests-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/revise-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/revise-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/room-invitation-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/room-invitation-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/room-invitations-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/room-invitations-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/schedule-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/schedule-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-appointments-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-appointments-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-calendar-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-calendar-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-equipment-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-equipment-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-feedback-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-feedback-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-home-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-home-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-inbox-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-inbox-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-rooms-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-rooms-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-waiting-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/student-waiting-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/waiting-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/waiting-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/waiting-policy-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/waiting-policy-320.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/week-1440.png"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/portal/PROF-UI-07/week-320.png"
     },
     {
       "status": "A",
@@ -2442,15 +786,7 @@
     },
     {
       "status": "A",
-      "path": "docs/professor-services/protocol-artifact-recheck/tests.txt"
-    },
-    {
-      "status": "A",
       "path": "docs/professor-services/regression/tests.json"
-    },
-    {
-      "status": "A",
-      "path": "docs/professor-services/regression/tests.txt"
     },
     {
       "status": "A",

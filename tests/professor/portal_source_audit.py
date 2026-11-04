@@ -11,6 +11,7 @@ import zlib
 ROOT=Path(__file__).resolve().parents[2]
 BASE='5a7f0b0'
 STUDENT_BASE='747c925b14c29368e6cb9bc8b2e2d9d33c494462'
+REVIEW_BASE='196933506469ae25d3214a91ef2fd457356d096d'
 
 
 def git(*args):
@@ -48,13 +49,13 @@ def delivery_inventory():
             sha256=hashlib.sha256(data).hexdigest(),pngCRC=True))
     (output/'screenshots.json').write_text(json.dumps(screenshots,indent=2)+'\n',encoding='utf-8')
     changed=[]
-    for row in git('diff','--name-status','-M',STUDENT_BASE).splitlines():
+    for row in git('diff','--name-status','-M',REVIEW_BASE).splitlines():
         status,*paths=row.split('\t')
         changed.append(dict(status=status,path=paths[-1],**({'previousPath':paths[0]} if len(paths)>1 else {})))
     known={row['path'] for row in changed}
     for path in git('ls-files','--others','--exclude-standard').splitlines():
         if path not in known:changed.append(dict(status='A',path=path))
-    (output/'changed-files.json').write_text(json.dumps(dict(reviewedBase=STUDENT_BASE,
+    (output/'changed-files.json').write_text(json.dumps(dict(reviewedBase=REVIEW_BASE,
         frontendBase=git('rev-parse',BASE).strip(),
         inheritedStudentBase=STUDENT_BASE,
         professorBranch='codex/professor-services-v1',
@@ -63,6 +64,8 @@ def delivery_inventory():
 
 
 def main():
+    inherited_main=['research','.github','web/cost_policy_service.py','tests/test_cost_policy_governance.py']
+    assert not git('diff',REVIEW_BASE,'--',*inherited_main)
     protected=['src','migrations','web/persistence','web/academic_eligibility.py',
         'web/account_service.py','web/appointment_service.py','web/room_request_service.py','web/equipment_service.py',
         'web/calendar_service.py','web/university_calendar.py','web/personal_schedule_service.py',
@@ -122,7 +125,7 @@ def main():
     assert service_source.count(input_guard)==1
     after=class_methods(service_source.replace(input_guard,''))
     assert all(before[key]==after[key] for key in before if key!='directory')
-    report=dict(frontendBase=BASE,unchangedProtectedSources=protected,
+    report=dict(frontendBase=BASE,reviewedMain=REVIEW_BASE,unchangedMainResearchAndGovernance=inherited_main,unchangedProtectedSources=protected,
         gatewayOnlyChange='Canonical repository input types and unbound guard invocation; all wire protocols and validators unchanged',
         studentHomeUnchangedApartFromAssetPath=True,sharedCss=css,professorBusinessMethodsUnchanged=True,
         approvedInputValidation='Optional participants must be a list; malformed input returns 400 before persistence',

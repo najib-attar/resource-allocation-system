@@ -93,7 +93,8 @@
   ],
   "referencedRegressionMethodsValidated": 52,
   "missingTestReferences": [],
-  "preservedStudentHead": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+  "preservedStudentBase": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+  "reviewedStudentHead": "8f17dec9f51902be29c2b97b7dd969b4b7cc8ffe",
   "studentClean": true,
   "professorBranch": "codex/professor-services-v1",
   "unchangedProtectedSources": [

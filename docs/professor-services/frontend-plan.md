@@ -27,3 +27,7 @@ PROF-UI-01–07 have focused verified commits; the acceptance report lists their
 ## Existing limitations preserved
 
 Academic slots are weekly weekday/minute requirements. Calendar dates require explicit administrative applicability. Shared/multi-room exam behavior is the existing engine strategy plus the supported split declaration; professors cannot select or run campus allocation strategies. No academic cancellation contract, versioned published replacement, academic notification producer or private teaching-attribution entitlement is added. Existing optional room invitations grant no faculty-review/custody authority.
+
+## Integration evidence maintenance
+
+Student PR #24 is merged; Professor Services now inherits main at `1969335`. For fresh browser execution, set `PROFESSOR_REVIEW_OUTPUT` to an owned directory under ignored `build/` before running the existing browser helpers. Keep compact verified summaries and deliberately selected representative captures; raw control/state dumps and extra screenshots are ignored. The acceptance report and artifact-cleanup.csv identify retained and historical evidence. Academic notifications, cancellation and versioned published replacements remain deferred.

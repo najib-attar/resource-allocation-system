@@ -1,0 +1,379 @@
+actor,tag,type,name,text,href,action,value,dataActions,disabled,behavior,occurrences
+2,A,,,"""Skip to content""",#main-content,,,[],False,Verified functional destination,145
+2,A,,,"""UCampus SpaceProfessor workspace""",/professor/,,,[],False,Verified functional destination,58
+2,A,,,"""Home""",/professor/,,,[],False,Verified functional destination,145
+2,A,,,"""My academic requests""",/professor/requests,,,[],False,Verified functional destination,185
+2,A,,,"""Calendar""",/calendar/,,,[],False,Verified functional destination,145
+2,A,,,"""Inbox""",/notifications/,,,[],False,Verified functional destination,145
+2,BUTTON,button,,"""Notifications""",,,,[],False,Verified local helper,116
+2,SUMMARY,,,"""Account menu for Professor Ada""",,,,[],False,Verified native disclosure,145
+2,A,,,"""My calendar""",/calendar/,,,[],False,Verified functional destination,145
+2,A,,,"""My schedule & blocks""",/appointments/calendar,,,[],False,Verified functional destination,150
+2,BUTTON,submit,,"""Sign out""",,/logout,,[],False,Verified form action,145
+2,A,,,"""Open Appointments""",/appointments/,,,[],False,Verified functional destination,15
+2,A,,,"""Manage office hours""",/appointments/availability,,,[],False,Verified functional destination,15
+2,A,,,"""Open academic requests""",/professor/requests,,,[],False,Verified functional destination,15
+2,A,,,"""My schedule & blocks\nYour dated commitments and personal availability.""",/appointments/calendar,,,[],False,Verified functional destination,15
+2,A,,,"""Room invitations\nRespond to optional attendance invitations.""",/rooms/,,,[],False,Verified functional destination,15
+2,SUMMARY,,,"""Other campus services & history""",,,,[],False,Verified native disclosure,15
+2,A,,,"""Equipment history""",/equipment/,,,[],False,Verified functional destination,15
+2,A,,,"""Waiting lists""",/waiting-lists/,,,[],False,Verified functional destination,15
+2,A,,,"""Waiting-list policy""",/waiting-lists/policy,,,[],False,Verified functional destination,20
+2,A,,,"""Feedback & issues""",/feedback/,,,[],False,Verified functional destination,15
+2,A,,,"""Fictional project review""",/appointments/2,,,[],False,Verified functional destination,20
+2,A,,,"""Fictional project review""",/appointments/3,,,[],False,Verified functional destination,20
+2,A,,,"""All appointment requests""",/appointments/,,,[],False,Verified functional destination,15
+2,A,,,"""Fictional project review""",/appointments/1,,,[],False,Verified functional destination,25
+2,A,,,"""Academic declaration WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW""",/professor/requests/7,,,[],False,Verified functional destination,20
+2,A,,,"""Declared fictional academic activity""",/professor/requests/5,,,[],False,Verified functional destination,35
+2,A,,,"""Declared fictional academic activity""",/professor/requests/4,,,[],False,Verified functional destination,35
+2,A,,,"""Declared fictional academic activity""",/professor/requests/3,,,[],False,Verified functional destination,35
+2,A,,,"""Declared fictional academic activity""",/professor/requests/2,,,[],False,Verified functional destination,20
+2,A,,,"""Monday, 07 January, 1 entries""",/calendar/?view=day&date=2030-01-07,,,[],False,Verified functional destination,15
+2,A,,,"""Tuesday, 08 January, 1 entries""",/calendar/?view=day&date=2030-01-08,,,[],False,Verified functional destination,15
+2,A,,,"""Wednesday, 09 January, 1 entries""",/calendar/?view=day&date=2030-01-09,,,[],False,Verified functional destination,15
+2,A,,,"""Thursday, 10 January, 1 entries""",/calendar/?view=day&date=2030-01-10,,,[],False,Verified functional destination,15
+2,A,,,"""Friday, 11 January, 1 entries""",/calendar/?view=day&date=2030-01-11,,,[],False,Verified functional destination,15
+2,A,,,"""Fictional project review""",/calendar/?view=day&date=2030-01-07,,,[],False,Verified functional destination,15
+2,A,,,"""Declared fictional academic activity""",/calendar/?view=day&date=2030-01-08,,,[],False,Verified functional destination,15
+2,A,,,"""Declared fictional academic activity""",/calendar/?view=day&date=2030-01-09,,,[],False,Verified functional destination,15
+2,A,,,"""Declared fictional academic activity""",/calendar/?view=day&date=2030-01-10,,,[],False,Verified functional destination,15
+2,A,,,"""View week""",/calendar/?view=week&date=2030-01-07,,,[],False,Verified functional destination,15
+2,A,,,"""All office-hour patterns""",/appointments/availability,,,[],False,Verified functional destination,15
+2,A,,,"""Private study activity""",,,,"[""notificationId""]",False,Verified functional destination,30
+2,A,,,"""Fictional project review""",,,,"[""notificationId""]",False,Verified functional destination,15
+2,A,,,"""Open Inbox""",/notifications/,,,[],False,Verified functional destination,15
+2,BUTTON,button,,"""Notifications, 5 unread""",,,,[],False,Verified local helper,29
+2,BUTTON,button,,"""Mark all read""",,,,"[""markAll""]",False,Verified local helper,5
+2,A,,,"""Room request update Unread\n            Private study activity\n            Current status: Pending Fa""",/rooms/2,,,"[""notificationId""]",False,Verified functional destination,10
+2,A,,,"""Room request update Unread\n            Private study activity\n            Current status: Pending Fa""",/rooms/1,,,"[""notificationId""]",False,Verified functional destination,10
+2,A,,,"""Appointment update Unread\n            Fictional project review\n            Current status: Pending A""",/appointments/3,,,"[""notificationId""]",False,Verified functional destination,10
+2,A,,,"""Appointment update Unread\n            Fictional project review\n            Current status: Pending A""",/appointments/2,,,"[""notificationId""]",False,Verified functional destination,10
+2,A,,,"""Appointment update Unread\n            Fictional project review\n            Current status: Confirmed""",/appointments/1,,,"[""notificationId""]",False,Verified functional destination,10
+2,A,,,"""View notification inbox""",/notifications/,,,[],False,Verified functional destination,5
+2,A,,,"""Professor services""",/professor/,,,[],False,Verified functional destination,130
+2,A,,,"""Office hours""",/appointments/availability,,,[],False,Verified functional destination,20
+2,A,,,"""My schedule""",/appointments/calendar,,,[],False,Verified functional destination,10
+2,A,,,"""All appointments""",/appointments/,,,[],False,Verified functional destination,5
+2,BUTTON,,decision,"""Approve this revision""",,/appointments/2/decision,approve,[],False,Verified form action,5
+2,BUTTON,,decision,"""Decline request""",,/appointments/2/decision,decline,[],False,Verified form action,5
+2,BUTTON,submit,,"""Cancel appointment""",,/appointments/2/cancel,,[],False,Verified form action,5
+2,A,,,"""Appointments""",/appointments/,,,[],False,Verified functional destination,5
+2,SELECT,,day,"""MondayTuesdayWednesdayThursdayFridaySaturdaySunday""",,/appointments/availability,,[],False,Verified form/local input,5
+2,INPUT,time,startTime,"""""",,/appointments/availability,,[],False,Verified form/local input,5
+2,INPUT,time,endTime,"""""",,/appointments/availability,,[],False,Verified form/local input,5
+2,INPUT,date,validFrom,"""""",,/appointments/availability,,[],False,Verified form/local input,5
+2,INPUT,date,validUntil,"""""",,/appointments/availability,,[],False,Verified form/local input,5
+2,INPUT,,excludedDates,"""""",,/appointments/availability,,[],False,Verified form/local input,5
+2,BUTTON,submit,,"""Publish hours""",,/appointments/availability,,[],False,Verified form action,5
+2,BUTTON,submit,,"""Remove pattern 1: 2030-01-01 through 2030-01-31""",,/appointments/availability,,[],False,Verified form action,5
+2,A,,,"""University calendar""",/calendar/,,,[],False,Verified functional destination,5
+2,INPUT,month,month,"""""",,/appointments/calendar,,[],False,Verified form/local input,5
+2,BUTTON,submit,,"""Show month""",,/appointments/calendar,,[],False,Verified form action,5
+2,A,,,"""31 Dec – 04 Jan""",/appointments/calendar?month=2030-01&week=2029-12-31,,,[],False,Verified functional destination,5
+2,A,,,"""07 Jan – 11 Jan""",/appointments/calendar?month=2030-01&week=2030-01-07,,,[],False,Verified functional destination,5
+2,A,,,"""14 Jan – 18 Jan""",/appointments/calendar?month=2030-01&week=2030-01-14,,,[],False,Verified functional destination,5
+2,A,,,"""21 Jan – 25 Jan""",/appointments/calendar?month=2030-01&week=2030-01-21,,,[],False,Verified functional destination,5
+2,A,,,"""28 Jan – 01 Feb""",/appointments/calendar?month=2030-01&week=2030-01-28,,,[],False,Verified functional destination,5
+2,INPUT,datetime-local,start,"""""",,/appointments/calendar,,[],False,Verified form/local input,5
+2,INPUT,datetime-local,end,"""""",,/appointments/calendar,,[],False,Verified form/local input,5
+2,INPUT,,reason,"""""",,/appointments/calendar,,[],False,Verified form/local input,5
+2,BUTTON,submit,,"""Add block""",,/appointments/calendar,,[],False,Verified form action,5
+2,A,,,"""Examination""",/professor/requests/new?type=Exam,,,[],False,Verified functional destination,25
+2,A,,,"""Teaching activity""",/professor/requests/new?type=OneTime,,,[],False,Verified functional destination,25
+2,A,,,"""Recurring teaching""",/professor/requests/new?type=Recurring,,,[],False,Verified functional destination,25
+2,A,,,"""Committee meeting""",/professor/requests/new?type=CommitteeMeeting,,,[],False,Verified functional destination,25
+2,INPUT,,title,"""""",,/professor/requests/new,,[],False,Verified form/local input,20
+2,TEXTAREA,,purpose,"""""",,/professor/requests/new,,[],False,Verified form/local input,20
+2,INPUT,,facultyDeclaration,"""""",,/professor/requests/new,,[],False,Verified form/local input,20
+2,INPUT,number,participantCount,"""""",,/professor/requests/new,,[],False,Verified form/local input,20
+2,INPUT,,courseCode,"""""",,/professor/requests/new,,[],False,Verified form/local input,5
+2,INPUT,,courseName,"""""",,/professor/requests/new,,[],False,Verified form/local input,5
+2,SELECT,,examType,"""MidtermFinalQuizGeneral""",,/professor/requests/new,,[],False,Verified form/local input,5
+2,SELECT,,canSplitAcrossRooms,"""NoYes""",,/professor/requests/new,,[],False,Verified form/local input,5
+2,SELECT,,spaceId,"""Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi""",,/professor/requests/new,,"[""resourceSelect""]",False,Verified form/local input,20
+2,SELECT,,requiredFeature,"""No required facilityProjectorWhiteboardComputers""",,/professor/requests/new,,[],False,Verified form/local input,20
+2,INPUT,,requiredBuilding,"""""",,/professor/requests/new,,[],False,Verified form/local input,20
+2,SELECT,,day,"""MondayTuesdayWednesdayThursdayFridaySaturdaySunday""",,/professor/requests/new,,[],False,Verified form/local input,15
+2,INPUT,time,startTime,"""""",,/professor/requests/new,,[],False,Verified form/local input,15
+2,INPUT,,endTime,"""""",,/professor/requests/new,,[],False,Verified form/local input,15
+2,BUTTON,submit,,"""Submit for eligibility review""",,/professor/requests/new,,[],False,Verified form action,20
+2,SELECT,,,"""MondayTuesdayWednesdayThursdayFridaySaturdaySunday""",,/professor/requests/new,,"[""slotDay""]",False,Verified form/local input,5
+2,INPUT,time,,"""""",,/professor/requests/new,,"[""slotStart""]",False,Verified form/local input,5
+2,INPUT,,,"""""",,/professor/requests/new,,"[""slotEnd""]",False,Verified form/local input,5
+2,BUTTON,button,,"""Add weekly slot""",,/professor/requests/new,,"[""addSlot""]",False,Verified local helper,5
+2,TEXTAREA,,timeData,"""""",,/professor/requests/new,,[],False,Verified form/local input,5
+2,SUMMARY,,,"""Choose participants (0 selected)""",,,,[],False,Verified native disclosure,5
+2,INPUT,search,,"""""",,/professor/requests/new,,"[""participantSearch""]",False,Verified form/local input,5
+2,INPUT,checkbox,requiredParticipantIds,"""""",,/professor/requests/new,,[],False,Verified form/local input,50
+2,INPUT,,participantRole_1,"""""",,/professor/requests/new,,[],False,Verified form/local input,5
+2,INPUT,,participantRole_2,"""""",,/professor/requests/new,,[],False,Verified form/local input,5
+2,INPUT,,participantRole_3,"""""",,/professor/requests/new,,[],False,Verified form/local input,5
+2,INPUT,,participantRole_4,"""""",,/professor/requests/new,,[],False,Verified form/local input,5
+2,INPUT,,participantRole_5,"""""",,/professor/requests/new,,[],False,Verified form/local input,5
+2,INPUT,,participantRole_6,"""""",,/professor/requests/new,,[],False,Verified form/local input,5
+2,INPUT,,participantRole_7,"""""",,/professor/requests/new,,[],False,Verified form/local input,5
+2,INPUT,,participantRole_9,"""""",,/professor/requests/new,,[],False,Verified form/local input,5
+2,INPUT,,participantRole_12,"""""",,/professor/requests/new,,[],False,Verified form/local input,5
+2,INPUT,,participantRole_900001,"""""",,/professor/requests/new,,[],False,Verified form/local input,5
+2,SELECT,,type,"""All typesExaminationTeaching activityRecurring teachingCommittee meeting""",,/professor/requests,,[],False,Verified form/local input,5
+2,SELECT,,status,"""All outcomesPendingApprovedRejected""",,/professor/requests,,[],False,Verified form/local input,5
+2,SELECT,,limit,"""102550100""",,/professor/requests,,[],False,Verified form/local input,5
+2,BUTTON,,,"""Apply filters""",,/professor/requests,,[],False,Verified form action,5
+2,A,,,"""Reset filters""",/professor/requests,,,[],False,Verified functional destination,5
+2,A,,,"""Declared fictional academic activity""",/professor/requests/1,,,[],False,Verified functional destination,5
+2,A,,,"""Open university calendar""",/calendar/,,,[],False,Verified functional destination,5
+2,SUMMARY,,,"""Eligibility review history""",,,,[],False,Verified native disclosure,10
+2,SUMMARY,,,"""Request and allocation history""",,,,[],False,Verified native disclosure,10
+2,A,,,"""Revise for another review""",/professor/requests/7/revise,,,[],False,Verified functional destination,5
+2,A,,,"""Examination""",/professor/requests/7/revise?type=Exam,,,[],False,Verified functional destination,5
+2,A,,,"""Teaching activity""",/professor/requests/7/revise?type=OneTime,,,[],False,Verified functional destination,5
+2,A,,,"""Recurring teaching""",/professor/requests/7/revise?type=Recurring,,,[],False,Verified functional destination,5
+2,A,,,"""Committee meeting""",/professor/requests/7/revise?type=CommitteeMeeting,,,[],False,Verified functional destination,5
+2,INPUT,,title,"""""",,/professor/requests/7/revise,,[],False,Verified form/local input,5
+2,TEXTAREA,,purpose,"""Synthetic academic request""",,/professor/requests/7/revise,,[],False,Verified form/local input,5
+2,INPUT,,facultyDeclaration,"""""",,/professor/requests/7/revise,,[],False,Verified form/local input,5
+2,INPUT,number,participantCount,"""""",,/professor/requests/7/revise,,[],False,Verified form/local input,5
+2,SELECT,,spaceId,"""Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi""",,/professor/requests/7/revise,,"[""resourceSelect""]",False,Verified form/local input,5
+2,SELECT,,requiredFeature,"""No required facilityProjectorWhiteboardComputers""",,/professor/requests/7/revise,,[],False,Verified form/local input,5
+2,INPUT,,requiredBuilding,"""""",,/professor/requests/7/revise,,[],False,Verified form/local input,5
+2,SELECT,,day,"""MondayTuesdayWednesdayThursdayFridaySaturdaySunday""",,/professor/requests/7/revise,,[],False,Verified form/local input,5
+2,INPUT,time,startTime,"""""",,/professor/requests/7/revise,,[],False,Verified form/local input,5
+2,INPUT,,endTime,"""""",,/professor/requests/7/revise,,[],False,Verified form/local input,5
+2,BUTTON,submit,,"""Save revision for review""",,/professor/requests/7/revise,,[],False,Verified form action,5
+2,A,,,"""My schedule and blocks""",/appointments/calendar,,,[],False,Verified functional destination,15
+2,A,,,"""Previous""",/calendar/?view=month&date=2029-12-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""Today""",/calendar/?view=month&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""Next""",/calendar/?view=month&date=2030-02-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""Month""",/calendar/?view=month&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,15
+2,A,,,"""Week""",/calendar/?view=week&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,15
+2,A,,,"""Day""",/calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,15
+2,INPUT,date,date,"""""",,/calendar/,,[],False,Verified form/local input,15
+2,SELECT,,scope,"""My activities and assigned responsibilitiesMy activities onlyPublished academic schedule (not enroll""",,/calendar/,,[],False,Verified form/local input,15
+2,BUTTON,,,"""Apply filters""",,/calendar/,,[],False,Verified form action,15
+2,INPUT,checkbox,category,"""""",,/calendar/,,[],False,Verified form/local input,75
+2,INPUT,checkbox,state,"""""",,/calendar/,,[],False,Verified form/local input,90
+2,A,,,"""31Mon""",/calendar/?view=day&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+2,A,,,"""1Tue""",/calendar/?view=day&date=2030-01-01&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""2Wed""",/calendar/?view=day&date=2030-01-02&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""3Thu""",/calendar/?view=day&date=2030-01-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""4Fri""",/calendar/?view=day&date=2030-01-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""5Sat""",/calendar/?view=day&date=2030-01-05&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""6Sun""",/calendar/?view=day&date=2030-01-06&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""7Mon""",/calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""10:00–11:00\n    Fictional project review\n    Confirmed\n    \n    1/1 professors approved revision 1.\n""",/appointments/1,,,"[""eventId""]",False,Verified functional destination,15
+2,A,,,"""11:00–12:00\n    Fictional project review\n    Pending · Pending Approval\n    \n    0/2 professors appr""",/appointments/2,,,"[""eventId""]",False,Verified functional destination,15
+2,A,,,"""12:00–13:00\n    Fictional project review\n    Pending · Pending Approval\n    \n    0/1 professors appr""",/appointments/3,,,"[""eventId""]",False,Verified functional destination,15
+2,A,,,"""8Tue""",/calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""10:00–11:00\n    Declared fictional academic activity\n    Confirmed\n    Study Studio - Arts\n    Expli""",/calendar/academic/1?date=2030-01-08,,,"[""eventId""]",False,Verified functional destination,10
+2,A,,,"""14:00–15:00\n    Private study activity\n    Pending · Pending Faculty Approval\n    Study Studio - Art""",/rooms/1,,,"[""eventId""]",False,Verified functional destination,10
+2,A,,,"""9Wed""",/calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""10:00–11:00\n    Declared fictional academic activity\n    Confirmed\n    Study Studio - Arts\n    Expli""",/calendar/academic/2?date=2030-01-09,,,"[""eventId""]",False,Verified functional destination,10
+2,A,,,"""14:00–15:00\n    Private study activity\n    Pending · Pending Faculty Approval\n    Study Studio - Art""",/rooms/2,,,"[""eventId""]",False,Verified functional destination,10
+2,A,,,"""10Thu""",/calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""10:00–11:00\n    Declared fictional academic activity\n    Confirmed\n    Study Studio - Arts\n    Expli""",/calendar/academic/3?date=2030-01-10,,,"[""eventId""]",False,Verified functional destination,10
+2,A,,,"""11Fri""",/calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""10:00–11:00\n    Declared fictional academic activity\n    Confirmed\n    Study Studio - Arts\n    Expli""",/calendar/academic/3?date=2030-01-11,,,"[""eventId""]",False,Verified functional destination,10
+2,A,,,"""12Sat""",/calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""13Sun""",/calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""14Mon""",/calendar/?view=day&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""15Tue""",/calendar/?view=day&date=2030-01-15&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""16Wed""",/calendar/?view=day&date=2030-01-16&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""17Thu""",/calendar/?view=day&date=2030-01-17&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""18Fri""",/calendar/?view=day&date=2030-01-18&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""19Sat""",/calendar/?view=day&date=2030-01-19&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""20Sun""",/calendar/?view=day&date=2030-01-20&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""21Mon""",/calendar/?view=day&date=2030-01-21&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""22Tue""",/calendar/?view=day&date=2030-01-22&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""23Wed""",/calendar/?view=day&date=2030-01-23&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""24Thu""",/calendar/?view=day&date=2030-01-24&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""25Fri""",/calendar/?view=day&date=2030-01-25&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""26Sat""",/calendar/?view=day&date=2030-01-26&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""27Sun""",/calendar/?view=day&date=2030-01-27&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""28Mon""",/calendar/?view=day&date=2030-01-28&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""29Tue""",/calendar/?view=day&date=2030-01-29&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""30Wed""",/calendar/?view=day&date=2030-01-30&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""31Thu""",/calendar/?view=day&date=2030-01-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""1Fri""",/calendar/?view=day&date=2030-02-01&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+2,A,,,"""2Sat""",/calendar/?view=day&date=2030-02-02&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+2,A,,,"""3Sun""",/calendar/?view=day&date=2030-02-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+2,A,,,"""Previous""",/calendar/?view=week&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""Today""",/calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""Next""",/calendar/?view=week&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""Mon 07 Jan""",/calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,4
+2,A,,,"""Tue 08 Jan""",/calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,2
+2,A,,,"""Wed 09 Jan""",/calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,2
+2,A,,,"""Thu 10 Jan""",/calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,2
+2,A,,,"""Fri 11 Jan""",/calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,2
+2,A,,,"""Sat 12 Jan""",/calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,2
+2,A,,,"""Sun 13 Jan""",/calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,2
+2,A,,,"""Previous""",/calendar/?view=day&date=2030-01-06&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""Today""",/calendar/?view=day&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""Next""",/calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+2,A,,,"""Back to calendar""",/calendar/,,,[],False,Verified functional destination,10
+2,BUTTON,,,"""Mark all as read""",,/notifications/read,,[],False,Verified form action,5
+2,A,,,"""Private study activity""",/rooms/1,,,[],False,Verified functional destination,5
+2,A,,,"""Private study activity""",/rooms/2,,,[],False,Verified functional destination,5
+2,A,,,"""All room requests""",/rooms/,,,[],False,Verified functional destination,5
+2,BUTTON,,response,"""Check my calendar and accept""",,/rooms/1/invitation,accept,[],False,Verified form action,5
+2,BUTTON,,response,"""Decline attendance""",,/rooms/1/invitation,decline,[],False,Verified form action,5
+2,A,,,"""Room free/busy calendar""",/rooms/availability/302?date=2030-01-08,,,[],False,Verified functional destination,5
+2,A,,,"""Back to room requests""",/rooms/,,,[],False,Verified functional destination,5
+2,A,,,"""Read the policy""",/waiting-lists/policy,,,[],False,Verified functional destination,5
+2,BUTTON,,,"""Recheck my authorized queues""",,/waiting-lists/refresh,,[],False,Verified form action,5
+2,A,,,"""Back to waiting lists""",/waiting-lists/,,,[],False,Verified functional destination,10
+2,A,,,"""My submitted reports""",/feedback/?scope=mine,,,[],False,Verified functional destination,5
+2,SELECT,,status,"""All statusesSubmittedUnder ReviewResolvedClosed""",,/feedback/,,[],False,Verified form/local input,5
+2,SELECT,,category,"""All categoriesProblemImprovementGeneral""",,/feedback/,,[],False,Verified form/local input,5
+2,SELECT,,kind,"""Rooms and equipmentroomequipment""",,/feedback/,,[],False,Verified form/local input,5
+2,SELECT,,resource,"""All permitted resources""",,/feedback/,,[],False,Verified form/local input,5
+2,BUTTON,,,"""Apply filters""",,/feedback/,,[],False,Verified form action,5
+2,A,,,"""UCampus Space""",/professor/,,,[],False,Verified functional destination,87
+2,A,,,"""Monday 07 January""",/calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,6
+2,A,,,"""Tuesday 08 January""",/calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+2,A,,,"""Wednesday 09 January""",/calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+2,A,,,"""Thursday 10 January""",/calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+2,A,,,"""Friday 11 January""",/calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+2,A,,,"""Saturday 12 January""",/calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+2,A,,,"""Sunday 13 January""",/calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+2,A,,,"""Back to academic requests""",/professor/requests,,,[],False,Verified functional destination,10
+2,A,,,"""Back to Professor Home""",/professor/,,,[],False,Verified functional destination,5
+1,A,,,"""Skip to content""",#main-content,,,[],False,Verified functional destination,50
+1,A,,,"""UCampus SpaceStudent workspace""",/student/,,,[],False,Verified functional destination,20
+1,A,,,"""Home""",/student/,,,[],False,Verified functional destination,50
+1,A,,,"""My Activity""",/student/#my-activity,,,[],False,Verified functional destination,50
+1,A,,,"""University Calendar""",/calendar/,,,[],False,Verified functional destination,65
+1,A,,,"""Inbox""",/notifications/,,,[],False,Verified functional destination,50
+1,BUTTON,button,,"""Notifications""",,,,[],False,Verified local helper,40
+1,SUMMARY,,,"""Account menu for Student Mira""",,,,[],False,Verified native disclosure,50
+1,A,,,"""My calendar""",/calendar/,,,[],False,Verified functional destination,50
+1,A,,,"""My schedule & blocks""",/appointments/calendar,,,[],False,Verified functional destination,50
+1,BUTTON,submit,,"""Sign out""",,/logout,,[],False,Verified form action,50
+1,A,,,"""Open Appointments""",/appointments/,,,[],False,Verified functional destination,15
+1,A,,,"""Explore rooms""",/rooms/,,,[],False,Verified functional destination,15
+1,A,,,"""Explore equipment""",/equipment/,,,[],False,Verified functional destination,15
+1,A,,,"""Waiting lists\nFollow requests when a resource isn't available.""",/waiting-lists/,,,[],False,Verified functional destination,15
+1,A,,,"""Feedback & issues\nReport a problem with a resource you've used.""",/feedback/,,,[],False,Verified functional destination,15
+1,A,,,"""Schedule an appointment""",/appointments/new,,,[],False,Verified functional destination,20
+1,A,,,"""Fictional project review""",/appointments/1,,,[],False,Verified functional destination,20
+1,A,,,"""Fictional project review""",/appointments/2,,,[],False,Verified functional destination,20
+1,A,,,"""Fictional project review""",/appointments/3,,,[],False,Verified functional destination,20
+1,A,,,"""Private study activity""",/rooms/1,,,[],False,Verified functional destination,20
+1,A,,,"""Private study activity""",/rooms/2,,,[],False,Verified functional destination,20
+1,A,,,"""Open meeting details""",/appointments/1,,,[],False,Verified functional destination,15
+1,A,,,"""Monday, 02 November, 0 entries""",/calendar/?view=day&date=2026-11-02,,,[],False,Verified functional destination,15
+1,A,,,"""Tuesday, 03 November, 0 entries""",/calendar/?view=day&date=2026-11-03,,,[],False,Verified functional destination,15
+1,A,,,"""Wednesday, 04 November, 0 entries""",/calendar/?view=day&date=2026-11-04,,,[],False,Verified functional destination,15
+1,A,,,"""Thursday, 05 November, 0 entries""",/calendar/?view=day&date=2026-11-05,,,[],False,Verified functional destination,15
+1,A,,,"""Friday, 06 November, 0 entries""",/calendar/?view=day&date=2026-11-06,,,[],False,Verified functional destination,15
+1,A,,,"""View week""",/calendar/?view=week&date=2026-11-02,,,[],False,Verified functional destination,15
+1,A,,,"""My schedule & personal blocks""",/appointments/calendar?month=2026-11&week=2026-11-02,,,[],False,Verified functional destination,15
+1,BUTTON,button,,"""Notifications, 1 unread""",,,,[],False,Verified local helper,10
+1,BUTTON,button,,"""Mark all read""",,,,"[""markAll""]",False,Verified local helper,5
+1,A,,,"""Appointment update Unread\n            Fictional project review\n            Current status: Confirmed""",/appointments/1,,,"[""notificationId""]",False,Verified functional destination,10
+1,A,,,"""View notification inbox""",/notifications/,,,[],False,Verified functional destination,5
+1,A,,,"""Student services""",/student/,,,[],False,Verified functional destination,35
+1,A,,,"""Find a university room""",/rooms/new,,,[],False,Verified functional destination,5
+1,A,,,"""Browse and borrow""",/equipment/catalog,,,[],False,Verified functional destination,5
+1,A,,,"""Waiting-list policy""",/waiting-lists/policy,,,[],False,Verified functional destination,5
+1,A,,,"""Read the policy""",/waiting-lists/policy,,,[],False,Verified functional destination,5
+1,A,,,"""Find a room""",/rooms/new,,,[],False,Verified functional destination,5
+1,A,,,"""Find equipment""",/equipment/catalog,,,[],False,Verified functional destination,5
+1,BUTTON,,,"""Recheck my authorized queues""",,/waiting-lists/refresh,,[],False,Verified form action,5
+1,A,,,"""My submitted reports""",/feedback/?scope=mine,,,[],False,Verified functional destination,5
+1,SELECT,,status,"""All statusesSubmittedUnder ReviewResolvedClosed""",,/feedback/,,[],False,Verified form/local input,5
+1,SELECT,,category,"""All categoriesProblemImprovementGeneral""",,/feedback/,,[],False,Verified form/local input,5
+1,SELECT,,kind,"""Rooms and equipmentroomequipment""",,/feedback/,,[],False,Verified form/local input,5
+1,SELECT,,resource,"""All permitted resources""",,/feedback/,,[],False,Verified form/local input,5
+1,BUTTON,,,"""Apply filters""",,/feedback/,,[],False,Verified form action,5
+1,A,,,"""Find a room booking""",/rooms/,,,[],False,Verified functional destination,5
+1,A,,,"""Find an equipment loan""",/equipment/,,,[],False,Verified functional destination,5
+1,A,,,"""My schedule and blocks""",/appointments/calendar,,,[],False,Verified functional destination,5
+1,A,,,"""Previous""",/calendar/?view=week&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+1,A,,,"""Today""",/calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+1,A,,,"""Next""",/calendar/?view=week&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+1,A,,,"""Month""",/calendar/?view=month&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+1,A,,,"""Week""",/calendar/?view=week&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+1,A,,,"""Day""",/calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,5
+1,INPUT,date,date,"""""",,/calendar/,,[],False,Verified form/local input,5
+1,SELECT,,scope,"""My activities and assigned responsibilitiesMy activities onlyPublished academic schedule (not enroll""",,/calendar/,,[],False,Verified form/local input,5
+1,BUTTON,,,"""Apply filters""",,/calendar/,,[],False,Verified form action,5
+1,INPUT,checkbox,category,"""""",,/calendar/,,[],False,Verified form/local input,25
+1,INPUT,checkbox,state,"""""",,/calendar/,,[],False,Verified form/local input,30
+1,A,,,"""Mon 07 Jan""",/calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,2
+1,A,,,"""Tue 08 Jan""",/calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,2
+1,A,,,"""Wed 09 Jan""",/calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,2
+1,A,,,"""Thu 10 Jan""",/calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,2
+1,A,,,"""Fri 11 Jan""",/calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,2
+1,A,,,"""Sat 12 Jan""",/calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,2
+1,A,,,"""Sun 13 Jan""",/calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,2
+1,A,,,"""10:00–11:00\n    Fictional project review\n    Confirmed\n    \n    1/1 professors approved revision 1.\n""",/appointments/1,,,"[""eventId""]",False,Verified functional destination,5
+1,A,,,"""11:00–12:00\n    Fictional project review\n    Pending · Pending Approval\n    \n    0/2 professors appr""",/appointments/2,,,"[""eventId""]",False,Verified functional destination,5
+1,A,,,"""12:00–13:00\n    Fictional project review\n    Pending · Pending Approval\n    \n    0/1 professors appr""",/appointments/3,,,"[""eventId""]",False,Verified functional destination,5
+1,A,,,"""14:00–15:00\n    Private study activity\n    Pending · Pending Faculty Approval\n    Study Studio - Art""",/rooms/1,,,"[""eventId""]",False,Verified functional destination,5
+1,A,,,"""14:00–15:00\n    Private study activity\n    Pending · Pending Faculty Approval\n    Study Studio - Art""",/rooms/2,,,"[""eventId""]",False,Verified functional destination,5
+1,BUTTON,,,"""Mark all as read""",,/notifications/read,,[],False,Verified form action,5
+1,A,,,"""UCampus Space""",/student/,,,[],False,Verified functional destination,30
+1,A,,,"""Monday 07 January""",/calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+1,A,,,"""Tuesday 08 January""",/calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+1,A,,,"""Wednesday 09 January""",/calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+1,A,,,"""Thursday 10 January""",/calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+1,A,,,"""Friday 11 January""",/calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+1,A,,,"""Saturday 12 January""",/calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+1,A,,,"""Sunday 13 January""",/calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant,,,[],False,Verified functional destination,3
+6,A,,,"""Skip to content""",#main-content,,,[],False,Verified functional destination,39
+6,A,,,"""UniversityResources & scheduling""",/,,,[],False,Verified functional destination,11
+6,A,,,"""Calendar""",/calendar/,,,[],False,Verified functional destination,11
+6,A,,,"""Appointments""",/appointments/,,,[],False,Verified functional destination,11
+6,A,,,"""Room Requests""",/rooms/,,,[],False,Verified functional destination,11
+6,A,,,"""Equipment""",/equipment/,,,[],False,Verified functional destination,11
+6,A,,,"""Waiting Lists""",/waiting-lists/,,,[],False,Verified functional destination,11
+6,A,,,"""Issues & Feedback""",/feedback/,,,[],False,Verified functional destination,11
+6,A,,,"""My Schedule""",/appointments/calendar,,,[],False,Verified functional destination,11
+6,SUMMARY,,,"""Administration""",,,,[],False,Verified native disclosure,11
+6,A,,,"""Dashboard""",/,,,[],False,Verified functional destination,11
+6,A,,,"""Add Request""",/add-request,,,[],False,Verified functional destination,11
+6,A,,,"""Academic Eligibility Review""",/academic-eligibility/,,,[],False,Verified functional destination,11
+6,A,,,"""Requests""",/requests,,,[],False,Verified functional destination,11
+6,A,,,"""Allocation Summary""",/allocation-summary,,,[],False,Verified functional destination,11
+6,A,,,"""Schedules""",/schedules,,,[],False,Verified functional destination,11
+6,A,,,"""Users""",/users,,,[],False,Verified functional destination,11
+6,A,,,"""Spaces""",/spaces,,,[],False,Verified functional destination,11
+6,A,,,"""Raw Data""",/raw-data,,,[],False,Verified functional destination,11
+6,A,,,"""Calendar Setup""",/appointments/calendar-setup,,,[],False,Verified functional destination,11
+6,A,,,"""Room Policies""",/rooms/configuration,,,[],False,Verified functional destination,11
+6,A,,,"""Academic Publication""",/calendar/publications,,,[],False,Verified functional destination,11
+6,A,,,"""Equipment Custodians""",/equipment/custodians,,,[],False,Verified functional destination,11
+6,A,,,"""Waiting-list Policy""",/waiting-lists/configuration,,,[],False,Verified functional destination,11
+6,BUTTON,button,,"""Notifications""",,,,[],False,Verified local helper,26
+6,SUMMARY,,,"""Account menu for Student Lia""",,,,[],False,Verified native disclosure,39
+6,A,,,"""My calendar""",/calendar/,,,[],False,Verified functional destination,39
+6,A,,,"""My schedule & blocks""",/appointments/calendar,,,[],False,Verified functional destination,39
+6,BUTTON,submit,,"""Sign out""",,/logout,,[],False,Verified form action,39
+6,A,,,"""Allocation administration""",/,,,[],False,Verified functional destination,19
+6,A,,,"""1 · Declared fictional academic activity""",/academic-eligibility/1,,,[],False,Verified functional destination,19
+6,A,,,"""2 · Declared fictional academic activity""",/academic-eligibility/2,,,[],False,Verified functional destination,19
+6,A,,,"""3 · Declared fictional academic activity""",/academic-eligibility/3,,,[],False,Verified functional destination,19
+6,A,,,"""4 · Declared fictional academic activity""",/academic-eligibility/4,,,[],False,Verified functional destination,19
+6,A,,,"""5 · Declared fictional academic activity""",/academic-eligibility/5,,,[],False,Verified functional destination,19
+6,A,,,"""6 · PRIVATE PEER ACADEMIC TITLE""",/academic-eligibility/6,,,[],False,Verified functional destination,19
+6,A,,,"""7 · Academic declaration WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW""",/academic-eligibility/7,,,[],False,Verified functional destination,19
+6,BUTTON,button,,"""Notifications, 0 unread""",,,,[],False,Verified local helper,13
+6,BUTTON,button,,"""Mark all read""",,,,"[""markAll""]",True,Intentionally disabled; visible empty/unavailable state,5
+6,A,,,"""View notification inbox""",/notifications/,,,[],False,Verified functional destination,5
+6,A,,,"""Academic eligibility queue""",/academic-eligibility/,,,[],False,Verified functional destination,5
+6,TEXTAREA,,reason,"""""",,/academic-eligibility/7,,[],False,Verified form/local input,5
+6,BUTTON,,decision,"""Approve eligibility""",,/academic-eligibility/7,approve,[],False,Verified form action,5
+6,BUTTON,,decision,"""Reject eligibility""",,/academic-eligibility/7,reject,[],False,Verified form action,5
+6,A,,,"""Review academic eligibility""",/academic-eligibility/7,,,[],False,Verified functional destination,10
+6,A,,,"""View Request""",/request/7,,,[],False,Verified functional destination,10
+6,A,,,"""Add Another Request""",/add-request,,,[],False,Verified functional destination,15
+6,A,,,"""View Allocation Summary""",/allocation-summary?highlight=7,,,[],False,Verified functional destination,10
+6,A,,,"""View Requests""",/requests?highlight=7,,,[],False,Verified functional destination,10
+6,A,,,"""Review academic eligibility""",/academic-eligibility/1,,,[],False,Verified functional destination,5
+6,A,,,"""View Request""",/request/1,,,[],False,Verified functional destination,5
+6,A,,,"""View Allocation Summary""",/allocation-summary?highlight=1,,,[],False,Verified functional destination,5
+6,A,,,"""View Requests""",/requests?highlight=1,,,[],False,Verified functional destination,5
+6,BUTTON,submit,,"""Run Allocation Now""",,/run-allocation-now/1,,[],False,Verified form action,5
+6,BUTTON,button,,"""Open navigation""",,,,"[""navigationToggle""]",False,Verified local helper,32
+6,BUTTON,button,,"""Close navigation""",,,,"[""navigationClose""]",False,Verified local helper,4

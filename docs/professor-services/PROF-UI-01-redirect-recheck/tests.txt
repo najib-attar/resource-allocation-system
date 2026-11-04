@@ -1,6 +1,0 @@
-test_login_and_root_choose_student_home_without_changing_other_roles (test_student_dashboard.StudentDashboardWebTests.test_login_and_root_choose_student_home_without_changing_other_roles) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 8.755s
-
-OK

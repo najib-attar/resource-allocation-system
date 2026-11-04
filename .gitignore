@@ -63,3 +63,11 @@ cmake-build-release/
 /docs/ui/student-portal/**/tests.txt
 /docs/ui/student-portal/**/*.png
 /docs/ui/student-portal-ui01/*.png
+
+# Professor raw acceptance output follows the same evidence policy.
+/docs/professor-services/**/post-states.json
+/docs/professor-services/**/persistence.json
+/docs/professor-services/**/controls.json
+/docs/professor-services/**/control-trace.json
+/docs/professor-services/**/tests.txt
+/docs/professor-services/**/*.png

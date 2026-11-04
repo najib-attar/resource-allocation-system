@@ -1,5 +1,12 @@
 {
   "frontendBase": "5a7f0b0",
+  "reviewedMain": "196933506469ae25d3214a91ef2fd457356d096d",
+  "unchangedMainResearchAndGovernance": [
+    "research",
+    ".github",
+    "web/cost_policy_service.py",
+    "tests/test_cost_policy_governance.py"
+  ],
   "unchangedProtectedSources": [
     "src",
     "migrations",
@@ -63,7 +70,7 @@
   ],
   "testRetention": {
     "baseline": 652,
-    "current": 668,
+    "current": 726,
     "removed": 0,
     "consolidated": 0
   },

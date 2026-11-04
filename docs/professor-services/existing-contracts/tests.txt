@@ -1,8 +1,0 @@
-test_cross_user_hours_and_block_deletions_are_forbidden_and_private (test_professor_existing_workflows.ProfessorExistingContractTests.test_cross_user_hours_and_block_deletions_are_forbidden_and_private) ... ok
-test_hour_publication_role_guard_and_session_ownership_for_all_five_roles (test_professor_existing_workflows.ProfessorExistingContractTests.test_hour_publication_role_guard_and_session_ownership_for_all_five_roles) ... ok
-test_invalid_hours_boundaries_and_exclusions_never_persist (test_professor_existing_workflows.ProfessorExistingContractTests.test_invalid_hours_boundaries_and_exclusions_never_persist) ... ok
-
-----------------------------------------------------------------------
-Ran 3 tests in 30.250s
-
-OK

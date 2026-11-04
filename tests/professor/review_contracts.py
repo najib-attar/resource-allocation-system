@@ -73,7 +73,10 @@ def main():
     assert not missing,missing
     student = Path('C:/Users/najee/Desktop/resource-allocation-frontend')
     base = '747c925b14c29368e6cb9bc8b2e2d9d33c494462'
-    assert git(student,'rev-parse','HEAD')==base and not git(student,'status','--porcelain')
+    reviewed_student = '8f17dec9f51902be29c2b97b7dd969b4b7cc8ffe'
+    assert git(student,'rev-parse','HEAD')==reviewed_student and not git(student,'status','--porcelain')
+    git(student,'merge-base','--is-ancestor',base,reviewed_student)
+    assert not git(student,'diff',base,reviewed_student,'--','web','tests','src','migrations','requirements.txt')
     assert git(ROOT,'branch','--show-current')=='codex/professor-services-v1'
     protected=['src','web/appointment_service.py','web/room_request_service.py',
         'web/equipment_service.py','web/account_service.py','web/university_calendar.py',
@@ -100,7 +103,7 @@ def main():
             integrity.append(dict(path=member.filename,sha256=hashlib.sha256(content).hexdigest()))
     (output/'source-review.json').write_text(json.dumps(dict(python=python,
         referencedRegressionMethodsValidated=len(references),missingTestReferences=missing,
-        preservedStudentHead=base,studentClean=True,professorBranch='codex/professor-services-v1',
+        preservedStudentBase=base,reviewedStudentHead=reviewed_student,studentClean=True,professorBranch='codex/professor-services-v1',
         unchangedProtectedSources=protected,approvedPersistenceChanges=True,
         unchangedSessionAndCsrfInternals=True,approvedProfessorHomeRedirect=True,
         handoffIntegrity=integrity),indent=2)+'\n',encoding='utf-8')
