@@ -1,0 +1,12 @@
+{
+  "modules": [
+    "test_save_only_confirmation"
+  ],
+  "expected": 11,
+  "run": 11,
+  "passed": 10,
+  "failures": 0,
+  "errors": 1,
+  "skipped": [],
+  "seconds": 96.27
+}

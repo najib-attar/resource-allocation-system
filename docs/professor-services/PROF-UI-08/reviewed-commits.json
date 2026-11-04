@@ -1,0 +1,127 @@
+{
+  "studentBase": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+  "auditStart": "6545a4aaf0b4f17311f80679f329a219209e9894",
+  "implementationHead": "8696adbd04acce1efe25f59acafb4c6744a1f560",
+  "commits": [
+    {
+      "sha": "19457e4aea950b34bfbba4e38dda031a6013fd08",
+      "subject": "docs(professor): record reviewed contracts and blocked academic eligibility gate",
+      "reviewed": true
+    },
+    {
+      "sha": "9a751c6ba383bce06d7875cd358e33af6c1a93f7",
+      "subject": "feat(professor): add strictly owner-scoped academic request reads",
+      "reviewed": true
+    },
+    {
+      "sha": "4bf6f7c3bde8f4915cbc2f6f8e70aa7b3692a450",
+      "subject": "fix(calendar): reveal complete keyboard focus in horizontal week grids",
+      "reviewed": true
+    },
+    {
+      "sha": "3c3af41928f0a3dae55a70bdc743b0ee83785ee7",
+      "subject": "test(professor): verify existing role boundaries and document missing review gate",
+      "reviewed": true
+    },
+    {
+      "sha": "9a3dc8a45e6c6caed05a4fb9fd565a06c08881bf",
+      "subject": "docs(professor): record backend verification, limitations and frontend sequence",
+      "reviewed": true
+    },
+    {
+      "sha": "1c50ecd614ffb12a3b8244e1ce7c3c811b057603",
+      "subject": "feat(eligibility): enforce revision-bound review before academic allocation",
+      "reviewed": true
+    },
+    {
+      "sha": "0ae1b840d0701ded467e619f7e6a84575f40632b",
+      "subject": "feat(professor): enable academic submissions and administrator eligibility review",
+      "reviewed": true
+    },
+    {
+      "sha": "49552d3c43b27b1f6114ace45075074a1a4589c0",
+      "subject": "fix(eligibility): reject unguarded runs and protect all published request inputs",
+      "reviewed": true
+    },
+    {
+      "sha": "48beaeb506d948182edded717f918eb23f737faf",
+      "subject": "fix(demo): require explicit reviews before academic allocation",
+      "reviewed": true
+    },
+    {
+      "sha": "8e4ca07e7926a03eae44c8c64c7a8e99f225b811",
+      "subject": "test(eligibility): verify review-first regressions and calendar preservation",
+      "reviewed": true
+    },
+    {
+      "sha": "50cacf2c5e20a1fad576ffd6fe3a2cbd88160535",
+      "subject": "fix(professor-ui): clarify published states and verify real browser workflows",
+      "reviewed": true
+    },
+    {
+      "sha": "5a7f0b012308dea87e15c390519122f8248699f4",
+      "subject": "docs(professor): finalize eligibility acceptance, migration policy and traceability",
+      "reviewed": true
+    },
+    {
+      "sha": "9fe9b8b22ab6ae70491e59fcbf7887cf103bed9f",
+      "subject": "feat(professor-portal): add scoped Home and reuse Campus Space workspace components",
+      "reviewed": true
+    },
+    {
+      "sha": "b460e6728e9862355d29cdf8c129d40b3689e5ce",
+      "subject": "feat(professor-portal): refine appointment decisions and safe form feedback",
+      "reviewed": true
+    },
+    {
+      "sha": "52dff9c9a6045b2b247b6cf3cb0de2a273e35512",
+      "subject": "feat(professor-portal): implement office hours and personal availability workspace",
+      "reviewed": true
+    },
+    {
+      "sha": "c41f271b2a245f999811f05ed624fcb5ef4443a1",
+      "subject": "feat(professor-portal): implement complete academic request declaration forms",
+      "reviewed": true
+    },
+    {
+      "sha": "6441b3bc9f1755082843fea9edbe672a535f721f",
+      "subject": "feat(professor-portal): track eligibility, allocations and protected revisions",
+      "reviewed": true
+    },
+    {
+      "sha": "8f6597508ff0732ed5d8ea87c0588e46edc2b2a4",
+      "subject": "feat(professor-portal): integrate calendar, mobile agendas and recipient Inbox",
+      "reviewed": true
+    },
+    {
+      "sha": "47825f540edca1754d560a7548673674a5e99575",
+      "subject": "test(professor-portal): verify controls, persistence and cross-role regressions",
+      "reviewed": true
+    },
+    {
+      "sha": "6545a4aaf0b4f17311f80679f329a219209e9894",
+      "subject": "docs(professor-portal): finalize acceptance, traceability and shared UI evidence",
+      "reviewed": true
+    },
+    {
+      "sha": "d71461d6ea62f075fffd4f8f6c536de6a2970f08",
+      "subject": "fix(eligibility): require canonical checked allocation inputs",
+      "reviewed": true
+    },
+    {
+      "sha": "86d72e4efb27ead7d20c5a99c175e1b8d3cd5797",
+      "subject": "fix(professor): reject malformed optional participant metadata",
+      "reviewed": true
+    },
+    {
+      "sha": "0de18dcbb5bd2847d2e03aab0cdeb2b0d87cfb57",
+      "subject": "fix(professor-ui): keep eligibility controls and saved states accurate",
+      "reviewed": true
+    },
+    {
+      "sha": "8696adbd04acce1efe25f59acafb4c6744a1f560",
+      "subject": "test(professor): expand independent control and migration verification",
+      "reviewed": true
+    }
+  ]
+}

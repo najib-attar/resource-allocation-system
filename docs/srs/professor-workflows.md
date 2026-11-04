@@ -28,6 +28,8 @@ New records begin Pending Eligibility Review. A different active administrator m
 
 Only Eligible records reviewed at the current request revision enter allocation. All repository snapshot/start/publication paths enforce this. Presentation snapshots retain all records but cannot be executed. The production Python gateway refuses raw unguarded academic inputs; standalone protocol fixtures require an explicit opt-in unused by production. C++ JSON is unchanged and its CLI has no database publication authority.
 
+PROF-UI-08 hardens the existing boundary: the default gateway accepts only canonical repository input types and invokes their canonical validator directly. A duck-typed marker, subclass or overwritten instance method is not evidence of administrative eligibility. This changes no eligibility policy, role permission, C++ strategy or wire protocol.
+
 ## Revisions, concurrency and audit
 
 Owners may revise unpublished requests with an expected revision. Material revisions reset eligibility, clear the reviewer/reviewed revision and record history. Database triggers also invalidate reviewed parent/subtype/slot/participant edits outside the service.
@@ -52,7 +54,7 @@ New imports, repository saves and demo seeds remain pending by default. Local-de
 
 UC-PROF-01–05 retain appointment hours/approvals, personal blocks, optional room invitations, calendar and Inbox. Confirmed appointments prevent incompatible blocks/hour removal. Optional attendance grants no faculty approval or custody rights.
 
-UC-PROF-06–08 have minimal shared Jinja intake/revision forms and JSON submission. UC-PROF-09 has owner list/detail filters, allocations, reasons/history and explicit bindings. Reads are private/no-store. Database failures return safe errors; invalid/private/stale operations commit no partial change.
+UC-PROF-06–08 have shared Jinja intake/revision forms and JSON submission. UC-PROF-09 has owner list/detail filters, allocations, reasons/history and explicit bindings. Reads are private/no-store. Academic service errors use JSON for the API; existing authentication, CSRF and general HTTP errors retain their established response behavior. Database failures return safe errors; invalid/private/stale operations commit no partial change.
 
 Academic outcome notifications remain deferred: Notification has no ResourceRequest event source. Source/schema, producers and recipient/destination policy need separate approval. Existing notifications remain supported. The Professor Portal frontend now follows the implemented [frontend sequence](../professor-services/frontend-plan.md), reusing the Student Campus Space system. Academic notifications, cancellation and versioned published replacement remain deferred.
 

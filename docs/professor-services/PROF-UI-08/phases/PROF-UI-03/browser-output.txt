@@ -1,0 +1,1 @@
+{"phase":"PROF-UI-03","views":26,"keyboardSteps":351,"checks":["Double native hour submission produced one POST; inclusive/excluded dates persisted, confirmed appointment blocked removal until cancellation, block create/remove, confirmed-appointment conflict rollback and unchanged academic publication under an overlapping personal block verified."]}

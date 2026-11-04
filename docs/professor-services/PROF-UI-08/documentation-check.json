@@ -1,0 +1,11 @@
+{
+  "documents": [
+    "docs/professor-services/acceptance-report.md",
+    "docs/professor-services/traceability.md",
+    "docs/professor-services/screen-coverage.md",
+    "docs/professor-services/frontend-plan.md",
+    "docs/srs/professor-workflows.md"
+  ],
+  "localLinksVerified": 68,
+  "brokenLinks": []
+}

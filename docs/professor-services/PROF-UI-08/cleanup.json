@@ -1,0 +1,59 @@
+{
+  "recordedAt": "2026-11-04T06:17:49.761772+00:00",
+  "readOnlyCatalogCheck": true,
+  "currentOwnedBrowsers": [
+    {
+      "evidence": "docs/professor-services/PROF-UI-08/phases/PROF-UI-01/cleanup.json",
+      "schema": "ras_test_82f33199f19f46a3817d9b1b5503cebf",
+      "serverStopped": true
+    },
+    {
+      "evidence": "docs/professor-services/PROF-UI-08/phases/PROF-UI-02/cleanup.json",
+      "schema": "ras_test_fb12105dfd0947a8bcdd0557f2b1c458",
+      "serverStopped": true
+    },
+    {
+      "evidence": "docs/professor-services/PROF-UI-08/phases/PROF-UI-03/cleanup.json",
+      "schema": "ras_test_a419e9c84ff24ad1a959f5b156e392d8",
+      "serverStopped": true
+    },
+    {
+      "evidence": "docs/professor-services/PROF-UI-08/phases/PROF-UI-04/cleanup.json",
+      "schema": "ras_test_85ab596e80c9404db7b7844b26533285",
+      "serverStopped": true
+    },
+    {
+      "evidence": "docs/professor-services/PROF-UI-08/phases/PROF-UI-05/cleanup.json",
+      "schema": "ras_test_39d326b0383945cc8e5a1dedae65353d",
+      "serverStopped": true
+    },
+    {
+      "evidence": "docs/professor-services/PROF-UI-08/phases/PROF-UI-06/cleanup.json",
+      "schema": "ras_test_6571c941dfb54c2389e1c4a84490b6d6",
+      "serverStopped": true
+    },
+    {
+      "evidence": "docs/professor-services/PROF-UI-08/browser/cleanup.json",
+      "schema": "ras_test_ba413ea1c56944e7a029f85c1fb55cae",
+      "serverStopped": true
+    },
+    {
+      "evidence": "docs/professor-services/PROF-UI-08/existing-workflows/cleanup.json",
+      "schema": "ras_test_02d7e14e071b4fc48baa2e1421068044",
+      "serverStopped": true
+    },
+    {
+      "evidence": "docs/professor-services/PROF-UI-08/legacy-gate/cleanup.json",
+      "schema": "ras_test_0c17a1ff38bb45dd9c9b48f05644e479",
+      "serverStopped": true
+    }
+  ],
+  "allOwnedSchemasAbsent": true,
+  "allOwnedFixtureServersStopped": true,
+  "remainingPreexistingUnownedNamespaces": [
+    "ras_test_0582a99d4f8441c0a65b8173541556d5",
+    "ras_test_a8b4fa0498774ce6b029889906f0ec9d"
+  ],
+  "unownedNamespacesModified": false,
+  "operationalDatabaseAccessed": false
+}

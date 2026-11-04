@@ -1,0 +1,14 @@
+
+AssertionError [ERR_ASSERTION]: pending-confirmation overflow
+
+6575 !== 1440
+
+    at inspect (C:\Users\najee\.codex\worktrees\professor-services-v1\resource-allocation-frontend\tests\professor\browser_review.cjs:55:10)
+    at async main (C:\Users\najee\.codex\worktrees\professor-services-v1\resource-allocation-frontend\tests\professor\portal_browser.cjs:183:44) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 6575,
+  expected: 1440,
+  operator: 'strictEqual',
+  diff: 'simple'
+}

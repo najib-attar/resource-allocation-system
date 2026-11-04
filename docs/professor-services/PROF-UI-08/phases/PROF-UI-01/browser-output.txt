@@ -1,0 +1,1 @@
+{"phase":"PROF-UI-01","views":30,"keyboardSteps":745,"checks":["Home empty/populated and all five role shells at five widths; real four-item professor navigation, no student creation or admin allocation."]}

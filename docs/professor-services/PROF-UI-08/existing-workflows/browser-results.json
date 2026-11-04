@@ -1,0 +1,1553 @@
+{
+  "checks": [
+    "Student: actual login redirect, read scope, CSRF and logout",
+    "Instructor: actual login redirect, read scope, CSRF and logout",
+    "TeachingAssistant: actual login redirect, read scope, CSRF and logout",
+    "Staff: actual login redirect, read scope, CSRF and logout",
+    "Administrator: actual login redirect, read scope, CSRF and logout",
+    "Owner-only API: actual published, rejected and pending records; private IDs, invalid filters and administrative/intake denials",
+    "Own hour publication and exclusions; foreign deletion denied; future confirmed appointments protect removal",
+    "Own dated block add/remove; private peer block absent; confirmed appointment conflict rejected",
+    "Month/week/day, schedule, appointments, hours, invitations and inbox responsive/keyboard review",
+    "Unanimous professor approval; student rescheduling invalidates both approvals; stale revision rejected; reapproval, professor cancellation and rejection persist",
+    "Optional room invitation accept/decline remains distinct from faculty approval and reservation",
+    "Inbox mark-all persisted; cancellation removed confirmed commitments; academic calendar filter uses explicit binding"
+  ],
+  "views": [
+    {
+      "name": "calendar-role-Student",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-role-Instructor",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-role-TeachingAssistant",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-role-Staff",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-role-Administrator",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointments",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "hours",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointment",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "room-invitation",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "schedule",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-month",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-week",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-day",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "inbox",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointments",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "hours",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointment",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "room-invitation",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "schedule",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-month",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-week",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-day",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "inbox",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointments",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "hours",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointment",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "room-invitation",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "schedule",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-month",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-week",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-day",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "inbox",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointments",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "hours",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "appointment",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "room-invitation",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "schedule",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-month",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-week",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "calendar-day",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "inbox",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    }
+  ],
+  "keyboardSteps": 927,
+  "nativePickerSteps": 45,
+  "errors": [],
+  "expectedErrors": [],
+  "verifiedDestinations": [
+    {
+      "identity": "1 /student/",
+      "status": 200
+    },
+    {
+      "identity": "1 /student/#my-activity",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/",
+      "status": 200
+    },
+    {
+      "identity": "1 /notifications/",
+      "status": 200
+    },
+    {
+      "identity": "1 /appointments/calendar",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=week&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=week&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=month&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=week&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /appointments/1",
+      "status": 200
+    },
+    {
+      "identity": "1 /appointments/2",
+      "status": 200
+    },
+    {
+      "identity": "1 /appointments/3",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /rooms/1",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /rooms/2",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "1 /calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/",
+      "status": 200
+    },
+    {
+      "identity": "2 /professor/requests",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/",
+      "status": 200
+    },
+    {
+      "identity": "2 /notifications/",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/calendar",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/availability",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=week&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=week&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=month&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=week&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/1",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/2",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/3",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/academic/1?date=2030-01-08",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /rooms/1",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /rooms/2",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "9 /calendar/",
+      "status": 200
+    },
+    {
+      "identity": "9 /appointments/calendar",
+      "status": 200
+    },
+    {
+      "identity": "9 /calendar/?view=week&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "9 /calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "9 /calendar/?view=week&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "9 /calendar/?view=month&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "9 /calendar/?view=week&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "9 /calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "9 /calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "9 /calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "9 /calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "9 /calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "9 /calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "9 /calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "9 /notifications/",
+      "status": 200
+    },
+    {
+      "identity": "9 /",
+      "status": 200
+    },
+    {
+      "identity": "9 /appointments/",
+      "status": 200
+    },
+    {
+      "identity": "9 /rooms/",
+      "status": 200
+    },
+    {
+      "identity": "9 /equipment/",
+      "status": 200
+    },
+    {
+      "identity": "9 /waiting-lists/",
+      "status": 200
+    },
+    {
+      "identity": "9 /feedback/",
+      "status": 200
+    },
+    {
+      "identity": "7 /calendar/",
+      "status": 200
+    },
+    {
+      "identity": "7 /appointments/calendar",
+      "status": 200
+    },
+    {
+      "identity": "7 /calendar/?view=week&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "7 /calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "7 /calendar/?view=week&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "7 /calendar/?view=month&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "7 /calendar/?view=week&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "7 /calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "7 /calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "7 /calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "7 /calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "7 /calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "7 /calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "7 /calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "7 /rooms/1",
+      "status": 200
+    },
+    {
+      "identity": "7 /rooms/2",
+      "status": 200
+    },
+    {
+      "identity": "7 /notifications/",
+      "status": 200
+    },
+    {
+      "identity": "7 /",
+      "status": 200
+    },
+    {
+      "identity": "7 /appointments/",
+      "status": 200
+    },
+    {
+      "identity": "7 /rooms/",
+      "status": 200
+    },
+    {
+      "identity": "7 /equipment/",
+      "status": 200
+    },
+    {
+      "identity": "7 /waiting-lists/",
+      "status": 200
+    },
+    {
+      "identity": "7 /feedback/",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/",
+      "status": 200
+    },
+    {
+      "identity": "6 /appointments/calendar",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/publications",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/?view=week&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/?view=week&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/?view=week&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/?view=month&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/?view=week&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/?view=day&date=2030-01-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/?view=day&date=2030-01-08&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/?view=day&date=2030-01-09&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/?view=day&date=2030-01-10&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/?view=day&date=2030-01-11&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/?view=day&date=2030-01-12&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "6 /calendar/?view=day&date=2030-01-13&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "6 /notifications/",
+      "status": 200
+    },
+    {
+      "identity": "6 /",
+      "status": 200
+    },
+    {
+      "identity": "6 /appointments/",
+      "status": 200
+    },
+    {
+      "identity": "6 /rooms/",
+      "status": 200
+    },
+    {
+      "identity": "6 /equipment/",
+      "status": 200
+    },
+    {
+      "identity": "6 /waiting-lists/",
+      "status": 200
+    },
+    {
+      "identity": "6 /feedback/",
+      "status": 200
+    },
+    {
+      "identity": "6 /add-request",
+      "status": 200
+    },
+    {
+      "identity": "6 /academic-eligibility/",
+      "status": 200
+    },
+    {
+      "identity": "6 /requests",
+      "status": 200
+    },
+    {
+      "identity": "6 /allocation-summary",
+      "status": 200
+    },
+    {
+      "identity": "6 /schedules",
+      "status": 200
+    },
+    {
+      "identity": "6 /users",
+      "status": 200
+    },
+    {
+      "identity": "6 /spaces",
+      "status": 200
+    },
+    {
+      "identity": "6 /raw-data",
+      "status": 200
+    },
+    {
+      "identity": "6 /appointments/calendar-setup",
+      "status": 200
+    },
+    {
+      "identity": "6 /rooms/configuration",
+      "status": 200
+    },
+    {
+      "identity": "6 /equipment/custodians",
+      "status": 200
+    },
+    {
+      "identity": "6 /waiting-lists/configuration",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/",
+      "status": 200
+    },
+    {
+      "identity": "2 /rooms/",
+      "status": 200
+    },
+    {
+      "identity": "2 /rooms/availability/302?date=2030-01-10",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/calendar?month=2030-01&week=2029-12-31",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/calendar?month=2030-01&week=2030-01-07",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/calendar?month=2030-01&week=2030-01-14",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/calendar?month=2030-01&week=2030-01-21",
+      "status": 200
+    },
+    {
+      "identity": "2 /appointments/calendar?month=2030-01&week=2030-01-28",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=month&date=2029-12-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=month&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=month&date=2030-02-07&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2029-12-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-01&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-02&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-05&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-06&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-14&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-15&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-16&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-17&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-18&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-19&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-20&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-21&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-22&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-23&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-24&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-25&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-26&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-27&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-28&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-29&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-30&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-01-31&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-02-01&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-02-02&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2030-02-03&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    },
+    {
+      "identity": "2 /calendar/?view=day&date=2026-11-04&filtered=1&category=academic&category=appointment&category=equipment&category=personal&category=room&state=cancelled&state=completed&state=confirmed&state=overdue&state=pending&state=rejected&scope=relevant",
+      "status": 200
+    }
+  ],
+  "networkRequests": [
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 3,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 9,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 9,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 9,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 7,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 7,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 7,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 7,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 6,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 3,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 3,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 3,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 1,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 3,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 3,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "actor": 2,
+      "path": "/notifications/feed",
+      "method": "GET",
+      "status": 200
+    }
+  ],
+  "shellKeyboardChecks": [
+    {
+      "actor": 1,
+      "width": 390,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 1,
+      "width": 390,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 390,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 390,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 9,
+      "width": 390,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 9,
+      "width": 390,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 9,
+      "width": 390,
+      "panel": "navigation",
+      "passed": true
+    },
+    {
+      "actor": 7,
+      "width": 390,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 7,
+      "width": 390,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 7,
+      "width": 390,
+      "panel": "navigation",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 390,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 390,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 6,
+      "width": 390,
+      "panel": "navigation",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 1440,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 1440,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 768,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 768,
+      "panel": "notifications",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 320,
+      "panel": "account",
+      "passed": true
+    },
+    {
+      "actor": 2,
+      "width": 320,
+      "panel": "notifications",
+      "passed": true
+    }
+  ]
+}

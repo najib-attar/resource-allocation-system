@@ -1,0 +1,3829 @@
+{
+  "checks": [
+    "Owner list/filter/page controls, actual allocated vs unallocated states, private IDs, published read-only after rejection, same-record unpublished type revision invalidates approval, stale revision rejected; no administrative allocation controls."
+  ],
+  "views": [
+    {
+      "name": "academic-list",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "allocated-request",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "unallocated-request",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "pending-review",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "academic-list",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "allocated-request",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "unallocated-request",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "pending-review",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "academic-list",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "allocated-request",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "unallocated-request",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "pending-review",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "academic-list",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "allocated-request",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "unallocated-request",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "pending-review",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "academic-list",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "allocated-request",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "unallocated-request",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "pending-review",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "empty-academic-list",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "empty-academic-list",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "empty-academic-list",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "empty-academic-list",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "empty-academic-list",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "rejected-eligibility-still-allocated",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "rejected-eligibility-still-allocated",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "rejected-eligibility-still-allocated",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "rejected-eligibility-still-allocated",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "rejected-eligibility-still-allocated",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "revise-as-exam",
+      "width": 1440,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "revise-as-exam",
+      "width": 1024,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "revise-as-exam",
+      "width": 768,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "revise-as-exam",
+      "width": 390,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    },
+    {
+      "name": "revise-as-exam",
+      "width": 320,
+      "overflow": false,
+      "fieldsLabeled": true,
+      "keyboardWalk": true
+    }
+  ],
+  "controls": [
+    {
+      "name": "academic-list",
+      "width": 1440,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "type",
+          "text": "All typesExaminationTeaching activityRecurring teachingCommittee meeting",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "status",
+          "text": "All outcomesPendingApprovedRejected",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "limit",
+          "text": "102550100",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "",
+          "name": "",
+          "text": "Apply filters",
+          "href": null,
+          "action": "/professor/requests",
+          "value": "",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Reset filters",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Awaiting administrative review",
+          "href": "/professor/requests/7",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/5",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/4",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/3",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/2",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/1",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "allocated-request",
+      "width": 1440,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Open university calendar",
+          "href": "/calendar/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "unallocated-request",
+      "width": 1440,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "pending-review",
+      "width": 1440,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Revise for another review",
+          "href": "/professor/requests/7/revise",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "academic-list",
+      "width": 1024,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "type",
+          "text": "All typesExaminationTeaching activityRecurring teachingCommittee meeting",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "status",
+          "text": "All outcomesPendingApprovedRejected",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "limit",
+          "text": "102550100",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "",
+          "name": "",
+          "text": "Apply filters",
+          "href": null,
+          "action": "/professor/requests",
+          "value": "",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Reset filters",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Awaiting administrative review",
+          "href": "/professor/requests/7",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/5",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/4",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/3",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/2",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/1",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "allocated-request",
+      "width": 1024,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Open university calendar",
+          "href": "/calendar/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "unallocated-request",
+      "width": 1024,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "pending-review",
+      "width": 1024,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Revise for another review",
+          "href": "/professor/requests/7/revise",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "academic-list",
+      "width": 768,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "type",
+          "text": "All typesExaminationTeaching activityRecurring teachingCommittee meeting",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "status",
+          "text": "All outcomesPendingApprovedRejected",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "limit",
+          "text": "102550100",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "",
+          "name": "",
+          "text": "Apply filters",
+          "href": null,
+          "action": "/professor/requests",
+          "value": "",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Reset filters",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Awaiting administrative review",
+          "href": "/professor/requests/7",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/5",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/4",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/3",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/2",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/1",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "allocated-request",
+      "width": 768,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Open university calendar",
+          "href": "/calendar/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "unallocated-request",
+      "width": 768,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "pending-review",
+      "width": 768,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Revise for another review",
+          "href": "/professor/requests/7/revise",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "academic-list",
+      "width": 390,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "type",
+          "text": "All typesExaminationTeaching activityRecurring teachingCommittee meeting",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "status",
+          "text": "All outcomesPendingApprovedRejected",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "limit",
+          "text": "102550100",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "",
+          "name": "",
+          "text": "Apply filters",
+          "href": null,
+          "action": "/professor/requests",
+          "value": "",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Reset filters",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Awaiting administrative review",
+          "href": "/professor/requests/7",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/5",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/4",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/3",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/2",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/1",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "allocated-request",
+      "width": 390,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Open university calendar",
+          "href": "/calendar/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "unallocated-request",
+      "width": 390,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "pending-review",
+      "width": 390,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Revise for another review",
+          "href": "/professor/requests/7/revise",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "academic-list",
+      "width": 320,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "type",
+          "text": "All typesExaminationTeaching activityRecurring teachingCommittee meeting",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "status",
+          "text": "All outcomesPendingApprovedRejected",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "limit",
+          "text": "102550100",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "",
+          "name": "",
+          "text": "Apply filters",
+          "href": null,
+          "action": "/professor/requests",
+          "value": "",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Reset filters",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Awaiting administrative review",
+          "href": "/professor/requests/7",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/5",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/4",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/3",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/2",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Declared fictional academic activity",
+          "href": "/professor/requests/1",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "allocated-request",
+      "width": 320,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Open university calendar",
+          "href": "/calendar/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "unallocated-request",
+      "width": 320,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "pending-review",
+      "width": 320,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Revise for another review",
+          "href": "/professor/requests/7/revise",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "empty-academic-list",
+      "width": 1440,
+      "actor": 12,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "type",
+          "text": "All typesExaminationTeaching activityRecurring teachingCommittee meeting",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "status",
+          "text": "All outcomesPendingApprovedRejected",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "limit",
+          "text": "102550100",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "",
+          "name": "",
+          "text": "Apply filters",
+          "href": null,
+          "action": "/professor/requests",
+          "value": "",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Reset filters",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "empty-academic-list",
+      "width": 1024,
+      "actor": 12,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "type",
+          "text": "All typesExaminationTeaching activityRecurring teachingCommittee meeting",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "status",
+          "text": "All outcomesPendingApprovedRejected",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "limit",
+          "text": "102550100",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "",
+          "name": "",
+          "text": "Apply filters",
+          "href": null,
+          "action": "/professor/requests",
+          "value": "",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Reset filters",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "empty-academic-list",
+      "width": 768,
+      "actor": 12,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "type",
+          "text": "All typesExaminationTeaching activityRecurring teachingCommittee meeting",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "status",
+          "text": "All outcomesPendingApprovedRejected",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "limit",
+          "text": "102550100",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "",
+          "name": "",
+          "text": "Apply filters",
+          "href": null,
+          "action": "/professor/requests",
+          "value": "",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Reset filters",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "empty-academic-list",
+      "width": 390,
+      "actor": 12,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "type",
+          "text": "All typesExaminationTeaching activityRecurring teachingCommittee meeting",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "status",
+          "text": "All outcomesPendingApprovedRejected",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "limit",
+          "text": "102550100",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "",
+          "name": "",
+          "text": "Apply filters",
+          "href": null,
+          "action": "/professor/requests",
+          "value": "",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Reset filters",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "empty-academic-list",
+      "width": 320,
+      "actor": 12,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/new?type=Exam",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/new?type=OneTime",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/new?type=Recurring",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/new?type=CommitteeMeeting",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "type",
+          "text": "All typesExaminationTeaching activityRecurring teachingCommittee meeting",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "status",
+          "text": "All outcomesPendingApprovedRejected",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "limit",
+          "text": "102550100",
+          "href": null,
+          "action": "/professor/requests",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "",
+          "name": "",
+          "text": "Apply filters",
+          "href": null,
+          "action": "/professor/requests",
+          "value": "",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Reset filters",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "rejected-eligibility-still-allocated",
+      "width": 1440,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Open university calendar",
+          "href": "/calendar/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "rejected-eligibility-still-allocated",
+      "width": 1024,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Open university calendar",
+          "href": "/calendar/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "rejected-eligibility-still-allocated",
+      "width": 768,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Open university calendar",
+          "href": "/calendar/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "rejected-eligibility-still-allocated",
+      "width": 390,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Open university calendar",
+          "href": "/calendar/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "rejected-eligibility-still-allocated",
+      "width": 320,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Open university calendar",
+          "href": "/calendar/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Eligibility review history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SUMMARY",
+          "type": "",
+          "name": "",
+          "text": "Request and allocation history",
+          "href": null,
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "revise-as-exam",
+      "width": 1440,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/7/revise?type=Exam",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/7/revise?type=OneTime",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/7/revise?type=Recurring",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/7/revise?type=CommitteeMeeting",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "TEXTAREA",
+          "type": "",
+          "name": "purpose",
+          "text": "Synthetic academic request",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "number",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "courseCode",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "courseName",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "examType",
+          "text": "MidtermFinalQuizGeneral",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "canSplitAcrossRooms",
+          "text": "NoYes",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [
+            "resourceSelect"
+          ],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "time",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "",
+          "text": "Save revision for review",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "value": "",
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "revise-as-exam",
+      "width": 1024,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/7/revise?type=Exam",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/7/revise?type=OneTime",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/7/revise?type=Recurring",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/7/revise?type=CommitteeMeeting",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "TEXTAREA",
+          "type": "",
+          "name": "purpose",
+          "text": "Synthetic academic request",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "number",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "courseCode",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "courseName",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "examType",
+          "text": "MidtermFinalQuizGeneral",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "canSplitAcrossRooms",
+          "text": "NoYes",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [
+            "resourceSelect"
+          ],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "time",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "",
+          "text": "Save revision for review",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "value": "",
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "revise-as-exam",
+      "width": 768,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/7/revise?type=Exam",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/7/revise?type=OneTime",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/7/revise?type=Recurring",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/7/revise?type=CommitteeMeeting",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "TEXTAREA",
+          "type": "",
+          "name": "purpose",
+          "text": "Synthetic academic request",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "number",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "courseCode",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "courseName",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "examType",
+          "text": "MidtermFinalQuizGeneral",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "canSplitAcrossRooms",
+          "text": "NoYes",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [
+            "resourceSelect"
+          ],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "time",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "",
+          "text": "Save revision for review",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "value": "",
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "revise-as-exam",
+      "width": 390,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/7/revise?type=Exam",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/7/revise?type=OneTime",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/7/revise?type=Recurring",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/7/revise?type=CommitteeMeeting",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "TEXTAREA",
+          "type": "",
+          "name": "purpose",
+          "text": "Synthetic academic request",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "number",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "courseCode",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "courseName",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "examType",
+          "text": "MidtermFinalQuizGeneral",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "canSplitAcrossRooms",
+          "text": "NoYes",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [
+            "resourceSelect"
+          ],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "time",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "",
+          "text": "Save revision for review",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "value": "",
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    },
+    {
+      "name": "revise-as-exam",
+      "width": 320,
+      "actor": 2,
+      "items": [
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Professor services",
+          "href": "/professor/",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "My academic requests",
+          "href": "/professor/requests",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Examination",
+          "href": "/professor/requests/7/revise?type=Exam",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Teaching activity",
+          "href": "/professor/requests/7/revise?type=OneTime",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Recurring teaching",
+          "href": "/professor/requests/7/revise?type=Recurring",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "A",
+          "type": "",
+          "name": "",
+          "text": "Committee meeting",
+          "href": "/professor/requests/7/revise?type=CommitteeMeeting",
+          "action": null,
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "title",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "TEXTAREA",
+          "type": "",
+          "name": "purpose",
+          "text": "Synthetic academic request",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "facultyDeclaration",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "number",
+          "name": "participantCount",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "courseCode",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "courseName",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "examType",
+          "text": "MidtermFinalQuizGeneral",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "canSplitAcrossRooms",
+          "text": "NoYes",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "spaceId",
+          "text": "Choose a campus resourceM301 · MeetingRoom · Capacity 20Study Studio · Classroom · Capacity 8Computi",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [
+            "resourceSelect"
+          ],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "requiredFeature",
+          "text": "No required facilityProjectorWhiteboardComputers",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "requiredBuilding",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "SELECT",
+          "type": "",
+          "name": "day",
+          "text": "MondayTuesdayWednesdayThursdayFridaySaturdaySunday",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "time",
+          "name": "startTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "INPUT",
+          "type": "",
+          "name": "endTime",
+          "text": "",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "dataActions": [],
+          "disabled": false
+        },
+        {
+          "tag": "BUTTON",
+          "type": "submit",
+          "name": "",
+          "text": "Save revision for review",
+          "href": null,
+          "action": "/professor/requests/7/revise",
+          "value": "",
+          "dataActions": [],
+          "disabled": false
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "expectedErrors": [],
+  "keyboardSteps": 335,
+  "nativePickerSteps": 5,
+  "phase": "PROF-UI-05"
+}

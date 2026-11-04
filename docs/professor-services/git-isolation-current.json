@@ -1,5 +1,5 @@
 {
-  "studentRemote": "747c925b14c29368e6cb9bc8b2e2d9d33c494462\trefs/heads/design/student-portal",
+  "studentRemote": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
   "number": 24,
   "state": "open",
   "draft": true,
@@ -11,37 +11,32 @@
   "remoteMainMatchesReviewed": true,
   "professorRemoteBranchAbsent": true,
   "studentWorktreeClean": true,
+  "studentBase": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
   "frontendReviewedBase": "5a7f0b012308dea87e15c390519122f8248699f4",
-  "reviewedImplementationHead": "47825f540edca1754d560a7548673674a5e99575",
-  "localFrontendCommits": [
+  "auditStart": "6545a4aaf0b4f17311f80679f329a219209e9894",
+  "reviewedImplementationHead": "8696adbd04acce1efe25f59acafb4c6744a1f560",
+  "localAuditCommits": [
     {
-      "sha": "9fe9b8b22ab6ae70491e59fcbf7887cf103bed9f",
-      "subject": "feat(professor-portal): add scoped Home and reuse Campus Space workspace components"
+      "sha": "d71461d6ea62f075fffd4f8f6c536de6a2970f08",
+      "subject": "fix(eligibility): require canonical checked allocation inputs"
     },
     {
-      "sha": "b460e6728e9862355d29cdf8c129d40b3689e5ce",
-      "subject": "feat(professor-portal): refine appointment decisions and safe form feedback"
+      "sha": "86d72e4efb27ead7d20c5a99c175e1b8d3cd5797",
+      "subject": "fix(professor): reject malformed optional participant metadata"
     },
     {
-      "sha": "52dff9c9a6045b2b247b6cf3cb0de2a273e35512",
-      "subject": "feat(professor-portal): implement office hours and personal availability workspace"
+      "sha": "0de18dcbb5bd2847d2e03aab0cdeb2b0d87cfb57",
+      "subject": "fix(professor-ui): keep eligibility controls and saved states accurate"
     },
     {
-      "sha": "c41f271b2a245f999811f05ed624fcb5ef4443a1",
-      "subject": "feat(professor-portal): implement complete academic request declaration forms"
-    },
-    {
-      "sha": "6441b3bc9f1755082843fea9edbe672a535f721f",
-      "subject": "feat(professor-portal): track eligibility, allocations and protected revisions"
-    },
-    {
-      "sha": "8f6597508ff0732ed5d8ea87c0588e46edc2b2a4",
-      "subject": "feat(professor-portal): integrate calendar, mobile agendas and recipient Inbox"
-    },
-    {
-      "sha": "47825f540edca1754d560a7548673674a5e99575",
-      "subject": "test(professor-portal): verify controls, persistence and cross-role regressions"
+      "sha": "8696adbd04acce1efe25f59acafb4c6744a1f560",
+      "subject": "test(professor): expand independent control and migration verification"
     }
   ],
-  "recordedAt": "2026-11-04T04:02:01.627298+00:00"
+  "recordedAt": "2026-11-04T06:08:11.464841+00:00",
+  "readOnlyOperations": [
+    "Git status/log/ls-remote",
+    "GitHub GET pull request 24"
+  ],
+  "localStateRecheckedAt": "2026-11-04T06:18:29.597088+00:00"
 }

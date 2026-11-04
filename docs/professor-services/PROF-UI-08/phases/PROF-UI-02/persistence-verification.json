@@ -1,0 +1,41 @@
+{
+  "posts": 13,
+  "outcomes": [
+    {
+      "path": "/appointments/2/decision",
+      "result": "appointment revision/approvals/commitments persisted"
+    },
+    {
+      "path": "/appointments/2/decision",
+      "result": "appointment revision/approvals/commitments persisted"
+    },
+    {
+      "path": "/appointments/2/reschedule",
+      "result": "appointment revision/approvals/commitments persisted"
+    },
+    {
+      "path": "/appointments/2/decision",
+      "result": "rejected; state unchanged"
+    },
+    {
+      "path": "/appointments/2/decision",
+      "result": "appointment revision/approvals/commitments persisted"
+    },
+    {
+      "path": "/appointments/2/decision",
+      "result": "appointment revision/approvals/commitments persisted"
+    },
+    {
+      "path": "/appointments/2/cancel",
+      "result": "appointment revision/approvals/commitments persisted"
+    },
+    {
+      "path": "/appointments/3/decision",
+      "result": "appointment revision/approvals/commitments persisted"
+    },
+    {
+      "path": "/appointments/2/reschedule",
+      "result": "rejected; state unchanged"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "posts": 6,
+  "outcomes": [
+    {
+      "path": "/professor/requests/new",
+      "result": "self-owned pending submission; no allocation",
+      "id": 8
+    },
+    {
+      "path": "/professor/requests/new",
+      "result": "self-owned pending submission; no allocation",
+      "id": 9
+    },
+    {
+      "path": "/professor/requests/new",
+      "result": "self-owned pending submission; no allocation",
+      "id": 10
+    },
+    {
+      "path": "/professor/requests/new",
+      "result": "self-owned pending submission; no allocation",
+      "id": 11
+    },
+    {
+      "path": "/professor/requests/new",
+      "result": "rejected; persisted state unchanged"
+    }
+  ]
+}

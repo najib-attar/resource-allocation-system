@@ -1,0 +1,1 @@
+{"phase":"PROF-UI-04","views":25,"keyboardSteps":590,"checks":["Four real self-owned pending submissions, source resource profile, split declaration, serialized recurring helper, selected participant search/roles, duplicate-submit protection and retained invalid form values; no allocation on submission."]}

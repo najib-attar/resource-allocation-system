@@ -1,0 +1,1 @@
+{"phase":"PROF-UI-02","views":15,"keyboardSteps":70,"checks":["Actual own approval, no duplicate approve control, unanimous confirmation, Student reschedule reset/stale rejection, reapproval, cancellation and decline; private/state persistence independently checked."]}
