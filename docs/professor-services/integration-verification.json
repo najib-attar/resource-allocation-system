@@ -1,0 +1,1077 @@
+{
+  "status": "LOGOUT CORRECTED LOCALLY - INTEGRATION PAUSED",
+  "recordedAt": "2026-11-04T16:31:12.010774+03:00",
+  "implementationCommit": "bf8f829af782aee9fbff869d365d41d0c9393350",
+  "branch": "codex/professor-services-v1",
+  "integrationResumed": false,
+  "studentPR": {
+    "number": 24,
+    "merged": true,
+    "source": "8f17dec9f51902be29c2b97b7dd969b4b7cc8ffe",
+    "mergeCommit": "196933506469ae25d3214a91ef2fd457356d096d",
+    "method": "merge",
+    "freshPRChecksPassed": 4,
+    "postMergeMainChecksPassed": 2
+  },
+  "professorPushed": false,
+  "professorPullRequest": null,
+  "professorMerged": false,
+  "correction": {
+    "cause": "Late authenticated response refreshed a cleared signed cookie; cookie-only logout was replayable.",
+    "policy": "Durably deny only the logged-out browser login. Other concurrent logins remain active.",
+    "oldCookies": "Require one fresh password login for cookies predating durable revocation; historical logouts cannot be inferred.",
+    "storage": "logged_out_session: university identity, account generation, SHA-256 random nonce digest, server time; no cookie or plaintext nonce.",
+    "guarantees": [
+      "Denial commits before cookie clearing/success redirect",
+      "Each authenticated HTTP request checks the denial",
+      "Duplicate/concurrent logout is idempotent",
+      "Replayed cookies cannot read private pages or mutate calendars",
+      "Independent/new logins still work",
+      "Denials survive account deletion/reprovision and concurrent global revocation",
+      "CSRF, global account revocation, role permissions and eight-hour sliding lifetime remain enforced"
+    ]
+  },
+  "migration": {
+    "version": "0051b",
+    "previous": "0051a",
+    "applicationTables": 62,
+    "sourceSha256": "9959df9e9a06b7e930e4edc88590b46553c8dccc142700ffbf9e5ee219644215",
+    "additive": true,
+    "existingAccountsAndBookingsReset": false,
+    "automaticLegacyApproval": false,
+    "emptyDowngradeSupported": true,
+    "populatedDowngradeRefusesDenialLoss": true,
+    "operationalDatabaseApplied": false,
+    "localDemoApplied": false,
+    "rollout": "Stop all old workers, back up, upgrade head, restart matching code. Local demo launcher upgrades on restart.",
+    "retention": "No automatic purge: late responses can refresh cookie signing times. Review absolute-login-expiry/compaction separately."
+  },
+  "verification": {
+    "scope": "Logout correction and all adjusted schema assertions; not a fresh complete integration release gate.",
+    "python": {
+      "modules": [
+        "test_logout_sessions",
+        "test_logout_migration",
+        "test_identity_sessions",
+        "test_appointment_foundation",
+        "test_appointments",
+        "test_postgres_foundation",
+        "test_database_diagrams",
+        "test_frontend_prototype",
+        "test_application_entrypoints",
+        "test_notifications",
+        "test_professor_existing_workflows"
+      ],
+      "expected": 91,
+      "run": 91,
+      "passed": 91,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 252.84,
+      "results": {
+        "test_logout_migration": {
+          "expected": 3,
+          "run": 3,
+          "passed": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "seconds": 20.22,
+          "exitCode": 0
+        },
+        "test_appointment_foundation": {
+          "expected": 6,
+          "run": 6,
+          "passed": 6,
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "seconds": 51.31,
+          "exitCode": 0
+        },
+        "test_identity_sessions": {
+          "expected": 8,
+          "run": 8,
+          "passed": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "seconds": 54.08,
+          "exitCode": 0
+        },
+        "test_database_diagrams": {
+          "expected": 1,
+          "run": 1,
+          "passed": 1,
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "seconds": 0.19,
+          "exitCode": 0
+        },
+        "test_postgres_foundation": {
+          "expected": 8,
+          "run": 8,
+          "passed": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "seconds": 18.5,
+          "exitCode": 0
+        },
+        "test_application_entrypoints": {
+          "expected": 7,
+          "run": 7,
+          "passed": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "seconds": 18.09,
+          "exitCode": 0
+        },
+        "test_frontend_prototype": {
+          "expected": 8,
+          "run": 8,
+          "passed": 8,
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "seconds": 47.16,
+          "exitCode": 0
+        },
+        "test_professor_existing_workflows": {
+          "expected": 3,
+          "run": 3,
+          "passed": 3,
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "seconds": 47.73,
+          "exitCode": 0
+        },
+        "test_logout_sessions": {
+          "expected": 12,
+          "run": 12,
+          "passed": 12,
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "seconds": 197.02,
+          "exitCode": 0
+        },
+        "test_appointments": {
+          "expected": 24,
+          "run": 24,
+          "passed": 24,
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "seconds": 201.42,
+          "exitCode": 0
+        },
+        "test_notifications": {
+          "expected": 11,
+          "run": 11,
+          "passed": 11,
+          "failures": 0,
+          "errors": 0,
+          "skipped": [],
+          "seconds": 149.19,
+          "exitCode": 0
+        }
+      }
+    },
+    "compatibility": {
+      "run": 17,
+      "passed": 17,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "cases": [
+        "test_cost_policy_persistence.PolicyMigrationTests.test_additive_empty_upgrade_and_schema_drift",
+        "test_cost_policy_persistence.PolicyMigrationTests.test_downgrade_lock_order_with_concurrent_decision_append_has_no_lost_history",
+        "test_cost_policy_persistence.PolicyMigrationTests.test_initialized_head_alone_also_blocks_downgrade_without_data_loss",
+        "test_cost_policy_persistence.PolicyMigrationTests.test_populated_authority_or_head_blocks_downgrade",
+        "test_database_diagrams.DatabaseDiagramTests.test_diagram_sources_and_catalog_match_all_actual_tables",
+        "test_eligibility_migration.EmptyEligibilityMigrationTests.test_empty_database_downgrade_and_upgrade_preserve_pre_gate_schema",
+        "test_eligibility_migration.LegacyEligibilityMigrationTests.test_legacy_approval_does_not_allocate_and_downgrade_refuses_history_loss",
+        "test_equipment.EquipmentWorkflowTests.test_database_prevents_incomplete_approval_and_cross_type_reservations",
+        "test_logout_migration.LogoutMigrationTests.test_empty_downgrade_and_reupgrade_are_reversible",
+        "test_logout_migration.LogoutMigrationTests.test_populated_downgrade_refuses_to_reactivate_logged_out_cookies",
+        "test_logout_migration.LogoutMigrationTests.test_upgrade_preserves_account_and_starts_without_guessed_denials",
+        "test_recurring_persistence.RecurringPersistenceTests.test_migration_drift_and_empty_downgrade_preserve_one_time_records",
+        "test_resource_feedback.FeedbackRoomTests.test_migration_drift_and_safe_empty_downgrade",
+        "test_scheduling_preferences.PreferenceMigrationTests.test_additive_upgrade_creates_empty_table_and_matches_metadata",
+        "test_scheduling_preferences.PreferenceMigrationTests.test_populated_history_blocks_downgrade_without_data_loss",
+        "test_university_calendar.UnifiedCalendarTests.test_migration_columns_have_safe_defaults_and_no_duplicate_calendar_tables",
+        "test_waiting_lists.WaitingEquipmentTests.test_migration_keeps_single_queue_and_can_upgrade_from_previous_head"
+      ],
+      "seconds": 77.037
+    },
+    "uniqueTestCases": 104,
+    "testExecutions": 108,
+    "deterministicFiveRoleBrowser": {
+      "passed": 5,
+      "results": [
+        {
+          "actor": 1,
+          "role": "Student",
+          "lateCookiePresent": true,
+          "protectedAfterLogout": 302,
+          "replayedMutationStatus": 400,
+          "independentLoginStatus": 200,
+          "newLoginStatus": 200
+        },
+        {
+          "actor": 2,
+          "role": "Instructor",
+          "lateCookiePresent": true,
+          "protectedAfterLogout": 302,
+          "replayedMutationStatus": 400,
+          "independentLoginStatus": 200,
+          "newLoginStatus": 200
+        },
+        {
+          "actor": 6,
+          "role": "Administrator",
+          "lateCookiePresent": true,
+          "protectedAfterLogout": 302,
+          "replayedMutationStatus": 400,
+          "independentLoginStatus": 200,
+          "newLoginStatus": 200
+        },
+        {
+          "actor": 7,
+          "role": "Staff",
+          "lateCookiePresent": true,
+          "protectedAfterLogout": 302,
+          "replayedMutationStatus": 400,
+          "independentLoginStatus": 200,
+          "newLoginStatus": 200
+        },
+        {
+          "actor": 9,
+          "role": "TeachingAssistant",
+          "lateCookiePresent": true,
+          "protectedAfterLogout": 302,
+          "replayedMutationStatus": 400,
+          "independentLoginStatus": 200,
+          "newLoginStatus": 200
+        }
+      ]
+    },
+    "committedRacePersistence": {
+      "logoutDenialsPersisted": 5,
+      "allFiveActorsVerified": true,
+      "accountVersionsUnchanged": true,
+      "rejectedMutationsPersisted": 0,
+      "responseTimingOnly": true
+    },
+    "originalFailedWorkflow": {
+      "passed": true,
+      "postCount": 41,
+      "independentlyVerifiedOutcomes": 28,
+      "views": 41,
+      "keyboardSteps": 927,
+      "nativePickerSteps": 45,
+      "checks": [
+        "Student: actual login redirect, read scope, CSRF and logout",
+        "Instructor: actual login redirect, read scope, CSRF and logout",
+        "TeachingAssistant: actual login redirect, read scope, CSRF and logout",
+        "Staff: actual login redirect, read scope, CSRF and logout",
+        "Administrator: actual login redirect, read scope, CSRF and logout",
+        "Owner-only API: actual published, rejected and pending records; private IDs, invalid filters and administrative/intake denials",
+        "Own hour publication and exclusions; foreign deletion denied; future confirmed appointments protect removal",
+        "Own dated block add/remove; private peer block absent; confirmed appointment conflict rejected",
+        "Month/week/day, schedule, appointments, hours, invitations and inbox responsive/keyboard review",
+        "Unanimous professor approval; student rescheduling invalidates both approvals; stale revision rejected; reapproval, professor cancellation and rejection persist",
+        "Optional room invitation accept/decline remains distinct from faculty approval and reservation",
+        "Inbox mark-all persisted; cancellation removed confirmed commitments; academic calendar filter uses explicit binding"
+      ],
+      "unexpectedErrors": []
+    },
+    "cleanup": {
+      "remainingUnownedSchemas": [
+        "ras_test_0582a99d4f8441c0a65b8173541556d5",
+        "ras_test_a8b4fa0498774ce6b029889906f0ec9d"
+      ],
+      "checkedOwnedBrowserFixtures": [
+        {
+          "name": "logout-browser-fixed",
+          "schema": "ras_test_5abe9e29af5743e3ab79d786a32d4d7e",
+          "absent": true,
+          "serverStopped": true
+        },
+        {
+          "name": "logout-browser-final",
+          "schema": "ras_test_d1516db9191947c98b75b89b50dff9d8",
+          "absent": true,
+          "serverStopped": true
+        },
+        {
+          "name": "logout-browser-release",
+          "schema": "ras_test_3451e657fd1440769258ebd426139753",
+          "absent": true,
+          "serverStopped": true
+        },
+        {
+          "name": "logout-five-role-workflows",
+          "schema": "ras_test_e819dc98c66f4ae98f6e9d7d9528487f",
+          "absent": true,
+          "serverStopped": true
+        },
+        {
+          "name": "logout-release-workflows",
+          "schema": "ras_test_318377543d5f4a07900bc2252c89ce78",
+          "absent": true,
+          "serverStopped": true
+        }
+      ],
+      "noSchemasDeletedByAudit": true
+    },
+    "protectedProductionPathsUnchanged": [
+      "src",
+      "research",
+      ".github",
+      "web/cost_policy_service.py",
+      "web/scheduling_preference_service.py",
+      "web/academic_eligibility.py",
+      "web/persistence/repository.py"
+    ],
+    "existingTestsRemoved": 0,
+    "existingTestsConsolidated": 0,
+    "addedRegressionMethods": 15,
+    "schemaOnlyTestUpdates": "14 existing methods retain all assertions; expected current head/table sets/counts include the additive logout table.",
+    "browserFixtures": "Real Flask, headless Edge/Playwright and owned disposable PostgreSQL schemas; no response mocks."
+  },
+  "evidenceHashes": {
+    "logout-before-fix.txt": "ad6fbce29e209073caa7341f328ab74da793e9bd81aed79fecd88bccec038509",
+    "logout-final-verified/tests.json": "0358c1ff789348f5715494e83b571d6a3df70549f4775d9cf0eecdf082d8a327",
+    "logout-final-verified/tests.txt": "df91f5ac5b7d2495a373c326c893da87a975c18f4b4f1b67d3c3e7fe591cee85",
+    "logout-compatibility-final.txt": "cf148b740fab9468e9fc2a3fde5a47f7ebaf9b846cddbf4eab6b97215435e13f",
+    "logout-browser-release/browser-results.json": "6682ddd68e3492d782dd1e936ae0a57f28625c933f89705e348ed59d2c85c3fd",
+    "logout-browser-release/persistence-verification.json": "f8823e19e0562fe80824fa1fd22395d2125f260bee75e74681827f820bec8dd3",
+    "logout-release-workflows/browser-results.json": "c856bc078219a908ad0661b44fd2f2711f857be97305794f878c80979dbf5a2c",
+    "logout-release-workflows/persistence-verification.json": "f0a06ee89e3c1fbeeba1844311d59e285eceb84f15d8ea8c4bb501b520e6b4a9",
+    "logout-cleanup-verification.json": "5ec3a5c08653180e50e6bf802d384267f25514190c5d5ab53f0087e0665afb29"
+  },
+  "earlierHarnessAttempts": "Retained locally and excluded from passing totals: stopped test PostgreSQL; incorrect new-fixture version/path; modern importer used against old schema; intermediate in-memory diagram drift; stale head/table expectations. Corrected and rerun without weakening assertions.",
+  "remainingIntegrationGates": [
+    "Fresh complete 741-case Python/PostgreSQL suite after this correction",
+    "Fresh C++/remaining legacy-publication and full release browser gates when integration resumes",
+    "Professor remote publication, hosted CI, review and normal merge",
+    "Final combined-main verification"
+  ],
+  "deploymentPerformed": false,
+  "operationalDatabaseModified": false,
+  "historicalBlockedAttempt": {
+    "status": "INTEGRATION BLOCKED - REVIEW REQUIRED",
+    "recordedAt": "2026-11-04T08:49:12.246083+00:00",
+    "studentPR": {
+      "number": 24,
+      "merged": true,
+      "source": "8f17dec9f51902be29c2b97b7dd969b4b7cc8ffe",
+      "mergeCommit": "196933506469ae25d3214a91ef2fd457356d096d",
+      "method": "merge",
+      "freshPRChecksPassed": 4,
+      "postMergeMainChecksPassed": 2
+    },
+    "remoteMain": "196933506469ae25d3214a91ef2fd457356d096d",
+    "professor": {
+      "candidate": "9dad4ff8130a96e442b2db6251601eaa454d2bc6",
+      "mainIntegratedLocally": "da7851efe640d720aa683ba8751cc58633271eff",
+      "pushed": false,
+      "pullRequest": null,
+      "merged": false
+    },
+    "python": {
+      "expected": 726,
+      "run": 726,
+      "passed": 725,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [
+        {
+          "test": "test_linux_execute_permission_is_checked (test_backend_executable.BackendExecutableTests.test_linux_execute_permission_is_checked)",
+          "reason": "POSIX permission check runs on Linux."
+        }
+      ],
+      "seconds": 1668.16
+    },
+    "pythonModules": {
+      "test_appointment_protocol": {
+        "expected": 5,
+        "run": 5,
+        "passed": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 10.06,
+        "exitCode": 0
+      },
+      "test_application_entrypoints": {
+        "expected": 7,
+        "run": 7,
+        "passed": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 16.58,
+        "exitCode": 0
+      },
+      "test_backend_executable": {
+        "expected": 21,
+        "run": 21,
+        "passed": 20,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [
+          {
+            "test": "test_linux_execute_permission_is_checked (test_backend_executable.BackendExecutableTests.test_linux_execute_permission_is_checked)",
+            "reason": "POSIX permission check runs on Linux."
+          }
+        ],
+        "seconds": 11.12,
+        "exitCode": 0
+      },
+      "test_appointment_foundation": {
+        "expected": 6,
+        "run": 6,
+        "passed": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 38.86,
+        "exitCode": 0
+      },
+      "test_calendar_loading": {
+        "expected": 3,
+        "run": 3,
+        "passed": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 16.42,
+        "exitCode": 0
+      },
+      "test_academic_eligibility": {
+        "expected": 9,
+        "run": 9,
+        "passed": 9,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 95.76,
+        "exitCode": 0
+      },
+      "test_cost_policy_values": {
+        "expected": 13,
+        "run": 13,
+        "passed": 13,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 0.12,
+        "exitCode": 0
+      },
+      "test_csv_cli": {
+        "expected": 1,
+        "run": 1,
+        "passed": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 0.44,
+        "exitCode": 0
+      },
+      "test_csv_contract": {
+        "expected": 3,
+        "run": 3,
+        "passed": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 1.39,
+        "exitCode": 0
+      },
+      "test_database_diagrams": {
+        "expected": 1,
+        "run": 1,
+        "passed": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 0.22,
+        "exitCode": 0
+      },
+      "test_eligibility_migration": {
+        "expected": 4,
+        "run": 4,
+        "passed": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 22.01,
+        "exitCode": 0
+      },
+      "test_engine_gateway": {
+        "expected": 24,
+        "run": 24,
+        "passed": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 13.2,
+        "exitCode": 0
+      },
+      "test_appointments": {
+        "expected": 24,
+        "run": 24,
+        "passed": 24,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 160.22,
+        "exitCode": 0
+      },
+      "test_cost_policy_persistence": {
+        "expected": 31,
+        "run": 31,
+        "passed": 31,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 172.98,
+        "exitCode": 0
+      },
+      "test_equipment_web": {
+        "expected": 7,
+        "run": 7,
+        "passed": 7,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 69.58,
+        "exitCode": 0
+      },
+      "test_frontend_prototype": {
+        "expected": 8,
+        "run": 8,
+        "passed": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 36.42,
+        "exitCode": 0
+      },
+      "test_cost_policy_governance": {
+        "expected": 56,
+        "run": 56,
+        "passed": 56,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 238.01,
+        "exitCode": 0
+      },
+      "test_identity_sessions": {
+        "expected": 8,
+        "run": 8,
+        "passed": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 42.75,
+        "exitCode": 0
+      },
+      "test_persistence_boundaries": {
+        "expected": 3,
+        "run": 3,
+        "passed": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 2.16,
+        "exitCode": 0
+      },
+      "test_personal_schedule": {
+        "expected": 15,
+        "run": 15,
+        "passed": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 57.76,
+        "exitCode": 0
+      },
+      "test_local_demo": {
+        "expected": 5,
+        "run": 5,
+        "passed": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 121.42,
+        "exitCode": 0
+      },
+      "test_equipment": {
+        "expected": 21,
+        "run": 21,
+        "passed": 21,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 268.7,
+        "exitCode": 0
+      },
+      "test_notifications": {
+        "expected": 11,
+        "run": 11,
+        "passed": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 136.95,
+        "exitCode": 0
+      },
+      "test_postgres_foundation": {
+        "expected": 8,
+        "run": 8,
+        "passed": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 15.61,
+        "exitCode": 0
+      },
+      "test_postgres_demo": {
+        "expected": 5,
+        "run": 5,
+        "passed": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 47.41,
+        "exitCode": 0
+      },
+      "test_postgres_import": {
+        "expected": 10,
+        "run": 10,
+        "passed": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 46.19,
+        "exitCode": 0
+      },
+      "test_postgres_completion": {
+        "expected": 21,
+        "run": 21,
+        "passed": 21,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 133.59,
+        "exitCode": 0
+      },
+      "test_postgres_concurrency": {
+        "expected": 15,
+        "run": 15,
+        "passed": 15,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 133.58,
+        "exitCode": 0
+      },
+      "test_postgres_text_contract": {
+        "expected": 1,
+        "run": 1,
+        "passed": 1,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 9.0,
+        "exitCode": 0
+      },
+      "test_postgres_runtime_independence": {
+        "expected": 3,
+        "run": 3,
+        "passed": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 43.83,
+        "exitCode": 0
+      },
+      "test_postgres_quality": {
+        "expected": 11,
+        "run": 11,
+        "passed": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 76.58,
+        "exitCode": 0
+      },
+      "test_preference_values": {
+        "expected": 11,
+        "run": 11,
+        "passed": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 0.28,
+        "exitCode": 0
+      },
+      "test_professor_existing_workflows": {
+        "expected": 3,
+        "run": 3,
+        "passed": 3,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 35.09,
+        "exitCode": 0
+      },
+      "test_postgres_web": {
+        "expected": 8,
+        "run": 8,
+        "passed": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 53.86,
+        "exitCode": 0
+      },
+      "test_postgres_workflow": {
+        "expected": 12,
+        "run": 12,
+        "passed": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 92.24,
+        "exitCode": 0
+      },
+      "test_postgres_recovery": {
+        "expected": 4,
+        "run": 4,
+        "passed": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 173.16,
+        "exitCode": 0
+      },
+      "test_recurrence": {
+        "expected": 16,
+        "run": 16,
+        "passed": 16,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 0.11,
+        "exitCode": 0
+      },
+      "test_professor_intake": {
+        "expected": 8,
+        "run": 8,
+        "passed": 8,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 101.5,
+        "exitCode": 0
+      },
+      "test_professor_portal": {
+        "expected": 12,
+        "run": 12,
+        "passed": 12,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 146.39,
+        "exitCode": 0
+      },
+      "test_recurring_persistence": {
+        "expected": 6,
+        "run": 6,
+        "passed": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 72.11,
+        "exitCode": 0
+      },
+      "test_professor_services": {
+        "expected": 14,
+        "run": 14,
+        "passed": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 156.14,
+        "exitCode": 0
+      },
+      "test_recurring_views": {
+        "expected": 10,
+        "run": 10,
+        "passed": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 124.12,
+        "exitCode": 0
+      },
+      "test_room_foundation": {
+        "expected": 4,
+        "run": 4,
+        "passed": 4,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 17.97,
+        "exitCode": 0
+      },
+      "test_recurring_policy": {
+        "expected": 25,
+        "run": 25,
+        "passed": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 292.09,
+        "exitCode": 0
+      },
+      "test_recurring_workflows": {
+        "expected": 25,
+        "run": 25,
+        "passed": 25,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 278.83,
+        "exitCode": 0
+      },
+      "test_save_only_confirmation": {
+        "expected": 11,
+        "run": 11,
+        "passed": 11,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 58.03,
+        "exitCode": 0
+      },
+      "test_room_requests": {
+        "expected": 18,
+        "run": 18,
+        "passed": 18,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 206.73,
+        "exitCode": 0
+      },
+      "test_resource_feedback": {
+        "expected": 31,
+        "run": 31,
+        "passed": 31,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 347.44,
+        "exitCode": 0
+      },
+      "test_service_examples": {
+        "expected": 5,
+        "run": 5,
+        "passed": 5,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 95.03,
+        "exitCode": 0
+      },
+      "test_student_portal_ui": {
+        "expected": 19,
+        "run": 19,
+        "passed": 19,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 0.75,
+        "exitCode": 0
+      },
+      "test_scheduling_preferences": {
+        "expected": 40,
+        "run": 40,
+        "passed": 40,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 141.12,
+        "exitCode": 0
+      },
+      "test_student_dashboard": {
+        "expected": 14,
+        "run": 14,
+        "passed": 14,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 97.99,
+        "exitCode": 0
+      },
+      "test_university_calendar": {
+        "expected": 21,
+        "run": 21,
+        "passed": 21,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 182.36,
+        "exitCode": 0
+      },
+      "test_waiting_lists": {
+        "expected": 49,
+        "run": 49,
+        "passed": 49,
+        "failures": 0,
+        "errors": 0,
+        "skipped": [],
+        "seconds": 499.02,
+        "exitCode": 0
+      }
+    },
+    "cpp": {
+      "passed": 192,
+      "failed": 0,
+      "runtimeSmokes": [
+        "clean-slot",
+        "normal-dataset"
+      ]
+    },
+    "successfulBrowserSuites": [
+      {
+        "name": "PROF-UI-01",
+        "views": 30,
+        "keyboardSteps": 745,
+        "posts": 7,
+        "verifiedOutcomes": 1
+      },
+      {
+        "name": "PROF-UI-02",
+        "views": 15,
+        "keyboardSteps": 70,
+        "posts": 13,
+        "verifiedOutcomes": 9
+      },
+      {
+        "name": "PROF-UI-03",
+        "views": 26,
+        "keyboardSteps": 351,
+        "posts": 10,
+        "verifiedOutcomes": 8
+      },
+      {
+        "name": "PROF-UI-04",
+        "views": 25,
+        "keyboardSteps": 590,
+        "posts": 6,
+        "verifiedOutcomes": 5
+      },
+      {
+        "name": "PROF-UI-05",
+        "views": 35,
+        "keyboardSteps": 335,
+        "posts": 10,
+        "verifiedOutcomes": 6
+      },
+      {
+        "name": "PROF-UI-06",
+        "views": 30,
+        "keyboardSteps": 765,
+        "posts": 5,
+        "verifiedOutcomes": 3
+      },
+      {
+        "name": "Independent",
+        "views": 200,
+        "keyboardSteps": 2604,
+        "posts": 32,
+        "verifiedOutcomes": 20
+      }
+    ],
+    "successfulBrowserTotals": {
+      "views": 361,
+      "keyboardSteps": 5460,
+      "posts": 83,
+      "verifiedOutcomes": 52
+    },
+    "failedBrowser": {
+      "script": "tests/professor/browser_review.cjs",
+      "line": 148,
+      "actor": 9,
+      "role": "TeachingAssistant",
+      "expectedStatusAfterLogout": 302,
+      "actualStatusAfterLogout": 403,
+      "exitCode": 1,
+      "capturedPostsBeforeFailure": 12,
+      "completeWorkflowVerificationPassed": false
+    },
+    "confirmedDiagnostic": {
+      "diagnostic": "Concurrent notification response after logout",
+      "authenticatedBefore": 200,
+      "logout": 302,
+      "anonymousBeforeDelayedResponse": 302,
+      "delayedFeedStatus": 200,
+      "delayedFeedSetCookiePresent": true,
+      "protectedAfterDelayedResponse": 200,
+      "expectedProtectedAfterLogout": 302,
+      "sessionRestored": true,
+      "sessionRefreshEachRequest": true,
+      "authenticationCodeModified": false,
+      "onlyResponseTimingDelayed": true
+    },
+    "authenticationProvenance": {
+      "loginAndLogoutHandlersIdenticalToMergedMain": true,
+      "notificationJavascriptIdenticalToMergedMain": true,
+      "diagnosticChangedOnlyResponseTiming": true
+    },
+    "notExecuted": [
+      "Fresh legacy/eligibility/C++ browser after failing five-role gate",
+      "Professor push/PR/hosted CI/merge",
+      "Final combined-main regressions because Professor was not merged"
+    ],
+    "requiredReview": "Define and approve server-side logout/session invalidation semantics so a late authenticated response cannot restore a logged-out session; retain the 302 expectation and add deterministic concurrency regression. Do not merely weaken assertions or delay logout in the browser.",
+    "migration": {
+      "version": "0051a",
+      "sourceUnchangedDuringIntegration": true,
+      "sha256": "a609a0af4331b517bab13977cb4c27ac37ee5ee47e5e1e76b89074706eeaf742",
+      "disposableMigrationTestsPassed": 4,
+      "operationalDatabaseApplied": false
+    },
+    "cleanup": {
+      "studentRemoved": 451,
+      "professorRemovedLocally": 420,
+      "validTestsRemoved": 0,
+      "studentScreenshotsRetained": 66,
+      "professorScreenshotsRetained": 68
+    },
+    "evidenceHashes": {
+      "failedBrowserOutput": "08d301f41ae573873fa81f526d04b1cc0681552edc96e901991cde1d8e996b21",
+      "pythonTranscript": "24a5b311ce5be56d721a64690ae7e103a905e1caf76da9226d0d304bfe1b0081",
+      "cppTranscript": "5bc8ca0c9ae75925d2e3c4ee6df0e0391dea3682646fa1077592242979d8fc8b",
+      "diagnosticResult": "ef1f031b873ebf6ab67860ebb3a4323b2fefb2f0412bc7ca7995101012d40cc8",
+      "diagnosticPython": "a26a2cd7e552cc90a174832c2858c50c4dea659f1359ee53c728c17b210088a5",
+      "diagnosticBrowser": "901b7c35415daff53d0b109f5907dccecefa20bb45c3c32184a51dc8fcc92f1d"
+    },
+    "rawEvidenceRoot": "C:\\Users\\najee\\.codex\\worktrees\\professor-services-v1\\resource-allocation-frontend\\build\\integration",
+    "diagnosticHarnessNote": "First diagnostic attempt used the pre-login CSRF token and was correctly rejected with 400. It was retained separately. The corrected diagnostic uses the rotated authenticated token and reproduces session restoration; this is defect evidence, not a passing security gate.",
+    "deploymentPerformed": false,
+    "operationalDatabaseModified": false
+  }
+}

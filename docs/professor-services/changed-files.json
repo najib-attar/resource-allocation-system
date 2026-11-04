@@ -666,6 +666,10 @@
     },
     {
       "status": "A",
+      "path": "docs/professor-services/integration-verification.json"
+    },
+    {
+      "status": "A",
       "path": "docs/professor-services/owner-reads-final/tests.json"
     },
     {
@@ -854,6 +858,10 @@
     },
     {
       "status": "A",
+      "path": "migrations/versions/0051b_logged_out_sessions.py"
+    },
+    {
+      "status": "A",
       "path": "reference/Professor-Use-Cases-Combined.pdf"
     },
     {
@@ -871,6 +879,22 @@
     {
       "status": "A",
       "path": "tests/academic_fixtures.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/auth_fixtures.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/logout_browser.cjs"
+    },
+    {
+      "status": "A",
+      "path": "tests/logout_browser.py"
+    },
+    {
+      "status": "M",
+      "path": "tests/postgres_fixtures.py"
     },
     {
       "status": "A",
@@ -951,6 +975,14 @@
     {
       "status": "M",
       "path": "tests/test_local_demo.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_logout_migration.py"
+    },
+    {
+      "status": "A",
+      "path": "tests/test_logout_sessions.py"
     },
     {
       "status": "M",
@@ -1071,6 +1103,10 @@
     {
       "status": "A",
       "path": "web/academic_eligibility.py"
+    },
+    {
+      "status": "M",
+      "path": "web/account_service.py"
     },
     {
       "status": "M",

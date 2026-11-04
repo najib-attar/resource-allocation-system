@@ -7,7 +7,7 @@
     "web/cost_policy_service.py",
     "tests/test_cost_policy_governance.py"
   ],
-  "unchangedProtectedSources": [
+  "protectedSourceGroups": [
     "src",
     "migrations",
     "web/persistence",
@@ -24,6 +24,14 @@
     "web/student_dashboard_service.py",
     "requirements.txt"
   ],
+  "approvedLogoutCorrections": [
+    "migrations/versions/0051b_logged_out_sessions.py",
+    "web/account_service.py",
+    "web/persistence/models.py"
+  ],
+  "otherProtectedSourcesUnchanged": true,
+  "allExistingModelDefinitionsPreserved": true,
+  "existingAccountMethodsPreservedExceptSessionIdentity": true,
   "gatewayOnlyChange": "Canonical repository input types and unbound guard invocation; all wire protocols and validators unchanged",
   "studentHomeUnchangedApartFromAssetPath": true,
   "sharedCss": [
@@ -70,7 +78,7 @@
   ],
   "testRetention": {
     "baseline": 652,
-    "current": 726,
+    "current": 741,
     "removed": 0,
     "consolidated": 0
   },

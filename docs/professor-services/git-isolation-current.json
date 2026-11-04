@@ -1,42 +1,86 @@
 {
-  "studentRemote": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
-  "number": 24,
-  "state": "open",
-  "draft": true,
-  "merged": false,
-  "head": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
-  "base": "main",
-  "url": "https://github.com/najib-attar/resource-allocation-system/pull/24",
-  "reviewedMain": "d9a63f3ef0f5f22b56a79af670c740a13f7bb6ad",
-  "remoteMainMatchesReviewed": true,
-  "professorRemoteBranchAbsent": true,
+  "recordedAt": "2026-11-04T16:31:12.010774+03:00",
+  "currentBranch": "codex/professor-services-v1",
+  "implementationCommit": "bf8f829af782aee9fbff869d365d41d0c9393350",
+  "professorWorktree": "C:\\Users\\najee\\.codex\\worktrees\\professor-services-v1\\resource-allocation-frontend",
+  "reviewedMain": "196933506469ae25d3214a91ef2fd457356d096d",
+  "studentPR": {
+    "number": 24,
+    "merged": true,
+    "source": "8f17dec9f51902be29c2b97b7dd969b4b7cc8ffe",
+    "mergeCommit": "196933506469ae25d3214a91ef2fd457356d096d",
+    "method": "merge",
+    "freshPRChecksPassed": 4,
+    "postMergeMainChecksPassed": 2
+  },
+  "studentWorktree": "C:\\Users\\najee\\Desktop\\resource-allocation-frontend",
+  "studentHead": "8f17dec9f51902be29c2b97b7dd969b4b7cc8ffe",
   "studentWorktreeClean": true,
-  "studentBase": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
-  "frontendReviewedBase": "5a7f0b012308dea87e15c390519122f8248699f4",
-  "auditStart": "6545a4aaf0b4f17311f80679f329a219209e9894",
-  "reviewedImplementationHead": "8696adbd04acce1efe25f59acafb4c6744a1f560",
-  "localAuditCommits": [
-    {
-      "sha": "d71461d6ea62f075fffd4f8f6c536de6a2970f08",
-      "subject": "fix(eligibility): require canonical checked allocation inputs"
-    },
-    {
-      "sha": "86d72e4efb27ead7d20c5a99c175e1b8d3cd5797",
-      "subject": "fix(professor): reject malformed optional participant metadata"
-    },
-    {
-      "sha": "0de18dcbb5bd2847d2e03aab0cdeb2b0d87cfb57",
-      "subject": "fix(professor-ui): keep eligibility controls and saved states accurate"
-    },
-    {
-      "sha": "8696adbd04acce1efe25f59acafb4c6744a1f560",
-      "subject": "test(professor): expand independent control and migration verification"
-    }
+  "localMainHead": "d9a63f3ef0f5f22b56a79af670c740a13f7bb6ad",
+  "localMainExistingUntracked": [
+    "?? .venv/",
+    "?? data/allocation_summaries.csv",
+    "?? data/allocations.csv",
+    "?? data/request_results.csv",
+    "?? data/request_summaries.csv",
+    "?? docs/use-cases/UC-STU-04-unified-university-calendar.pdf"
   ],
-  "recordedAt": "2026-11-04T06:08:11.464841+00:00",
-  "readOnlyOperations": [
-    "Git status/log/ls-remote",
-    "GitHub GET pull request 24"
+  "mainUnrelatedFilesPreserved": true,
+  "professorPushed": false,
+  "professorPullRequest": null,
+  "professorMerged": false,
+  "remoteRefNotRefreshedDuringUserPause": true,
+  "integrationResumed": false,
+  "deploymentPerformed": false,
+  "protectedProductionPathsUnchanged": [
+    "src",
+    "research",
+    ".github",
+    "web/cost_policy_service.py",
+    "web/scheduling_preference_service.py",
+    "web/academic_eligibility.py",
+    "web/persistence/repository.py"
   ],
-  "localStateRecheckedAt": "2026-11-04T06:18:29.597088+00:00"
+  "historicalPreIntegrationAudit": {
+    "studentRemote": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+    "number": 24,
+    "state": "open",
+    "draft": true,
+    "merged": false,
+    "head": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+    "base": "main",
+    "url": "https://github.com/najib-attar/resource-allocation-system/pull/24",
+    "reviewedMain": "d9a63f3ef0f5f22b56a79af670c740a13f7bb6ad",
+    "remoteMainMatchesReviewed": true,
+    "professorRemoteBranchAbsent": true,
+    "studentWorktreeClean": true,
+    "studentBase": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+    "frontendReviewedBase": "5a7f0b012308dea87e15c390519122f8248699f4",
+    "auditStart": "6545a4aaf0b4f17311f80679f329a219209e9894",
+    "reviewedImplementationHead": "8696adbd04acce1efe25f59acafb4c6744a1f560",
+    "localAuditCommits": [
+      {
+        "sha": "d71461d6ea62f075fffd4f8f6c536de6a2970f08",
+        "subject": "fix(eligibility): require canonical checked allocation inputs"
+      },
+      {
+        "sha": "86d72e4efb27ead7d20c5a99c175e1b8d3cd5797",
+        "subject": "fix(professor): reject malformed optional participant metadata"
+      },
+      {
+        "sha": "0de18dcbb5bd2847d2e03aab0cdeb2b0d87cfb57",
+        "subject": "fix(professor-ui): keep eligibility controls and saved states accurate"
+      },
+      {
+        "sha": "8696adbd04acce1efe25f59acafb4c6744a1f560",
+        "subject": "test(professor): expand independent control and migration verification"
+      }
+    ],
+    "recordedAt": "2026-11-04T06:08:11.464841+00:00",
+    "readOnlyOperations": [
+      "Git status/log/ls-remote",
+      "GitHub GET pull request 24"
+    ],
+    "localStateRecheckedAt": "2026-11-04T06:18:29.597088+00:00"
+  }
 }
