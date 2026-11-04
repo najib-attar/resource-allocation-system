@@ -33,6 +33,7 @@ async function login(browser, actor) {
 async function post(page,url,form,status) {
   const response=await page.request.post(base+url,{form:{csrf_token:tokens.get(page),...form},maxRedirects:0});
   assert.equal(response.status(),status,await response.text());
+  return response;
 }
 async function shot(page,label) {
   await page.screenshot({path:path.join(out,label+'.png'),fullPage:true});

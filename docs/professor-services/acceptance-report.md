@@ -10,7 +10,8 @@ Reviewed frontend base `5a7f0b0`; Student `747c925` remains unchanged. The appro
 | PROF-UI-02 | Implemented: pending/confirmed/history hub, own-decision progress, invitation status, preserved authorized decisions/cancellation/history and shared error recovery. Phase run 56 cases: 55 passed and one renamed error-handler test reference failed; the complete failure-presentation class passed on recheck. Browser: 15 views, 70 keyboard steps, 13 actual POSTs and nine verified domain/rejection outcomes. |
 | PROF-UI-03 | Implemented: inclusive/excluded office-hour form and patterns, retained validation fields, personal blocks and reused mobile agenda. 48/48 Python/PostgreSQL tests passed. Browser: 26 views, 351 keyboard steps, 10 POSTs/eight verified outcomes including duplicate-submit protection, protected removal and conflict rollback. |
 | PROF-UI-04 | Implemented: all four shared academic forms, actual resource profile, required facilities/building, exam split declaration, recurring helper, participant search/roles and preserved values. 37-case run: 36 passed and one newly added HTML-parser assertion was corrected; targeted recheck 1/1 passed. Browser: 25 views, 590 keyboard steps, six real POSTs/five verified outcomes; four self-owned pending submissions reserve nothing. |
-| PROF-UI-05–07 | Planned; continue sequentially. |
+| PROF-UI-05 | Implemented: owner list/filter/page controls, five separate progress axes, actual resources, rejection explanations, readable history and unpublished type revision. 42/42 tests passed; strengthened stale-form recheck 1/1 passed. Browser rerun: 35 views, 335 keyboard steps, 10 POSTs/six verified outcomes, including private IDs, published preservation after rejection and revision invalidation. |
+| PROF-UI-06–07 | Planned; continue sequentially. |
 
 Shared shell/service CSS declarations were verified equivalent to the approved Student rules after neutral selector promotion. The original three Student asset implementations and two Jinja components were renamed, not copied. Role-specific Student classes and contents remain. Instructor default navigation now reaches Professor Home; session/authentication/CSRF behavior is unchanged. Superseded role-ambiguous intermediate screenshots were archived under ignored build storage; final phase screenshots identify each role.
 
@@ -27,6 +28,10 @@ Availability compatibility: personal blocks reject overlap with confirmed appoin
 Academic input coverage includes the existing 24:00 end-of-day contract, previously unrepresentable in the native time input. End-time display/revision round-trip is tested without changing validation or engine rules. Resource profiles show configured facilities/service state, not time availability. Weekly slots remain weekly; dates require administrative binding. Multi/shared-room strategy selection remains administrative. No schema or scheduling change was introduced.
 
 [Phase 04 tests](PROF-UI-04/tests.json), [field recheck](PROF-UI-04-field-recheck/tests.json), [browser](portal/PROF-UI-04/browser-results.json), [committed outcomes](portal/PROF-UI-04/persistence-verification.json).
+
+Tracking correction: a rejected stale revision previously rendered the current version token with old submitted values. The form now retains the original expected revision, so another retry remains stale until the user explicitly reloads/reviews saved values. The backend's existing revision/ownership guards are unchanged. Unpublished request-type revision reuses the existing atomic subtype transition; published requests remain locked. Calendar applicability and visibility are described separately from actual allocation, without fabricating dated commitments.
+
+[Phase 05 tests](PROF-UI-05/tests.json), [stale retry recheck](PROF-UI-05-stale-recheck/tests.json), [browser](portal/PROF-UI-05/browser-results.json), [persistence verification](portal/PROF-UI-05/persistence-verification.json).
 
 ---
 

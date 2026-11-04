@@ -111,7 +111,36 @@ async function main(){
     for(const width of widths) {await prof.page.setViewportSize({width,height:950});await inspect(prof.page,width,'invalid-academic-form');await shot(prof.page,'invalid-academic-form-'+width);}
     checks.push('Four real self-owned pending submissions, source resource profile, split declaration, serialized recurring helper, selected participant search/roles, duplicate-submit protection and retained invalid form values; no allocation on submission.');
   }
-  const data=results();assert.equal(data.views.length,{'PROF-UI-01':30,'PROF-UI-02':15,'PROF-UI-03':26,'PROF-UI-04':25}[phase], 'Every planned phase view must execute');assert.deepEqual(data.errors,[]);assert.ok(data.expectedErrors.every(r=>[400,403,409].includes(r.status)));
+  if(phase==='PROF-UI-05') {
+    await views(prof.page,[['academic-list','/professor/requests'],['allocated-request','/professor/requests/'+ids.academic.Exam],['unallocated-request','/professor/requests/'+ids.rejected],['pending-review','/professor/requests/'+ids.pending]]);
+    const empty=await login(browser,12);await views(empty.page,[['empty-academic-list','/professor/requests']]);await empty.context.close();
+    await go(prof.page,'/professor/requests?limit=1');assert.equal(await prof.page.locator('.service-list .service-row').count(),1);
+    await prof.page.getByRole('link',{name:'Next page',exact:true}).click();assert.equal(new URL(prof.page.url()).searchParams.get('offset'),'1');
+    assert.equal(await prof.page.locator('[name=limit]').inputValue(),'1');await prof.page.getByRole('link',{name:'Previous page',exact:true}).click();
+    await prof.page.locator('[name=type]').selectOption('Exam');await prof.page.locator('[name=status]').selectOption('Rejected');await submit(prof.page,prof.page.getByRole('button',{name:'Apply filters',exact:true}));
+    assert.equal(await prof.page.locator('.service-list .service-row').count(),1);assert.match(await prof.page.locator('main').innerText(),/Allocation explanation/);
+    const peer=await login(browser,3);assert.equal((await peer.page.request.get(base+'/professor/requests/'+ids.pending)).status(),403);await post(peer.page,'/professor/requests/'+ids.pending+'/revise',{},403);
+    const admin=await login(browser,6);
+    async function review(key,decision) {
+      await go(admin.page,'/academic-eligibility/'+key);await admin.page.locator('[name=reason]').fill('Synthetic individual administrative decision.');await submit(admin.page,admin.page.locator('button[name=decision][value='+decision+']'));
+    }
+    await review(ids.academic.Exam,'reject');await views(prof.page,[['rejected-eligibility-still-allocated','/professor/requests/'+ids.academic.Exam]]);
+    assert.ok(await prof.page.locator('.academic-allocation').count()>0);assert.equal(await prof.page.locator('a[href$="/revise"]').count(),0);
+    await post(prof.page,'/professor/requests/'+ids.academic.Exam+'/revise',{},400);
+    await review(ids.pending,'approve');await views(prof.page,[['revise-as-exam','/professor/requests/'+ids.pending+'/revise?type=Exam']]);
+    const token=await prof.page.locator('[name=submissionKey]').inputValue();
+    await prof.page.locator('[name=title]').fill('Revised examination declaration');await prof.page.locator('[name=courseCode]').fill('REV101');await prof.page.locator('[name=courseName]').fill('Declared revised examination');
+    await submit(prof.page,prof.page.locator('[data-academic-form] button[type=submit]'));
+    assert.match(await prof.page.locator('main').innerText(),/Pending Eligibility Review/);assert.equal(await prof.page.locator('.academic-allocation').count(),0);
+    const result=await (await prof.page.request.get(base+'/professor/academic-requests/'+ids.pending)).json();assert.equal(result.item.type,'Exam');assert.equal(result.item.revision,2);
+    const stale=await post(prof.page,'/professor/requests/'+ids.pending+'/revise',{requestType:'Exam',revision:1,submissionKey:token,title:'Stale revision',purpose:'Declared',spaceId:302,participantCount:5,day:7,startTime:'10:00',endTime:'11:00',courseCode:'REV101',courseName:'Declared',examType:'General',canSplitAcrossRooms:'false'},400);
+    assert.match(await stale.text(),/name="revision" value="1"/);
+    assert.match(await stale.text(),/Reload saved declaration/);
+    await shot(prof.page,'revision-reset-eligibility');
+    checks.push('Owner list/filter/page controls, actual allocated vs unallocated states, private IDs, published read-only after rejection, same-record unpublished type revision invalidates approval, stale revision rejected; no administrative allocation controls.');
+    await peer.context.close();await admin.context.close();
+  }
+  const data=results();assert.equal(data.views.length,{'PROF-UI-01':30,'PROF-UI-02':15,'PROF-UI-03':26,'PROF-UI-04':25,'PROF-UI-05':35}[phase], 'Every planned phase view must execute');assert.deepEqual(data.errors,[]);assert.ok(data.expectedErrors.every(r=>[400,403,409].includes(r.status)));
   fs.writeFileSync(path.join(out,'browser-results.json'),JSON.stringify({...data,phase,checks},null,2)+'\n');
   console.log(JSON.stringify({phase,views:data.views.length,keyboardSteps:data.keyboardSteps,checks}));
  } finally {await browser.close();}

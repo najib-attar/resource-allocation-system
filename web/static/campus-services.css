@@ -181,3 +181,15 @@
 .service-tabs a[aria-current=page] { background: var(--soft-blue); border-color: var(--accent); font-weight: 650; }
 .campus-service .academic-person { padding: 12px 0; border-top: 1px solid var(--line); align-items: center; }
 .campus-service .academic-person[hidden] { display: none; }
+.service-progress { list-style: none; margin: 0; padding: 0; }
+.service-progress > li { padding: 18px 0; border-bottom: 1px solid var(--line); }
+.service-progress > li:first-child { padding-top: 0; }
+.service-progress h3 { margin-top: 0; }
+.service-definition { display: grid; grid-template-columns: minmax(130px,1fr) minmax(0,2fr); gap: 10px 20px; }
+.service-definition dt { color: var(--muted); font-weight: 600; }
+.service-definition dd { margin: 0; overflow-wrap: anywhere; }
+.academic-allocation { padding: 16px 0; border-top: 1px solid var(--line); }
+.academic-allocation h3 { margin-top: 0; }
+.service-history > li { padding: 12px 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.service-history time { color: var(--muted); font-size: 11px; }
+@media (max-width: 600px) { .service-definition { grid-template-columns: minmax(0,1fr); gap: 5px; } .service-definition dd { margin-bottom: 12px; } }

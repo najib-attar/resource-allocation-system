@@ -1,0 +1,6 @@
+test_owner_tracking_distinguishes_pending_allocation_and_type_revision_requires_review (test_professor_portal.ProfessorPortalTests.test_owner_tracking_distinguishes_pending_allocation_and_type_revision_requires_review) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 8.002s
+
+OK

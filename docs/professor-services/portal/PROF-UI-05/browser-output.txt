@@ -1,0 +1,1 @@
+{"phase":"PROF-UI-05","views":35,"keyboardSteps":335,"checks":["Owner list/filter/page controls, actual allocated vs unallocated states, private IDs, published read-only after rejection, same-record unpublished type revision invalidates approval, stale revision rejected; no administrative allocation controls."]}

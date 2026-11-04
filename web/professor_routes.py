@@ -1,5 +1,6 @@
 """Owner-scoped academic intake and tracking; independent of appointments."""
 import uuid
+from datetime import datetime
 from flask import Blueprint, g, jsonify, redirect, render_template, request, url_for
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -9,11 +10,15 @@ from .professor_service import ProfessorRequestError, ProfessorService
 from .input_validation import integer, parse_time_slots
 from .engine_gateway import EngineIntegrationError
 from .professor_dashboard_service import ProfessorDashboardService
-from .calendar_service import CalendarError
+from .calendar_service import CalendarError, university_zone
 
 
 def create_professor_blueprint(database_provider):
     blueprint = Blueprint('professor', __name__, url_prefix='/professor')
+
+    @blueprint.app_template_filter('recorded_time')
+    def recorded_time(value):
+        return datetime.fromisoformat(value).astimezone(university_zone()).strftime('%d %b %Y, %H:%M')+' ('+university_zone().key+')'
 
     @blueprint.after_request
     def private(response):
@@ -125,7 +130,7 @@ def create_professor_blueprint(database_provider):
             values['timeData']=';'.join(f"{s['day']}-{s['startMinutes']//60:02d}:{s['startMinutes']%60:02d}-{s['endMinutes']//60:02d}:{s['endMinutes']%60:02d}" for s in item['slots'])
             for person in item['participants']:
                 values['participantRole_'+str(person['id'])]=person['declaredRole']
-        kind=values.get('requestType',item['type'] if item else request.args.get('type','OneTime'))
+        kind=values.get('requestType',request.args.get('type',item['type'] if item else 'OneTime'))
         if kind not in {'Exam','OneTime','Recurring','CommitteeMeeting'}:
             raise ProfessorRequestError('Choose a supported academic request type.')
         error=None

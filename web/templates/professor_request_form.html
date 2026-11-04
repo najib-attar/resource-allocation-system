@@ -6,11 +6,11 @@
 {% block service_intro %}Declare your activity for administrative eligibility review. Submission and eligibility approval do not reserve a resource.{% endblock %}
 {% block service_actions %}<a class="service-button" href="{{ url_for('professor.pages') }}">My academic requests</a>{% endblock %}
 {% block service_content %}
-{% if not item %}<nav class="service-tabs" aria-label="Academic request types">{% for choice in ['Exam','OneTime','Recurring','CommitteeMeeting'] %}<a href="{{ url_for('professor.form',type=choice) }}"{% if choice==kind %} aria-current="page"{% endif %}>{{ academic_type(choice) }}</a>{% endfor %}</nav>{% endif %}
-{% if error %}<section class="panel service-notice" role="alert"><h2>Check your declaration</h2><p>{{ error }}</p></section>{% endif %}
+<nav class="service-tabs" aria-label="Academic request types">{% for choice in ['Exam','OneTime','Recurring','CommitteeMeeting'] %}<a href="{{ url_for('professor.form',request_id=item.id,type=choice) if item else url_for('professor.form',type=choice) }}"{% if choice==kind %} aria-current="page"{% endif %}>{{ academic_type(choice) }}</a>{% endfor %}</nav>
+{% if error %}<section class="panel service-notice" role="alert"><h2>Check your declaration</h2><p>{{ error }}</p>{% if item %}<a class="service-button" href="{{ url_for('professor.form',request_id=item.id) }}">Reload saved declaration</a><p>Reload to review the current saved values before retrying a stale revision.</p>{% endif %}</section>{% endif %}
 {% if item %}<p class="service-notice">Saving a revision invalidates the previous eligibility decision and returns this request to Pending Eligibility Review.</p>{% endif %}
 <form method="post" data-academic-form>
-  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="submissionKey" value="{{ submission_key }}"><input type="hidden" name="requestType" value="{{ kind }}">{% if item %}<input type="hidden" name="revision" value="{{ item.revision }}">{% endif %}
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="submissionKey" value="{{ submission_key }}"><input type="hidden" name="requestType" value="{{ kind }}">{% if item %}<input type="hidden" name="revision" value="{{ values.get('revision',item.revision) }}">{% endif %}
   {% include 'components/_academic_request_fields.html' %}
   <section class="panel"><h2>Submit for review</h2><p>Your identity is assigned by your signed-in account. Course, faculty and activity details are declarations, not verified affiliations.</p><p>Administration reviews eligibility before allocation. Calendar dates require a separate explicit academic-period binding.</p>
     {% if not directory.resources %}<p role="status">No campus resources are configured. Contact university administration before submitting.</p>{% endif %}

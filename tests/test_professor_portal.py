@@ -137,3 +137,43 @@ class ProfessorPortalTests(ProfessorFixture):
         self.assertTrue(page.find(role='alert'))
         self.assertEqual(len([node for node in page.find('input',name='requiredParticipantIds') if 'checked' in node.attrs]),2)
         self.assertEqual(page.find('input',name='participantRole_2')[0].attrs['value'],'Chair')
+
+    def test_owner_tracking_distinguishes_pending_allocation_and_type_revision_requires_review(self):
+        key=self.academic_request(title='Own unallocated declaration')
+        from test_student_portal_ui import Document
+        page=Document(self.client.get(f'/professor/requests/{key}').get_data(as_text=True)).root
+        self.assertIn('Not allocated',page.text)
+        self.assertFalse(page.find('article',**{'class':'academic-allocation'}))
+        changed=self.client.get(f'/professor/requests/{key}/revise?type=Exam')
+        self.assertEqual(changed.status_code,200)
+        self.assertTrue(Document(changed.get_data(as_text=True)).root.find('input',name='courseCode'))
+        from web.academic_eligibility import EligibilityService
+        item=self.professors.detail(2,key)['item']
+        EligibilityService(self.database).decide(6,key,1,item['reviewVersion'],True,'Reviewed original declaration')
+        data=dict(requestType='Exam',revision=1,submissionKey=uuid.uuid4().hex,title='Revised exam declaration',
+            purpose='Declared examination',spaceId=302,participantCount=5,day=2,startTime='10:00',endTime='11:00',
+            courseCode='SYN2',courseName='Declared course',examType='Final',canSplitAcrossRooms='true')
+        response=self.client.post(f'/professor/requests/{key}/revise',data=data)
+        self.assertEqual(response.status_code,302,response.data)
+        item=self.professors.detail(2,key)['item']
+        self.assertEqual((item['type'],item['revision'],item['eligibilityStatus']),('Exam',2,'Pending Eligibility Review'))
+        self.assertEqual(item['allocations'],[])
+        self.assertEqual(item['examDeclaration']['courseCode'],'SYN2')
+        stale=self.client.post(f'/professor/requests/{key}/revise',data=data)
+        self.assertEqual(stale.status_code,400)
+        stale_page=Document(stale.get_data(as_text=True)).root
+        self.assertEqual(stale_page.find('input',name='revision')[0].attrs['value'],'1')
+        self.assertTrue(stale_page.find('a',href=f'/professor/requests/{key}/revise'))
+        self.assertEqual(self.client.post(f'/professor/requests/{key}/revise',data=data).status_code,400)
+        self.assertEqual(self.professors.detail(2,key)['item']['revision'],2)
+        self.assertEqual(authorized_client(web_app.app,3).get(f'/professor/requests/{key}').status_code,403)
+
+    def test_published_tracking_has_real_allocation_and_no_edit_control(self):
+        key=self.academic_request()
+        self.publish()
+        from test_student_portal_ui import Document
+        page=Document(self.client.get(f'/professor/requests/{key}').get_data(as_text=True)).root
+        self.assertTrue(page.find('article',**{'class':'academic-allocation'}))
+        self.assertFalse(page.find('a',href=f'/professor/requests/{key}/revise'))
+        self.assertIn('read-only',page.text)
+        self.assertIn('No explicit academic period',page.text)
