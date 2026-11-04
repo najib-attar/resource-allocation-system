@@ -1,5 +1,10 @@
 # D1: synthetic preference contract and deterministic compiler
 
+> Stage documentation and dated verification record. See the
+> [research guide](../../README.md) for the current stage map and application boundary.
+> Schema counts, branch/publication status and next-stage recommendations below
+> refer to their recorded checkpoints; CDMCS remains inactive in live scheduling.
+
 This is an offline research library, not preference storage or application
 activation. It queries no database, registers no Flask routes, invokes no engine
 and changes no bookings or permissions. All input must be explicitly synthetic.

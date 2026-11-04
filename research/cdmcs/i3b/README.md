@@ -1,5 +1,10 @@
 # I3b: authorized read-only calendar projection
 
+> Stage documentation and dated verification record. See the
+> [research guide](../README.md) for the current stage map and application boundary.
+> Schema counts, branch/publication status and next-stage recommendations below
+> refer to their recorded checkpoints; CDMCS remains inactive in live scheduling.
+
 This experimental Python module reads existing application calendars into I3a's
 immutable `Snapshot` DTO. It registers no routes, selects no scheduler, launches
 no engine, and creates no bookings, approvals, permissions or background work.

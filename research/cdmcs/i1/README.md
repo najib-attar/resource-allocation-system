@@ -1,5 +1,10 @@
 # Isolated CDMCS C++17 research prototype
 
+> Stage documentation and dated verification record. See the
+> [research guide](../README.md) for the current stage map and application boundary.
+> Schema counts, branch/publication status and next-stage recommendations below
+> refer to their recorded checkpoints; CDMCS remains inactive in live scheduling.
+
 This is the I2-reviewed copy of the supplied I1 engine. It proposes schedules;
 it never books, approves, persists, or changes a calendar. It is not selected by
 the university application, EngineGateway, production build, or production CI.
