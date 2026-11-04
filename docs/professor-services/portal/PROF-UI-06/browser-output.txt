@@ -1,0 +1,1 @@
+{"phase":"PROF-UI-06","views":30,"keyboardSteps":765,"checks":["Month/week/day and academic detail at five widths; real date navigation and category filtering, recipient link read and mark-all persisted, empty Inbox and administrative publication denial."]}

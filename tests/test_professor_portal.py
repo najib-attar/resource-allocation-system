@@ -177,3 +177,14 @@ class ProfessorPortalTests(ProfessorFixture):
         self.assertFalse(page.find('a',href=f'/professor/requests/{key}/revise'))
         self.assertIn('read-only',page.text)
         self.assertIn('No explicit academic period',page.text)
+
+    def test_professor_calendar_agenda_and_inbox_preserve_authorized_sources(self):
+        self.meeting('Visible student request')
+        from test_student_portal_ui import Document
+        page=Document(self.client.get('/calendar/?view=week&date=2030-01-07').get_data(as_text=True)).root
+        self.assertTrue(page.find('section',**{'class':'calendar-agenda'}))
+        self.assertIn('Declared courses',page.text)
+        self.assertFalse(page.find('a',href='/calendar/publications'))
+        inbox=Document(self.client.get('/notifications/').get_data(as_text=True)).root
+        self.assertIn('Academic allocation notifications are not enabled',inbox.text)
+        self.assertTrue(inbox.find('form',action='/notifications/read'))

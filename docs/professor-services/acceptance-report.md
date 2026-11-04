@@ -11,7 +11,8 @@ Reviewed frontend base `5a7f0b0`; Student `747c925` remains unchanged. The appro
 | PROF-UI-03 | Implemented: inclusive/excluded office-hour form and patterns, retained validation fields, personal blocks and reused mobile agenda. 48/48 Python/PostgreSQL tests passed. Browser: 26 views, 351 keyboard steps, 10 POSTs/eight verified outcomes including duplicate-submit protection, protected removal and conflict rollback. |
 | PROF-UI-04 | Implemented: all four shared academic forms, actual resource profile, required facilities/building, exam split declaration, recurring helper, participant search/roles and preserved values. 37-case run: 36 passed and one newly added HTML-parser assertion was corrected; targeted recheck 1/1 passed. Browser: 25 views, 590 keyboard steps, six real POSTs/five verified outcomes; four self-owned pending submissions reserve nothing. |
 | PROF-UI-05 | Implemented: owner list/filter/page controls, five separate progress axes, actual resources, rejection explanations, readable history and unpublished type revision. 42/42 tests passed; strengthened stale-form recheck 1/1 passed. Browser rerun: 35 views, 335 keyboard steps, 10 POSTs/six verified outcomes, including private IDs, published preservation after rejection and revision invalidation. |
-| PROF-UI-06–07 | Planned; continue sequentially. |
+| PROF-UI-06 | Implemented: shared month/week/day calendar and mobile agenda, actual source privacy, office-hour/schedule navigation, recipient Inbox and explicit academic-notification limitation. 58/58 tests passed. Browser: 30 views, 765 keyboard steps, five POSTs/three verified outcomes, including read receipts and professor publication denial. |
+| PROF-UI-07 | Final independent integration, cleanup and full regressions in progress. |
 
 Shared shell/service CSS declarations were verified equivalent to the approved Student rules after neutral selector promotion. The original three Student asset implementations and two Jinja components were renamed, not copied. Role-specific Student classes and contents remain. Instructor default navigation now reaches Professor Home; session/authentication/CSRF behavior is unchanged. Superseded role-ambiguous intermediate screenshots were archived under ignored build storage; final phase screenshots identify each role.
 
@@ -32,6 +33,8 @@ Academic input coverage includes the existing 24:00 end-of-day contract, previou
 Tracking correction: a rejected stale revision previously rendered the current version token with old submitted values. The form now retains the original expected revision, so another retry remains stale until the user explicitly reloads/reviews saved values. The backend's existing revision/ownership guards are unchanged. Unpublished request-type revision reuses the existing atomic subtype transition; published requests remain locked. Calendar applicability and visibility are described separately from actual allocation, without fabricating dated commitments.
 
 [Phase 05 tests](PROF-UI-05/tests.json), [stale retry recheck](PROF-UI-05-stale-recheck/tests.json), [browser](portal/PROF-UI-05/browser-results.json), [persistence verification](portal/PROF-UI-05/persistence-verification.json).
+
+[Phase 06 tests](PROF-UI-06/tests.json), [calendar/Inbox browser](portal/PROF-UI-06/browser-results.json), [read-state persistence](portal/PROF-UI-06/persistence-verification.json). Public academic attribution/declarations grant no private teaching entitlement. No new notification source or publication permission was added.
 
 ---
 

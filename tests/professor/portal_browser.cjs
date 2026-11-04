@@ -140,7 +140,21 @@ async function main(){
     checks.push('Owner list/filter/page controls, actual allocated vs unallocated states, private IDs, published read-only after rejection, same-record unpublished type revision invalidates approval, stale revision rejected; no administrative allocation controls.');
     await peer.context.close();await admin.context.close();
   }
-  const data=results();assert.equal(data.views.length,{'PROF-UI-01':30,'PROF-UI-02':15,'PROF-UI-03':26,'PROF-UI-04':25,'PROF-UI-05':35}[phase], 'Every planned phase view must execute');assert.deepEqual(data.errors,[]);assert.ok(data.expectedErrors.every(r=>[400,403,409].includes(r.status)));
+  if(phase==='PROF-UI-06') {
+    await views(prof.page,[['calendar-month','/calendar/?view=month&date=2030-01-07'],['calendar-week','/calendar/?view=week&date=2030-01-07'],['calendar-day','/calendar/?view=day&date=2030-01-07'],['academic-calendar-detail','/calendar/academic/'+ids.academic.Exam+'?date=2030-01-08'],['inbox','/notifications/']]);
+    const empty=await login(browser,12);await views(empty.page,[['empty-inbox','/notifications/']]);await empty.context.close();
+    await go(prof.page,'/calendar/?view=week&date=2030-01-07');await prof.page.getByRole('link',{name:'Next',exact:true}).click();assert.equal(new URL(prof.page.url()).searchParams.get('date'),'2030-01-14');
+    await prof.page.getByRole('link',{name:'Previous',exact:true}).click();
+    const filters=prof.page.locator('form.calendar-filters');for(const box of await filters.locator('[name=category]').all())await box.uncheck();await filters.locator('[name=category][value=academic]').check();await submit(prof.page,filters.getByRole('button',{name:'Apply filters'}));
+    assert.equal(new URL(prof.page.url()).searchParams.getAll('category').join(','),'academic');
+    assert.equal(await prof.page.locator('a[href="/calendar/publications"]').count(),0);
+    await go(prof.page,'/notifications/');const first=prof.page.locator('main a[data-notification-id]').first();await Promise.all([prof.page.waitForNavigation(),first.click()]);
+    await go(prof.page,'/notifications/');await submit(prof.page,prof.page.locator('form[action="/notifications/read"]').filter({has:prof.page.locator('[name=throughId]')}).locator('button'));
+    assert.match(await prof.page.locator('main').innerText(),/0 unread/);await shot(prof.page,'inbox-all-read');
+    await post(prof.page,'/calendar/publications',{id:ids.academic.Exam,visibility:'published'},403);
+    checks.push('Month/week/day and academic detail at five widths; real date navigation and category filtering, recipient link read and mark-all persisted, empty Inbox and administrative publication denial.');
+  }
+  const data=results();assert.equal(data.views.length,{'PROF-UI-01':30,'PROF-UI-02':15,'PROF-UI-03':26,'PROF-UI-04':25,'PROF-UI-05':35,'PROF-UI-06':30}[phase], 'Every planned phase view must execute');assert.deepEqual(data.errors,[]);assert.ok(data.expectedErrors.every(r=>[400,403,409].includes(r.status)));
   fs.writeFileSync(path.join(out,'browser-results.json'),JSON.stringify({...data,phase,checks},null,2)+'\n');
   console.log(JSON.stringify({phase,views:data.views.length,keyboardSteps:data.keyboardSteps,checks}));
  } finally {await browser.close();}

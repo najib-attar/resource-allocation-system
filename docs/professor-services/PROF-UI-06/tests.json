@@ -1,0 +1,69 @@
+{
+  "modules": [
+    "test_professor_portal",
+    "test_university_calendar",
+    "test_notifications",
+    "test_personal_schedule"
+  ],
+  "expected": 58,
+  "run": 58,
+  "passed": 58,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "seconds": 186.61,
+  "results": {
+    "test_personal_schedule": {
+      "modules": [
+        "test_personal_schedule"
+      ],
+      "expected": 15,
+      "run": 15,
+      "passed": 15,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 48.45,
+      "exitCode": 0
+    },
+    "test_professor_portal": {
+      "modules": [
+        "test_professor_portal"
+      ],
+      "expected": 11,
+      "run": 11,
+      "passed": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 122.45,
+      "exitCode": 0
+    },
+    "test_notifications": {
+      "modules": [
+        "test_notifications"
+      ],
+      "expected": 11,
+      "run": 11,
+      "passed": 11,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 122.55,
+      "exitCode": 0
+    },
+    "test_university_calendar": {
+      "modules": [
+        "test_university_calendar"
+      ],
+      "expected": 21,
+      "run": 21,
+      "passed": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "seconds": 182.78,
+      "exitCode": 0
+    }
+  }
+}

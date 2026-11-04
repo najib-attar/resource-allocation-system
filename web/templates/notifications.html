@@ -1,6 +1,6 @@
 {% extends 'service_base.html' %}
 {% block title %}My Notifications{% endblock %}
-{% block page_heading %}My Notifications{% endblock %}
+{% block page_heading %}{{ 'Inbox' if professor_shell else 'My Notifications' }}{% endblock %}
 {% block service_eyebrow %}Inbox{% endblock %}
 {% block service_intro %}Updates on your requests, invitations, loans and private resource reports.{% endblock %}
 {% block service_content %}
@@ -9,5 +9,6 @@
     <form method="post" action="{{ url_for('notifications.read') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="throughId" value="{{ inbox.throughId }}"><button{% if not inbox.unreadCount %} disabled{% endif %}>Mark all as read</button></form></div>
     {% include 'components/_notification_items.html' %}
     <p class="student-card-note">Showing the latest 100 updates. Full activity history stays on each request. Room/professor availability alerts are not enabled yet.</p>
+    {% if professor_shell %}<p class="service-notice">Academic allocation notifications are not enabled. Follow eligibility decisions and allocation outcomes in <a href="{{ url_for('professor.pages') }}">My academic requests</a>.</p>{% endif %}
 </section>
 {% endblock %}
