@@ -79,18 +79,17 @@ def main():
     assert not git(student,'diff',base,reviewed_student,'--','web','tests','src','migrations','requirements.txt')
     assert git(ROOT,'branch','--show-current')=='codex/professor-services-v1'
     protected=['src','web/appointment_service.py','web/room_request_service.py',
-        'web/equipment_service.py','web/account_service.py','web/university_calendar.py',
+        'web/equipment_service.py','web/university_calendar.py',
         'web/personal_schedule_service.py','web/notification_service.py']
     assert all((ROOT/path).exists() for path in protected)
     assert not git(ROOT,'diff',base,'--',*protected)
-    old_security=git(ROOT,'show',base+':web/security.py')
-    new_security=(ROOT/'web/security.py').read_text(encoding='utf-8').strip()
-    professor_guard=('        if request.endpoint and request.endpoint.startswith("professor."):\n'
-        '            if g.principal.role != "Instructor":\n'
-        '                abort(403, description="Instructor access required.")\n'
-        '            return None\n')
-    home_redirect='    if principal.role == "Instructor":\n        return "professor.home"\n'
-    assert new_security.replace(professor_guard,'').replace(home_redirect,'')==old_security
+    # Session internals deliberately changed in the separately approved security
+    # correction. Pin that reviewed revision rather than claiming no auth change.
+    auth_fix='bf8f829af782aee9fbff869d365d41d0c9393350'
+    git(ROOT,'merge-base','--is-ancestor',auth_fix,'HEAD')
+    auth_sources=['web/account_service.py','web/security.py']
+    for path in auth_sources:
+        assert (ROOT/path).read_text(encoding='utf-8').strip()==git(ROOT,'show',auth_fix+':'+path),path
     archive = Path('C:/Users/najee/Downloads/professor_use_cases_handoff.zip')
     integrity = []
     with zipfile.ZipFile(archive) as package:
@@ -105,7 +104,9 @@ def main():
         referencedRegressionMethodsValidated=len(references),missingTestReferences=missing,
         preservedStudentBase=base,reviewedStudentHead=reviewed_student,studentClean=True,professorBranch='codex/professor-services-v1',
         unchangedProtectedSources=protected,approvedPersistenceChanges=True,
-        unchangedSessionAndCsrfInternals=True,approvedProfessorHomeRedirect=True,
+        approvedLogoutCorrection=auth_fix,authSourcesPinnedToReviewedCorrection=auth_sources,
+        sessionBehavior='Durable per-login logout denial; delayed cookie replay rejected; independent logins preserved.',
+        approvedProfessorHomeRedirect=True,
         handoffIntegrity=integrity),indent=2)+'\n',encoding='utf-8')
     print(json.dumps(dict(approvalGate='enforced; intake enabled',pythonSources=len(python),
                          testReferences=len(references),handoffFiles=len(integrity))))

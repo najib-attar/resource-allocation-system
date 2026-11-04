@@ -102,13 +102,17 @@
     "web/appointment_service.py",
     "web/room_request_service.py",
     "web/equipment_service.py",
-    "web/account_service.py",
     "web/university_calendar.py",
     "web/personal_schedule_service.py",
     "web/notification_service.py"
   ],
   "approvedPersistenceChanges": true,
-  "unchangedSessionAndCsrfInternals": true,
+  "approvedLogoutCorrection": "bf8f829af782aee9fbff869d365d41d0c9393350",
+  "authSourcesPinnedToReviewedCorrection": [
+    "web/account_service.py",
+    "web/security.py"
+  ],
+  "sessionBehavior": "Durable per-login logout denial; delayed cookie replay rejected; independent logins preserved.",
   "approvedProfessorHomeRedirect": true,
   "handoffIntegrity": [
     {
