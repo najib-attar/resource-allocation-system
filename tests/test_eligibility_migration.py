@@ -4,7 +4,7 @@ import uuid
 from unittest import mock
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import MetaData, Table, select
+from sqlalchemy import MetaData, Table, select, inspect, text
 from postgres_fixtures import PostgresTestCase, ROOT
 from web.account_service import AccountService
 from web.academic_eligibility import EligibilityError, EligibilityService
@@ -98,3 +98,26 @@ class LegacyEligibilityMigrationTests(PostgresTestCase):
         with self.assertRaises(RuntimeError),mock.patch.dict(os.environ,{'DATABASE_URL':self.url}):
             command.downgrade(Config(str(ROOT/'alembic.ini')),'0050b')
         self.assert_original()
+        with self.database.transaction(read_only=True) as session:
+            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')),'0051a')
+            self.assertEqual(session.get(RequestEligibility,1).status,'Eligible')
+
+
+class EmptyEligibilityMigrationTests(PostgresTestCase):
+    def test_empty_database_downgrade_and_upgrade_preserve_pre_gate_schema(self):
+        with mock.patch.dict(os.environ,{'DATABASE_URL':self.url}):
+            command.downgrade(Config(str(ROOT/'alembic.ini')),'0050b')
+        with self.database.transaction(read_only=True) as session:
+            schema=inspect(session.connection())
+            self.assertFalse(schema.has_table('request_eligibility'))
+            self.assertNotIn('faculty_declaration',{c['name'] for c in schema.get_columns('resource_request')})
+            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')),'0050b')
+        with mock.patch.dict(os.environ,{'DATABASE_URL':self.url}):
+            command.upgrade(Config(str(ROOT/'alembic.ini')),'head')
+        with self.database.transaction(read_only=True) as session:
+            schema=inspect(session.connection())
+            self.assertTrue(schema.has_table('request_eligibility'))
+            self.assertIn('faculty_declaration',{c['name'] for c in schema.get_columns('resource_request')})
+            self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')),'0051a')
+            self.assertEqual(session.scalar(text('SELECT count(*) FROM request_eligibility')),0)
+            self.assertEqual(session.scalar(text('SELECT count(*) FROM eligibility_event')),0)

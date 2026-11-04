@@ -3,6 +3,7 @@ const fs=require('node:fs'),path=require('node:path'),assert=require('node:asser
 const {chromium}=require(process.env.PLAYWRIGHT_NODE_MODULE||'playwright');
 const {go,submit,login,post,shot,inspect,base,ids,out,results}=require('./browser_review.cjs');
 const phase=process.env.PROFESSOR_PORTAL_PHASE||'PROF-UI-01';
+const independentAudit=process.env.PROFESSOR_INDEPENDENT_AUDIT==='1';
 const widths=[1440,1024,768,390,320],checks=[];
 async function views(page,pages,captureWidths=widths) {
   for(const width of widths) {
@@ -170,7 +171,37 @@ async function main(){
       await post(user.page,'/logout',{csrf_token:'invalid'},400);await user.page.locator('[data-account-menu] summary').click();await submit(user.page,user.page.locator('form[action="/logout"] button'));assert.equal((await user.page.request.get(base+'/professor/',{maxRedirects:0})).status(),302);await user.context.close();
     }
     await post(prof.page,'/academic-eligibility/'+ids.pending,{revision:2,reviewVersion:1,decision:'approve',reason:'Self approval'},403);await post(prof.page,'/run-allocation',{},403);
-    const contexts=new Map([[1,student.page],[2,prof.page]]),destinations=[],classified=[];
+    let administrator;
+    if(independentAudit) {
+      const response=await prof.page.request.post(base+'/professor/academic-requests',{headers:{'X-CSRF-Token':await prof.page.locator('[data-csrf]').getAttribute('data-csrf')},data:{type:'OneTime',spaceId:302,participantCount:5,title:'Synthetic malformed API',purpose:'Independent audit',slots:[{day:7,startMinutes:600,endMinutes:660}],submissionKey:'a'.repeat(32),participants:null}});
+      assert.equal(response.status(),400);assert.match((await response.json()).error,/Participants must be a list/);
+      administrator=await login(browser,6);
+      const pages=[['eligibility-queue','/academic-eligibility/'],['eligibility-detail','/academic-eligibility/'+ids.pending],['pending-confirmation','/request-added/'+ids.pending],['eligible-confirmation','/request-added/'+ids.academic.Exam]];
+      for(const width of widths) {
+        await administrator.page.setViewportSize({width,height:950});
+        for(const [name,url] of pages) {
+          await go(administrator.page,url);await inspect(administrator.page,width,name);
+          if(name.startsWith('eligibility'))assert.ok(await administrator.page.locator('.app-admin-navigation').getAttribute('open')!==null);
+          if(name==='pending-confirmation')assert.equal(await administrator.page.locator('main form[action^="/run-allocation-now/"]').count(),0);
+          if(name==='eligible-confirmation')assert.equal(await administrator.page.getByRole('button',{name:'Run Allocation Now',exact:true}).count(),1);
+          if([1440,320].includes(width))await shot(administrator.page,name+'-'+width);
+        }
+      }
+      await go(administrator.page,'/request-added/'+ids.academic.Exam);
+      await submit(administrator.page,administrator.page.getByRole('button',{name:'Run Allocation Now',exact:true}));
+      await go(administrator.page,'/academic-eligibility/'+ids.pending);
+      await administrator.page.locator('[name=reason]').fill('Synthetic independent review rejection; no reservation change.');
+      await submit(administrator.page,administrator.page.locator('button[name=decision][value=reject]'));
+      for(const width of widths) {
+        await administrator.page.setViewportSize({width,height:950});await go(administrator.page,'/request-added/'+ids.pending);
+        assert.match(await administrator.page.locator('main').innerText(),/Current eligibility: Eligibility Rejected/);
+        assert.equal(await administrator.page.locator('main form[action^="/run-allocation-now/"]').count(),0);
+        await inspect(administrator.page,width,'rejected-confirmation');if([1440,320].includes(width))await shot(administrator.page,'rejected-confirmation-'+width);
+      }
+      await go(administrator.page,'/request-added/999999',404);assert.doesNotMatch(await administrator.page.locator('body').innerText(),/was added successfully/);
+      checks.push('Independent audit: malformed JSON is a persisted no-op; all-role global controls and menus, live pending/eligible/rejected confirmation states, explicit administrator Run Allocation Now POST, missing-ID 404, and expanded eligibility navigation.');
+    }
+    const contexts=new Map([[1,student.page],[2,prof.page],...(administrator?[[6,administrator.page]]:[])]),destinations=[],classified=[];
     for(const view of results().controls)for(const control of view.items) {
       let behavior;
       if(control.disabled)behavior='Intentionally disabled; visible empty/unavailable state';
@@ -188,8 +219,9 @@ async function main(){
     fs.writeFileSync(path.join(out,'control-trace.json'),JSON.stringify({classified,destinations},null,2)+'\n');
     checks.push('Independent final sweep: 24 professor surfaces, three real error states and eight Student surfaces at five widths; long persisted content, every collected GET destination, native disclosures, all-role logout/CSRF, staff drawers, optional student decline and room invitation mutations.');
     await student.context.close();
+    if(administrator)await administrator.context.close();
   }
-  const data=results();assert.equal(data.views.length,{'PROF-UI-01':30,'PROF-UI-02':15,'PROF-UI-03':26,'PROF-UI-04':25,'PROF-UI-05':35,'PROF-UI-06':30,'PROF-UI-07':175}[phase], 'Every planned phase view must execute');assert.deepEqual(data.errors,[]);assert.ok(data.expectedErrors.every(r=>[400,403,409].includes(r.status)));
+  const data=results();assert.equal(data.views.length,{'PROF-UI-01':30,'PROF-UI-02':15,'PROF-UI-03':26,'PROF-UI-04':25,'PROF-UI-05':35,'PROF-UI-06':30,'PROF-UI-07':independentAudit?200:175}[phase], 'Every planned phase view must execute');assert.deepEqual(data.errors,[]);assert.ok(data.expectedErrors.every(r=>[400,403,409,...(independentAudit?[404]:[])].includes(r.status)));
   fs.writeFileSync(path.join(out,'browser-results.json'),JSON.stringify({...data,phase,checks},null,2)+'\n');
   console.log(JSON.stringify({phase,views:data.views.length,keyboardSteps:data.keyboardSteps,checks}));
  } finally {await browser.close();}

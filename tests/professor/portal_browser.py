@@ -24,7 +24,7 @@ from web.persistence.models import LoginAccount,Role,User
 def main():
     if not os.environ.get('TEST_DATABASE_URL'):raise RuntimeError('Disposable PostgreSQL required.')
     phase=os.environ.get('PROFESSOR_PORTAL_PHASE','PROF-UI-01')
-    output=ROOT/'docs/professor-services/portal'/phase
+    output=Path(os.environ.get('PROFESSOR_REVIEW_OUTPUT',str(ROOT/'docs/professor-services/portal'/phase)))
     fixture=ProfessorFixture();server=None;thread=None;posts=[]
     try:
         fixture.setUp()
@@ -91,7 +91,7 @@ def main():
                 assert next(r for r in after['appointmentInvitations'] if r['appointment_id']==key and r['user_id']==4)['status']=='Declined'
                 assert before['commitments']==after['commitments'] and before['approvals']==after['approvals']
                 extra.append(dict(path=post['path'],result='optional student decline persisted without changing mandatory commitments'));continue
-            is_academic=post['path'].startswith(('/professor/requests','/academic-eligibility')) or post['path']=='/run-allocation'
+            is_academic=post['path'].startswith(('/professor/requests','/academic-eligibility','/run-allocation-now/')) or post['path']=='/run-allocation'
             key='academic' if is_academic else 'workflow'
             value=dict(post,before=post['before'][key],after=post['after'][key])
             (academic_posts if is_academic else original).append(value)

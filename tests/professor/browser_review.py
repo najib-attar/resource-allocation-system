@@ -19,7 +19,7 @@ from web import app as web_app
 from web.account_service import AccountService
 from web.persistence.models import LoginAccount, ProfessorAvailability, Role, User
 
-OUTPUT = ROOT / 'docs/professor-services/browser'
+OUTPUT = Path(os.environ.get('PROFESSOR_REVIEW_OUTPUT',str(ROOT/'docs/professor-services/browser')))
 BUILD = ROOT / 'build/professor-review'
 
 

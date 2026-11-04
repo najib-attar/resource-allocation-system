@@ -19,7 +19,7 @@ from web.engine_gateway import EngineGateway
 from web.persistence.models import LoginAccount,RequestEligibility,Resource,ResourceRequest,Role,User
 from web.persistence.repository import advance_identity
 
-OUTPUT=ROOT/'docs/professor-services/eligibility-browser'
+OUTPUT=Path(os.environ.get('PROFESSOR_REVIEW_OUTPUT',str(ROOT/'docs/professor-services/eligibility-browser')))
 
 
 def persisted(database):
@@ -65,7 +65,7 @@ def verify(posts):
             assert row['revision']==int(form['revision'])+1 and meta['status']=='Pending Eligibility Review'
             assert meta['reviewer_id'] is None
             outcomes.append(dict(path=path,result='material revision invalidated eligibility',id=key))
-        elif path=='/run-allocation':
+        elif path=='/run-allocation' or path.startswith('/run-allocation-now/'):
             if before['state'][0]['active_run_id']==after['state'][0]['active_run_id']:
                 assert before==after
                 outcomes.append(dict(path=path,result='outstanding legacy review blocked replacement without mutation'))
