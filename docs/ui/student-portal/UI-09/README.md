@@ -1,5 +1,10 @@
 # UI-09 Integration and acceptance evidence
 
+> Historical phase record. UI-01–UI-10 are complete and merged; see the
+> [current Student Portal guide](../README.md). Scope statements, test counts
+> and follow-up plans below describe this phase at its recorded revision.
+> Later shared-component and authentication changes are documented in the current guides.
+
 All existing student service rules are accounted for. `routes.md` / `routes.csv`
 inventory all 68 Flask rules, including 47 service rules and their role boundaries.
 `contracts.json` verifies original named form controls and unchanged protected
@@ -24,7 +29,8 @@ changed. Four explicit presentation/error-contract tests accompany the change.
   No database tests skipped. Real dump/restore, concurrency, private preferences
   and policy foundations, all student lifecycles and existing role flows ran.
   Elapsed: 1,551.08 seconds. `tests.json` has per-module counts; `tests.txt` has every
-  result; `modules/` retains each subprocess's exact evidence.
+  result. Redundant per-module output was later archived at the audited Git
+  revision; the current acceptance report documents the evidence cleanup.
 - Only skip: `test_linux_execute_permission_is_checked` — "POSIX permission check
   runs on Linux." This execution used Windows.
 - C++: **192 passed, 0 failed**. Both existing runtime smoke cases passed, using

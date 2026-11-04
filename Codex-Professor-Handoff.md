@@ -1,5 +1,11 @@
 # Codex — Professor Use Cases v1: Backend-first implementation handoff
 
+> Historical implementation handoff. Professor Services is now merged through
+> [PR #25](https://github.com/najib-attar/resource-allocation-system/pull/25).
+> Original task instructions below are preserved as provenance; they do not
+> describe current development status. See the
+> [Professor Services guide](docs/professor-services/README.md) and approved contracts.
+
 You are implementing the next part of the University Resource Allocation and Scheduling System: **Professor Services**.
 
 The accompanying handoff package contains `professor_use_cases_v1.pdf`, separate one-page `UC-PROF-01.pdf`–`UC-PROF-09.pdf`, and `professor_backend_audit.md`. Read all of them.
@@ -23,6 +29,7 @@ The accompanying handoff package contains `professor_use_cases_v1.pdf`, separate
 ## Stage 1 — Verify existing professor behavior
 
 Verify and, where needed, correct UC-PROF-01..05 in focused commits:
+
 - Own appointment hours: dates, exclusions, add/remove, no cross-user modification.
 - Required-professor appointment approval: current revision, all required professors, conflict rechecks, cancellation, optional students never veto.
 - Dated personal blocks and own calendar, no private third-party events.
@@ -34,6 +41,7 @@ Do not rewrite these stable services merely for consistency. Do not grant ordina
 ## Stage 2 — New professor academic requests (one small PR/commit group per type)
 
 Implement UC-PROF-06, 07 and 08 only where the existing domain contracts make it safe:
+
 - Authenticated Instructor can submit **only an Instructor-owned** Exam, OneTime/Recurring teaching, or CommitteeMeeting academic request through a new role-scoped intake. Never accept arbitrary user IDs from forms.
 - Reuse existing validators, Request repository, occurrence/participant models and C++ request types. Do not remove `spaceId` from a contract that currently requires it; if a new user experience needs additional mapping, document and test the mapping before implementing it.
 - Exam requires course code, course name, exam type and split flag; room capacity/facilities constraints and time must be validated.

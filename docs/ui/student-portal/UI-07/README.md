@@ -1,5 +1,10 @@
 # UI-07 Feedback and Issues
 
+> Historical phase record. UI-01–UI-10 are complete and merged; see the
+> [current Student Portal guide](../README.md). Scope statements, test counts
+> and follow-up plans below describe this phase at its recorded revision.
+> Later shared-component and authentication changes are documented in the current guides.
+
 Private report list, server filters, eligible report form, detail, staff response,
 clarification and history use the shared student service layout. The list explains
 how to open an eligible booking/loan instead of adding an unrestricted creation

@@ -1,5 +1,10 @@
 # Professor workflows — repository audit and implementation boundary
 
+> Historical pre-implementation audit, retained as handoff evidence. UC-PROF-06–09
+> and the approved eligibility policy are now implemented and merged. Use the
+> [approved contracts](professor-workflows.md) and
+> [current Professor Services guide](../professor-services/README.md) for present behavior.
+
 **Audit basis:** `najib-attar/resource-allocation-system`, GitHub `main`, inspected 3 November 2026. The UI-01–UI-10 student redesign is local and has **not** been inspected: remote `design/student-portal` and its recent commits were unavailable. Any deviations in the local worktree must be reconciled by Codex before implementation.
 
 ## Roles and authority

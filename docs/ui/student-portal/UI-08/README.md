@@ -1,5 +1,10 @@
 # UI-08 Calendar, My Schedule and Inbox
 
+> Historical phase record. UI-01–UI-10 are complete and merged; see the
+> [current Student Portal guide](../README.md). Scope statements, test counts
+> and follow-up plans below describe this phase at its recorded revision.
+> Later shared-component and authentication changes are documented in the current guides.
+
 University month/week/day views, all original date/audience/category/status
 controls, academic details, personal timetable/blocks and Inbox now use the shared
 student service layout. Tablet/mobile week/day and personal schedules render the

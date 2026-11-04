@@ -1,5 +1,10 @@
 # UI-05 Equipment
 
+> Historical phase record. UI-01–UI-10 are complete and merged; see the
+> [current Student Portal guide](../README.md). Scope statements, test counts
+> and follow-up plans below describe this phase at its recorded revision.
+> Later shared-component and authentication changes are documented in the current guides.
+
 The equipment hub, borrowing catalog/form, loan detail, recurring loan states and
 error pages use the shared student service components, with sage service accents.
 All existing quantities, exact specifications, faculty selection, dates, notes,

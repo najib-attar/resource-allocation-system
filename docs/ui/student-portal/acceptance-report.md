@@ -1,6 +1,12 @@
 # Student Portal acceptance report — UI-10
 
-**PASS — READY FOR FINAL ACCEPTANCE REVIEW**
+> Integration status: [PR #24](https://github.com/najib-attar/resource-allocation-system/pull/24)
+> is merged into `main` at `196933506469ae25d3214a91ef2fd457356d096d`.
+> The audit and pre-merge execution records below retain their original dates and
+> scope. Statements about awaiting publication describe those checkpoints, not
+> the current branch status. See the [portal guide](README.md) for current scope.
+
+Audit status: **PASS — READY FOR FINAL ACCEPTANCE REVIEW**
 
 Independent audit completed on 3 November 2026 (Europe/Istanbul), starting from the expected clean `998d54dc60207c2fea5434cda0fe68235a566187` on `design/student-portal`, exclusively in `resource-allocation-frontend`. Existing UI-01–UI-09 commits were preserved. No push, pull request, merge, deployment, operational-database change, permission, migration, scheduling rule, C++ or CDMCS change was made.
 
@@ -112,4 +118,4 @@ Remaining limits: deployment/operational configuration and production load testi
 
 Original UI-10 recommendation: suitable for a Draft PR and final acceptance review. The later integration authorization permits push and normal merge only after fresh verification and hosted checks; deployment remains excluded.
 
-**READY FOR FINAL ACCEPTANCE REVIEW**
+Historical recommendation: **READY FOR FINAL ACCEPTANCE REVIEW**

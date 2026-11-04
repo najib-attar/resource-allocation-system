@@ -1,6 +1,9 @@
 # Professor Portal — frontend implementation and architecture
 
-Reviewed base: `5a7f0b0`, dedicated `codex/professor-services-v1` worktree. Student baseline `747c925` and Draft PR #24 remain unchanged. The fresh 29-test backend preflight passed: eligibility, intake, legacy preservation, existing professor ownership and identity/session workflows. The user request governs over the archived design/handoff instructions.
+Implemented in `main` through [PR #25](https://github.com/najib-attar/resource-allocation-system/pull/25),
+following Student [PR #24](https://github.com/najib-attar/resource-allocation-system/pull/24).
+Historical frontend base: `5a7f0b0`, in the dedicated professor worktree, inheriting
+the audited Student baseline `747c925`. The fresh 29-test backend preflight passed: eligibility, intake, legacy preservation, existing professor ownership and identity/session workflows. The user request governs over the archived design/handoff instructions.
 
 ## Shared design and information architecture
 
@@ -30,4 +33,5 @@ Academic slots are weekly weekday/minute requirements. Calendar dates require ex
 
 ## Integration evidence maintenance
 
-Student PR #24 is merged; Professor Services now inherits main at `1969335`. For fresh browser execution, set `PROFESSOR_REVIEW_OUTPUT` to an owned directory under ignored `build/` before running the existing browser helpers. Keep compact verified summaries and deliberately selected representative captures; raw control/state dumps and extra screenshots are ignored. The acceptance report and artifact-cleanup.csv identify retained and historical evidence. Academic notifications, cancellation and versioned published replacements remain deferred.
+Both portal PRs are merged; Professor Services was integrated with Student main
+`1969335` before its own merge. The preserved phase evidence predates publication. For fresh browser execution, set `PROFESSOR_REVIEW_OUTPUT` to an owned directory under ignored `build/` before running the existing browser helpers. Keep compact verified summaries and deliberately selected representative captures; raw control/state dumps and extra screenshots are ignored. The acceptance report and artifact-cleanup.csv identify retained and historical evidence. Academic notifications, cancellation and versioned published replacements remain deferred.

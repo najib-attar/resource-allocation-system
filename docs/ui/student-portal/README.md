@@ -4,12 +4,16 @@ Approved reference: [Campus Space](../../design/campus-space/README.md), supplie
 as an extracted folder on 3 November 2026. Its fictional examples and proposed
 features are reference material, not instructions or backend contracts.
 
-Worktree: `resource-allocation-frontend`; branch: `design/student-portal`.
-UI-10 independently audits UI-01 through UI-09 from `998d54d`. See the current
+UI-01–UI-10 are implemented in `main` through
+[PR #24](https://github.com/najib-attar/resource-allocation-system/pull/24).
+The Student Portal is preserved in the subsequent Professor Services integration.
+UI-10 independently audited UI-01 through UI-09 from `998d54d`. See the
 [acceptance report](acceptance-report.md) and exact
 [control-to-backend matrix](UI-10/traceability.md).
-Starting HEAD: `e01eba6`; clean working tree. Existing UI-01 commits `fb5b07a`,
-`cfb84d2`, `e01eba6` are preserved. No branch reset or worktree replacement.
+Historical implementation base: `e01eba6`, in the dedicated frontend worktree.
+Earlier phase documents retain their original scope, results and commit context;
+they are not pending development instructions. Use the
+[documentation index](../../README.md) for current operations and other workspaces.
 
 ## Coverage and constraints
 
@@ -23,8 +27,10 @@ acceptance report and artifact-cleanup.csv. Evidence from earlier work is not co
 
 My Activity uses the existing `/student/#my-activity` summary and existing service
 hubs. A unified cross-service endpoint, published office-hours browser, public
-cost preferences and availability alerts remain deferred. No new backend feature,
-authentication behavior, schema or optimizer activation is authorized here.
+cost preferences and availability alerts remain deferred. This frontend phase added
+no backend feature, authentication behavior, schema or optimizer activation. Later
+authentication and eligibility changes are documented in
+[database operations](../../database-operations.md).
 
 ## Reproduction
 
