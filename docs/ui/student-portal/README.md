@@ -19,8 +19,8 @@ they are not pending development instructions. Use the
 
 The [feature matrix](coverage.md) maps pages, authorized actions and regression
 tests. Existing Python services, routes, permissions, CSRF, revision checks and
-C++ engine behavior remain authoritative. Only presentation and UI test fixtures
-are changed. Each phase retains its exact result summaries; representative real-app screenshots
+C++ engine behavior remain authoritative. The original Student rollout changed
+presentation and UI test fixtures. Each phase retains its exact result summaries; representative real-app screenshots
 remain tracked. The integration cleanup archives redundant raw evidence at its
 immutable audited Git revision and in a hash-verified local archive; see the
 acceptance report and artifact-cleanup.csv. Evidence from earlier work is not counted as a new run.
@@ -33,6 +33,21 @@ authentication and eligibility changes are documented in
 [database operations](../../database-operations.md).
 
 ## Reproduction
+
+For the current integrated application, use the
+[developer regression commands](../../../web/README.md#testing) with a disposable
+PostgreSQL database. These cover the current shared components, professor services,
+authentication and migrations.
+
+### Historical phase reproduction
+
+The commands below describe the original Student review. Source/form preservation
+auditors deliberately compare frozen Student-era revisions; they are not current-main
+compatibility checks. Reproduce those audits in a separate checkout of
+`747c925b14c29368e6cb9bc8b2e2d9d33c494462`, with that revision's dependencies and owned
+fixtures. Running the original protected-source comparison on current main correctly
+detects later approved Professor/authentication changes. Never reset a working checkout
+or operational database to reproduce historical evidence.
 
 Use an isolated PostgreSQL `TEST_DATABASE_URL`, build the unchanged backend with
 `python scripts/build_backend.py`, then run
@@ -67,8 +82,9 @@ Each invocation creates synthetic identities/records in an owned test schema,
 serves the real Flask app on loopback, records committed PostgreSQL state before
 and after POSTs, and shuts down/cleans up even after browser assertion failures.
 Set `PLAYWRIGHT_NODE_MODULE` when using a bundled Playwright installation.
-`PORTAL_BUILD_DIR` separates metadata for independent runs. Run
-`tests/ui/verify_audit_persistence.py` after all modes, plus
-`audit_portal_sources.py` and `audit_student_routes.py UI-10/contracts`.
+`PORTAL_BUILD_DIR` separates metadata for independent runs. In the historical checkout,
+run `python -B tests/ui/verify_audit_persistence.py` after all modes, plus
+`python -B tests/ui/audit_portal_sources.py` and
+`python -B tests/ui/audit_student_routes.py UI-10/contracts`.
 
 Generated raw POST/state dumps, per-module copies and additional captures are ignored locally after the integration cleanup. Existing tracked final output and representative images remain tracked. Review a new representative before deliberately adding it with `git add -f`; retain compact aggregate summaries rather than bulk raw output.
