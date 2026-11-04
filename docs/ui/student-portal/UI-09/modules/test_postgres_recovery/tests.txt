@@ -1,9 +1,0 @@
-test_real_backup_restore_preserves_published_results_and_survives_app_restart (test_postgres_recovery.PostgresRecoveryTests.test_real_backup_restore_preserves_published_results_and_survives_app_restart) ... ok
-test_additive_upgrade_preserves_inputs_results_and_identity_sequences (test_postgres_recovery.PostgresUpgradeTests.test_additive_upgrade_preserves_inputs_results_and_identity_sequences) ... ok
-test_incomplete_historical_subtype_aborts_upgrade_without_deleting_data (test_postgres_recovery.PostgresUpgradeTests.test_incomplete_historical_subtype_aborts_upgrade_without_deleting_data) ... ok
-test_invalid_old_rows_abort_upgrade_without_deleting_or_partially_migrating (test_postgres_recovery.PostgresUpgradeTests.test_invalid_old_rows_abort_upgrade_without_deleting_or_partially_migrating) ... ok
-
-----------------------------------------------------------------------
-Ran 4 tests in 284.916s
-
-OK

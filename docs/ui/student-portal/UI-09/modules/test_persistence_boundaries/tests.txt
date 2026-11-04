@@ -1,8 +1,0 @@
-test_io_guard_detects_both_file_opens_and_csv_writers (test_persistence_boundaries.PersistenceBoundaryTests.test_io_guard_detects_both_file_opens_and_csv_writers) ... ok
-test_presentation_and_gateway_have_no_file_or_csv_persistence_interfaces (test_persistence_boundaries.PersistenceBoundaryTests.test_presentation_and_gateway_have_no_file_or_csv_persistence_interfaces) ... ok
-test_runtime_import_tree_contains_no_archived_file_coordinator (test_persistence_boundaries.PersistenceBoundaryTests.test_runtime_import_tree_contains_no_archived_file_coordinator) ... ok
-
-----------------------------------------------------------------------
-Ran 3 tests in 1.401s
-
-OK

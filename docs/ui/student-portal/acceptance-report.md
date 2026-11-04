@@ -4,6 +4,16 @@
 
 Independent audit completed on 3 November 2026 (Europe/Istanbul), starting from the expected clean `998d54dc60207c2fea5434cda0fe68235a566187` on `design/student-portal`, exclusively in `resource-allocation-frontend`. Existing UI-01–UI-09 commits were preserved. No push, pull request, merge, deployment, operational-database change, permission, migration, scheduling rule, C++ or CDMCS change was made.
 
+## Final integration evidence cleanup - 4 November 2026
+
+Publication/merge preparation is now explicitly authorized, subject to fresh local regressions and hosted checks. The original UI-10 audit below remains a historical execution record at `747c925`; it does not claim a new test run.
+
+Removed **451 redundant tracked artifacts (32,659,899 bytes)**: 289 duplicate/intermediate PNGs, 85 generated JSON copies/state dumps, 76 duplicate/intermediate text outputs and one superseded route CSV. Every original tracked evidence file was archived locally and verified by SHA-256 before removal; unchanged Git history preserves the exact original revision. [Every removed path/hash/reason](artifact-cleanup.csv), [archive and preservation proof](artifact-cleanup.json).
+
+The current packet retains **66 representative unchanged screenshots**, final full Python/C++ output, every aggregate module result, important failed-run traces, browser/authorization/workflow results, committed-persistence verification, source/dead-code audits, acceptance reports and traceability. [Current screenshot gallery](screenshots.md). The former 9,108-instance raw control dump is represented by [1,293 classification signatures with exact occurrence totals](UI-10/browser/control-summary.csv); the full raw context remains available at the immutable original revision. Persistence input hashes were checked against the retained verifier before the raw state dumps were removed.
+
+All production code, valid regression tests and approved design files are preserved. Links to retired artifacts now target their exact historical Git revision. Fresh integration regression/CI results will be added before publication; no merge gate is bypassed.
+
 ## Reviewed implementation and exact traceability
 
 | Phase | Page group | Audit status | Original phase commit |
@@ -20,7 +30,7 @@ Independent audit completed on 3 November 2026 (Europe/Istanbul), starting from 
 
 The [exact control-to-backend matrix](UI-10/traceability.md) contains **92 control-type traces**, nine disabled/deferred/recovery rows and 125 referenced regression methods. It records parameters, Flask endpoints, services, PostgreSQL tables/C++ calls, responses, UI outcomes and permission boundaries. [All 24 approved screens](screen-coverage.md), [68 Flask routes / 47 service rules](UI-10/contracts/routes.md), [493 source control declarations across all roles](UI-10/source-controls.csv), and [59 reachable Jinja templates](UI-10/source-audit.json) are accounted for. One dynamic administrator template helper was reviewed: `render_table_page("spaces.html")`; its inherited `table.html` remains.
 
-The real-browser inventory contains **9,108 rendered control instances** across 242 views. **360 authorized GET destinations** were followed; [destinations](UI-10/browser/destinations.json) and [control classifications](UI-10/browser/controls.json) are recorded. Source-contract verification is distinguished from browser execution. No unexplained defective or disconnected control remains identified.
+The real-browser inventory contains **9,108 rendered control instances** across 242 views. **360 authorized GET destinations** were followed; [destinations](UI-10/browser/destinations.json) and [control classifications](https://github.com/najib-attar/resource-allocation-system/blob/747c925b14c29368e6cb9bc8b2e2d9d33c494462/docs/ui/student-portal/UI-10/browser/controls.json) are recorded. Source-contract verification is distinguished from browser execution. No unexplained defective or disconnected control remains identified.
 
 ## Confirmed frontend defects and corrections
 
@@ -81,11 +91,11 @@ All review servers were stopped. Read-only PostgreSQL checks verified the 12 rec
 
 The approved desktop/mobile Home, appointment and calendar references were visually compared with real captures. The four-destination navigation, pale blue/sand/sage service hierarchy, white panels, status text and mobile agendas remain coherent. Additional backend fields/history make some real pages longer than the prototype. Current sampled text contrast is 5.39–13.33:1; control boundaries 3.34:1 and focus 5.19:1 against white. [Current contrast checks](UI-10/contrast.json). Target-device and assistive-technology acceptance remains; this is not an accessibility certification.
 
-**347 real application screenshots, including 75 new UI-10 captures.** All 272 historical image hashes are unchanged; PNG CRC checks passed. [Complete gallery](screenshots.md), [dimension/hash inventory](screenshots.json), [verification](UI-10/screenshot-verification.json). Examples: [Home 320px](UI-10/browser/final-home-320.png), [weekly room approval](UI-10/lifecycles/room-recurring-partial.png), [physical partial return](UI-10/lifecycles/physical-partial-return.png), [preapproved equipment queue](UI-10/equipment-lifecycles/equipment-queue-preapproved-unassigned.png), [actual assigned loan](UI-10/equipment-lifecycles/equipment-assigned-reservation-awaiting-custody.png).
+**Historical UI-10 execution: 347 real application screenshots, including 75 new captures.** Those original hashes/CRCs were verified then; the current packet retains 66 unchanged representatives after the documented integration cleanup. [Complete gallery](screenshots.md), [dimension/hash inventory](screenshots.json), [verification](UI-10/screenshot-verification.json). Examples: [Home 320px](UI-10/browser/final-home-320.png), [weekly room approval](UI-10/lifecycles/room-recurring-partial.png), [physical partial return](UI-10/lifecycles/physical-partial-return.png), [preapproved equipment queue](UI-10/equipment-lifecycles/equipment-queue-preapproved-unassigned.png), [actual assigned loan](https://github.com/najib-attar/resource-allocation-system/blob/747c925b14c29368e6cb9bc8b2e2d9d33c494462/docs/ui/student-portal/UI-10/equipment-lifecycles/equipment-assigned-reservation-awaiting-custody.png).
 
 ## Files, local commits, remaining scope and recommendation
 
-[Complete UI-10 file inventory](UI-10/changed-files.csv); [entire frontend rollout inventory](changed-files.csv). Documentation now contains the current acceptance results, exact traceability, component boundaries, screen mapping and real evidence; earlier phase records remain available.
+[Historical UI-10 file inventory](UI-10/changed-files.csv); [entire frontend rollout inventory](changed-files.csv). Documentation now contains the current acceptance results, exact traceability, component boundaries, screen mapping and real evidence; earlier phase records remain available.
 
 | Local code/test commit | Purpose |
 |---|---|
@@ -100,6 +110,6 @@ No identified existing student backend feature was intentionally omitted. Deferr
 
 Remaining limits: deployment/operational configuration and production load testing were not performed; existing bounded lock contention can return a retryable busy response. No security or integration regression was identified in the executed scope. Final review on university devices and assistive technologies is still required.
 
-Recommendation: the local branch is suitable for a **GitHub Draft PR and final student acceptance review**, subject to explicit authorization before any push/PR, merge or deployment. Student Services v1 is ready for final user acceptance testing when the gate above is PASS.
+Original UI-10 recommendation: suitable for a Draft PR and final acceptance review. The later integration authorization permits push and normal merge only after fresh verification and hosted checks; deployment remains excluded.
 
 **READY FOR FINAL ACCEPTANCE REVIEW**

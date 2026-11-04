@@ -46,7 +46,7 @@ phase `tests.json` files record actual executions.
 
 The generated [complete Flask route inventory](UI-09/routes.md) classifies all 68
 rules, including 47 service rules and their staff-only boundaries.
-[Contract audit](UI-09/contracts.json) verifies every original named form control
+[Contract audit](https://github.com/najib-attar/resource-allocation-system/blob/747c925b14c29368e6cb9bc8b2e2d9d33c494462/docs/ui/student-portal/UI-09/contracts.json) verifies every original named form control
 remains present and protected service, authentication, persistence, migration,
 C++ and CDMCS paths are unchanged. `web/app.py` changes only error presentation:
 existing statuses, HTTP method headers, CSRF rejection and retry headers remain

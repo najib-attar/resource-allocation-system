@@ -16,8 +16,10 @@ Starting HEAD: `e01eba6`; clean working tree. Existing UI-01 commits `fb5b07a`,
 The [feature matrix](coverage.md) maps pages, authorized actions and regression
 tests. Existing Python services, routes, permissions, CSRF, revision checks and
 C++ engine behavior remain authoritative. Only presentation and UI test fixtures
-are changed. Each phase retains its exact test results and real-app screenshots
-in its subdirectory. Evidence from earlier work is not counted as a new run.
+are changed. Each phase retains its exact result summaries; representative real-app screenshots
+remain tracked. The integration cleanup archives redundant raw evidence at its
+immutable audited Git revision and in a hash-verified local archive; see the
+acceptance report and artifact-cleanup.csv. Evidence from earlier work is not counted as a new run.
 
 My Activity uses the existing `/student/#my-activity` summary and existing service
 hubs. A unified cross-service endpoint, published office-hours browser, public
