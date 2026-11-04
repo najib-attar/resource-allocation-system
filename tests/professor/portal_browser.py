@@ -47,11 +47,15 @@ def main():
             roles={r.name:r.id for r in session.scalars(select(Role))}
             session.add_all([User(id=9,source_order=9,name='Synthetic Teaching Assistant',primary_role_id=roles['TeachingAssistant']),
                 User(id=12,source_order=12,name='Synthetic New Professor',primary_role_id=roles['Instructor'])])
-        actors=(1,2,3,6,7,9,12);password='Synthetic-professor-portal-only-password'
+        actors=(1,2,3,4,5,6,7,9,12);password='Synthetic-professor-portal-only-password'
         with fixture.database.transaction(read_only=True) as session:existing=set(session.scalars(select(LoginAccount.user_id)))
         users={actor:'portal-review-'+str(actor) for actor in actors}
         for actor in actors:AccountService(fixture.database).provision(actor,users[actor],password,administrator=actor==6,reset=actor in existing)
-        def state():return dict(workflow=original_state(fixture),academic=academic_state(fixture.database))
+        def state():
+            workflow=original_state(fixture)
+            with fixture.database.transaction(read_only=True) as session:
+                workflow['appointmentInvitations']=[dict(row) for row in session.execute(text('SELECT appointment_id,user_id,status FROM appointment_invitation ORDER BY appointment_id,user_id')).mappings()]
+            return dict(workflow=workflow,academic=academic_state(fixture.database))
         def before():
             if request.method=='POST':g.portal_before=state()
         def after(response):
@@ -65,7 +69,7 @@ def main():
         server=make_server('127.0.0.1',0,web_app.app,threaded=True);thread=Thread(target=server.serve_forever,daemon=True);thread.start()
         build=ROOT/'build/professor-portal';build.mkdir(parents=True,exist_ok=True)
         info=build/(phase+'.json');info.write_text(json.dumps(dict(url=f'http://127.0.0.1:{server.server_port}',users=users,password=password,
-            ids=dict(confirmed=confirmed,multi=multi,decline=decline,roomAccept=rooms[0],roomDecline=rooms[1],
+            roles={actor:('Student' if actor in (1,4,5) else 'Instructor' if actor in (2,3,12) else 'Administrator' if actor==6 else 'Staff' if actor==7 else 'TeachingAssistant') for actor in actors},ids=dict(confirmed=confirmed,multi=multi,decline=decline,roomAccept=rooms[0],roomDecline=rooms[1],
                 academic=academic,rejected=rejected,pending=pending,foreign=foreign))),encoding='utf-8')
         output.mkdir(parents=True,exist_ok=True)
         env=dict(os.environ,PROFESSOR_INFO_FILE=str(info),PROFESSOR_OUTPUT_DIR=str(output))
@@ -79,14 +83,19 @@ def main():
             overlap=next(p for p in posts if p['form'].get('reason')=='Personal preference during academic allocation')
             assert overlap['before']['academic']['allocations']==overlap['after']['academic']['allocations']
             assert overlap['before']['academic']['state'][0]['active_run_id']==overlap['after']['academic']['state'][0]['active_run_id']
-        original=[];academic_posts=[]
+        original=[];academic_posts=[];extra=[]
         for post in posts:
             if post['status']>=400:assert post['before']==post['after'],post['path']
+            if post['path'].endswith('/decline-invitation') and post['status']<400:
+                key=int(post['path'].split('/')[2]);before,after=post['before']['workflow'],post['after']['workflow']
+                assert next(r for r in after['appointmentInvitations'] if r['appointment_id']==key and r['user_id']==4)['status']=='Declined'
+                assert before['commitments']==after['commitments'] and before['approvals']==after['approvals']
+                extra.append(dict(path=post['path'],result='optional student decline persisted without changing mandatory commitments'));continue
             is_academic=post['path'].startswith(('/professor/requests','/academic-eligibility')) or post['path']=='/run-allocation'
             key='academic' if is_academic else 'workflow'
             value=dict(post,before=post['before'][key],after=post['after'][key])
             (academic_posts if is_academic else original).append(value)
-        checked=verify_original(original)+verify_academic(academic_posts)
+        checked=verify_original(original)+verify_academic(academic_posts)+extra
         (output/'persistence-verification.json').write_text(json.dumps(dict(posts=len(posts),outcomes=checked),indent=2)+'\n',encoding='utf-8')
         print(json.dumps(dict(phase=phase,exitCode=0,posts=len(posts),verifiedOutcomes=len(checked))))
     finally:

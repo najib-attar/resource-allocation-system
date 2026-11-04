@@ -1,0 +1,257 @@
+Compiling backend smoke executable...
+Running backend smoke executable...
+PASS: backend runtime smoke 'clean-slot' (no injected bookings).
+PASS: backend runtime smoke 'normal-dataset' (no injected bookings).
+Compiling test runner...
+Running unit and integration tests...
+Running 192 test(s)
+Warning: allocation strategy config missing. Falling back to greedy.
+[PASS] UserFactory creates supported polymorphic user types
+[PASS] UserFactory handles unknown role safely
+[PASS] User priorities match current polymorphic model
+[PASS] User space permissions are enforced by subclasses
+[PASS] User request-type permissions are enforced by subclasses
+[PASS] UserAvailabilityService applies working hours and busy-slot overlaps
+[PASS] UserAvailabilityService exposes busy slots for one user only
+[PASS] TimeSlot detects overlap on the same day
+[PASS] TimeSlot does not overlap across different days
+[PASS] TimeSlot uses half-open interval boundaries
+[PASS] TimeSlot preserves minute-based times
+[PASS] TimeSlot rejects invalid ranges
+[PASS] AllocationStrategyFactory returns expected strategies and greedy fallback
+Warning: unknown allocation strategy. Falling back to greedy.
+Warning: allocation strategy config missing. Falling back to greedy.
+Warning: allocation strategy config missing. Falling back to greedy.
+Warning: allocation strategy config missing. Falling back to greedy.
+[PASS] DataController loads allocation strategy from config with safe fallbacks
+[PASS] Greedy strategy processes conflicting requests in input order
+[PASS] Priority strategy processes conflicting requests by descending priority
+[PASS] Priority strategy preserves input order for equal priority conflicts
+[PASS] SpaceFactory creates classroom spaces
+[PASS] SpaceFactory creates laboratory spaces
+[PASS] SpaceFactory creates meeting room spaces
+[PASS] SpaceFactory returns null for unknown space types
+[PASS] Shared-room exam strategy uses remaining capacity before spilling to another room
+[PASS] Derived room schedule includes approved allocations and excludes rejected conflicts
+[PASS] Committee participant schedule is derived only from approved committee allocations
+[PASS] Least-change meeting suggestions are valid schedule alternatives
+[PASS] Multi-room exam schedule preserves total demand and room capacities
+[PASS] Rejected oversized exam creates no schedule allocations
+[PASS] Shared-room exam schedule never exceeds remaining room capacity
+[PASS] Structured summaries agree with schedule allocation state
+[PASS] Backend processes a larger request set without timing out or losing schedule entries
+[PASS] Physical room rules evaluate current Request API
+Warning: Allocation 1 has no space. Writing empty space fields.
+[PASS] Physical room rules cover exact capacity and empty preferences
+[PASS] RequestTypeRule and UserRoleRule enforce requester permissions
+[PASS] AvailabilityRule rejects one-time and recurring external conflicts
+[PASS] ParticipantAvailabilityRule passes non-committee requests immediately
+[PASS] ParticipantAvailabilityRule rejects missing committee participants
+[PASS] ParticipantAvailabilityRule rejects unavailable and unknown participants
+[PASS] ParticipantAvailabilityRule rejects outside working hours through availability service
+[PASS] Student rooms rank single distinct physical rooms by best fit
+[PASS] Student rooms support all permitted purposes with the same policy
+[PASS] Student room capacity facilities access ownership and approvers are mandatory
+[PASS] Student room preferences do not grant access or restrict another faculty
+[PASS] Dated room closures and academic commitments use half open intervals
+[PASS] Unmapped room or organizer calendars never masquerade as free
+[PASS] Organizer appointments block room selection but adjacent times are valid
+[PASS] Greedy room selection preserves source order within preference ties
+[PASS] Room protocol preserves structured candidates and standard text escaping
+[PASS] Room protocol never substitutes another room for a stale selection
+[PASS] Room protocol offers only feasible alternative times after a conflict
+[PASS] Room protocol rejects malformed numeric policy and strategy values
+[PASS] Dated room series keep one common room in existing deterministic rank order
+[PASS] One conflicting room date excludes that room from the complete series
+[PASS] Alternating available rooms cannot silently substitute across a series
+[PASS] Room series intersection precedes the twenty candidate presentation limit
+[PASS] Room series protocol reports dated conflicts and feasible whole pattern time alternatives
+[PASS] Optional professor acceptance validates every dated room occurrence
+[PASS] Room series protocol rejects empty overlapping and mismatched occurrences
+Warning: Skipping null request while writing request results.
+[PASS] Output writers tolerate null pointers without crashing
+Error: Could not open allocation output file: tests/missing_export_dir/allocations.csv
+Error: Could not open request results file: tests/missing_export_dir/results.csv
+Error: Could not open request summary file: tests/missing_export_dir/request_summaries.csv
+Error: Could not open allocation summary file: tests/missing_export_dir/allocation_summaries.csv
+[PASS] Output writers fail safely when export files cannot be opened
+[PASS] Rules reject requests with missing requested space safely
+[PASS] Availability helpers ignore corrupt allocations with missing spaces
+[PASS] Priority strategy skips null request entries safely
+[PASS] ResourceAllocationSession loads, runs, exports, and cleans up backend workflow
+Error: Could not open allocation output file: tests/missing_export_dir/allocations.csv
+Error: Could not open request results file: tests/missing_export_dir/results.csv
+Error: Could not open request summary file: tests/missing_export_dir/request_summaries.csv
+Error: Could not open allocation summary file: tests/missing_export_dir/allocation_summaries.csv
+Error: One or more export files could not be written.
+[PASS] ResourceAllocationSession reports export failure
+Error: Could not open requests file: tests/tmp_session_missing_requests.csv
+[PASS] ResourceAllocationSession reports failed loads without running allocation
+[PASS] RequestFactory creates supported request subtypes
+[PASS] RequestFactory creates ExamRequest with exam metadata
+[PASS] RequestFactory creates InvalidRequest for bad request types and malformed times
+[PASS] RequestFactory rejects zero-length, negative, and reversed time data
+[PASS] Request stores default metadata and lifecycle history
+[PASS] All strategies reject overlapping required participants across different rooms
+[PASS] Committee suggestions exclude another room's approved participant commitment
+[PASS] Sequential committee processing retains commitments without borrowing request pointers
+[PASS] Batch suggestions include participant commitments allocated later in the batch
+[PASS] Required participant commitments use half-open minute intervals
+[PASS] Different required participants may meet simultaneously in different rooms
+Warning: Request 2 rejected: Invalid user reference.
+Warning: Request 3 rejected: Invalid space reference.
+Warning: Request 4 rejected: Malformed input.
+[PASS] Participant validation combines loaded busy slots with every required participant
+[PASS] Rejected meetings do not reserve participants and different days remain available
+[PASS] Suggestion candidates respect participant and room conflicts without false rejections
+[PASS] Priority strategy reserves participants in descending requester priority
+[PASS] Session CSV integration rejects double-booked participants and exports only approval
+[PASS] MeetingTimeSuggestionService ranks valid slots by least time change
+[PASS] MeetingTimeSuggestionService excludes requested-room conflicts
+[PASS] MeetingTimeSuggestionService returns no suggestions without required participants
+[PASS] JSON OneTime returns structured approval and capacity
+[PASS] JSON Recurring preserves each occurrence
+[PASS] JSON Exam splits rooms under both best-fit strategies
+[PASS] JSON shared exam uses remaining capacity
+[PASS] JSON Committee participant conflict exposes structured suggestions
+[PASS] JSON capacity rejection is a successful execution decision
+Warning: Request 5 rejected: Malformed input.
+[PASS] JSON empty request batch is valid
+Warning: Request 5 rejected: Duplicate request ID.
+[PASS] JSON strings preserve commas quotes Unicode newlines and empty values
+[PASS] JSON missing version fails explicitly
+[PASS] JSON unsupported version fails explicitly
+[PASS] JSON missing and unknown strategy do not fall back
+[PASS] JSON malformed request and unknown type fail
+[PASS] JSON invalid numeric values and identifiers fail
+[PASS] JSON missing domain references fail
+[PASS] JSON invalid time ranges fail
+[PASS] JSON malformed participants fail without leaking partially loaded objects
+[PASS] JSON invalid room information and roles fail
+[PASS] JSON duplicate identifiers fail
+[PASS] JSON profiles features and availability reach existing domain rules
+[PASS] JSON stream mode emits exactly one document and uses failure exit code
+[PASS] JSON best-fit resource limits fail explicitly without partial results
+[PASS] DataController loads temp CSVs, processes requests, and exports results
+Warning: Rejected request: Malformed input.
+[PASS] DataController converts invalid request rows into InvalidRequest objects
+Error: Could not open requests file: tests/does_not_exist_requests.csv
+[PASS] DataController handles missing and empty request CSV files safely
+[PASS] DataController tolerates extra request columns after current schema
+Warning: Rejected request: Invalid request ID.
+[PASS] DataController converts negative request IDs into InvalidRequest objects
+[PASS] DataController loads custom auxiliary busy-slot and request-participant paths
+[PASS] Session exports fresh normal-data smoke artifacts to isolated paths
+[PASS] Equipment selects distinct identical physical units in stable ID order
+[PASS] Equipment insufficient quantity never yields a partial reservation
+[PASS] Equipment excludes damage maintenance missing lost and retired assets
+[PASS] Equipment held loans stay unavailable even beyond planned due dates
+[PASS] Equipment reservations use half open intervals and permit adjacent loans
+[PASS] Equipment requires faculty eligibility custody policy and exact specifications
+[PASS] Equipment suggests only compatible same faculty alternative types
+[PASS] Equipment alternative periods fulfill every item after known reservations end
+[PASS] Equipment mixed requests are all or nothing without reusing units
+[PASS] Equipment JSON roundtrips escaped Unicode text without filesystem access
+[PASS] Equipment JSON rejects missing versions fractional counts and broken references
+[PASS] Equipment malformed JSON returns one explicit protocol error
+[PASS] Equipment series may reserve the same unit in separate non overlapping periods
+[PASS] One unavailable equipment occurrence makes the complete proposal infeasible
+[PASS] Equipment series may choose different eligible physical units per period
+[PASS] Overdue unreturned equipment is unavailable in every later series occurrence
+[PASS] Equipment series never silently reduces quantity
+[PASS] Equipment series validates complete sorted periods and distinct operation
+Warning: Skipping malformed user busy slot row 3.
+Warning: Skipping invalid user busy slot row 4.
+Warning: Skipping invalid user busy slot row 5.
+[PASS] DataLoader loads valid user busy slots and skips malformed rows
+Warning: Could not open user busy slots file: tests/does_not_exist_user_busy_slots.csv. Continuing with no busy slots.
+[PASS] DataLoader handles missing optional user busy slot file
+Warning: Skipping malformed request participant row 4.
+Warning: Skipping malformed request participant row 5.
+Warning: Skipping malformed request participant row 6.
+[PASS] DataLoader loads valid request participants and skips malformed rows
+Warning: Could not open request participants file: tests/does_not_exist_request_participants.csv. Continuing with no request participants.
+[PASS] DataLoader handles missing optional request participants file
+Error: Could not open users file: tests/does_not_exist_users.csv
+Error: Could not open spaces file: tests/does_not_exist_spaces.csv
+[PASS] DataLoader handles missing and empty required CSV files safely
+Warning: Skipping malformed user row 3.
+Warning: Skipping malformed space row 3.
+[PASS] DataLoader skips unknown user roles and unknown space types
+[PASS] DataLoader delegates all supported space types to SpaceFactory
+Warning: Duplicate user ID 1 on row 3. Keeping first user and skipping duplicate row.
+Warning: Duplicate space ID 101 on row 3. Keeping first space and skipping duplicate row.
+[PASS] DataLoader skips duplicate user and space IDs while preserving first valid row
+Warning: Skipping malformed user row 2.
+Warning: Skipping malformed space row 2.
+Warning: Skipping malformed user busy slot row 2.
+Warning: Skipping malformed request participant row 2.
+Warning: Skipping malformed request participant row 3.
+[PASS] DataLoader skips negative IDs in users spaces busy slots and participants
+[PASS] CSV reader decodes comma quotes empty fields and UTF-8 without shifting columns
+[PASS] CSV reader preserves embedded LF and CRLF inside quoted fields
+[PASS] CSV reader accepts final records without a terminating newline
+[PASS] CSV reader distinguishes blank records from quoted empty fields
+[PASS] CSV reader handles UTF-8 BOM before quoted headers without consuming other UTF-8
+[PASS] CSV reader rejects illegal quotes and resumes after malformed physical records
+[PASS] CSV reader rejects unterminated quoted records rather than inventing subsequent rows
+[PASS] CSV reader roundtrips combinations of standard quoted fields
+[PASS] CSV request loading preserves quoted metadata exam fields and multiline purpose
+[PASS] CSV input loaders accept quoted names buildings reasons roles and UTF-8
+Warning: Skipping malformed user CSV record 2: Unexpected character after closing quote.
+Warning: Skipping malformed space CSV record 2: Unexpected quote in unquoted field.
+Warning: Skipping malformed user busy slot CSV record 2: Unexpected character after closing quote.
+Warning: Skipping malformed request participant CSV record 2: Unexpected character after closing quote.
+[PASS] CSV loaders skip malformed quoted auxiliary records without shifting following rows
+Warning: Request 1 rejected: Malformed CSV: Unexpected character after closing quote.
+Warning: Request 3 rejected: Malformed CSV: Unterminated quoted field.
+[PASS] Malformed request quoting produces InvalidRequest and leaves valid following request intact
+Warning: Duplicate user ID 2 on row 3. Keeping first user and skipping duplicate row.
+Warning: Duplicate space ID 101 on row 3. Keeping first space and skipping duplicate row.
+Warning: Request 1 rejected: Duplicate request ID.
+[PASS] Quoted duplicate IDs retain duplicate validation and correctly parsed metadata
+Warning: Request 7 rejected: Malformed CSV: Unexpected character after closing quote.
+Warning: Request 7 rejected: Duplicate request ID.
+Warning: Rejected request: Malformed CSV: Unexpected character after closing quote.
+[PASS] Malformed CSV request records do not allow reuse of an already readable request ID
+[PASS] CSV loading preserves headerless legacy rows defaults and extra columns
+[PASS] Best-fit rejects nonpositive candidate capacities
+[PASS] Best-fit checks capacity sums and state count before integer overflow
+[PASS] Best-fit refuses excessive DP memory and work before allocating
+[PASS] Best-fit bounded inputs preserve objective ordering and deterministic ties
+[PASS] Multi-room best-fit reconstructs 10 10 20 demand 40 without reusing a room
+[PASS] Shared-room best-fit reconstructs 10 10 20 demand 40 without reusing a room
+[PASS] Multi-room best-fit chooses fewer rooms for the same exact capacity
+[PASS] Shared-room best-fit chooses fewer rooms for the same exact capacity
+[PASS] Multi-room best-fit rejects infeasible demand without allocations
+[PASS] Shared-room best-fit rejects infeasible demand without allocations
+[PASS] Multi-room best-fit minimizes capacity among multiple feasible combinations
+[PASS] Shared-room best-fit minimizes capacity among multiple feasible combinations
+[PASS] Multi-room best-fit accepts equal capacities from different physical rooms
+[PASS] Shared-room best-fit accepts equal capacities from different physical rooms
+[PASS] Multi-room best-fit keeps first-discovered rooms for equal-score ties
+[PASS] Shared-room best-fit keeps first-discovered rooms for equal-score ties
+[PASS] Shared-room best-fit reconstructs distinct remaining-capacity chunks
+[PASS] Multi-room best-fit matches an exhaustive four-room subset oracle
+[PASS] Shared-room best-fit matches an exhaustive four-room subset oracle
+[PASS] Capacity selection handles empty infeasible and nonpositive demand
+[PASS] Capacity selection retains distinct indices objective and stable ties
+[PASS] Appointments require every professor publication and organizer availability
+[PASS] Optional invitees rank appointments without blocking feasibility
+[PASS] Unknown mandatory legacy calendars fail safely
+[PASS] Dated weeks do not share weekday-only conflicts
+[PASS] Adjacent publication windows cover one appointment
+[PASS] Appointment protocol rejects malformed input with protocol-only stdout
+[PASS] Appointment protocol validates and recommends without changing allocation v1
+[PASS] Appointment protocol supports unresolved calendars for the full participant batch
+[PASS] AllocationService approves a valid one-time request
+[PASS] AllocationService stores clear rejection reason
+[PASS] AllocationService approves a valid recurring request with two allocations
+[PASS] AllocationService rejects recurring request with internal self-conflict
+[PASS] AllocationService rejects recurring request with one external conflict
+[PASS] AllocationService approves committee meeting when participants are free
+[PASS] AllocationService rejects busy committee participant and appends suggestions
+[PASS] AllocationService rejects committee meeting with no participants
+[PASS] All allocation strategies process a simple one-time request without crashing
+
+Result: 192 passed, 0 failed

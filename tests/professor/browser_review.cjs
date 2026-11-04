@@ -5,7 +5,7 @@ const assert = require('node:assert/strict');
 const {chromium} = require(process.env.PLAYWRIGHT_NODE_MODULE || 'playwright');
 const fixture = JSON.parse(fs.readFileSync(process.env.PROFESSOR_INFO_FILE));
 const base = fixture.url, ids = fixture.ids, out = process.env.PROFESSOR_OUTPUT_DIR;
-const checks = [], views = [], controls = [], errors = [], expectedErrors = [], tokens = new Map();
+const checks = [], views = [], controls = [], errors = [], expectedErrors = [], tokens = new Map(), actors = new Map();
 let keyboardSteps = 0, nativePickerSteps = 0;
 
 async function go(page, url, status=200) {
@@ -26,7 +26,9 @@ async function login(browser, actor) {
   await page.locator('[name=username]').fill(fixture.users[actor]);
   await page.locator('[name=password]').fill(fixture.password);
   await submit(page,page.locator('button[type=submit]'));
-  assert.equal(new URL(page.url()).pathname, actor===1?'/student/':actor===6?'/':[2,3,12].includes(actor)?'/professor/':'/appointments/');
+  const role=fixture.roles?.[actor];
+  assert.equal(new URL(page.url()).pathname,actor===6?'/':role==='Student'||actor===1?'/student/':role==='Instructor'||[2,3,12].includes(actor)?'/professor/':'/appointments/');
+  actors.set(page,actor);
   tokens.set(page,await page.locator('[data-csrf]').getAttribute('data-csrf'));
   return {context,page};
 }
@@ -51,8 +53,8 @@ async function inspect(page,width,name) {
       !el.getAttribute('aria-labelledby') && !Array.from(el.labels||[]).some(l=>l.textContent.trim()))
     .map(el=>el.name));
   assert.deepEqual(unlabeled,[],name+' unlabeled inputs');
-  controls.push({name,width,items:await page.locator('main a,main button,main input,main select,main summary').evaluateAll(nodes=>
-    nodes.filter(el=>el.getClientRects().length).map(el=>({tag:el.tagName,name:el.name||'',
+  controls.push({name,width,actor:actors.get(page),items:await page.locator('main a,main button,main input,main select,main textarea,main summary').evaluateAll(nodes=>
+    nodes.filter(el=>el.getClientRects().length).map(el=>({tag:el.tagName,type:el.getAttribute('type')||'',name:el.name||'',
       text:(el.getAttribute('aria-label')||el.textContent||'').trim().slice(0,100),
       href:el.getAttribute('href'),action:el.form?new URL(el.form.getAttribute('action')||location.href,location.href).pathname:null,disabled:!!el.disabled})))});
   await page.locator('a[href="#main-content"]').focus();

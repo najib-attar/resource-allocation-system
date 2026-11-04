@@ -21,6 +21,16 @@
       "unusedImports": []
     },
     {
+      "path": "web/professor_dashboard_service.py",
+      "parsed": true,
+      "unusedImports": []
+    },
+    {
+      "path": "tests/test_professor_portal.py",
+      "parsed": true,
+      "unusedImports": []
+    },
+    {
       "path": "tests/academic_fixtures.py",
       "parsed": true,
       "unusedImports": []
@@ -61,6 +71,16 @@
       "unusedImports": []
     },
     {
+      "path": "tests/professor/portal_browser.py",
+      "parsed": true,
+      "unusedImports": []
+    },
+    {
+      "path": "tests/professor/portal_source_audit.py",
+      "parsed": true,
+      "unusedImports": []
+    },
+    {
       "path": "tests/professor/review_contracts.py",
       "parsed": true,
       "unusedImports": []
@@ -88,6 +108,7 @@
   ],
   "approvedPersistenceChanges": true,
   "unchangedSessionAndCsrfInternals": true,
+  "approvedProfessorHomeRedirect": true,
   "handoffIntegrity": [
     {
       "path": "docs/use-cases/UC-PROF-01.pdf",

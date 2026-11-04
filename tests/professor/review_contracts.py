@@ -50,7 +50,7 @@ def main():
             raise RuntimeError('Contract fixture cleanup failed.')
     # Only the newly introduced Python code; valid existing tests/code are retained.
     sources = [ROOT/'web/professor_routes.py',ROOT/'web/professor_service.py',
-               ROOT/'web/eligibility_routes.py',ROOT/'web/academic_eligibility.py',
+               ROOT/'web/eligibility_routes.py',ROOT/'web/academic_eligibility.py',ROOT/'web/professor_dashboard_service.py',ROOT/'tests/test_professor_portal.py',
                ROOT/'tests/academic_fixtures.py',ROOT/'tests/test_academic_eligibility.py',
                ROOT/'tests/test_professor_intake.py',ROOT/'tests/test_eligibility_migration.py',
                ROOT/'tests/test_professor_services.py',ROOT/'tests/test_professor_existing_workflows.py',
@@ -86,7 +86,8 @@ def main():
         '            if g.principal.role != "Instructor":\n'
         '                abort(403, description="Instructor access required.")\n'
         '            return None\n')
-    assert new_security.replace(professor_guard,'')==old_security
+    home_redirect='    if principal.role == "Instructor":\n        return "professor.home"\n'
+    assert new_security.replace(professor_guard,'').replace(home_redirect,'')==old_security
     archive = Path('C:/Users/najee/Downloads/professor_use_cases_handoff.zip')
     integrity = []
     with zipfile.ZipFile(archive) as package:
@@ -101,7 +102,7 @@ def main():
         referencedRegressionMethodsValidated=len(references),missingTestReferences=missing,
         preservedStudentHead=base,studentClean=True,professorBranch='codex/professor-services-v1',
         unchangedProtectedSources=protected,approvedPersistenceChanges=True,
-        unchangedSessionAndCsrfInternals=True,
+        unchangedSessionAndCsrfInternals=True,approvedProfessorHomeRedirect=True,
         handoffIntegrity=integrity),indent=2)+'\n',encoding='utf-8')
     print(json.dumps(dict(approvalGate='enforced; intake enabled',pythonSources=len(python),
                          testReferences=len(references),handoffFiles=len(integrity))))

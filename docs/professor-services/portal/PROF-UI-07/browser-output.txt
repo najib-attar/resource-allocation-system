@@ -1,0 +1,1 @@
+{"phase":"PROF-UI-07","views":175,"keyboardSteps":2464,"checks":["Independent final sweep: 24 professor surfaces, three real error states and eight Student surfaces at five widths; long persisted content, every collected GET destination, native disclosures, all-role logout/CSRF, staff drawers, optional student decline and room invitation mutations."]}

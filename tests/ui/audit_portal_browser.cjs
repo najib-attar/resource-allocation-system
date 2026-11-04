@@ -177,7 +177,7 @@ async function inspect(page,width,name,student=true,actor=1) {
           const response=await rolePage.goto(fixture.url+url);
           assert.equal(response.status(),200,'Role '+actor+' '+url);
           assert.equal(await rolePage.locator('.student-service').count(),0);
-          assert.equal(await rolePage.locator('link[href$="campus-services.css"]').count(),actor===2?1:0);
+          assert.equal(await rolePage.locator('link[href$="campus-services.css"]').count(),Number(actor)===2?1:0);
           assert.equal(await rolePage.evaluate(()=>document.documentElement.scrollWidth),width,'Role overflow '+actor+' '+url);
           if(controlsAudit) await controlsAudit.inspect(rolePage,'role-'+actor+' '+url,fixture,actor);
           totalViews++;

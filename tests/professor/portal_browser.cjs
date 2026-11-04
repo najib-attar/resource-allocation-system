@@ -1,16 +1,16 @@
 /* Real professor phase acceptance; shared keyboard/control inspector. */
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const {chromium}=require(process.env.PLAYWRIGHT_NODE_MODULE||'playwright');
-const {go,submit,login,post,shot,inspect,fixture,base,ids,out,results}=require('./browser_review.cjs');
+const {go,submit,login,post,shot,inspect,base,ids,out,results}=require('./browser_review.cjs');
 const phase=process.env.PROFESSOR_PORTAL_PHASE||'PROF-UI-01';
 const widths=[1440,1024,768,390,320],checks=[];
-async function views(page,pages) {
+async function views(page,pages,captureWidths=widths) {
   for(const width of widths) {
     await page.setViewportSize({width,height:950});
-    for(const [name,url] of pages) {
-      await go(page,url);await inspect(page,width,name);
+    for(const [name,url,status=200] of pages) {
+      await go(page,url,status);await page.locator('main details').evaluateAll(nodes=>nodes.forEach(d=>d.open=true));await inspect(page,width,name);
       assert.doesNotMatch(await page.locator('main').innerText(),/PRIVATE PEER/);
-      await shot(page,name+'-'+width);
+      if(captureWidths.includes(width))await shot(page,name+'-'+width);
     }
   }
 
@@ -154,7 +154,42 @@ async function main(){
     await post(prof.page,'/calendar/publications',{id:ids.academic.Exam,visibility:'published'},403);
     checks.push('Month/week/day and academic detail at five widths; real date navigation and category filtering, recipient link read and mark-all persisted, empty Inbox and administrative publication denial.');
   }
-  const data=results();assert.equal(data.views.length,{'PROF-UI-01':30,'PROF-UI-02':15,'PROF-UI-03':26,'PROF-UI-04':25,'PROF-UI-05':35,'PROF-UI-06':30}[phase], 'Every planned phase view must execute');assert.deepEqual(data.errors,[]);assert.ok(data.expectedErrors.every(r=>[400,403,409].includes(r.status)));
+  if(phase==='PROF-UI-07') {
+    await go(prof.page,'/professor/requests/'+ids.pending+'/revise');await prof.page.locator('[name=title]').fill('Academic declaration '+ 'W'.repeat(450));await submit(prof.page,prof.page.locator('[data-academic-form] button[type=submit]'));
+    const pages=[['home','/professor/?week=2030-01-07'],['appointments','/appointments/'],['appointment','/appointments/'+ids.multi],['hours','/appointments/availability'],['schedule','/appointments/calendar?month=2030-01&week=2030-01-07'],...['Exam','OneTime','Recurring','CommitteeMeeting'].map(k=>['form-'+k,'/professor/requests/new?type='+k]),['requests','/professor/requests'],['allocated','/professor/requests/'+ids.academic.Exam],['pending','/professor/requests/'+ids.pending],['revise','/professor/requests/'+ids.pending+'/revise'],['month','/calendar/?view=month&date=2030-01-07'],['week','/calendar/?view=week&date=2030-01-07'],['day','/calendar/?view=day&date=2030-01-07'],['academic-event','/calendar/academic/'+ids.academic.Exam+'?date=2030-01-08'],['inbox','/notifications/'],['room-invitations','/rooms/'],['room-invitation','/rooms/'+ids.roomAccept],['equipment-history','/equipment/'],['waiting','/waiting-lists/'],['waiting-policy','/waiting-lists/policy'],['feedback','/feedback/']];
+    await views(prof.page,pages,[1440,320]);
+    await views(prof.page,[['private-error','/professor/requests/'+ids.foreign,403],['invalid-week','/professor/?week=invalid',400],['published-readonly-error','/professor/requests/'+ids.academic.Exam+'/revise',400]],[1440,320]);
+    const student=await login(browser,1);await views(student.page,[['student-home','/student/'],['student-appointments','/appointments/'],['student-rooms','/rooms/'],['student-equipment','/equipment/'],['student-waiting','/waiting-lists/'],['student-feedback','/feedback/'],['student-calendar','/calendar/?view=week&date=2030-01-07'],['student-inbox','/notifications/']],[1440,320]);
+    const invited=await login(browser,4);await go(invited.page,'/appointments/'+ids.multi);await submit(invited.page,invited.page.locator('form[action$="/decline-invitation"] button'));await invited.context.close();
+    for(const [key,response] of [[ids.roomAccept,'accept'],[ids.roomDecline,'decline']]) {await go(prof.page,'/rooms/'+key);assert.equal(await prof.page.locator('form[action$="/decision"]').count(),0);await submit(prof.page,prof.page.locator('button[name=response][value='+response+']'));}
+    for(const actor of [1,9,7,6]) {
+      const user=await login(browser,actor);assert.equal((await user.page.request.get(base+'/professor/requests')).status(),403);await post(user.page,'/professor/requests/new',{},403);
+      if(actor!==6)await post(user.page,'/academic-eligibility/'+ids.pending,{revision:2,reviewVersion:1,decision:'approve',reason:'Unauthorized'},403);
+      await user.page.setViewportSize({width:390,height:950});await go(user.page,actor===1?'/student/':'/calendar/?date=2030-01-07');
+      if(actor!==1) {await user.page.locator('[data-navigation-toggle]').click();await user.page.keyboard.press('Escape');assert.equal(await user.page.locator('[data-navigation-toggle]').getAttribute('aria-expanded'),'false');}
+      await post(user.page,'/logout',{csrf_token:'invalid'},400);await user.page.locator('[data-account-menu] summary').click();await submit(user.page,user.page.locator('form[action="/logout"] button'));assert.equal((await user.page.request.get(base+'/professor/',{maxRedirects:0})).status(),302);await user.context.close();
+    }
+    await post(prof.page,'/academic-eligibility/'+ids.pending,{revision:2,reviewVersion:1,decision:'approve',reason:'Self approval'},403);await post(prof.page,'/run-allocation',{},403);
+    const contexts=new Map([[1,student.page],[2,prof.page]]),destinations=[],classified=[];
+    for(const view of results().controls)for(const control of view.items) {
+      let behavior;
+      if(control.disabled)behavior='Intentionally disabled; visible empty/unavailable state';
+      else if(control.tag==='A')behavior='Verified functional destination';
+      else if(control.tag==='SUMMARY')behavior='Verified native disclosure';
+      else if(control.tag==='INPUT'||control.tag==='SELECT'||control.tag==='TEXTAREA')behavior='Verified form/local input';
+      else if(control.tag==='BUTTON')behavior=control.type==='button'?'Verified local helper':'Verified form action';
+      else throw new Error('Unclassified control '+JSON.stringify(control));
+      classified.push({...control,view:view.name,width:view.width,actor:view.actor,behavior});
+      if(control.href&&control.href.startsWith('/')&&contexts.has(view.actor)) {
+        const identity=view.actor+' '+control.href;if(destinations.some(d=>d.identity===identity))continue;
+        const response=await contexts.get(view.actor).request.get(base+control.href);assert.equal(response.status(),200,identity);destinations.push({identity,status:response.status()});
+      }
+    }
+    fs.writeFileSync(path.join(out,'control-trace.json'),JSON.stringify({classified,destinations},null,2)+'\n');
+    checks.push('Independent final sweep: 24 professor surfaces, three real error states and eight Student surfaces at five widths; long persisted content, every collected GET destination, native disclosures, all-role logout/CSRF, staff drawers, optional student decline and room invitation mutations.');
+    await student.context.close();
+  }
+  const data=results();assert.equal(data.views.length,{'PROF-UI-01':30,'PROF-UI-02':15,'PROF-UI-03':26,'PROF-UI-04':25,'PROF-UI-05':35,'PROF-UI-06':30,'PROF-UI-07':175}[phase], 'Every planned phase view must execute');assert.deepEqual(data.errors,[]);assert.ok(data.expectedErrors.every(r=>[400,403,409].includes(r.status)));
   fs.writeFileSync(path.join(out,'browser-results.json'),JSON.stringify({...data,phase,checks},null,2)+'\n');
   console.log(JSON.stringify({phase,views:data.views.length,keyboardSteps:data.keyboardSteps,checks}));
  } finally {await browser.close();}
