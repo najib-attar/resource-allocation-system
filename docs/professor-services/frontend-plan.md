@@ -1,16 +1,16 @@
-# Professor Portal — frontend implementation plan
+# Professor Portal — frontend implementation and architecture
 
 Reviewed base: `5a7f0b0`, dedicated `codex/professor-services-v1` worktree. Student baseline `747c925` and Draft PR #24 remain unchanged. The fresh 29-test backend preflight passed: eligibility, intake, legacy preservation, existing professor ownership and identity/session workflows. The user request governs over the archived design/handoff instructions.
 
 ## Shared design and information architecture
 
-Promote the existing Campus Space shell/service CSS and Jinja service parent to workspace-neutral components; retain the Student role classes and rendering. No duplicate design system, framework, global reset or business-rule implementation. Existing other-role styles/permissions remain opt-in and unchanged.
+The implementation promotes the existing Campus Space shell/service CSS and Jinja service parent to workspace-neutral components, retaining Student role classes and rendering. No duplicate design system, framework, global reset or business-rule implementation was added. Existing other-role styles/permissions remain opt-in and unchanged.
 
 Primary professor navigation: Home, My academic requests (real owner route), Calendar, Inbox. Service entry points appear on Home: Appointments, Office hours, Academic requests, Personal schedule and optional room invitations. Preserve authorized legacy campus-service/history destinations through Home, not duplicate primary navigation. Account controls keep schedule, notifications and logout.
 
 Home uses a read-only, Instructor-scoped database snapshot, existing academic read contracts and personal schedule projection. It shows actual upcoming required confirmed appointments, requests awaiting this professor, bounded office-hour patterns, academic review/outcomes, dated own commitments and recipient notifications. No teaching affiliation or dates are inferred from declarations. Lists link to complete existing services.
 
-## Sequential implementation
+## Implemented sequence
 
 | Phase | Pages and presentation | Verification and safety boundary |
 |---|---|---|
@@ -22,7 +22,7 @@ Home uses a read-only, Instructor-scoped database snapshot, existing academic re
 | PROF-UI-06 | Existing calendar, personal schedule and Inbox component alignment | Month/week/day, filters/date navigation/privacy, supported read actions; academic notifications explicitly unavailable |
 | PROF-UI-07 | Independent control/source audit, safe cleanup, complete integration/cross-role/browser regressions | Actual persisted POST outcomes, 1440/1024/768/390/320, keyboard/focus/overflow, full Python/PostgreSQL and C++ tests; no operational data |
 
-Each phase receives a focused local commit after relevant automated and real-browser checks. Final full suites run after integration. The [screen/control coverage](screen-coverage.md) extends the existing [backend traceability](traceability.md); the acceptance report records actual execution, not planned passes.
+PROF-UI-01–07 have focused verified commits; the acceptance report lists their SHAs. PROF-UI-07 supplies the final independent integration/full regression evidence. Each page group was exercised in the real Flask application with disposable PostgreSQL data at all five widths. The [screen/control coverage](screen-coverage.md) extends the existing [backend traceability](traceability.md); the acceptance report records actual execution, not planned passes.
 
 ## Existing limitations preserved
 

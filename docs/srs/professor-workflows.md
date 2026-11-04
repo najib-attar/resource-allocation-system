@@ -54,6 +54,6 @@ UC-PROF-01–05 retain appointment hours/approvals, personal blocks, optional ro
 
 UC-PROF-06–08 have minimal shared Jinja intake/revision forms and JSON submission. UC-PROF-09 has owner list/detail filters, allocations, reasons/history and explicit bindings. Reads are private/no-store. Database failures return safe errors; invalid/private/stale operations commit no partial change.
 
-Academic outcome notifications remain deferred: Notification has no ResourceRequest event source. Source/schema, producers and recipient/destination policy need separate approval. Existing notifications remain supported. Full professor visual redesign follows the [frontend sequence](../professor-services/frontend-plan.md).
+Academic outcome notifications remain deferred: Notification has no ResourceRequest event source. Source/schema, producers and recipient/destination policy need separate approval. Existing notifications remain supported. The Professor Portal frontend now follows the implemented [frontend sequence](../professor-services/frontend-plan.md), reusing the Student Campus Space system. Academic notifications, cancellation and versioned published replacement remain deferred.
 
 See [traceability](../professor-services/traceability.md) and [acceptance](../professor-services/acceptance-report.md) for executed evidence and limitations.

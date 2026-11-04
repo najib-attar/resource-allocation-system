@@ -1,6 +1,6 @@
 # Professor Portal screen and control coverage
 
-Status starts Planned; each phase records verification in the acceptance report. All POST controls retain global CSRF and authoritative service authorization. The detailed engine/persistence contracts remain in [traceability](traceability.md).
+All supported rows are implemented; the acceptance report records executed phase/final verification. Deferred controls remain explicitly identified. All POST controls retain global CSRF and authoritative service authorization. The detailed engine/persistence contracts remain in [traceability](traceability.md).
 
 | Phase / screen | UC and backend capability | Route / service | Required controls and result | Regression boundary |
 |---|---|---|---|---|
@@ -15,7 +15,7 @@ Status starts Planned; each phase records verification in the acceptance report.
 | 04 Committee form | UC08 required participants | Same route, type=CommitteeMeeting | Active required participant IDs/declared roles, purpose, resource/time; separate from appointments | Active/duplicate/foreign identity validations; actual engine outcome |
 | 05 My academic requests | UC09 owner-only current lifecycle | GET /professor/requests; list_for | Type/allocation filters, pagination, creation links, separate eligibility/outcome badges | test_professor_services ownership/filter/pagination |
 | 05 Academic detail | UC09 own review/result/history | GET /professor/requests/<id>; detail | Explicit submitted/review/processed/allocated/calendar distinctions, reasons, actual rooms, history, binding warning | Owner-ID/legacy/read-model/real-engine tests |
-| 05 Revision | UC06–09 unpublished owner revision | GET/POST /professor/requests/<id>/revise; submit(key,revision) | Existing expected revision/idempotency token; visible eligibility reset; active published read-only explanation | Stale/concurrent/published/direct-SQL/calendar preservation tests |
+| 05 Revision | UC06–09 unpublished owner revision | GET/POST /professor/requests/<id>/revise; submit(key,revision) | Existing expected revision/idempotency token, supported type change, visible eligibility reset; active published read-only explanation; stale tokens are retained until explicit reload | Stale/concurrent/published/direct-SQL/calendar preservation tests |
 | 06 Calendar month/week/day | UC05 authorized sources | GET /calendar/; UniversityCalendarService | View/date/navigation, categories/states/scope, source links, pending/optional/reminder distinction | test_university_calendar, privacy/overflow/keyboard browser |
 | 06 Academic event | UC05 explicit dated academic projection | GET /calendar/academic/<id>?date= | Existing authorized details/back navigation, no affiliation inferred | Existing private/public calendar tests |
 | 06 Inbox | UC05 recipient updates | GET /notifications/; NotificationService.inbox | Read/unread, source links, mark-all boundary; existing link-triggered read POST | test_notifications and persisted read-state browser |
