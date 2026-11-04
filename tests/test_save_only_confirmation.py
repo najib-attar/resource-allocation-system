@@ -201,7 +201,9 @@ class SaveOnlyConfirmationTests(PostgresTestCase):
 
     def test_confirmation_run_button_keeps_explicit_run_and_detail_navigation(self):
         confirmation = self.client.get("/request-added/40")
-        self.assertIn('action="/run-allocation-now/40"', confirmation.get_data(as_text=True))
+        self.assertNotIn('action="/run-allocation-now/40"', confirmation.get_data(as_text=True))
+        self.assertIn('href="/academic-eligibility/40"', confirmation.get_data(as_text=True))
+        self.assertIn('Pending Eligibility Review', confirmation.get_data(as_text=True))
         self.run_backend.assert_not_called()
         response = self.client.post("/run-allocation-now/40")
         self.assertEqual(response.status_code, 302)
@@ -209,10 +211,21 @@ class SaveOnlyConfirmationTests(PostgresTestCase):
         self.run_backend.assert_not_called()
         from academic_fixtures import review_requests
         review_requests(self.database)
+        confirmation = self.client.get('/request-added/40').get_data(as_text=True)
+        self.assertIn('Current eligibility: <strong>Eligible</strong>',confirmation)
+        self.assertIn('action="/run-allocation-now/40"',confirmation)
+        self.assertIn('Run Allocation Now',confirmation)
+        self.assertNotIn('Review eligibility before allocation',confirmation)
         response = self.client.post('/run-allocation-now/40')
         self.assertTrue(response.location.startswith("/request/40?"))
         self.run_backend.assert_called_once_with()
         self.assertEqual(self.client.get(response.location).status_code, 200)
+
+    def test_unknown_confirmation_does_not_claim_a_successful_creation(self):
+        response=self.client.get('/request-added/999999')
+        self.assertEqual(response.status_code,404)
+        self.assertNotIn('was added successfully',response.get_data(as_text=True))
+        self.run_backend.assert_not_called()
 
     def test_helper_is_available_for_package_and_standalone_imports(self):
         self.assertIs(web_app.build_committee_participant_display, build_committee_participant_display)

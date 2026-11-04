@@ -15,6 +15,26 @@ from web.professor_dashboard_service import ProfessorDashboardService
 
 
 class ProfessorPortalTests(ProfessorFixture):
+    def test_eligibility_navigation_is_expanded_for_administrators_and_protected_for_other_roles(self):
+        from test_student_portal_ui import Document
+        key=self.academic_request()
+        administrator=authorized_client(web_app.app,6)
+        for path in ('/academic-eligibility/',f'/academic-eligibility/{key}'):
+            response=administrator.get(path)
+            self.assertEqual(response.status_code,200)
+            page=Document(response.get_data(as_text=True)).root
+            disclosure=page.find('details',**{'class':'app-admin-navigation'})[0]
+            self.assertIn('open',disclosure.attrs)
+            self.assertEqual(disclosure.find('a',href='/academic-eligibility/')[0].attrs['aria-current'],'page')
+        with self.database.transaction() as session:
+            role=session.scalar(select(Role).where(Role.name=='TeachingAssistant'))
+            session.add(User(id=9,source_order=9,name='Synthetic audit TA',primary_role_id=role.id))
+        AccountService(self.database).provision(9,'synthetic-audit-ta','Synthetic-audit-password-only')
+        for actor in (1,2,7,9):
+            client=authorized_client(web_app.app,actor)
+            self.assertEqual(client.get('/academic-eligibility/').status_code,403)
+            self.assertEqual(client.get(f'/academic-eligibility/{key}').status_code,403)
+
     def meeting(self,title,organizer=1,professors=(2,),start=START):
         return self.service.submit(organizer,list(professors),[],title,60,start,self.faculty)
 

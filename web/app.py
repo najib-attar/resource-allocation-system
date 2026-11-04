@@ -900,6 +900,11 @@ def add_request():
 @app.route("/request-added/<request_id>")
 def request_added(request_id):
     row = get_request_row(request_id)
+    if row is None:
+        return render_template('workspace_error.html',message='Academic request not found.',status=404,
+            recovery=('eligibility.index','academic eligibility review')),404
+    from .academic_eligibility import EligibilityService
+    eligibility = EligibilityService(get_repository().database).detail(g.principal.user_id,safe_int(request_id))
     display_row = dict(row) if row else None
     participant_rows = get_request_participant_rows(request_id)
     users_by_id = index_by_field(get_table("users")["rows"], "userId")
@@ -916,6 +921,7 @@ def request_added(request_id):
         "request_added.html",
         request_id=request_id,
         request_row=display_row,
+        eligibility=eligibility,
         requester=requester,
         requested_space=requested_space,
         committee_participants=build_committee_participant_display(

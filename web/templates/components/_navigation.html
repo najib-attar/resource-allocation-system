@@ -31,7 +31,7 @@
     {% if g.principal.role == 'Instructor' %}{{ nav_link('appointments.availability', 'Office Hours', 'calendar') }}{% endif %}
     {% if g.principal.role == 'Instructor' %}{{ nav_link('professor.pages', 'Academic Requests', 'book', 'professor.') }}{% endif %}
     {% if g.principal.administrator %}
-    <details class="app-admin-navigation"{% if request.endpoint in ['index','add_request','requests','allocation_summary','schedules','users','spaces','raw_data','appointments.bindings','rooms.configuration','calendar.publications','equipment.custodians','waiting.configuration'] %} open{% endif %}>
+    <details class="app-admin-navigation"{% if request.endpoint in ['index','add_request','requests','allocation_summary','schedules','users','spaces','raw_data','appointments.bindings','rooms.configuration','calendar.publications','equipment.custodians','waiting.configuration','eligibility.index','eligibility.detail'] %} open{% endif %}>
         <summary>{{ icon('settings', 19) }}<span>Administration</span>{{ icon('chevron', 14) }}</summary>
         <div class="app-admin-links">
             {{ nav_link('index', 'Dashboard', 'home') }}{{ nav_link('add_request', 'Add Request', 'plus') }}
