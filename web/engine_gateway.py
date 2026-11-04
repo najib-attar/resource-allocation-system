@@ -116,9 +116,11 @@ class EngineGateway:
 
     def _execute(self, snapshot, mode, validator):
         if mode == '--json':
-            guard = getattr(snapshot, 'assert_allocation_ready', None)
-            if guard is not None:
-                guard()
+            from .academic_eligibility import AllocationInput, PresentationInput
+            if type(snapshot) is AllocationInput:
+                AllocationInput.assert_allocation_ready(snapshot)
+            elif type(snapshot) is PresentationInput:
+                PresentationInput.assert_allocation_ready(snapshot)
             elif not self.allow_unbound_allocations:
                 raise EngineIntegrationError('Academic allocation requires a current eligibility-checked repository snapshot. Raw protocol fixtures require explicit standalone opt-in.')
         backend = resolve_backend_executable(self.project_root, os.environ.get("RESOURCE_ALLOCATION_BACKEND"))

@@ -1,12 +1,13 @@
 """Actual PostgreSQL/engine evidence for the administrative eligibility boundary."""
 from concurrent.futures import ThreadPoolExecutor
+from copy import deepcopy
 from unittest import mock
 from sqlalchemy import select, text, update
 from sqlalchemy.exc import IntegrityError
 
 from postgres_fixtures import ROOT
 from test_professor_services import ProfessorFixture
-from web.academic_eligibility import EligibilityError, EligibilityService
+from web.academic_eligibility import AllocationInput, EligibilityError, EligibilityService
 from web.allocation_workflow import execute_allocation
 from web.engine_gateway import EngineGateway, EngineIntegrationError
 from web.persistence.models import (Allocation, ApplicationState, EligibilityEvent, RequestEligibility,
@@ -26,6 +27,30 @@ class EligibilityGateTests(ProfessorFixture):
             revision=row.revision
             version=meta.version if version is None else version
         return self.review.decide(6,key,revision,version,approve,'Reviewed synthetic academic declarations.')
+
+    def test_forged_guards_and_overridden_methods_cannot_send_pending_inputs_to_engine(self):
+        key=self.academic_request()
+        raw=self.repository.read_view()[0]
+        class Unverified(dict):
+            def assert_allocation_ready(self):pass
+        class DerivedInput(AllocationInput):
+            def assert_allocation_ready(self):pass
+        with self.database.transaction(read_only=True) as session:
+            revision=session.get(ApplicationState,1).input_revision
+        with mock.patch('web.engine_gateway.subprocess.run') as process:
+            for snapshot in (Unverified(raw),DerivedInput(raw,self.database,revision)):
+                with self.subTest(kind=type(snapshot).__name__),self.assertRaises(EngineIntegrationError):
+                    EngineGateway(ROOT).execute(snapshot)
+            legitimate=self.repository.snapshot()
+            legitimate['requests']=raw['requests']
+            legitimate.assert_allocation_ready=lambda:None
+            with self.assertRaises(StaleRun):EngineGateway(ROOT).execute(legitimate)
+            process.assert_not_called()
+        self.decision(key)
+        snapshot=self.repository.snapshot()
+        for valid in (snapshot,snapshot.copy(),deepcopy(snapshot)):
+            result,_=EngineGateway(ROOT).execute(valid)
+            self.assertEqual([r['requestId'] for r in result['requestResults']],[key])
 
     def test_pending_and_rejected_requests_never_enter_any_repository_engine_snapshot(self):
         pending=self.academic_request()
