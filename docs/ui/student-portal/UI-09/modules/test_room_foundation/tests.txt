@@ -1,9 +1,0 @@
-test_additive_schema_has_no_automatic_bookable_rooms_or_reservations (test_room_foundation.RoomFoundationTests.test_additive_schema_has_no_automatic_bookable_rooms_or_reservations) ... ok
-test_confirmed_request_requires_exact_approval_and_commitments (test_room_foundation.RoomFoundationTests.test_confirmed_request_requires_exact_approval_and_commitments) ... ok
-test_faculty_ownership_and_categories_are_constrained (test_room_foundation.RoomFoundationTests.test_faculty_ownership_and_categories_are_constrained) ... ok
-test_pending_requests_reserve_nothing_and_cannot_have_reservations (test_room_foundation.RoomFoundationTests.test_pending_requests_reserve_nothing_and_cannot_have_reservations) ... ok
-
-----------------------------------------------------------------------
-Ran 4 tests in 30.377s
-
-OK

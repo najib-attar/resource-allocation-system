@@ -1,8 +1,0 @@
-test_empty_people_does_not_load_unrelated_calendars (test_calendar_loading.CalendarLoadingTests.test_empty_people_does_not_load_unrelated_calendars) ... ok
-test_projection_loads_only_relevant_rows_with_bounded_queries (test_calendar_loading.CalendarLoadingTests.test_projection_loads_only_relevant_rows_with_bounded_queries) ... ok
-test_required_members_active_run_and_bound_outside_horizon_remain_correct (test_calendar_loading.CalendarLoadingTests.test_required_members_active_run_and_bound_outside_horizon_remain_correct) ... ok
-
-----------------------------------------------------------------------
-Ran 3 tests in 16.152s
-
-OK

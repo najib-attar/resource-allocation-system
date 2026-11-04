@@ -1,6 +1,0 @@
-test_flask_submit_and_run_preserves_comma_quote_and_unicode_title (test_postgres_text_contract.PostgresTextContractTests.test_flask_submit_and_run_preserves_comma_quote_and_unicode_title) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 11.575s
-
-OK

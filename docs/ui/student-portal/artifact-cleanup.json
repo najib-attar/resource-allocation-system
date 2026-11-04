@@ -1,0 +1,22 @@
+{
+  "originalRevision": "747c925b14c29368e6cb9bc8b2e2d9d33c494462",
+  "removedFiles": 451,
+  "removedBytes": 32659899,
+  "retainedRepresentativeScreenshots": 66,
+  "allOriginalEvidenceArchived": true,
+  "localArchive": "C:\\Users\\najee\\Desktop\\resource-allocation-frontend\\build\\integration\\student-evidence-747c925.zip",
+  "archiveSha256": "a66e854941299c470a8dcb79756f70408247f3a636f9133175d922e1eb2254a2",
+  "archiveFiles": 644,
+  "archiveEveryFileHashVerified": true,
+  "historicalGitEvidencePreserved": true,
+  "rewrittenHistoricalLinks": 295,
+  "controlSummary": {
+    "originalInstances": 9108,
+    "distinctSignatures": 1293,
+    "sumOccurrences": 9108,
+    "labelEncoding": "JSON escaped string; original label whitespace preserved"
+  },
+  "persistenceSourceHashesVerified": true,
+  "productionFilesChanged": [],
+  "testsRemoved": []
+}

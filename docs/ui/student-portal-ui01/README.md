@@ -106,13 +106,13 @@ appears at the viewport edge within full-page screenshots, as in the reference.
 
 | Width | Populated | Empty |
 | --- | --- | --- |
-| 1440px | [Desktop](populated-1440.png) | [Desktop empty](empty-1440.png) |
-| 768px | [Tablet](populated-768.png) | [Tablet empty](empty-768.png) |
-| 390px | [Mobile](populated-390.png) | [Mobile empty](empty-390.png) |
-| 320px | [Small mobile](populated-320.png) | [Small mobile empty](empty-320.png) |
+| 1440px | [Desktop](https://github.com/najib-attar/resource-allocation-system/blob/747c925b14c29368e6cb9bc8b2e2d9d33c494462/docs/ui/student-portal-ui01/populated-1440.png) | [Desktop empty](https://github.com/najib-attar/resource-allocation-system/blob/747c925b14c29368e6cb9bc8b2e2d9d33c494462/docs/ui/student-portal-ui01/empty-1440.png) |
+| 768px | [Tablet](https://github.com/najib-attar/resource-allocation-system/blob/747c925b14c29368e6cb9bc8b2e2d9d33c494462/docs/ui/student-portal-ui01/populated-768.png) | [Tablet empty](https://github.com/najib-attar/resource-allocation-system/blob/747c925b14c29368e6cb9bc8b2e2d9d33c494462/docs/ui/student-portal-ui01/empty-768.png) |
+| 390px | [Mobile](https://github.com/najib-attar/resource-allocation-system/blob/747c925b14c29368e6cb9bc8b2e2d9d33c494462/docs/ui/student-portal-ui01/populated-390.png) | [Mobile empty](https://github.com/najib-attar/resource-allocation-system/blob/747c925b14c29368e6cb9bc8b2e2d9d33c494462/docs/ui/student-portal-ui01/empty-390.png) |
+| 320px | [Small mobile](https://github.com/najib-attar/resource-allocation-system/blob/747c925b14c29368e6cb9bc8b2e2d9d33c494462/docs/ui/student-portal-ui01/populated-320.png) | [Small mobile empty](https://github.com/najib-attar/resource-allocation-system/blob/747c925b14c29368e6cb9bc8b2e2d9d33c494462/docs/ui/student-portal-ui01/empty-320.png) |
 
-Browser results: [dashboard and routes](browser-results.json),
-[keyboard and controls](controls-results.json).
+Browser results: [dashboard and routes](https://github.com/najib-attar/resource-allocation-system/blob/747c925b14c29368e6cb9bc8b2e2d9d33c494462/docs/ui/student-portal-ui01/browser-results.json),
+[keyboard and controls](https://github.com/najib-attar/resource-allocation-system/blob/747c925b14c29368e6cb9bc8b2e2d9d33c494462/docs/ui/student-portal-ui01/controls-results.json).
 
 ## Verification
 
@@ -137,7 +137,7 @@ All discovered modules ran unchanged with
 `python -B -m unittest discover -s tests -p '<module>.py' -v` in six isolated
 processes against a dedicated PostgreSQL 17 cluster. Discovery and executed counts
 matched exactly. Elapsed time was 22m23s; earlier partial/focused runs are excluded
-from these totals. See [Python regression results](python-results.json).
+from these totals. See [Python regression results](https://github.com/najib-attar/resource-allocation-system/blob/747c925b14c29368e6cb9bc8b2e2d9d33c494462/docs/ui/student-portal-ui01/python-results.json).
 
 The C++ regression driver passed **192 tests, 0 failures**. Both existing backend
 runtime smoke cases passed: clean-slot and normal-dataset. The authoritative

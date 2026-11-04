@@ -1,6 +1,0 @@
-test_diagram_sources_and_catalog_match_all_actual_tables (test_database_diagrams.DatabaseDiagramTests.test_diagram_sources_and_catalog_match_all_actual_tables) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.323s
-
-OK

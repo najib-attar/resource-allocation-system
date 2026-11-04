@@ -1,6 +1,0 @@
-test_real_cli_writes_only_inside_temporary_workspace (test_csv_cli.IsolatedCliSmokeTests.test_real_cli_writes_only_inside_temporary_workspace) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.477s
-
-OK
