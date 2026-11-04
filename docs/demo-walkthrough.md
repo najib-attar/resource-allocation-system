@@ -1,230 +1,159 @@
 # Run and explore the fictional university demo
 
-For the equipment service, see [the equipment walkthrough](equipment-borrowing-guide.md).
-New fictional profiles include inventory automatically; existing profiles remain
-unchanged and can use the explicit additive development seed described there.
+The Windows launcher creates an owned, loopback-only PostgreSQL profile with
+fictional university records. It starts the actual Flask application and C++
+integration; it does not replace workflows with mock responses.
 
-From Windows PowerShell in the repository root:
+## Prerequisites and startup
 
-```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run_demo.ps1
-```
-
-## Ready-made student service examples
-
-Use the same primary local database for appointments, rooms and equipment:
+Install Python 3.12/3.13, PostgreSQL 17 tools and a C++17 `g++` compiler. From the
+repository root in PowerShell:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run_demo.ps1 `
-  -ServiceExamples
+python scripts/build_backend.py
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_demo.ps1
 ```
 
-The existing users, resources and equipment are fictional. Nine clearly labeled
-`[Demo]` requests exercise **Accepted**, **Rejected** and **Pending** outcomes for
-appointments, rooms and equipment. The real services and C++ engine perform the
-decisions; the tool does not insert fake approved allocations. Its printed summary
-lists each detail URL, current status, deciding account and actual assignments.
-The current local setup uses the explicit fictional period **19 October through
-13 November 2026**. Saved dates never reset. A fresh installation must configure
-its own explicit academic period; do not infer dates for existing records.
+The launcher installs pinned Python dependencies into its profile environment,
+prepares its private PostgreSQL server, upgrades that designated demo database,
+verifies the authoritative engine and seeds fictional inputs once. Open
+`http://127.0.0.1:5000` and keep the terminal open.
 
-- `student1`: all nine requests, received decisions, upcoming confirmed timetable.
-- `professor1`: appointment decisions and room invitations.
-- `admin` (or the printed assigned account): room decisions and equipment custody.
-- `student2`: optional appointment invitations.
+If tools are outside the discovered locations, supply `-PythonPath`, `-CompilerPath`
+or `-PostgresBin` (the PostgreSQL `bin` directory). The launcher does not install
+system tools, modify Windows services or reset an unrelated database. Internet is
+needed for missing Python packages.
 
-The password is printed by the launcher and remains in the profile's private
-`settings.json` as `demoPassword`. Existing profiles and passwords are not changed.
-For October examples, select the **19 Oct** week in My Schedule. Appointment
-acceptance is called **Confirmed**, rejection **Declined**; rooms use Confirmed /
-Rejected, and equipment uses Approved / Rejected. Approved equipment is reserved,
-not physically borrowed until verified handover.
+Build before the first launch and after C++ changes. On Windows PowerShell a
+missing/stale engine can stop the launcher's freshness check before its intended
+rebuild fallback. The explicit build above avoids that limitation. Use
+`python scripts/build_backend.py --compiler PATH` if `g++` is outside PATH.
 
-Pending examples remain undecided so you can try either action. After deciding,
-the request's current status and available actions change; old submission messages
-remain as history, not pending tasks. The notification badge counts **unread
-updates**, not pending requests. Every notification shows its current request
-status, sender, recipient and time. Students see their own activity and outcomes;
-professors see requests addressed to them and their own decisions. Only the assigned
-room approver or authorized equipment custodian sees the operational audit log,
-including actors and actual notification recipients. These records live in PostgreSQL.
+## Persistent profiles and accounts
 
-Rerunning `-ServiceExamples` reports existing examples and never resets manual
-decisions or creates duplicates. To add the examples to an already initialized,
-owned fictional profile without starting Flask:
+The default profile is `build/local-demos/university-demo/`. Its private
+`settings.json` selects the connection, generated demo password and explicit
+academic period. New profiles default to PostgreSQL port **55443** and fictional
+dates **7–31 January 2030**. An existing profile keeps its saved settings, which
+may differ. Use the launcher's printed summary rather than a machine-specific port.
 
-```powershell
-python scripts/seed_service_examples.py --state-dir build/local-demos/university-demo
-```
+The launcher prints generated student, professor and administrator sign-ins.
+Choose the displayed users for the walkthrough below; use the generated password
+from that profile. Never upload private settings or reuse demo credentials in a
+real installation. Normal account provisioning is documented in
+[database operations](database-operations.md#accounts-and-appointment-calendars).
 
-If preparation fails partway, completed examples are retained and reported on a
-rerun. The tool refuses unowned profiles and never changes calendars or policies to
-force an unavailable request to succeed. Do not use it against production data.
+All services in a profile share one application database. Rerunning the same
+command preserves users, passwords, appointments, requests, notifications and
+manual decisions. Conflicting explicit settings are rejected rather than applied
+as a reset. Do not delete a profile to repair an error or treat an existing
+database as disposable.
 
-The launcher installs `requirements.txt` into its own environment, prepares a
-password-protected, loopback-only PostgreSQL server, migrates the **single application
-database**, verifies/builds the C++ executable and seeds fictional university
-inputs. Allocation results come from the real engine. It starts Flask at
-`http://127.0.0.1:5000`; keep the terminal open. This is local development, not
-production deployment.
-
-Prerequisites are Python 3.12/3.13, PostgreSQL 17 tools and C++17 `g++`. Existing
-repository-local tools or PATH installations are discovered automatically.
-If tools live elsewhere, use `-PythonPath`, `-CompilerPath` and `-PostgresBin`.
-The launcher does not install system software, alter Windows services or modify
-an unrelated database. Internet is needed only for missing Python packages.
-
-## One local application database
-
-The primary local profile is `build/local-demos/university-demo/`. Its private
-`settings.json` selects **resource_allocation** on `127.0.0.1:55448` in the current
-installation. All users, appointments, equipment, room requests, notifications and
-history belong to this same database. The historical profile directory name does
-not imply a second operational database. The launcher reuses the saved connection;
-you do not need a different profile for each service.
-
-The data is fictional but this is the application's actual local persistence,
-not a CSV copy or a second demo database. Retired fixtures are kept only in private
-backups outside the repository. PostgreSQL's `postgres`, `template0` and `template1`
-are system databases, not additional application databases, and must not be deleted.
-Automated integration tests use disposable isolated databases/schemas which are
-removed afterward; never run destructive tests against this primary database.
-
-## Initial data and sign-in
-
-| Data | Default |
-|---|---:|
-| Students | 80 |
-| Professors (Instructor role) | 12 |
-| Administrators | 2 |
-| Teaching assistants / staff | 6 / 6 |
-| Resources | 20 |
-| Room requests | 120 |
-| Professor office-hour patterns | 60 |
-
-Names, emails and request details are fictional and generated reproducibly using
-seed 42. The first two professors belong to **Faculty of Applied Sciences** so
-the multi-professor demonstration is easy. Their actual generated names appear
-in the launcher's account list. Weekday office hours are 09:00-17:00 Istanbul time.
-
-The launcher prints one randomly generated **demo password**. Use it with:
-
-| Username | Use |
-|---|---|
-| `student1` | Organize an appointment |
-| `student2` | View/decline an optional invitation |
-| `professor1` | Publish hours and approve requests |
-| `professor2` | Second required approval |
-| `admin` | Dashboard, users, resources and allocation results |
-
-Other accounts are `student1` through `student80`, `professor1` through
-`professor12` and `admin2`. The shared password is only a convenience for this
-isolated fictional demo; never use these credentials in a real installation.
-Private settings and data live under `build/local-demos/university-demo/`, which
-Git ignores. Do not upload that directory: `settings.json` contains credentials.
+To work as two users at once, use separate browser profiles or one normal window
+and one InPrivate/incognito window. Two ordinary tabs in the same profile share
+the login cookie.
 
 ## Appointment walkthrough
 
-Use dates in the saved explicit academic period; the current walkthrough uses
-October 19-November 13, 2026. A fresh installation's default remains January 7-31,
-2030 unless configured explicitly. Neither assigns dates to real university records.
+Use a future date inside the profile's printed academic period and the selected
+professor's published hours. If the saved fictional period is in the past, review
+its development calendar explicitly rather than assuming the launcher resets it.
 
-1. Sign in as `student1`. **Home** shows a current-month hourly timetable,
-   your next confirmed meeting, bookings, pending requests and optional invitations. New
-   accounts correctly show empty states. Click **Schedule an appointment**.
-2. Select **Faculty of Applied Sciences**, open **Choose professors**, and search
-   for the names shown for `professor1` and `professor2`. Use the separate
-   **Choose students** list for `student2` if you want optional participation.
-   Numeric fictional-name suffixes are hidden; accounts and stored IDs stay unchanged.
-3. Enter a purpose and duration, for example 30 minutes. Select **Appointment date**
-   `2026-10-26` once for the current local data. Feasible time buttons load automatically; **Refresh times**
-   retries the check. University commitments and personal blocks are considered.
-4. Select a recommendation and **Submit for professor approval**. Its status is
-   **Pending Approval**; no time has been reserved yet.
-5. Sign out, sign in as `professor1`, open the request under **Appointments** and
-   approve it. With two professors selected, it remains pending.
-6. Sign in as `professor2` and approve the same revision. It becomes **Confirmed**.
-7. Return to student **Home**: the confirmed booking and next-meeting card now
-   appear. Click **Show this week**, or choose October 2026 under **Month** and
-   select the **26 Oct - 30 Oct** week. **My Schedule** uses the same hourly
-   timetable for students and professors. Pending requests do not reserve time.
-8. As `student2`, open the invitation and decline it. Confirmation is unaffected;
-   professors can see the declined status. No acceptance is required.
-9. As the organizer, change the proposed time to clear all professor approvals,
-   or cancel to release the reserved time. A selected professor can also cancel.
+1. Sign in as a printed student. Home links to **Appointments** and the existing
+   service hubs; an empty schedule is a valid initial state.
+2. Start a new appointment. Select the configured faculty and one printed professor.
+   Select more required professors for unanimous approval, and optionally invite
+   another printed student through the separate student chooser.
+3. Enter purpose/duration and a date. Choose an available-time recommendation or
+   a manual proposal. Both are checked against published hours and commitments.
+4. Submit for professor approval. **Pending Approval** reserves no time.
+5. In the professor's separate browser, open the appointment notification or the
+   pending Appointments list and approve the current revision.
+6. If multiple professors are required, each must approve independently. After the
+   last approval, the appointment becomes **Confirmed**.
+7. Open Calendar or My Schedule in both accounts at that date. The confirmed
+   mandatory commitments are recorded for the organizer and required professors.
+8. An optional student may decline without cancelling the meeting. As organizer,
+   reschedule to invalidate earlier approvals, or cancel to release commitments.
 
-For one professor, select just one. For multiple students, invite additional
-students. These selections demonstrate all four supported configurations.
-Professors manage recurring publications through **Office Hours**, and everyone
-can add date-specific blocks through **My Schedule**. Do not remove hours needed
-by future confirmed appointments before cancelling/rescheduling them.
+Professors publish weekly patterns, validity dates and exclusions through **Office
+Hours**. Personal blocks use **My Schedule**. Existing confirmed commitments
+remain protected; absent professor hours are not treated as free availability.
 
-## Explore room allocation
+## Rooms and equipment
 
 ### Student room-request demonstration
 
-Use the same database and login accounts as the appointment walkthrough:
+From Student Home, open Rooms, describe the activity, capacity/facilities and date,
+then review real recommendations and busy/free availability. Submit the selected
+room for faculty approval. The detail identifies the responsible approver; use
+that printed staff/administrative account to approve or reject. Other accounts
+cannot substitute for the assigned approver. Pending requests reserve nothing.
+
+An approved room request appears as confirmed on the authorized calendar. Optional
+professor invitations grant attendance choice, not faculty approval authority.
+Configured semesters and existing policy govern recurring requests and occurrence
+actions. Existing profiles are never silently reassigned room ownership.
+
+### Equipment borrowing
+
+For borrowing, use the [equipment walkthrough](equipment-borrowing-guide.md).
+Approval, physical collection and verified return are separate. A due time never
+means an asset has physically returned; only authorized custodians perform handover
+and inspection. Eligible waiting-list and private feedback links appear in their
+existing resource workflows.
+
+### Optional service examples
+
+To add the existing labeled appointment/room/equipment examples to an owned
+fictional profile:
 
 ```powershell
-powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run_demo.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_demo.ps1 -ServiceExamples
 ```
 
-1. Sign in as `student1`, then choose **Find a room** from Home or **Room Requests**.
-2. Enter a study/meeting/lecture/club/other purpose, total attendees, facilities,
-   optional faculty/building preferences and professor invitations. Use an explicit
-   fictional date such as `2026-10-26 10:00`, with a 60-minute duration.
-3. Review the ranked room and its owning faculty. Submit for faculty approval;
-   pending requests reserve nothing. The detail page names the assigned approver.
-4. Sign in as `admin` or `admin2`, whichever the detail page assigns. Open
-   **Room Requests**, inspect the pending event and **Recheck and approve** or reject
-   with an explanation. Other faculty approvers cannot approve it.
-5. Return as `student1`: view Confirmed and October 2026 under My Schedule.
-   As an invited professor, open Room Requests to accept or decline optional attendance.
-6. Cancel as organizer or the assigned faculty administrator to release the room.
-   Revise pending requests for a new room/time and approval; confirmed changes require
-   cancellation plus a new request. Activity history remains available.
+The real services perform these decisions; the printed summary shows detail URLs,
+statuses and assigned deciding accounts. Rerunning reports existing examples and
+preserves manual decisions. If a date/resource is unavailable, inspect the error;
+the tool does not relax calendars or policies to force success. Do not use this
+seed against operational data.
 
-New demo profiles explicitly configure fictional room ownership. An existing profile
-is never automatically reassigned: use **Room Policies** as its administrator to
-designate faculty approvers and configure the actual known room owners. Unconfigured
-rooms deliberately remain unavailable to student requests. Professor appointments
-and the ordinary administrative allocation dashboard remain separate workflows.
+## Academic requests, eligibility and allocation
 
-Sign in as `admin`. Open **Users**, **Spaces**, **Requests**, **Allocation Summary**
-and **Schedules**. The seed has already run the real allocation engine. Select a
-strategy on **Dashboard** and use **Run Allocation** to compare its results.
-**Add Request** supports Save Only and Submit and Run. Weekly room schedules are
-separate from dated appointment calendars; anonymous exam attendees do not define
-student enrollment schedules.
+As a professor, open Academic Requests and submit an Exam, OneTime, Recurring or
+CommitteeMeeting declaration. These use existing weekly resource contracts;
+course/faculty descriptions do not verify affiliations. Submission starts
+**Pending Eligibility Review**, without allocation or reservation.
 
-## One calendar across services
+As an administrator, open **Academic Eligibility** and review each relevant request
+with a recorded reason. Default seeding/import does not approve academic inputs.
+Only eligible current revisions can enter **Run Allocation**. Relevant unreviewed
+legacy requests block replacement; rejection preserves current published
+reservations until an authorized replacement. Eligibility review itself does not
+reserve a room. The administrative request-save shortcut leads to review first.
 
-Open **Calendar** after sign-in. The primary fictional academic period is recorded
-in the local setup summary; navigate to those dates if the current month is empty.
-Month, Week and Day retain category/status filters when navigating. The accepted,
-rejected and pending service examples appear with distinct statuses, and clicking
-an event opens the existing authorized detail page. Equipment pickup/return entries
-are reminders only. Professor calendars include their own teaching commitments;
-faculty reviewers/custodians additionally see assigned work, not unrelated private
-appointments. **My Schedule** still provides personal blocks.
+After allocation, professors can inspect their own outcomes and actual resources.
+Eligible and allocated are different states. Active published inputs remain
+read-only; material unpublished revisions require review again. Academic
+notifications, cancellation and versioned replacements are deferred.
 
-Academic records remain private by default. An administrator may explicitly publish
-non-committee academic scheduling metadata through **Academic Publication**, after
-configuring real validity dates in **Calendar Setup**. No enrollment is inferred.
+The unified Calendar offers month/week/day navigation and category/status filters.
+Weekly academic inputs need explicit **Calendar Setup** applicability; authorized
+**Academic Publication** controls visibility. No dates, student enrollment or
+professor teaching responsibility are inferred from declarations. Equipment entries
+are reminders rather than personal busy time.
 
-## Restart and options
+## Restart and configuration
 
-`Ctrl+C` stops Flask. Rerun the same command to resume with existing requests,
-appointments and passwords preserved. The private PostgreSQL server stays local
-and can be reused. `-SetupOnly` prepares the demo without serving Flask;
-`-WebPort 5001` selects another web port.
-After Python application changes, restart the launcher to load the new code;
-refreshing an already running, non-debug server does not reload Python modules.
+`Ctrl+C` stops Flask; the owned PostgreSQL server can remain running locally.
+Rerun the same launcher to resume. Restart after Python changes; refreshing a
+non-debug server does not reload modules. `-SetupOnly` prepares without serving,
+and `-WebPort 5001` selects a different web port.
 
-Reruns use the primary profile's saved settings. Explicitly conflicting settings
-are rejected, never applied as a reset. To change the academic calendar, use an
-explicitly reviewed data/configuration change rather than creating another
-operational database. A failed setup can leave saved inputs; inspect the error
-without deleting the database. Missing or stale engines are rebuilt; malformed database/configuration
-does not trigger CSV fallback. Keep the normal application setup in
-[database operations](database-operations.md) for non-demo use.
+For a deliberately new fictional profile, `-Profile NAME`, `-PostgresPort PORT`,
+`-AcademicStart YYYY-MM-DD` and `-AcademicEnd YYYY-MM-DD` select its initial settings.
+These are new-profile options, not a migration/reset procedure for saved users.
+Rebuild a missing/stale engine before relaunching; database/configuration failures
+never fall back to CSV results. Use [database operations](database-operations.md) for manual
+setup, backup and controlled upgrades, and the [developer guide](../web/README.md)
+for environment configuration and tests.

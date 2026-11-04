@@ -1,205 +1,250 @@
-# Resource Allocation Dashboard
+# Flask application developer guide
 
-The Flask/Jinja dashboard uses **PostgreSQL** for application persistence and the
-existing C++17 engine for allocation. It does not implement allocation algorithms,
-participant rules, exam sharing or meeting suggestions in Python.
+The application serves the Student Portal, Professor Portal and administrative
+workspaces from one Flask/Jinja codebase. PostgreSQL is the source of truth.
+C++17 owns allocation rules, availability and scheduling recommendations; Python
+coordinates authorized workflows without reimplementing those algorithms.
+
+## Architecture
+
+| Layer | Main modules | Responsibility |
+| --- | --- | --- |
+| Application and security | `app.py`, `security.py`, `account_service.py` | Blueprint registration, login/logout, sessions, CSRF and role boundaries |
+| Service workspaces | `student_routes.py`, `professor_routes.py`, appointment/room/equipment/calendar/notification routes | Authorized forms, navigation, errors and responses |
+| Academic intake/review | `professor_service.py`, `academic_eligibility.py`, `eligibility_routes.py` | Owner-only intake/revisions, administrative decisions and audit history |
+| Allocation integration | `allocation_workflow.py`, `engine_gateway.py`, `backend_executable.py` | Revision-bound snapshots, verified executable and validated engine responses |
+| Persistence/read models | `persistence/`, `database_result_adapter.py`, dashboard services | Transactions, durable records and consistent authorized presentation |
+| Presentation | `templates/`, `static/` | Shared Campus Space shell, service components, scoped CSS and page JavaScript |
 
 ```text
-Flask forms -> PostgreSQL request/participant transaction
-PostgreSQL ordered snapshot -> EngineGateway -> C++ --json
-C++ structured result -> validated PostgreSQL publication
-DatabaseResultAdapter -> dashboard/detail/schedule/technical views
+Authenticated form/API -> service authorization and validation -> PostgreSQL commit
+Eligible snapshot -> EngineGateway -> verified C++ executable over JSON
+Validated response + current revision proof -> atomic result persistence
+Authorized database read model -> Jinja page / JSON response
 ```
 
-## Setup and startup
+C++ runs outside the snapshot transaction. Concurrent changes invalidate stale
+results rather than silently publishing them. State locks, run ordering and
+revision proofs protect publication. Each rendered database result view uses one
+consistent snapshot. CSV/local JSON files are never a persistence fallback.
+See [engine protocol v1](../docs/engine-protocol.md) and
+[database architecture](../docs/architecture/database-design.md).
 
-Read [database operations](../docs/database-operations.md) for database creation,
-credentials, safe import and tests. From the project root, with PostgreSQL running
-and a new empty application database configured:
+## Routes and permissions
+
+| Entry point | Authorized use |
+| --- | --- |
+| `/login`, POST `/logout` | Trusted accounts; logout requires authenticated CSRF |
+| `/student/` | Student Home |
+| `/professor/` | Instructor Home |
+| `/appointments/`, `/appointments/<id>` | Participant-scoped list/details and role-specific appointment actions |
+| `/appointments/new` | Student-organized appointment requests |
+| `/appointments/availability` | Instructor office-hour management |
+| `/appointments/calendar` | Own timetable and personal blocks for signed-in roles |
+| `/rooms/`, `/equipment/`, `/waiting-lists/`, `/feedback/` | Student/borrower/participant actions and designated staff operations; service checks apply |
+| `/calendar/`, `/notifications/` | Authorized calendar and recipient-scoped Inbox |
+| `/professor/requests`, `/professor/requests/new`, `/professor/requests/<id>` | Instructor-owned academic forms and tracking |
+| `/professor/requests/<id>/revise` | Own unpublished academic revisions only |
+| `/professor/academic-requests`, `/professor/academic-requests/<id>` | Owner-scoped JSON list/detail; collection POST supports intake |
+| `/academic-eligibility/`, `/academic-eligibility/<id>` | Administrative review queue and reasoned decisions |
+| `/`, `/add-request`, `/requests`, `/request/<id>`, `/allocation-summary`, `/schedules`, `/raw-data` | Administrative technical workspace and allocation management |
+
+The five university roles are Student, Instructor, TeachingAssistant, Staff and
+Administrator. Administration is an explicit account capability; faculty approval,
+custody and record ownership are checked separately. A role name alone does not
+authorize an operation on another person's request.
+
+Default login destinations are Student Home, Professor Home, the administrative
+dashboard for an administrative account, and Appointments for other signed-in
+roles. A local `next` destination is supported; destination authorization still
+applies. Legacy technical redirects remain for compatibility.
+
+## Authentication and authorization
+
+Accounts are provisioned for existing university identities with scrypt password
+hashes. There is no public registration, role selection or password recovery.
+Signed sessions are HttpOnly/SameSite=Lax with an eight-hour sliding lifetime;
+use Secure cookies behind HTTPS. State-changing requests require a form
+`csrf_token` or `X-CSRF-Token`, including JSON submissions and logout.
+
+Identity is resolved from the database on each authenticated request. Account
+revocation and durable per-login logout denials reject replayed or delayed cookies.
+Logout commits its denial before clearing the browser cookie; another independent
+login remains valid. Keep a stable private secret across normal restarts.
+See [session rollout and retention](../docs/database-operations.md#current-schema-0051b).
+
+## Student–professor appointments
+
+Students select a faculty, required professors, optional student invitees, purpose,
+duration and date. Recommendations and manual proposals both pass the existing
+C++ `--appointments-json` feasibility operation. Published professor hours,
+explicit calendar applicability and existing mandatory commitments remain binding.
+
+Every required professor must approve the current revision. Pending requests hold
+no time; rescheduling clears approvals. Rejection prevents confirmation. Authorized
+cancellation releases commitments; optional student decline does not cancel the
+meeting. PostgreSQL stores approvals, histories, private notifications and half-open
+mandatory-person reservations atomically. Professors cannot approve for a peer or
+initiate a student appointment. See [appointment design](../docs/architecture/appointments-design.md).
+
+## Academic eligibility and allocation
+
+An active Instructor may submit an own Exam, OneTime, Recurring or CommitteeMeeting
+request for an existing campus resource. Faculty/course/activity fields are
+declarations. Committee resource requests are separate from dated student appointments.
+Supported weekly slot contracts and existing exam splitting/sharing rules remain
+unchanged; professors cannot select or run administrative strategies.
+
+1. Submission commits **Pending Eligibility Review** and reserves nothing.
+2. An authorized administrator other than the requester records approval/rejection
+   with a reason, request revision and review version.
+3. Only **Eligible current revisions** enter any academic allocation snapshot.
+4. Allocation produces outcomes and actual assignments; eligibility alone guarantees neither.
+5. Calendar visibility requires the existing explicit publication/applicability records.
+
+Material unpublished revisions invalidate eligibility. Inputs in the active
+publication remain read-only, including after a later eligibility rejection.
+Legacy requests are not automatically approved: outstanding relevant reviews block
+replacement, and current reservations remain until authorized replacement publication.
+Immutable history and snapshot proofs protect concurrent review/revision/run operations.
+See [approved professor contracts](../docs/srs/professor-workflows.md) and
+[control-to-backend traceability](../docs/professor-services/traceability.md).
+
+Supported allocation strategies are `greedy`, `priority`, `multi_room_exam_greedy`,
+`multi_room_exam_best_fit` and `shared_room_exam_best_fit`. The web strategy setting
+is persisted in PostgreSQL. The standalone CSV CLI independently uses `data/config.txt`.
+
+## Development setup
+
+Use Python 3.12/3.13, PostgreSQL 17 and a C++17 `g++` compiler. Commands below run
+from the repository root in PowerShell. For the owned, persistent fictional Windows
+demo, use the [demo launcher](../docs/demo-walkthrough.md) instead of manual seeding.
+
+For a manually configured **new development database**:
 
 ```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 python scripts/build_backend.py
-$env:DATABASE_URL = 'postgresql+psycopg://USER:PASSWORD@localhost:5432/resource_allocation'
+```
+
+Create a dedicated PostgreSQL database and application role using your PostgreSQL
+administration tools. Set the connection privately; substitute the placeholder with
+your own URL (URL-encode special password characters):
+
+```powershell
+$env:DATABASE_URL = '<your private postgresql+psycopg:// connection URL>'
+$env:RESOURCE_ALLOCATION_SECRET_KEY = (python -c "import secrets; print(secrets.token_hex(32))")
+$env:RESOURCE_ALLOCATION_TIMEZONE = 'Europe/Istanbul'
 python -m alembic upgrade head
+```
+
+The secret-generation command is suitable for this shell session. For repeatable
+startup, store the generated value in private local configuration and load the
+same value each time; never commit it. `.env.example` is **not automatically loaded**.
+
+To load the repository's offline inputs into an empty development database:
+
+```powershell
 python scripts/import_csv.py --data-dir data --dry-run
 python scripts/import_csv.py --data-dir data
-$env:RESOURCE_ALLOCATION_SECRET_KEY = '<at least 32 private random characters>'
-$env:RESOURCE_ALLOCATION_TIMEZONE = 'Europe/Istanbul'
-python scripts/manage_accounts.py --user-id EXISTING_USER_ID --username campus-admin --administrator
+python scripts/manage_accounts.py --user-id EXISTING_USER_ID --username CHOSEN_USERNAME
+```
+
+Replace `EXISTING_USER_ID` with an imported university identity. For an explicitly
+authorized administrative account, add `--administrator`. Passwords are prompted,
+not passed in command arguments; existing accounts require explicit `--reset-password`
+to change credentials. Import refuses populated targets. Default demo/imported
+academic requests need review before allocation; do not bypass eligibility to seed results.
+
+Start the development server:
+
+```powershell
 python web/app.py
 ```
 
-The import refuses populated targets and does not modify source CSVs. `DATABASE_URL`
-must be set before migration/startup; `.env.example` is not automatically loaded.
-On Linux, export the same variable and use the same Python commands. Startup from
-`web/` with `python app.py` remains supported after environment configuration.
-Open `http://127.0.0.1:5000` and sign in. This is a development server, not a public deployment.
-Technical allocation views require administration. Student/professor appointment
-workflows are available at `/appointments/`, scoped to the authenticated identity.
-Students normally land at `/student/`; professors retain the appointment list and
-administrators retain the technical dashboard. An explicit permitted sign-in
-destination remains supported.
+Open `http://127.0.0.1:5000`. Keep this loopback development server private.
+On Linux use `python3 -m venv .venv`, `source .venv/bin/activate` and `export` for
+the same environment settings; the subsequent Python commands are unchanged.
 
-## Compile The C++ Backend
+### Engine build and environment
 
-The authoritative backend artifact is `build/backend/allocation_system.exe` on
-Windows and `build/backend/allocation_system` on Linux. `scripts/build_backend.py`
-requires g++ on PATH and writes an adjacent `.build.json` manifest containing
-source/binary hashes, compiler identity and build time. Missing, stale or mismatched
-builds fail explicitly; old root/check executables are never fallbacks.
+`scripts/build_backend.py` writes `build/backend/allocation_system.exe` on Windows
+or `build/backend/allocation_system` on Linux, plus its `.build.json` manifest.
+Flask checks current source and binary hashes; stale/root/check binaries are not
+fallbacks. Use `--compiler PATH` if `g++` is not on PATH. For an intentional alternate
+artifact, build with `--output PATH` and set `RESOURCE_ALLOCATION_BACKEND` to that
+same path. Relative paths resolve from the repository root.
 
-For an intentional alternate location:
+| Setting | Meaning |
+| --- | --- |
+| `DATABASE_URL` | Dedicated PostgreSQL URL using psycopg; required |
+| `RESOURCE_ALLOCATION_SECRET_KEY` | Stable private random secret, at least 32 characters; required |
+| `RESOURCE_ALLOCATION_TIMEZONE` | IANA university zone; default `Europe/Istanbul` |
+| `RESOURCE_ALLOCATION_BACKEND` | Optional explicit manifest-verified engine path |
+| `RESOURCE_ALLOCATION_DB_LOCK_TIMEOUT` | Database lock timeout in seconds; default 5 |
+| `RESOURCE_ALLOCATION_ENGINE_TIMEOUT` | Engine timeout in seconds; default 30 |
+| `RESOURCE_ALLOCATION_ROOM_STRATEGY` | Student room recommendation strategy; default `best_fit` |
+| `RESOURCE_ALLOCATION_SECURE_COOKIE` | `1` for HTTPS; local HTTP needs `0` |
+| `RESOURCE_ALLOCATION_DEBUG` | Development debug flag; default `0` |
 
-```powershell
-python scripts/build_backend.py --output 'build/custom/engine.exe'
-$env:RESOURCE_ALLOCATION_BACKEND = 'build/custom/engine.exe'
-```
+Busy database writes return 503 with retry information. Engine failures/stale inputs
+preserve the previous active result; database failures never switch to file storage.
 
-Relative paths resolve from the project root; absolute paths and spaces are
-supported. On Linux the artifact must be executable. Build before starting workers;
-this is not automatic C++ hot reload or signed-artifact verification. The
-[JSON protocol v1](../docs/engine-protocol.md) and freshness checks are unchanged.
+### Migrations and existing data
 
-## Request and allocation workflow
+The current chain ends `0050b -> 0051a -> 0051b`:
 
-1. Add a OneTime, Recurring, Exam or CommitteeMeeting request.
-2. Save Request Only commits the request, occurrences, exam metadata where relevant,
-   selected committee participants and history without running allocation.
-3. Save and review eligibility opens administrator review. All new requests start
-   Pending Eligibility Review. A different active administrator records a decision
-   and reason for the current revision; review reserves nothing.
-4. Only Eligible current revisions enter an administrator-initiated C++ run.
-   Failures/timeouts/stale inputs retain previous results. Current legacy requests
-   require individual review before replacement.
-5. Review Requests, request details, Allocation Summary and Schedules.
-6. Raw Data is a technical **database projection**, not a file browser. Old CSV-style
-   tab names/URLs are retained for compatibility; no operational files are read.
+- `0051a` adds independent academic eligibility, immutable review history, per-run
+  eligibility proofs and faculty declarations. Old inputs await explicit review;
+  existing published results/reservations are preserved.
+- `0051b` adds durable logout denials without changing account credentials or saved
+  appointments/allocations. Pre-fix cookies require fresh sign-in.
 
-Instructors use `/professor/requests` for self-owned academic intake and tracking.
-Only unpublished requests may be revised; revisions invalidate eligibility.
-Administrators review at `/academic-eligibility/`. Eligibility, engine outcomes
-and calendar publication are separate. See [Professor contracts](../docs/srs/professor-workflows.md)
-for migration, concurrency and deferred notifications/versioned replacements.
+For an existing database: back up, stop old workers, run `python -m alembic upgrade head`
+against the intended database, then start matching code. Do not mix old/new
+authentication workers, automatically approve legacy inputs or discard logout
+denials. Populated downgrades refuse audit/revocation loss. See
+[database operations](../docs/database-operations.md) for controlled rollout,
+backup/restore and verification; a passing test is not permission to migrate real data.
 
-Committee forms show instructor, teaching assistant, staff and administrator
-participants. At least one is required, with a role such as Supervisor or
-CommitteeMember. Professor appointment approval is a separate dated workflow,
-not part of committee resource-request processing. C++ checks loaded busy slots and already approved
-committee commitments and returns ranked feasible suggestions as structured data.
+## Testing
 
-Normal time selectors remain Monday-Friday, 09:00-17:00 in 30-minute steps.
-Recurring entry accepts the existing weekday/hour or minute syntax, for example
-`2-09:00-10:30;4-13:15-14:00`, and is validated before persistence. Schedule views
-remain weekly. My Schedule separately displays real dated appointments and
-university commitments with explicitly configured academic applicability.
-
-## Student-professor appointments
-
-Students select a configured faculty, professors, purpose/duration and optional
-students through separate searchable lists, select one date, then choose a feasible
-time button or propose a manual time on that date. Input changes clear selected times;
-the engine rechecks them on submission and confirmation. Professors
-publish bounded weekly hours and exclusions; personal/professor blocks are dated.
-Every required professor approves the same revision before confirmation. Pending
-requests reserve nothing. Rejection prevents confirmation; time changes clear
-approvals; organizer/professor cancellation releases commitments. Invited students
-may decline without cancelling; unanswered invitations never block confirmation.
-
-`EngineGateway` calls the separate `--appointments-json` operation for feasibility
-and ranking; C++ has no SQL access. PostgreSQL atomically stores state/approvals and
-half-open mandatory-person reservations, preventing concurrent double-booking.
-Europe/Istanbul is explicitly configurable. Unresolved legacy commitment dates
-require administrator Calendar Setup; no semester or calendar dates are guessed.
-
-Accounts use trusted provisioning, password hashes, revocable signed sessions and
-CSRF-protected forms. No public role assignment or private third-party schedule
-access is offered. See [appointment architecture](../docs/architecture/appointments-design.md)
-and [operations](../docs/database-operations.md#accounts-and-appointment-calendars).
-
-## Strategy selection
-
-Save Strategy updates PostgreSQL application configuration, not `data/config.txt`.
-Each engine snapshot includes its own strategy. Supported choices remain:
-
-- `greedy`: loaded request order.
-- `priority`: request priority order.
-- `multi_room_exam_greedy`: greedy splitting across available classrooms.
-- `multi_room_exam_best_fit`: best-fit classroom combination.
-- `shared_room_exam_best_fit`: compatible exams share remaining classroom capacity.
-
-All decisions still belong to C++ strategies/rules. The no-argument standalone CSV
-CLI retains its legacy `config.txt` behavior and four output writers.
-
-## Transactions and consistent readers
-
-PostgreSQL identities generate request IDs. Short state-row locks coordinate saves,
-strategy updates, run snapshot capture and publication. C++ runs **outside** that
-transaction, so inputs may be saved while it computes. A changed input revision
-causes an explicit retry error rather than publishing stale decisions. Older runs
-cannot replace newer completed runs.
-
-Validated decisions, allocations, mandatory participants, suggestions, history and
-the active-run reference commit together. Each Flask response reads one repeatable-
-read database view. `DatabaseResultAdapter` reuses presentation formatting from
-`BackendResultAdapter` but never reads local result JSON/CSV as a fallback.
-
-Set `RESOURCE_ALLOCATION_DB_LOCK_TIMEOUT` (default 5 seconds) and
-`RESOURCE_ALLOCATION_ENGINE_TIMEOUT` (default 30 seconds) as needed. Busy writes
-return HTTP 503 with Retry-After. Database errors are explicit and do not expose
-SQL credentials. Worker crashes cannot make partial results active; an abandoned
-run record can remain non-authoritative until administrative cleanup.
-
-## Pages
-
-- `/student/`: student-only Home with a current-month hourly timetable and next confirmed meeting,
-  pending requests, optional invitations and organizer-owned confirmed bookings.
-  All sections read one PostgreSQL snapshot; no timetable entries means no entries
-  shown, not guaranteed availability. Links reuse the existing appointment workflows.
-- `/appointments/`, `/appointments/new`, `/appointments/<id>` and
-  `/appointments/calendar`: authenticated participant-scoped appointment workflows.
-  My Schedule is available to all roles, with month/week selection, Monday-Friday
-  hourly rows and a separate weekend list. Existing `?from=YYYY-MM-DD` links select
-  the corresponding week. Only known, explicitly dated personal commitments are shown.
-- `/`: strategy, run action, counts, recent requests and demo shortcuts.
-- `/users` and `/spaces`: database profiles/resources; existing role filters retained.
-- `/requests` and `/request/<requestId>`: queue, decisions, assignments and suggestions.
-- `/add-request`: transactionally save any supported request type.
-- `/request-added/<requestId>`: Save Only confirmation and explicit run action.
-- `/allocation-summary`: grouped approvals/rejections/pending requests and exam rooms.
-- `/schedules`: saved busy slots and allocation-derived user/resource events.
-- `/raw-data`: technical projections, including request/allocation summary tabs.
-- `/add-one-time`, `/add-exam`, `/exam-summary`, `/allocations`, `/results`: existing redirects.
-
-Missing request IDs and invalid raw-data selectors retain safe responses. Before
-the first DB allocation run, requests are pending and views ask the user to run it.
-An unavailable database never falls back to legacy CSV results.
-
-## Verification and limitations
-
-The student-facing Campus Space rollout covers the existing service hubs, forms,
-details, private reports, calendar views, personal blocks and notification actions.
-Its [feature matrix](../docs/ui/student-portal/coverage.md),
-[route inventory](../docs/ui/student-portal/UI-09/routes.md) and
-[acceptance report](../docs/ui/student-portal/acceptance-report.md) document preserved
-backend contracts, exact test results and real Flask screenshots. The new
-student-only error presentation preserves HTTP status and retry headers; business
-services and authentication are unchanged.
-
-Install dependencies, build the backend and configure a disposable
-`TEST_DATABASE_URL`, then run:
+After dependency installation and the verified engine build, configure a separate
+disposable PostgreSQL `TEST_DATABASE_URL`; never use `DATABASE_URL` as a test target.
+Set `POSTGRES_TEST_TOOLS_DIR` to matching PostgreSQL binaries for backup/recovery
+tests. Individual fixtures own random schemas.
 
 ```powershell
-python -m unittest discover -s tests -p 'test_*.py' -v
-powershell -ExecutionPolicy Bypass -File tests/run_tests.ps1
+python -B -m unittest discover -s tests -p "test_*.py" -v
+powershell -NoProfile -ExecutionPolicy Bypass -File .\tests\run_tests.ps1
+python scripts/generate_database_diagrams.py --check
 ```
 
-Presentation uses file-free `get_table("requests")` views;
-offline CSV conversion belongs only to the explicit importer. Retired file-lock
-and local-result-publication fixtures have been removed. Standalone C++ CSV
-CLI/import tests remain, including quoting and five-strategy JSON parity. Web
-workflow tests forbid CSV/config/lock/local-result IO, including cold restart and
-PostgreSQL failure. Exact keyed form retries reuse saved requests; unkeyed legacy
-callers retain their original new-request semantics. Iteration 42 adds authentication,
-dated appointments and the student home read model; engine-job deduplication and
-production deployment hardening remain outside these iterations.
+The PowerShell runner compiles/runs C++ tests and both isolated runtime smokes in
+owned temporary directories. Linux CI provides PostgreSQL and its own C++ build
+commands in the [application workflow](../.github/workflows/backend-postgresql-regression.yml).
+
+Real-browser suites use synthetic accounts, actual Flask POSTs and disposable
+PostgreSQL schemas. See [Student reproduction](../docs/ui/student-portal/README.md#reproduction),
+[Professor evidence](../docs/professor-services/acceptance-report.md) and
+[browser fixtures](../tests/professor/). Playwright/installed Chromium requirements
+are separate from the runtime dependencies; `PLAYWRIGHT_NODE_MODULE` can select a
+tool installation. Missing database/native/browser prerequisites are unavailable
+coverage or skips, not proof of a full pass. Historical counts belong to their
+recorded revisions.
+
+## Limitations and related documentation
+
+Deferred academic features: request notifications, cancellation and versioned
+replacement of published requests. Appointment notifications/cancellation already
+work. Calendar dates/teaching responsibility are not inferred from declarations.
+A standalone student office-hours browser and unified cross-service activity API
+are not implemented. Campus Space prototypes contain proposed controls and fictional
+data; they are visual references, not executable feature contracts.
+
+CDMCS and cost/preference research are not active scheduling strategies. No
+production deployment configuration, public registration or password recovery is
+provided. Start with the [documentation index](../docs/README.md) for current
+requirements, operations, architecture and historical verification records.
