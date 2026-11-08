@@ -29,4 +29,14 @@ def create_administration_blueprint(database_provider):
         return render_template('administration/home.html', home=AdminDashboardService(database_provider()).load(
             g.principal.user_id, request.args.get('queue', 'all')))
 
+    @blueprint.get('/runs/<int:run_id>')
+    def run(run_id):
+        try:
+            page = int(request.args.get('page', '1'))
+            allocation_page = int(request.args.get('allocation_page', '1'))
+        except ValueError as error:
+            raise ValueError('Choose a valid history page.') from error
+        return render_template('administration/run.html', run=AdminDashboardService(database_provider()).run_detail(
+            g.principal.user_id, run_id, page, allocation_page))
+
     return blueprint

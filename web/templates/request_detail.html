@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "service_base.html" %}
 
 {% block title %}Request {{ request_id }} | Resource Allocation System{% endblock %}
 {% block page_heading %}Request {{ request_id }}{% endblock %}
 
-{% block content %}
+{% block service_content %}
 {% if run_message %}
 <section class="page-message page-message-{{ run_message.status }}">
     <p>{{ run_message.text }}</p>

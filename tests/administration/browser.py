@@ -17,6 +17,7 @@ from werkzeug.serving import make_server
 from test_professor_services import ProfessorFixture
 from test_appointments import START
 from eligibility_browser import persisted as academic_state
+from eligibility_browser import verify as verify_academic
 from web import app as web_app
 from web.account_service import AccountService
 from web.equipment_service import EquipmentService
@@ -34,6 +35,7 @@ def state(database):
         'notifications': 'SELECT id,recipient_id,read_at FROM notification ORDER BY id',
         'publication': 'SELECT id,calendar_public,academic_instructor_id FROM resource_request ORDER BY id',
         'bindings': 'SELECT id,request_id,period_id FROM legacy_calendar_binding ORDER BY id',
+        'configuration': 'SELECT strategy,waiting_notice_minutes,recurring_limits,reservation_priorities FROM application_state',
     }
     with database.transaction(read_only=True) as session:
         result = {key: [dict(r) for r in session.execute(text(sql)).mappings()] for key, sql in queries.items()}
@@ -46,9 +48,17 @@ def verify(posts):
     for post in posts:
         if post['path'] in ('/login', '/logout'):
             continue
+        if post['path'].startswith(('/academic-eligibility/', '/professor/requests')) or post['path'] == '/run-allocation':
+            entry = dict(post, before=post['before']['academic'], after=post['after']['academic'])
+            outcomes.extend(verify_academic([entry]))
+            continue
         if post['status'] >= 400:
             assert post['before'] == post['after'], ('Rejected mutation changed domain data', post['path'])
             outcomes.append(dict(path=post['path'], result='rejected; committed domain state unchanged'))
+        elif post['path'] == '/set-strategy':
+            assert post['after']['academic']['state'][0]['input_revision'] > post['before']['academic']['state'][0]['input_revision']
+            assert post['after']['configuration'][0]['strategy'] == post['form']['strategy']
+            outcomes.append(dict(path=post['path'], result='strategy input revision committed'))
         else:
             raise AssertionError(('Unverified successful domain mutation', post['path']))
     return outcomes

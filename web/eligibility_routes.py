@@ -13,11 +13,11 @@ def create_eligibility_blueprint(database_provider):
 
     @blueprint.errorhandler(EligibilityError)
     def invalid(error):
-        return render_template('calendar_error.html',message=str(error)),409
+        return render_template('administration/error.html',message=str(error)),409
 
     @blueprint.errorhandler(PermissionError)
     def forbidden(error):
-        return render_template('calendar_error.html',message=str(error)),403
+        return render_template('administration/error.html',message=str(error)),403
 
     @blueprint.get('/')
     def index():

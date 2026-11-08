@@ -189,7 +189,7 @@ def pin_database_view():
 def workspace_error_response(message, status, headers=None):
     """Present workspace failures without changing status codes or authority."""
     principal = getattr(g, "principal", None) if has_request_context() else None
-    if principal is None or principal.role not in {"Student","Instructor"} or principal.administrator:
+    if principal is None or (principal.role not in {"Student","Instructor"} and not principal.administrator):
         return None
     recovery = {
         "appointments": ("appointments.index", "appointments"),
@@ -200,7 +200,8 @@ def workspace_error_response(message, status, headers=None):
         "calendar": ("calendar.index", "calendar"),
         "notifications": ("notifications.index", "Inbox"),
         "professor": (("professor.pages", "academic requests") if principal.role == "Instructor" else ("student.home", "Home")),
-    }.get(request.blueprint, ("professor.home" if principal.role == "Instructor" else "student.home", "Home"))
+        "eligibility": ("eligibility.index", "academic eligibility"),
+    }.get(request.blueprint, ("administration.home" if principal.administrator else "professor.home" if principal.role == "Instructor" else "student.home", "Home"))
     if request.endpoint == "appointments.calendar":
         recovery = ("appointments.calendar", "My Schedule")
     return render_template("workspace_error.html", message=message, status=status, recovery=recovery), status, {

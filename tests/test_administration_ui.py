@@ -47,3 +47,20 @@ class AdministrationPageTests(RoomFixture):
             text = authorized_client(web_app.app, actor).get(path).get_data(as_text=True)
             self.assertIn(marker, text)
             self.assertNotIn('admin-shell', text)
+
+    def test_history_is_private_bounded_and_handles_invalid_parameters(self):
+        self.assertEqual(self.client.get('/administration/runs/999999').status_code, 404)
+        self.assertEqual(self.client.get('/administration/runs/1?page=bad').status_code, 400)
+        self.assertEqual(self.client.get('/administration/runs/1?allocation_page=0').status_code, 400)
+        self.assertEqual(authorized_client(web_app.app, 2).get('/administration/runs/1').status_code, 403)
+
+    def test_history_page_displays_persisted_real_engine_outcomes(self):
+        from academic_fixtures import execute_reviewed_allocation
+        from web.admin_dashboard_service import AdminDashboardService
+        repository = self.academic()
+        execute_reviewed_allocation(repository, self.rooms.gateway)
+        run = AdminDashboardService(self.database).load(6)['activeRun']['id']
+        response = self.client.get('/administration/runs/'+str(run))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Assigned resource segments', response.get_data(as_text=True))
+        self.assertNotIn('snapshot', response.get_data(as_text=True))
