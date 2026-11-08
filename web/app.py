@@ -177,16 +177,19 @@ app.register_blueprint(create_waiting_blueprint(lambda: get_repository().databas
 from web.feedback_routes import create_feedback_blueprint
 app.register_blueprint(create_feedback_blueprint(lambda: get_repository().database))
 
+from web.admin_routes import create_administration_blueprint
+app.register_blueprint(create_administration_blueprint(lambda: get_repository().database))
+
 @app.before_request
 def pin_database_view():
-    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "professor.", "eligibility.", "rooms.", "notifications.", "equipment.", "calendar.", "waiting.", "feedback.")):
+    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "professor.", "eligibility.", "rooms.", "notifications.", "equipment.", "calendar.", "waiting.", "feedback.", "administration.")):
         current_results()
 
 
 def workspace_error_response(message, status, headers=None):
     """Present workspace failures without changing status codes or authority."""
     principal = getattr(g, "principal", None) if has_request_context() else None
-    if principal is None or principal.role not in {"Student","Instructor"} or principal.administrator:
+    if principal is None or (principal.role not in {"Student","Instructor"} and not principal.administrator):
         return None
     recovery = {
         "appointments": ("appointments.index", "appointments"),
@@ -197,7 +200,8 @@ def workspace_error_response(message, status, headers=None):
         "calendar": ("calendar.index", "calendar"),
         "notifications": ("notifications.index", "Inbox"),
         "professor": (("professor.pages", "academic requests") if principal.role == "Instructor" else ("student.home", "Home")),
-    }.get(request.blueprint, ("professor.home" if principal.role == "Instructor" else "student.home", "Home"))
+        "eligibility": ("eligibility.index", "academic eligibility"),
+    }.get(request.blueprint, ("administration.home" if principal.administrator else "professor.home" if principal.role == "Instructor" else "student.home", "Home"))
     if request.endpoint == "appointments.calendar":
         recovery = ("appointments.calendar", "My Schedule")
     return render_template("workspace_error.html", message=message, status=status, recovery=recovery), status, {
@@ -219,7 +223,7 @@ def workspace_http_error(error):
 
 @app.errorhandler(DatabaseBusy)
 def database_busy(error):
-    return workspace_error_response("This service is busy. Please try again shortly.", 503, {"Retry-After": "2"}) or (str(error), 503, {"Retry-After": "2"})
+    return workspace_error_response("This service is busy. Please retry shortly.", 503, {"Retry-After": "2"}) or (str(error), 503, {"Retry-After": "2"})
 
 
 @app.errorhandler(DatabaseConfigurationError)
@@ -790,12 +794,17 @@ def execute_json_backend():
 
 def render_table_page(template_name, title, name, empty_message):
     table = current_results().format_table_for_display(name, get_table(name))
+    search_query = request.args.get('q', '').strip()[:100] if name == 'spaces' else ''
+    if search_query:
+        table = dict(table, rows=[row for row in table['rows'] if search_query.casefold() in
+            ' '.join(str(value) for value in row.values()).casefold()])
     return render_template(
         template_name,
         title=title,
         table=table,
         empty_message=empty_message,
         page_message=get_page_message(),
+        searchable=name == 'spaces', search_query=search_query,
     )
 
 
@@ -1026,6 +1035,10 @@ def users():
         selected_role = "All"
 
     rows = table["rows"]
+    search_query = request.args.get('q', '').strip()[:100]
+    if search_query:
+        rows = [row for row in rows if search_query.casefold() in
+                ' '.join(str(value) for value in row.values()).casefold()]
     if selected_role != "All":
         rows = [
             row for row in rows
@@ -1039,6 +1052,7 @@ def users():
         users=build_user_display_rows(rows),
         role_options=USER_ROLE_OPTIONS,
         selected_role=selected_role,
+        search_query=search_query,
         empty_message="No users were found.",
         page_message=get_page_message(),
     )

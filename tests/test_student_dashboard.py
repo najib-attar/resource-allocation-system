@@ -184,8 +184,8 @@ class StudentDashboardWebTests(AppointmentFixture):
         response = client.post('/login' + next_path, data={'username': username, 'password': self.password, 'csrf_token': token})
         return client, response
 
-    def test_login_and_root_choose_student_home_without_changing_other_roles(self):
-        for username, location in (('student-one', '/student/'), ('professor-one', '/professor/'), ('admin-one', '/')):
+    def test_login_and_root_choose_each_authorized_workspace(self):
+        for username, location in (('student-one', '/student/'), ('professor-one', '/professor/'), ('admin-one', '/administration/')):
             client, response = self.login(username)
             self.assertEqual(response.location, location)
             self.assertEqual(client.get(location).status_code, 200)

@@ -3,7 +3,7 @@
 {% block content %}
 {% if campus_shell %}
 <header class="service-heading">
-    <div><p class="service-eyebrow"><a href="{{ url_for('student.home' if student_shell else 'professor.home') }}">{{ 'Student services' if student_shell else 'Professor services' }}</a> / {% block service_eyebrow %}Your workspace{% endblock %}</p>
+    <div><p class="service-eyebrow"><a href="{{ url_for('administration.home' if admin_shell else 'student.home' if student_shell else 'professor.home') }}">{{ 'Administration' if admin_shell else 'Student services' if student_shell else 'Professor services' }}</a> / {% block service_eyebrow %}Your workspace{% endblock %}</p>
         <h1>{{ self.page_heading() }}</h1>
         {% if self.service_intro()|trim %}<p class="service-intro">{% block service_intro %}{% endblock %}</p>{% endif %}
     </div>

@@ -23,14 +23,19 @@ def administrator(session, actor):
         raise PermissionError('An active university administrator is required.')
 
 
-def outstanding_legacy(session):
-    return list(session.scalars(select(ResourceRequest.id).join(RequestEligibility,
+def outstanding_legacy_query():
+    """One legacy publication barrier predicate for enforcement and summaries."""
+    return (select(ResourceRequest.id).join(RequestEligibility,
         RequestEligibility.request_id == ResourceRequest.id).join(RequestDecision,
         RequestDecision.request_id == ResourceRequest.id).join(ApplicationState,
         ApplicationState.active_run_id == RequestDecision.run_id).where(RequestEligibility.origin == 'Legacy',
         or_(RequestEligibility.status == 'Pending Eligibility Review',
             RequestEligibility.reviewed_revision.is_distinct_from(ResourceRequest.revision)))
-        .order_by(ResourceRequest.id)))
+        .order_by(ResourceRequest.id))
+
+
+def outstanding_legacy(session):
+    return list(session.scalars(outstanding_legacy_query()))
 
 
 def assert_legacy_reviewed(session):

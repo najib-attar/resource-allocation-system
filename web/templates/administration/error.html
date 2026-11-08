@@ -1,0 +1,3 @@
+{% extends 'service_base.html' %}
+{% block page_heading %}Administration request unavailable{% endblock %}
+{% block service_content %}<section class="panel"><h2>Please check your request</h2><p role="alert">{{ message }}</p><a class="button-secondary" href="{{ url_for('administration.home') }}">Administration Home</a></section>{% endblock %}

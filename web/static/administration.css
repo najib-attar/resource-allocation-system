@@ -1,0 +1,29 @@
+/* Administration composition uses the shared Campus Space tokens and services. */
+.admin-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 20px; }
+.admin-grid-two { grid-template-columns: repeat(2,minmax(0,1fr)); }
+.admin-shell .admin-grid > .panel { margin-bottom: 0; }
+.admin-shell .admin-grid { margin-bottom: 24px; }
+.admin-service { display: flex; flex-direction: column; align-items: flex-start; }
+.admin-service p { flex: 1; }
+.admin-metrics { display: grid; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 14px; margin-top: 24px; }
+.admin-metrics a { display: flex; flex-direction: column; gap: 8px; padding: 16px; border: 1px solid var(--line); border-radius: 9px; text-decoration: none; background: #f7fafb; }
+.admin-metrics strong { font-size: 28px; line-height: 1.2; font-weight: 650; }
+.admin-metrics span { font-size: 12px; }
+.admin-queue { margin-top: 28px; }
+.admin-count { font-size: 12px; color: var(--muted); margin-left: 8px; }
+.admin-shell .service-row h4 { margin: 0; overflow-wrap: anywhere; }
+.admin-shell .app-admin-links { display: flex; flex-direction: column; gap: 4px; }
+.admin-shell .app-admin-navigation summary { color: #435969; }
+.admin-shell .admin-queue .service-empty { padding: 10px 0; margin: 0; }
+.admin-shell .dashboard-hero { background: #f7fafb; border: 1px solid var(--line); border-radius: 12px; box-shadow: none; }
+.admin-shell :is(.panel-card,.form-card,.table-card,.info-panel,.request-detail-card,.strategy-card) { min-width: 0; border-radius: 12px; box-shadow: none; border: 1px solid var(--line); }
+.admin-shell .hero-copy { min-width: 0; }
+.admin-shell .table-wrap { max-width: 100%; overflow-x: auto; }
+.admin-shell .hero-actions { flex-wrap: wrap; }
+.admin-shell .summary-list { grid-template-columns: minmax(0,1fr); }
+.admin-shell .request-card { min-width: 0; background: #fff; border-radius: 12px; box-shadow: none; }
+@media(max-width:1100px) { .admin-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .admin-metrics { grid-template-columns: repeat(3,minmax(0,1fr)); } }
+@media(max-width:700px) { .admin-grid, .admin-grid-two { grid-template-columns: minmax(0,1fr); } .admin-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+/* The Campus Space bottom bar contains primary destinations only. Academic
+   tools remain available from Home and the Academic page on small screens. */
+@media(max-width:800px) { .admin-shell .app-admin-navigation { display: none; } .admin-shell .app-navigation { grid-template-columns: repeat(5,minmax(0,1fr)); } }

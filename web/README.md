@@ -45,6 +45,7 @@ See [engine protocol v1](../docs/engine-protocol.md) and
 | `/calendar/`, `/notifications/` | Authorized calendar and recipient-scoped Inbox |
 | `/professor/requests`, `/professor/requests/new`, `/professor/requests/<id>` | Instructor-owned academic forms and tracking |
 | `/professor/requests/<id>/revise` | Own unpublished academic revisions only |
+| `/administration/`, `/administration/reports`, `/administration/runs/<id>` | Administrative Home, bounded read-only reports and persisted allocation-run history |
 | `/professor/academic-requests`, `/professor/academic-requests/<id>` | Owner-scoped JSON list/detail; collection POST supports intake |
 | `/academic-eligibility/`, `/academic-eligibility/<id>` | Administrative review queue and reasoned decisions |
 | `/`, `/add-request`, `/requests`, `/request/<id>`, `/allocation-summary`, `/schedules`, `/raw-data` | Administrative technical workspace and allocation management |
@@ -58,6 +59,12 @@ Default login destinations are Student Home, Professor Home, the administrative
 dashboard for an administrative account, and Appointments for other signed-in
 roles. A local `next` destination is supported; destination authorization still
 applies. Legacy technical redirects remain for compatibility.
+
+The [Administration guide](../docs/administration/README.md) describes the v1
+workspace proposed for review on this branch. Administrative capability does not
+replace designated faculty room approval, equipment custody or private record
+ownership. Dashboard/report reads use bounded, consistent SQL projections and do
+not invoke the allocation engine. The technical `/` route is preserved.
 
 ## Authentication and authorization
 
