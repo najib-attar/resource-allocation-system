@@ -23,7 +23,7 @@ from web.engine_gateway import EngineGateway
 from web.equipment_service import EquipmentService
 from web.persistence.models import LoginAccount, Role, User
 
-OUTPUT = ROOT / 'docs/ui/student-portal/UI-10'
+OUTPUT = Path(os.environ.get('PORTAL_REVIEW_OUTPUT', str(ROOT / 'docs/ui/student-portal/UI-10')))
 BUILD = ROOT / os.environ.get('PORTAL_BUILD_DIR', 'build/ui10')
 POST_STATES = []
 ACTIVE_FIXTURE = None

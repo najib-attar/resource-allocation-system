@@ -22,15 +22,10 @@ async function main() {
         const user=await login(browser,actor);await go(user.page,'/administration/',403);await user.context.close();
       }
     } else if(phase==='ADM-UI-02') {
-      if(!process.env.ADMIN_ACTIONS_ONLY)await views(admin.page,[['academic','/'],['eligibility','/academic-eligibility/'],['review','/academic-eligibility/'+ids.academic],['new-request','/add-request'],['requests','/requests'],['results-empty','/allocation-summary'],['schedules','/schedules']]);
+      await views(admin.page,[['academic','/'],['eligibility','/academic-eligibility/'],['review','/academic-eligibility/'+ids.academic],['new-request','/add-request'],['requests','/requests'],['results-empty','/allocation-summary'],['schedules','/schedules']]);
       await go(admin.page,'/academic-eligibility/'+ids.academic);
       await admin.page.locator('[name=reason]').fill('Synthetic administrative eligibility review');
-      try {await submit(admin.page,admin.page.locator('button[value=approve]'));}
-      catch(error) {
-        fs.writeFileSync(path.join(out,'form-diagnostic.json'),JSON.stringify(await admin.page.locator('main form').evaluateAll(forms=>forms.map(f=>({valid:f.checkValidity(),submitting:f.dataset.submitting,method:f.method,action:f.action,
-          fields:[...f.elements].filter(x=>x.name!=='csrf_token').map(x=>({name:x.name,value:x.value,disabled:x.disabled,valid:x.checkValidity()}))}))),null,2));
-        await admin.page.screenshot({path:path.join(out,'failed-submit.png'),fullPage:true});throw error;
-      }
+      await submit(admin.page,admin.page.locator('button[value=approve]'));
       await post(admin.page,'/academic-eligibility/'+ids.academic,{revision:'1',reviewVersion:'0',decision:'reject',reason:'Stale decision'},409);
       await go(admin.page,'/');
       await admin.page.locator('[name=strategy]').selectOption('priority');
@@ -108,6 +103,47 @@ async function main() {
       await post(admin.page,'/notifications/read',{id:ids.foreignNotification},403);
       for(const actor of [1,2,7,9]) {const user=await login(browser,actor);await go(user.page,'/administration/reports',403);await user.context.close();}
       await views(admin.page,[['inbox-read','/notifications/']]);
+    } else if(phase==='ADM-UI-06') {
+      await views(admin.page,[['final-home','/administration/'],['final-academic','/'],['final-reports','/administration/reports'],['final-calendar','/calendar/?view=week&date=2030-01-07'],['final-inbox','/notifications/']]);
+      const professor=await login(browser,2), title='Synthetic independent academic integration';
+      await go(professor.page,'/professor/requests/new?type=OneTime');
+      for(const [name,value] of Object.entries({title,purpose:'Synthetic academic integration',facultyDeclaration:'Declared faculty only',participantCount:'5'}))await professor.page.locator('[name='+name+']').fill(value);
+      await professor.page.locator('[name=spaceId]').selectOption('302');await professor.page.locator('[name=day]').selectOption('2');
+      await professor.page.locator('[name=startTime]').fill('13:00');await professor.page.locator('[name=endTime]').fill('14:00');
+      await submit(professor.page,professor.page.locator('main form button[type=submit]'));
+      const key=Number(new URL(professor.page.url()).pathname.split('/').pop());assert.ok(key>0);
+      await post(professor.page,'/run-allocation',{},403);
+      async function run() {await go(admin.page,'/');await submit(admin.page,admin.page.locator('form[action="/run-allocation"] button'));}
+      async function review(decision) {
+        await go(admin.page,'/academic-eligibility/'+key);await admin.page.locator('[name=reason]').fill('Synthetic independent '+decision+' review');
+        await submit(admin.page,admin.page.locator('button[value='+decision+']'));
+      }
+      await run();await go(professor.page,'/professor/requests/'+key);assert.equal(await professor.page.locator('article.academic-allocation').count(),0);
+      await review('approve');await go(professor.page,'/professor/requests/'+key+'/revise');
+      await professor.page.locator('[name=purpose]').fill('Materially revised synthetic teaching purpose');
+      await submit(professor.page,professor.page.locator('main form button[type=submit]'));
+      assert.match(await professor.page.locator('main').innerText(),/Pending Eligibility Review/);
+      await run();await review('approve');await run();
+      await go(admin.page,'/appointments/calendar-setup');await admin.page.locator('[name=periodName]').fill('Independent integration week');
+      await admin.page.locator('[name=fromDate]').fill('2030-01-07');await admin.page.locator('[name=untilDate]').fill('2030-01-13');
+      await admin.page.locator('[name=requestId]').selectOption(String(key));await admin.page.locator('[name=weekStart]').fill('2030-01-07');await submit(admin.page,admin.page.locator('main form button'));
+      await go(admin.page,'/calendar/publications');const publication=admin.page.locator('main form').filter({has:admin.page.locator('[name=id][value="'+key+'"]')});
+      await publication.locator('[name=visibility]').selectOption('published');await publication.locator('[name=instructor]').selectOption('2');await submit(admin.page,publication.locator('button'));
+      await views(professor.page,[['final-professor-result','/professor/requests/'+key],['final-professor-calendar','/calendar/?view=day&date=2030-01-08']]);
+      assert.match(await professor.page.locator('main').innerText(),new RegExp(title));
+      await review('reject');
+      const blocked=await post(professor.page,'/professor/requests/'+key+'/revise',{revision:'2',title:'Forbidden published edit'},400);
+      assert.match(await blocked.text(),/Published reservations are read-only/);
+      await go(professor.page,'/calendar/?view=day&date=2030-01-08');assert.match(await professor.page.locator('main').innerText(),new RegExp(title));
+      const peer=await login(browser,3);await go(peer.page,'/professor/requests/'+key,403);assert.doesNotMatch(await peer.page.locator('main').innerText(),new RegExp(title));await peer.context.close();
+      for(const actor of [1,7,9]) {
+        const user=await login(browser,actor);await views(user.page,[[actor===1?'final-student-home':'final-role-appointments',actor===1?'/student/':'/appointments/']]);
+        await go(user.page,'/administration/',403);await user.context.close();
+      }
+      await go(admin.page,'/administration/');await admin.page.setViewportSize({width:320,height:950});await admin.page.evaluate(()=>scrollTo(0,0));
+      await admin.page.screenshot({path:path.join(out,'home-mobile-viewport.png')});
+      await admin.page.setViewportSize({width:1440,height:950});await admin.page.evaluate(()=>scrollTo(0,0));await shot(admin.page,'home-final-desktop');
+      await professor.context.close();
     } else throw Error('Unsupported administration browser phase '+phase);
     const report=results();assert.deepEqual(report.errors,[]);
     assert.ok(report.expectedErrors.every(r=>[400,403,404,409].includes(r.status)),JSON.stringify(report.expectedErrors));

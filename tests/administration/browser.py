@@ -45,6 +45,7 @@ def state(database):
         'equipmentEvents': 'SELECT id,request_id,faculty_id,actor_id,message FROM equipment_event ORDER BY id',
         'periods': 'SELECT id,name,start_date,end_date FROM academic_period ORDER BY id',
         'feedbackEvents': 'SELECT id,report_id,revision,actor_id,message FROM feedback_event ORDER BY id',
+        'allocationInputs': "SELECT id, ARRAY(SELECT (r->>'id')::int FROM jsonb_array_elements(snapshot->'requests') r) AS request_ids FROM allocation_run ORDER BY id",
     }
     with database.transaction(read_only=True) as session:
         result = {key: [dict(r) for r in session.execute(text(sql)).mappings()] for key, sql in queries.items()}
@@ -60,6 +61,14 @@ def verify(posts):
         if post['path'].startswith(('/academic-eligibility/', '/professor/requests')) or post['path'] == '/run-allocation':
             entry = dict(post, before=post['before']['academic'], after=post['after']['academic'])
             outcomes.extend(verify_academic([entry]))
+            if post['path']=='/run-allocation' and post['status']<400:
+                current=post['after']['academic']['state'][0]['active_run_id']
+                requests={r['id']:r['revision'] for r in post['after']['academic']['requests']}
+                eligible={e['request_id'] for e in post['after']['academic']['eligibility'] if e['status']=='Eligible'
+                    and e['reviewed_revision']==requests[e['request_id']]}
+                saved=next(r for r in post['after']['allocationInputs'] if r['id']==current)
+                assert set(saved['request_ids'])==eligible
+                outcomes[-1]['verifiedEngineInputIds']=sorted(eligible)
             continue
         if post['status'] >= 400:
             assert post['before'] == post['after'], ('Rejected mutation changed domain data', post['path'])
