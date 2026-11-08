@@ -223,7 +223,7 @@ def workspace_http_error(error):
 
 @app.errorhandler(DatabaseBusy)
 def database_busy(error):
-    return workspace_error_response("This service is busy. Please try again shortly.", 503, {"Retry-After": "2"}) or (str(error), 503, {"Retry-After": "2"})
+    return workspace_error_response("This service is busy. Please retry shortly.", 503, {"Retry-After": "2"}) or (str(error), 503, {"Retry-After": "2"})
 
 
 @app.errorhandler(DatabaseConfigurationError)
