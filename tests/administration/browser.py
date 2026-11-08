@@ -21,6 +21,10 @@ from eligibility_browser import verify as verify_academic
 from web import app as web_app
 from web.account_service import AccountService
 from web.equipment_service import EquipmentService
+from web.feedback_service import FeedbackService
+from web.waiting_list_service import WaitingListService, POLICY_VERSION
+from web.academic_eligibility import EligibilityService
+from web.allocation_workflow import execute_allocation
 from web.persistence.models import LoginAccount, Role, User
 
 
@@ -39,6 +43,8 @@ def state(database):
         'units': 'SELECT id,type_id,asset_tag,condition,notes FROM equipment_unit ORDER BY id',
         'custodians': 'SELECT faculty_id,user_id FROM equipment_custodian ORDER BY faculty_id',
         'equipmentEvents': 'SELECT id,request_id,faculty_id,actor_id,message FROM equipment_event ORDER BY id',
+        'periods': 'SELECT id,name,start_date,end_date FROM academic_period ORDER BY id',
+        'feedbackEvents': 'SELECT id,report_id,revision,actor_id,message FROM feedback_event ORDER BY id',
     }
     with database.transaction(read_only=True) as session:
         result = {key: [dict(r) for r in session.execute(text(sql)).mappings()] for key, sql in queries.items()}
@@ -81,6 +87,43 @@ def verify(posts):
             elif action=='handover': assert assets and all(r['handed_at'] is not None for r in assets)
             else: assert sum(r['returned_at'] is not None for r in assets)==1 and len(assets)==2
             outcomes.append(dict(path=post['path'], result=expected+' persisted with physical asset checks'))
+        elif post['path']=='/appointments/calendar-setup':
+            assert len(post['after']['bindings'])==len(post['before']['bindings'])+1
+            assert any(r['request_id']==int(post['form']['requestId']) for r in post['after']['bindings'])
+            assert post['before']['academic']['allocations']==post['after']['academic']['allocations']
+            outcomes.append(dict(path=post['path'], result='explicit applicability committed; allocation unchanged'))
+        elif post['path']=='/calendar/publications':
+            row=next(r for r in post['after']['publication'] if r['id']==int(post['form']['id']))
+            assert row['calendar_public'] is True and row['academic_instructor_id']==2
+            assert post['before']['academic']['allocations']==post['after']['academic']['allocations']
+            outcomes.append(dict(path=post['path'], result='calendar visibility and explicit attribution persisted'))
+        elif post['path']=='/waiting-lists/configuration':
+            if post['form'].get('action')=='semester':
+                assert any(r['name']==post['form']['name'] and str(r['start_date'])==post['form']['start']
+                    and str(r['end_date'])==post['form']['end'] for r in post['after']['periods'])
+            else: assert post['after']['configuration'][0]['waiting_notice_minutes']==int(post['form']['noticeMinutes'])
+            outcomes.append(dict(path=post['path'], result='explicit policy configuration committed'))
+        elif post['path'].startswith('/waiting-lists/') and post['path'].endswith('/review'):
+            key=int(post['path'].split('/')[2]); row=next(r for r in post['after']['waiting'] if r['id']==key)
+            assert row['status']=='Preapproved' and row['approved_by']==6
+            assert post['before']['assets']==post['after']['assets']
+            outcomes.append(dict(path=post['path'], result='preapproval persisted without reservation'))
+        elif post['path'].startswith('/equipment/') and post['path'].endswith('/cancel'):
+            key=int(post['path'].split('/')[2])
+            assert next(r for r in post['after']['loans'] if r['id']==key)['status']=='Cancelled'
+            assert any(r['status']=='Assigned' for r in post['after']['waiting'])
+            assert all(r['released'] for r in post['after']['assets'] if r['request_id']==key)
+            outcomes.append(dict(path=post['path'], result='stock release and automatic waiting assignment committed'))
+        elif post['path']=='/waiting-lists/refresh':
+            assert post['before']['assets']==post['after']['assets']
+            outcomes.append(dict(path=post['path'], result='repeat recheck created no duplicate reservation'))
+        elif post['path'].startswith('/feedback/') and post['path'].endswith('/update'):
+            key=int(post['path'].split('/')[2]); row=next(r for r in post['after']['feedback'] if r['id']==key)
+            assert row['revision']==int(post['form']['revision'])+1
+            assert len(post['after']['feedbackEvents'])==len(post['before']['feedbackEvents'])+1
+            if post['form']['action']=='review': assert row['status']==post['form']['status'] and row['response']==post['form']['response']
+            assert post['before']['assets']==post['after']['assets']
+            outcomes.append(dict(path=post['path'], result='private response/clarification and audit committed without inventory mutation'))
         else:
             raise AssertionError(('Unverified successful domain mutation', post['path']))
     return outcomes
@@ -95,6 +138,10 @@ def main():
     fixture = ProfessorFixture(); server = thread = None; posts = []
     try:
         fixture.setUp()
+        with fixture.database.transaction() as session:
+            session.get(User, 6).name = 'Synthetic Administrator'
+            role = session.scalar(select(Role.id).where(Role.name == 'TeachingAssistant'))
+            session.add(User(id=9, source_order=9, name='Synthetic Teaching Assistant', primary_role_id=role))
         empty = os.environ.get('ADMIN_EMPTY') == '1'
         ids = dict(faculty=fixture.faculty, otherFaculty=fixture.other_faculty)
         if not empty:
@@ -116,10 +163,23 @@ def main():
                 ids['collection']=equipment.submit(1,fixture.faculty,[dict(typeId=ids['equipmentType'],quantity=2)],
                     now-timedelta(hours=1),now+timedelta(days=2),'Synthetic physical collection','',uuid.uuid4().hex)
                 equipment.decide(6,ids['collection'],True)
-        with fixture.database.transaction() as session:
-            session.get(User, 6).name = 'Synthetic Administrator'
-            role = session.scalar(select(Role.id).where(Role.name == 'TeachingAssistant'))
-            session.add(User(id=9, source_order=9, name='Synthetic Teaching Assistant', primary_role_id=role))
+            if phase in ('ADM-UI-04','ADM-UI-06'):
+                equipment.handover(6,ids['collection'],'Synthetic inspected collection fixture')
+                feedback=FeedbackService(fixture.database)
+                resource=feedback.context('equipment',ids['collection'],1)['resources'][0]['id']
+                ids['feedback']=feedback.submit(1,'equipment',ids['collection'],resource,'problem',
+                    'Synthetic cable inspection needed',False,uuid.uuid4().hex)
+                waiting=WaitingListService(fixture.database,fixture.rooms.gateway)
+                waiting.configure_notice(6,60)
+                kind=equipment.create_type(6,fixture.faculty,'Teaching kits','Synthetic queue kit','Queue fixture',{},14,'Faculty desk')
+                equipment.add_unit(6,kind,'SYN-QUEUE-1')
+                start=START+timedelta(days=7); end=start+timedelta(days=1)
+                ids['occupied']=equipment.submit(4,fixture.faculty,[dict(typeId=kind,quantity=1)],start,end,'Synthetic occupied stock','',uuid.uuid4().hex)
+                equipment.decide(6,ids['occupied'],True)
+                ids['waiting']=waiting.join_equipment(1,fixture.faculty,[dict(typeId=kind,quantity=1)],start,end,
+                    'Synthetic waiting activity','',POLICY_VERSION,True,uuid.uuid4().hex)
+                EligibilityService(fixture.database).decide(6,ids['academic'],1,0,True,'Synthetic verified eligibility')
+                execute_allocation(fixture.repository,fixture.rooms.gateway)
         users = {key: 'admin-browser-'+str(key) for key in (1, 2, 3, 4, 6, 7, 9)}
         password = uuid.uuid4().hex
         with fixture.database.transaction(read_only=True) as session:
