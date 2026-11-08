@@ -91,6 +91,16 @@ class LegacyEligibilityMigrationTests(PostgresTestCase):
             self.assertEqual(len(list(session.scalars(select(Allocation).where(Allocation.run_id==self.old_run)))),1)
             self.assertEqual(session.get(RequestDecision,(self.old_run,1)).status,'Approved')
 
+    def test_administration_legacy_summary_matches_barrier_and_never_changes_reservations(self):
+        from web.admin_dashboard_service import AdminDashboardService
+        dashboard = AdminDashboardService(self.database)
+        self.assertEqual(dashboard.load(6)['legacyOutstanding'], 1)
+        self.assert_original()
+        self.review.decide(6,1,1,0,False,'Reviewed individually; retain current published reservation.')
+        self.assertEqual(dashboard.load(6)['legacyOutstanding'], 0)
+        self.assertEqual(self.review.list_for(6)['outstandingLegacy'], [])
+        self.assert_original()
+
     def test_legacy_approval_does_not_allocate_and_downgrade_refuses_history_loss(self):
         self.review.decide(6,1,1,0,True,'Explicitly reviewed the historical teaching declaration.')
         self.assert_original()

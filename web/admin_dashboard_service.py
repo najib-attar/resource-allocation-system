@@ -7,7 +7,7 @@ from datetime import date, datetime, time, timedelta, timezone
 
 from sqlalchemy import and_, func, or_, select
 
-from .academic_eligibility import administrator
+from .academic_eligibility import administrator, outstanding_legacy_query
 from .calendar_service import university_zone
 from .equipment_access import custodian_faculties
 from .feedback_access import managed_scope, room_faculties
@@ -84,12 +84,7 @@ class AdminDashboardService:
                 queues[key] = dict(count=self._count(session, query), endpoint=endpoint, parameter=parameter,
                     items=[dict(row) for row in session.execute(query.order_by(query.selected_columns.id)
                         .limit(self.LIMIT)).mappings()] if queue in ('all', key) else [])
-            legacy = select(ResourceRequest.id).join(RequestEligibility,
-                RequestEligibility.request_id == ResourceRequest.id).join(RequestDecision,
-                RequestDecision.request_id == ResourceRequest.id).where(
-                RequestDecision.run_id == state.active_run_id, RequestEligibility.origin == 'Legacy',
-                or_(RequestEligibility.status == 'Pending Eligibility Review',
-                    RequestEligibility.reviewed_revision.is_distinct_from(ResourceRequest.revision)))
+            legacy = outstanding_legacy_query()
             run = session.execute(select(AllocationRun.id, AllocationRun.strategy,
                 AllocationRun.created_at, AllocationRun.input_revision).where(
                 AllocationRun.id == state.active_run_id)).first() if state.active_run_id else None
