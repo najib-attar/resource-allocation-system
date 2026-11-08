@@ -42,6 +42,11 @@ def state(database):
         'configuration': 'SELECT strategy,waiting_notice_minutes,recurring_limits,reservation_priorities FROM application_state',
         'units': 'SELECT id,type_id,asset_tag,condition,notes FROM equipment_unit ORDER BY id',
         'custodians': 'SELECT faculty_id,user_id FROM equipment_custodian ORDER BY faculty_id',
+        'equipmentTypes': 'SELECT id,name,faculty_id,specifications,max_loan_days,enabled FROM equipment_type ORDER BY id',
+        'roomPolicies': 'SELECT resource_id,faculty_id,enabled,restricted,categories FROM room_policy ORDER BY resource_id',
+        'approvers': 'SELECT faculty_id,user_id FROM faculty_room_approver ORDER BY faculty_id',
+        'closures': 'SELECT id,resource_id,start_at,end_at,reason FROM room_closure ORDER BY id',
+        'priorities': 'SELECT id,priority FROM student_room_request ORDER BY id',
         'equipmentEvents': 'SELECT id,request_id,faculty_id,actor_id,message FROM equipment_event ORDER BY id',
         'periods': 'SELECT id,name,start_date,end_date FROM academic_period ORDER BY id',
         'feedbackEvents': 'SELECT id,report_id,revision,actor_id,message FROM feedback_event ORDER BY id',
@@ -83,10 +88,48 @@ def verify(posts):
             assert any(r['request_id']==key for r in post['after']['roomReservations'])
             outcomes.append(dict(path=post['path'], result='faculty decision and reservation committed'))
         elif post['path'].startswith('/equipment/inventory/'):
-            assert post['form']['action']=='unit'
-            assert len(post['after']['units'])==len(post['before']['units'])+1
-            assert any(r['asset_tag']==post['form']['asset_tag'] for r in post['after']['units'])
-            outcomes.append(dict(path=post['path'], result='unique physical asset registered in owning faculty'))
+            action=post['form']['action']
+            if action=='unit':
+                assert len(post['after']['units'])==len(post['before']['units'])+1
+                assert any(r['asset_tag']==post['form']['asset_tag'] for r in post['after']['units'])
+            elif action=='type':
+                assert len(post['after']['equipmentTypes'])==len(post['before']['equipmentTypes'])+1
+                row=next(r for r in post['after']['equipmentTypes'] if r['name']==post['form']['name'])
+                assert row['specifications']==json.loads(post['form']['specifications'])
+                assert row['max_loan_days']==int(post['form']['max_days'])
+            elif action=='condition':
+                row=next(r for r in post['after']['units'] if r['id']==int(post['form']['unit_id']))
+                assert row['condition']==post['form']['condition'] and row['notes']==post['form']['notes']
+            elif action=='policy':
+                row=next(r for r in post['after']['equipmentTypes'] if r['id']==int(post['form']['type_id']))
+                assert row['max_loan_days']==int(post['form']['max_days'])
+                assert row['enabled']==('enabled' in post['form'])
+            else: raise AssertionError(('Unknown inventory action',action))
+            outcomes.append(dict(path=post['path'], result='inventory '+action+' committed in owning faculty'))
+        elif post['path']=='/equipment/custodians':
+            row=next(r for r in post['after']['custodians'] if r['faculty_id']==int(post['form']['faculty']))
+            assert row['user_id']==int(post['form']['custodian'])
+            outcomes.append(dict(path=post['path'], result='explicit custodian assignment committed'))
+        elif post['path']=='/rooms/configuration':
+            action=post['form']['action']
+            if action=='approver':
+                row=next(r for r in post['after']['approvers'] if r['faculty_id']==int(post['form']['faculty']))
+                assert row['user_id']==int(post['form']['approver'])
+            elif action=='policy':
+                row=next(r for r in post['after']['roomPolicies'] if r['resource_id']==int(post['form']['roomId']))
+                assert row['faculty_id']==int(post['form']['faculty']) and row['enabled']==('enabled' in post['form'])
+                assert row['restricted']==('restricted' in post['form'])
+                categories=post['form']['categories']
+                assert set(row['categories'])==set(categories if isinstance(categories,list) else [categories])
+            elif action=='close':
+                assert len(post['after']['closures'])==len(post['before']['closures'])+1
+                assert any(r['resource_id']==int(post['form']['roomId']) and r['reason']==post['form']['reason'] for r in post['after']['closures'])
+            elif action=='reopen':
+                assert len(post['after']['closures'])==len(post['before']['closures'])-1
+                assert all(r['id']!=int(post['form']['closureId']) for r in post['after']['closures'])
+            else: raise AssertionError(('Unknown room configuration action',action))
+            assert post['before']['roomReservations']==post['after']['roomReservations']
+            outcomes.append(dict(path=post['path'], result='room '+action+' committed; reservations preserved'))
         elif post['path'].startswith('/equipment/') and post['path'].split('/')[-1] in ('approve','handover','return'):
             key = int(post['path'].split('/')[2]); action=post['path'].split('/')[-1]
             expected={'approve':'Approved','handover':'Borrowed','return':'Partially Returned'}[action]
@@ -110,8 +153,19 @@ def verify(posts):
             if post['form'].get('action')=='semester':
                 assert any(r['name']==post['form']['name'] and str(r['start_date'])==post['form']['start']
                     and str(r['end_date'])==post['form']['end'] for r in post['after']['periods'])
+            elif post['form'].get('action')=='reservation-policy':
+                row=post['after']['configuration'][0]
+                assert row['reservation_priorities']==[int(v) for v in post['form']['priorities'].split(',')]
+                for kind in ('room','equipment'):
+                    for key in ('maxWeeklyMinutes','maxActiveSeries'):
+                        assert row['recurring_limits'][kind][key]==int(post['form'][kind+'_'+key])
             else: assert post['after']['configuration'][0]['waiting_notice_minutes']==int(post['form']['noticeMinutes'])
             outcomes.append(dict(path=post['path'], result='explicit policy configuration committed'))
+        elif post['path'].startswith('/waiting-lists/priority/room/'):
+            key=int(post['path'].split('/')[-1])
+            assert next(r for r in post['after']['priorities'] if r['id']==key)['priority']==int(post['form']['priority'])
+            assert post['before']['roomReservations']==post['after']['roomReservations']
+            outcomes.append(dict(path=post['path'], result='justified configured priority committed without reservation'))
         elif post['path'].startswith('/waiting-lists/') and post['path'].endswith('/review'):
             key=int(post['path'].split('/')[2]); row=next(r for r in post['after']['waiting'] if r['id']==key)
             assert row['status']=='Preapproved' and row['approved_by']==6
@@ -169,7 +223,7 @@ def main():
             fixture.request_room(room=301,start=START+timedelta(days=2),purpose='Synthetic second faculty decision')
             with fixture.database.transaction(read_only=True) as session:
                 ids['foreignNotification']=session.scalar(select(Notification.id).where(Notification.recipient_id==7).order_by(Notification.id))
-        if phase in ('ADM-UI-03','ADM-UI-04','ADM-UI-06'):
+        if phase in ('ADM-UI-03','ADM-UI-04','ADM-UI-06','ADM-UI-06-controls'):
             equipment = EquipmentService(fixture.database, fixture.rooms.gateway)
             equipment.assign_custodian(6, fixture.faculty, 6)
             equipment.assign_custodian(6, fixture.other_faculty, 7)
