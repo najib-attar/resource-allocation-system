@@ -1,9 +1,9 @@
-{% extends "base.html" %}
+{% extends "service_base.html" %}
 
 {% block title %}Users | Resource Allocation System{% endblock %}
 {% block page_heading %}Users{% endblock %}
 
-{% block content %}
+{% block service_content %}
 <section class="table-card">
     {% if page_message %}
         <div class="page-message page-message-{{ page_message.status }}">
@@ -16,6 +16,7 @@
     </div>
 
     <form class="filter-form" method="get" action="{{ url_for('users') }}">
+        <label for="directory-search">Search university profiles</label><input id="directory-search" name="q" value="{{ search_query }}" maxlength="100" type="search">
         <label for="role">Filter by role</label>
         <div class="filter-controls">
             <select id="role" name="role">
@@ -24,7 +25,7 @@
                 {% endfor %}
             </select>
             <button type="submit">Apply Filter</button>
-            {% if selected_role != "All" %}
+            {% if selected_role != "All" or search_query %}
             <a href="{{ url_for('users') }}">Clear</a>
             {% endif %}
         </div>

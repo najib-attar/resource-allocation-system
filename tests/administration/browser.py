@@ -29,13 +29,16 @@ def state(database):
         'rooms': 'SELECT id,status,revision,approved_by FROM student_room_request ORDER BY id',
         'roomReservations': 'SELECT request_id,resource_id,start_at,end_at FROM room_reservation ORDER BY request_id,start_at',
         'loans': 'SELECT id,status,due_at FROM borrow_request ORDER BY id',
-        'assets': 'SELECT id,unit_id,handed_at,returned_at,released FROM equipment_reservation ORDER BY id',
+        'assets': 'SELECT r.id,i.request_id,r.unit_id,r.handed_at,r.returned_at,r.released FROM equipment_reservation r JOIN borrow_item i ON i.id=r.item_id ORDER BY r.id',
         'waiting': 'SELECT id,status,approved_by FROM waiting_list_entry ORDER BY id',
         'feedback': 'SELECT id,status,revision,response FROM resource_feedback ORDER BY id',
         'notifications': 'SELECT id,recipient_id,read_at FROM notification ORDER BY id',
         'publication': 'SELECT id,calendar_public,academic_instructor_id FROM resource_request ORDER BY id',
         'bindings': 'SELECT id,request_id,period_id FROM legacy_calendar_binding ORDER BY id',
         'configuration': 'SELECT strategy,waiting_notice_minutes,recurring_limits,reservation_priorities FROM application_state',
+        'units': 'SELECT id,type_id,asset_tag,condition,notes FROM equipment_unit ORDER BY id',
+        'custodians': 'SELECT faculty_id,user_id FROM equipment_custodian ORDER BY faculty_id',
+        'equipmentEvents': 'SELECT id,request_id,faculty_id,actor_id,message FROM equipment_event ORDER BY id',
     }
     with database.transaction(read_only=True) as session:
         result = {key: [dict(r) for r in session.execute(text(sql)).mappings()] for key, sql in queries.items()}
@@ -59,6 +62,25 @@ def verify(posts):
             assert post['after']['academic']['state'][0]['input_revision'] > post['before']['academic']['state'][0]['input_revision']
             assert post['after']['configuration'][0]['strategy'] == post['form']['strategy']
             outcomes.append(dict(path=post['path'], result='strategy input revision committed'))
+        elif post['path'].startswith('/rooms/') and post['path'].endswith('/decision'):
+            key = int(post['path'].split('/')[2])
+            assert next(r for r in post['after']['rooms'] if r['id']==key)['status'] == 'Confirmed'
+            assert any(r['request_id']==key for r in post['after']['roomReservations'])
+            outcomes.append(dict(path=post['path'], result='faculty decision and reservation committed'))
+        elif post['path'].startswith('/equipment/inventory/'):
+            assert post['form']['action']=='unit'
+            assert len(post['after']['units'])==len(post['before']['units'])+1
+            assert any(r['asset_tag']==post['form']['asset_tag'] for r in post['after']['units'])
+            outcomes.append(dict(path=post['path'], result='unique physical asset registered in owning faculty'))
+        elif post['path'].startswith('/equipment/') and post['path'].split('/')[-1] in ('approve','handover','return'):
+            key = int(post['path'].split('/')[2]); action=post['path'].split('/')[-1]
+            expected={'approve':'Approved','handover':'Borrowed','return':'Partially Returned'}[action]
+            assert next(r for r in post['after']['loans'] if r['id']==key)['status']==expected
+            assets=[r for r in post['after']['assets'] if r['request_id']==key]
+            if action=='approve': assert assets and all(r['handed_at'] is None for r in assets)
+            elif action=='handover': assert assets and all(r['handed_at'] is not None for r in assets)
+            else: assert sum(r['returned_at'] is not None for r in assets)==1 and len(assets)==2
+            outcomes.append(dict(path=post['path'], result=expected+' persisted with physical asset checks'))
         else:
             raise AssertionError(('Unverified successful domain mutation', post['path']))
     return outcomes
@@ -79,6 +101,21 @@ def main():
             ids['room'] = fixture.request_room(room=301, purpose='Synthetic student study room')
             ids['foreignRoom'] = fixture.request_room(room=302, start=START+timedelta(days=1), purpose='Other faculty room')
             ids['academic'] = fixture.academic_request(day=3, title='Synthetic teaching declaration')
+        if phase in ('ADM-UI-03','ADM-UI-04','ADM-UI-06'):
+            equipment = EquipmentService(fixture.database, fixture.rooms.gateway)
+            equipment.assign_custodian(6, fixture.faculty, 6)
+            equipment.assign_custodian(6, fixture.other_faculty, 7)
+            ids['equipmentType'] = equipment.create_type(6, fixture.faculty, 'Teaching kits',
+                'Synthetic teaching kit', 'Synthetic university equipment', {'architecture':'arm'}, 14, 'Faculty equipment desk')
+            ids['units'] = [equipment.add_unit(6, ids['equipmentType'], 'SYN-ADMIN-'+str(n)) for n in (1,2)]
+            ids['equipment'] = equipment.submit(1, fixture.faculty, [dict(typeId=ids['equipmentType'],quantity=1)],
+                START, START+timedelta(days=2), 'Synthetic future borrowing request', '', uuid.uuid4().hex)
+            now=datetime.now(timezone.utc).replace(second=0,microsecond=0)
+            with mock.patch('web.equipment_service.datetime', wraps=datetime) as clock:
+                clock.now.return_value=now-timedelta(hours=2)
+                ids['collection']=equipment.submit(1,fixture.faculty,[dict(typeId=ids['equipmentType'],quantity=2)],
+                    now-timedelta(hours=1),now+timedelta(days=2),'Synthetic physical collection','',uuid.uuid4().hex)
+                equipment.decide(6,ids['collection'],True)
         with fixture.database.transaction() as session:
             session.get(User, 6).name = 'Synthetic Administrator'
             role = session.scalar(select(Role.id).where(Role.name == 'TeachingAssistant'))

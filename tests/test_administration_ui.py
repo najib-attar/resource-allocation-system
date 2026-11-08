@@ -64,3 +64,13 @@ class AdministrationPageTests(RoomFixture):
         self.assertEqual(response.status_code, 200)
         self.assertIn('Assigned resource segments', response.get_data(as_text=True))
         self.assertNotIn('snapshot', response.get_data(as_text=True))
+
+    def test_read_only_directory_search_combines_role_and_literal_query(self):
+        people = self.client.get('/users?role=Instructor&q=ada').get_data(as_text=True)
+        self.assertIn('Professor Ada', people)
+        self.assertNotIn('Professor Grace', people)
+        spaces = self.client.get('/spaces?q=no-such-synthetic-space').get_data(as_text=True)
+        self.assertIn('No rows found', spaces)
+        escaped = self.client.get('/users?q=%3Cscript%3E').get_data(as_text=True)
+        self.assertIn('&lt;script&gt;', escaped)
+        self.assertEqual(authorized_client(web_app.app, 1).get('/users?q=ada').status_code, 403)

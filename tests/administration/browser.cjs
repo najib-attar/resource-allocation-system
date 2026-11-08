@@ -44,6 +44,24 @@ async function main() {
       assert.match(await professor.page.locator('main').innerText(),/Allocated|Approved/);
       await go(professor.page,runLink,403);await professor.context.close();
       await go(admin.page,'/administration/runs/99999999',404);
+    } else if(phase==='ADM-UI-03') {
+      await views(admin.page,[['room-requests','/rooms/'],['room-review','/rooms/'+ids.room],['room-policy','/rooms/configuration'],['loans','/equipment/'],['inventory','/equipment/inventory/'+ids.faculty],['custodians','/equipment/custodians'],['directory','/users'],['spaces','/spaces']]);
+      await go(admin.page,'/users?q=Professor&role=Instructor');assert.match(await admin.page.locator('main').innerText(),/Professor Ada/);
+      await go(admin.page,'/spaces?q=nonexistent-synthetic-space');assert.match(await admin.page.locator('main').innerText(),/No rows found/);
+      await go(admin.page,'/rooms/'+ids.room);await submit(admin.page,admin.page.locator('button[value=approve]'));
+      await go(admin.page,'/equipment/'+ids.equipment);await submit(admin.page,admin.page.locator('form[action$="/approve"] button'));
+      const staff=await login(browser,7);await go(staff.page,'/equipment/'+ids.collection,403);await staff.context.close();
+      await go(admin.page,'/equipment/inventory/'+ids.otherFaculty,403);
+      await go(admin.page,'/equipment/'+ids.collection);await admin.page.locator('form[action$="/handover"] [name=condition]').fill('Synthetic inspected physical units');
+      await submit(admin.page,admin.page.locator('form[action$="/handover"] button'));
+      const returns=admin.page.locator('form[action$="/return"]');await returns.locator('[name=unitIds]').first().check();
+      await returns.locator('[name=notes]').fill('Synthetic verified partial return');await submit(admin.page,returns.locator('button'));
+      assert.match(await admin.page.locator('main').innerText(),/Partially Returned/);
+      await go(admin.page,'/equipment/inventory/'+ids.faculty);
+      const register=admin.page.locator('form').filter({has:admin.page.locator('[name=action][value=unit]')});
+      await register.locator('[name=asset_tag]').fill('SYN-ADMIN-NEW');await submit(admin.page,register.locator('button'));
+      await post(admin.page,'/equipment/inventory/'+ids.faculty,{action:'unit',type_id:ids.equipmentType,asset_tag:'SYN-ADMIN-NEW',condition:'usable'},409);
+      await views(admin.page,[['partial-return','/equipment/'+ids.collection],['confirmed-room','/rooms/'+ids.room]]);
     } else throw Error('Unsupported administration browser phase '+phase);
     const report=results();assert.deepEqual(report.errors,[]);
     assert.ok(report.expectedErrors.every(r=>[400,403,404,409].includes(r.status)),JSON.stringify(report.expectedErrors));

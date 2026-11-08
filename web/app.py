@@ -794,12 +794,17 @@ def execute_json_backend():
 
 def render_table_page(template_name, title, name, empty_message):
     table = current_results().format_table_for_display(name, get_table(name))
+    search_query = request.args.get('q', '').strip()[:100] if name == 'spaces' else ''
+    if search_query:
+        table = dict(table, rows=[row for row in table['rows'] if search_query.casefold() in
+            ' '.join(str(value) for value in row.values()).casefold()])
     return render_template(
         template_name,
         title=title,
         table=table,
         empty_message=empty_message,
         page_message=get_page_message(),
+        searchable=name == 'spaces', search_query=search_query,
     )
 
 
@@ -1030,6 +1035,10 @@ def users():
         selected_role = "All"
 
     rows = table["rows"]
+    search_query = request.args.get('q', '').strip()[:100]
+    if search_query:
+        rows = [row for row in rows if search_query.casefold() in
+                ' '.join(str(value) for value in row.values()).casefold()]
     if selected_role != "All":
         rows = [
             row for row in rows
@@ -1043,6 +1052,7 @@ def users():
         users=build_user_display_rows(rows),
         role_options=USER_ROLE_OPTIONS,
         selected_role=selected_role,
+        search_query=search_query,
         empty_message="No users were found.",
         page_message=get_page_message(),
     )

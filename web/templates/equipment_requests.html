@@ -21,6 +21,6 @@
         <p>Pickup {{ item.start|university_time }} &middot; Due {{ item.due|university_time }}</p>
         <p>{% for line in item['items'] %}{{ line.quantity }} &times; {{ line.name }}{% if not loop.last %}; {% endif %}{% endfor %}</p></div>
         <div class="service-row-state">{{ status(item.recurrence.summary if item.recurrence else item.status) }}{% if item.overdue %}<p class="equipment-warning" role="status">Overdue: physical return required</p>{% endif %}</div></article>
-    {% else %}<div class="service-empty"><h3>No borrowing requests yet.</h3><p>Choose equipment from the catalog to start a request.</p></div>{% endfor %}</div>
+    {% else %}<div class="service-empty"><h3>No borrowing requests yet.</h3><p>{{ 'Choose equipment from the catalog to start a request.' if g.principal.role=='Student' else 'No loans or decisions are visible under your current assignments. Physical custody requires a designated faculty custodian.' }}</p></div>{% endfor %}</div>
 </section>
 {% endblock %}
