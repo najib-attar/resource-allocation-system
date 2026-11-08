@@ -177,9 +177,12 @@ app.register_blueprint(create_waiting_blueprint(lambda: get_repository().databas
 from web.feedback_routes import create_feedback_blueprint
 app.register_blueprint(create_feedback_blueprint(lambda: get_repository().database))
 
+from web.admin_routes import create_administration_blueprint
+app.register_blueprint(create_administration_blueprint(lambda: get_repository().database))
+
 @app.before_request
 def pin_database_view():
-    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "professor.", "eligibility.", "rooms.", "notifications.", "equipment.", "calendar.", "waiting.", "feedback.")):
+    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "professor.", "eligibility.", "rooms.", "notifications.", "equipment.", "calendar.", "waiting.", "feedback.", "administration.")):
         current_results()
 
 
