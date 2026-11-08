@@ -1,6 +1,10 @@
-# Administration use cases — proposed v1 scope
+# Administration use cases — approved v1 scope
 
-**Baseline:** `aae966bf8fa6390348c6e6a2d53a24faf6c0ab70`. Classification is grounded in inspected routes and docs, not a claim of completed admin UI.
+**Requirements baseline:** `aae966bf8fa6390348c6e6a2d53a24faf6c0ab70`.
+The original status classifications below describe that baseline, before this
+implementation. They are retained as specification history. Current delivery and
+verification are recorded in [traceability](traceability.md),
+[screen coverage](screen-coverage.md) and [acceptance](acceptance-report.md).
 
 | ID | Use case | Current state / scope |
 | --- | --- | --- |

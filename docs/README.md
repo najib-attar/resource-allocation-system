@@ -36,6 +36,15 @@ PostgreSQL records: [Student gallery](ui/student-portal/screenshots.md),
 Acceptance records identify the exact revisions, commands and results that ran;
 historical counts are not claims of a fresh test execution on every later commit.
 
+## Administration implementation awaiting review
+
+Administration Services v1 is on `feature/admin-services-v1`, outside the published
+beta. Its [guide](administration/README.md),
+[approved scope](administration/specification.md),
+[traceability](administration/traceability.md) and
+[acceptance record](administration/acceptance-report.md) describe the new shared
+workspace and preserved service-specific authorization.
+
 ## Research and inactive foundations
 
 - [CDMCS research guide](../research/cdmcs/README.md): isolated experiments, explicit

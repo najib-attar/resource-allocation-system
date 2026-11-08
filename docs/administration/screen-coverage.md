@@ -4,7 +4,7 @@ Design: reuse Campus Space `base.html`, `service_base.html`, `components/ui.html
 `components/services.html`, tokens, shell, calendar, Inbox and native POST forms.
 No framework, duplicate scheduling logic or administrative super-permission.
 
-## Planned delivery after backend acceptance
+## Implemented delivery after backend acceptance
 
 | Phase / screen | Controls → authoritative destination | Visible state / privacy |
 | --- | --- | --- |
@@ -21,5 +21,35 @@ No framework, duplicate scheduling logic or administrative super-permission.
 | UI-05 Inbox | Existing read/read-all/feed and source links → NotificationService | Recipient and current parent visibility; unread notices ≠ pending decisions; no academic notifications invented |
 | UI-06 Integration | Independent browser + committed PostgreSQL checks across five roles and full regression | All widths, keyboard/focus, invalid/conflict/repeated/unauthorized cases |
 
-Execution evidence and any corrections will be added to the acceptance report.
-This inventory is a delivery plan until those stages are verified.
+All listed screens use real Flask services. Detailed controls, parameter contracts,
+persisted effects and regression references are in the
+[integration matrix](integration-verification.md). Existing personal actions remain
+subject to their original role and ownership checks; administration does not make
+an account a student organizer or give it another professor's approval rights.
+
+## Browser coverage
+
+Actual Flask/Edge with disposable PostgreSQL fixtures, at **1440, 1024, 768, 390
+and 320 pixels**. Counts are page/width observations, not distinct screens.
+
+| Iteration | Page/width observations | Keyboard steps | POSTs | Verified non-login outcomes |
+| --- | ---: | ---: | ---: | ---: |
+| UI-01 populated | 15 | 265 | 5 | 0 (logins only) |
+| UI-01 empty | 15 | 250 | 5 | 0 (logins only) |
+| UI-02 final implementation | 50 | 369 | 6 | 4 |
+| UI-03 | 50 | 448 | 8 | 6 |
+| UI-04 | 60 | 1173 | 16 | 11 |
+| UI-05 | 40 | 280 | 9 | 4 |
+| UI-06 independent pipeline | 50 | 730 | 18 | 12 |
+| UI-06 configuration controls | 15 | 330 | 15 | 14 |
+
+UI-02 was repeated after the final shared-query extraction. UI-06 also repeats
+the retained Professor, Student, legacy eligibility and logout browser suites;
+their separate counts and later configuration-control checks are in the
+[final acceptance report](acceptance-report.md). Each important POST is checked
+against an independent committed PostgreSQL read. Expected 400/403/404/409
+responses are recorded separately from unexpected errors.
+
+Representative images, dimensions and hashes are in
+[the screenshot gallery](screenshots.md). Raw state dumps and intermediate
+captures remain ignored local evidence, outside Git.

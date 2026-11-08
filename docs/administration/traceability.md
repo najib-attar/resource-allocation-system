@@ -43,7 +43,15 @@ arbitrary resource editing, PII exports, academic notifications, published versi
 replacement/cancellation, SIS import and CDMCS activation remain explicitly deferred.
 No schema, C++ protocol, scheduling semantics or permissions change is planned.
 
-## Verification status
+## Delivery and verification
 
-ADM-B0 is a source/contract audit, **not** a test pass. Focused backend executions,
-full acceptance and browser evidence are recorded in subsequent iteration reports.
+The matrix's final column records the original gap analysis. UC-01 and the approved
+UC-11 reporting scope are now implemented; the existing workflows in UC-02/04–10/12
+are connected to the shared Campus Space administration shell. UC-03 retains its
+verified trusted CLI; its proposed browser extension is deliberately deferred.
+
+ADM-B0 is a source/contract audit, **not** a test pass. See
+[backend acceptance](administration-backend-acceptance.md),
+[control-to-persistence verification](integration-verification.md),
+[screen coverage](screen-coverage.md) and [final acceptance](acceptance-report.md)
+for actual execution counts, corrections and remaining limitations.
