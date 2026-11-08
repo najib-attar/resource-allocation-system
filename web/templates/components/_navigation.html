@@ -11,6 +11,7 @@
     <a class="app-nav-link" href="{{ url_for('index') }}"{% if request.endpoint in ['index','eligibility.index','eligibility.detail','requests','request_detail','add_request','allocation_summary','schedules'] %} aria-current="page"{% endif %}>{{ icon('book',19) }}<span>Academic</span></a>
     {{ nav_link('calendar.index', 'Calendar', 'calendar', 'calendar.') }}
     {{ nav_link('notifications.index', 'Inbox', 'meeting', 'notifications.') }}
+    {{ nav_link('administration.reports', 'Reports', 'book') }}
     <details class="app-admin-navigation"{% if request.endpoint in ['eligibility.index','eligibility.detail','add_request','requests','allocation_summary','schedules','raw_data'] %} open{% endif %}><summary>{{ icon('settings',19) }}<span>Allocation &amp; records</span>{{ icon('chevron',14) }}</summary><div class="app-admin-links">
       {{ nav_link('eligibility.index','Eligibility review','check','eligibility.') }}
       {{ nav_link('add_request','Add academic request','plus') }}

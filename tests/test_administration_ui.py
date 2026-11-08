@@ -74,3 +74,24 @@ class AdministrationPageTests(RoomFixture):
         escaped = self.client.get('/users?q=%3Cscript%3E').get_data(as_text=True)
         self.assertIn('&lt;script&gt;', escaped)
         self.assertEqual(authorized_client(web_app.app, 1).get('/users?q=ada').status_code, 403)
+
+    def test_reports_do_not_load_legacy_snapshots_or_execute_engine(self):
+        with mock.patch.object(web_app, 'current_results', side_effect=AssertionError('Legacy snapshot read')):
+            response = self.client.get('/administration/reports')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.headers['Cache-Control'], 'private, no-store')
+        self.assertIn('0 source record(s)', response.get_data(as_text=True))
+
+    def test_report_filter_counts_only_current_assigned_faculty(self):
+        self.request_room(room=301)
+        self.request_room(room=302)
+        response = self.client.get('/administration/reports?domain=rooms&start=2030-01-07&end=2030-01-07')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('1 source record(s)', response.get_data(as_text=True))
+        self.assertIn('Pending Faculty Approval', response.get_data(as_text=True))
+
+    def test_report_invalid_filters_and_foreign_roles_are_rejected(self):
+        for query in ('domain=private', 'start=bad', 'start=2030-02-01&end=2030-01-01'):
+            self.assertEqual(self.client.get('/administration/reports?'+query).status_code, 400)
+        for actor in (1,2,7):
+            self.assertEqual(authorized_client(web_app.app,actor).get('/administration/reports').status_code,403)

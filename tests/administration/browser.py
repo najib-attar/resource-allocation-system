@@ -25,7 +25,7 @@ from web.feedback_service import FeedbackService
 from web.waiting_list_service import WaitingListService, POLICY_VERSION
 from web.academic_eligibility import EligibilityService
 from web.allocation_workflow import execute_allocation
-from web.persistence.models import LoginAccount, Role, User
+from web.persistence.models import LoginAccount, Notification, Role, User
 
 
 def state(database):
@@ -124,6 +124,14 @@ def verify(posts):
             if post['form']['action']=='review': assert row['status']==post['form']['status'] and row['response']==post['form']['response']
             assert post['before']['assets']==post['after']['assets']
             outcomes.append(dict(path=post['path'], result='private response/clarification and audit committed without inventory mutation'))
+        elif post['path']=='/notifications/read':
+            key=int(post['form'].get('id',post['form'].get('throughId')))
+            targets=[r for r in post['after']['notifications'] if r['recipient_id']==6 and
+                (r['id']==key if 'id' in post['form'] else r['id']<=key)]
+            assert targets and all(r['read_at'] is not None for r in targets)
+            assert [r for r in post['before']['notifications'] if r['recipient_id']!=6]==[
+                r for r in post['after']['notifications'] if r['recipient_id']!=6]
+            outcomes.append(dict(path=post['path'], result='recipient read state committed; other recipients unchanged'))
         else:
             raise AssertionError(('Unverified successful domain mutation', post['path']))
     return outcomes
@@ -148,6 +156,10 @@ def main():
             ids['room'] = fixture.request_room(room=301, purpose='Synthetic student study room')
             ids['foreignRoom'] = fixture.request_room(room=302, start=START+timedelta(days=1), purpose='Other faculty room')
             ids['academic'] = fixture.academic_request(day=3, title='Synthetic teaching declaration')
+        if phase=='ADM-UI-05':
+            fixture.request_room(room=301,start=START+timedelta(days=2),purpose='Synthetic second faculty decision')
+            with fixture.database.transaction(read_only=True) as session:
+                ids['foreignNotification']=session.scalar(select(Notification.id).where(Notification.recipient_id==7).order_by(Notification.id))
         if phase in ('ADM-UI-03','ADM-UI-04','ADM-UI-06'):
             equipment = EquipmentService(fixture.database, fixture.rooms.gateway)
             equipment.assign_custodian(6, fixture.faculty, 6)

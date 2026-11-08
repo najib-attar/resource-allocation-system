@@ -39,4 +39,10 @@ def create_administration_blueprint(database_provider):
         return render_template('administration/run.html', run=AdminDashboardService(database_provider()).run_detail(
             g.principal.user_id, run_id, page, allocation_page))
 
+    @blueprint.get('/reports')
+    def reports():
+        return render_template('administration/reports.html', report=AdminDashboardService(database_provider()).report(
+            g.principal.user_id, request.args.get('domain', 'allocation'),
+            request.args.get('start'), request.args.get('end')))
+
     return blueprint

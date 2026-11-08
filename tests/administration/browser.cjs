@@ -94,6 +94,20 @@ async function main() {
       await post(admin.page,'/feedback/'+ids.feedback+'/update',{action:'review',revision:'1',action_key:'a'.repeat(32),status:'Under Review',priority:'normal',response:'Stale response'},409);
       const staff=await login(browser,7);await go(staff.page,'/feedback/'+ids.feedback,403);await go(staff.page,'/waiting-lists/configuration',403);await staff.context.close();
       await views(admin.page,[['published-calendar','/calendar/?view=week&date=2030-01-09'],['assigned-waiting','/waiting-lists/'+ids.waiting],['responded-issue','/feedback/'+ids.feedback]]);
+    } else if(phase==='ADM-UI-05') {
+      await views(admin.page,[['reports','/administration/reports'],['room-report','/administration/reports?domain=rooms&start=2030-01-07&end=2030-01-13'],['equipment-report','/administration/reports?domain=equipment'],['waiting-report','/administration/reports?domain=waiting'],['issue-report','/administration/reports?domain=issues'],['report-invalid','/administration/reports?domain=invalid',400],['inbox','/notifications/']]);
+      await go(admin.page,'/administration/reports?domain=rooms&start=2030-01-07&end=2030-01-13');
+      assert.match(await admin.page.locator('main').innerText(),/2 source record\(s\)/);
+      await go(admin.page,'/notifications/');
+      await Promise.all([admin.page.waitForNavigation(),admin.page.locator('main a[data-notification-id]').first().click()]);
+      await go(admin.page,'/notifications/');
+      const through=await admin.page.locator('main [name=throughId]').inputValue();
+      await submit(admin.page,admin.page.locator('main form[action="/notifications/read"] button'));
+      assert.match(await admin.page.locator('main').innerText(),/0 unread/);
+      await post(admin.page,'/notifications/read',{throughId:through},302);
+      await post(admin.page,'/notifications/read',{id:ids.foreignNotification},403);
+      for(const actor of [1,2,7,9]) {const user=await login(browser,actor);await go(user.page,'/administration/reports',403);await user.context.close();}
+      await views(admin.page,[['inbox-read','/notifications/']]);
     } else throw Error('Unsupported administration browser phase '+phase);
     const report=results();assert.deepEqual(report.errors,[]);
     assert.ok(report.expectedErrors.every(r=>[400,403,404,409].includes(r.status)),JSON.stringify(report.expectedErrors));
