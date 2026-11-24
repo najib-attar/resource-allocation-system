@@ -42,7 +42,7 @@ See [engine protocol v1](../docs/engine-protocol.md) and
 | `/appointments/availability` | Instructor office-hour management |
 | `/appointments/calendar` | Own timetable and personal blocks for signed-in roles |
 | `/rooms/`, `/equipment/`, `/waiting-lists/`, `/feedback/` | Student/borrower/participant actions and designated staff operations; service checks apply |
-| `/calendar/`, `/notifications/` | Authorized calendar and recipient-scoped Inbox |
+| `/calendar/`, `/notifications/` | Authorized calendar and recipient-scoped Inbox with service and read-status filters |
 | `/professor/requests`, `/professor/requests/new`, `/professor/requests/<id>` | Instructor-owned academic forms and tracking |
 | `/professor/requests/<id>/revise` | Own unpublished academic revisions only |
 | `/administration/`, `/administration/reports`, `/administration/runs/<id>` | Administrative Home, bounded read-only reports and persisted allocation-run history |
@@ -90,7 +90,12 @@ explicit calendar applicability and existing mandatory commitments remain bindin
 Every required professor must approve the current revision. Pending requests hold
 no time; rescheduling clears approvals. Rejection prevents confirmation. Authorized
 cancellation releases commitments; optional student decline does not cancel the
-meeting. PostgreSQL stores approvals, histories, private notifications and half-open
+meeting. The organizer and required professors can download a confirmed
+appointment as an iCalendar file from its detail page. The file contains the
+event time and a generic title. Update the external entry if the appointment
+is moved or cancelled.
+
+PostgreSQL stores approvals, histories, private notifications and half-open
 mandatory-person reservations atomically. Professors cannot approve for a peer or
 initiate a student appointment. See [appointment design](../docs/architecture/appointments-design.md).
 

@@ -116,6 +116,17 @@ preserves manual decisions. If a date/resource is unavailable, inspect the error
 the tool does not relax calendars or policies to force success. Do not use this
 seed against operational data.
 
+## Inbox and calendar downloads
+
+Use **Service** and **Read status** in the full Inbox to find updates. **Older
+updates** keeps the selection while browsing. **Mark matching as read** clears
+unread updates matching that selection, including earlier pages.
+
+On a confirmed appointment, the student organizer and required professors can
+choose **Download calendar file (.ics)**. Import it into your calendar
+application. The file includes the time and a generic title. If the appointment
+is moved or cancelled, update your imported entry separately.
+
 ## Academic requests, eligibility and allocation
 
 As a professor, open Academic Requests and submit an Exam, OneTime, Recurring or
