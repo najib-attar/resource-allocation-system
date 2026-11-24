@@ -133,6 +133,31 @@ class AppointmentService:
             raise PermissionError("This appointment is private to its participants.")
         return record, professors, invitations
 
+    @staticmethod
+    def _can_download_calendar(record, professors, actor):
+        return record.status == "Confirmed" and (
+            record.organizer_id == actor or any(row.user_id == actor for row in professors))
+
+    def calendar_export(self, appointment_id, actor):
+        unavailable = "Calendar downloads require a confirmed appointment and a required participant."
+        if not 0 < appointment_id <= 2**63 - 1:
+            raise PermissionError(unavailable)
+        with self.database.transaction(read_only=True) as session:
+            try:
+                record, professors, _ = self._visible(session, appointment_id, actor)
+            except (AppointmentError, PermissionError):
+                raise PermissionError(unavailable) from None
+            if not self._can_download_calendar(record, professors, actor):
+                raise PermissionError(unavailable)
+            confirmed_at = session.scalar(select(AppointmentEvent.created_at).where(
+                AppointmentEvent.appointment_id == appointment_id,
+                AppointmentEvent.revision == record.revision,
+                AppointmentEvent.actor_id.in_([row.user_id for row in professors]))
+                .order_by(AppointmentEvent.id.desc()).limit(1))
+            return {"id": record.id, "start": record.start_at, "end": record.end_at,
+                    "revision": record.revision, "created": record.created_at,
+                    "confirmed": confirmed_at or record.created_at}
+
     def detail(self, appointment_id, actor):
         with self.database.transaction(read_only=True) as session:
             record, professors, invitations = self._visible(session, appointment_id, actor)
@@ -144,6 +169,7 @@ class AppointmentService:
                     "professors": [{"id": row.user_id, "name": names[row.user_id], "decision": row.decision} for row in professors],
                     "invitations": [{"id": row.user_id, "name": names[row.user_id], "status": row.status} for row in invitations],
                     "canAudit": False,
+                    "canDownloadCalendar": self._can_download_calendar(record, professors, actor),
                     "history": event_history(session, AppointmentEvent, record.id, actor)}
 
     def list_for(self, actor):

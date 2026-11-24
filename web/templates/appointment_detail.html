@@ -4,7 +4,10 @@
 {% block title %}Appointment {{ item.id }} | Campus Space{% endblock %}
 {% block service_eyebrow %}Appointments / Details{% endblock %}
 {% block service_intro %}Follow this proposal, its approvals and optional invitations.{% endblock %}
-{% block service_actions %}<a class="service-button" href="{{ url_for('appointments.index') }}">All appointments</a>{% endblock %}
+{% block service_actions %}
+<a class="service-button" href="{{ url_for('appointments.index') }}">All appointments</a>
+{% if item.canDownloadCalendar %}<a class="service-button" href="{{ url_for('appointments.download_calendar', appointment_id=item.id) }}">Download calendar file (.ics)</a>{% endif %}
+{% endblock %}
 {% block service_content %}<section class="panel"><h2>{{ item.purpose }}</h2><p>{{ item.start|university_time }} &ndash; {{ item.end|university_time }} ({{ zone }})</p>
 <p>Organizer: {{ item.organizerName|person_name }}</p>{{ status(item.status) }}
 {% if g.principal.role == 'Student' and g.principal.user_id != item.organizerId %}<p class="service-notice">You are an optional invitee. The meeting status is the organizer's; your invitation does not reserve your time.</p>{% endif %}
@@ -17,6 +20,7 @@
 </section><section class="panel"><h2>Student invitations</h2>{% for row in item.invitations %}<div class="service-person"><p>{{ row.name|person_name }}</p>{{ status(row.status) }}</div>{% else %}<p>No additional students invited.</p>{% endfor %}
 <p class="student-card-note">Optional invitees may decline. Their response does not block confirmation.</p></section>
 <section class="panel"><h2>Manage appointment</h2>
+{% if item.canDownloadCalendar %}<p class="student-card-note">If the time changes or the appointment is cancelled, update your imported calendar entry separately.</p>{% endif %}
 {% set own_professor=(item.professors|selectattr('id','equalto',g.principal.user_id)|list|first) %}
 {% if professor_shell %}<p>You can decide only for yourself. A student time change resets every professor's approval and creates a new revision.</p>{% endif %}
 {% if item.status == 'Pending Approval' and g.principal.user_id in item.professors|map(attribute='id')|list %}
