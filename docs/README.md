@@ -45,7 +45,10 @@ beta. Its [guide](administration/README.md),
 [acceptance record](administration/acceptance-report.md) describe the new shared
 workspace and preserved service-specific authorization.
 
-## Research and inactive foundations
+## Evaluation, research and inactive foundations
+
+- [Application strategy comparison](allocation-strategy-comparison.md) explains
+  how to reproduce the five-strategy evaluation with synthetic requests.
 
 - [CDMCS research guide](../research/cdmcs/README.md): isolated experiments, explicit
   synthetic execution and authorized read-only projection; no live scheduler activation.
