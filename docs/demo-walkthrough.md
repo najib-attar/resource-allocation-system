@@ -10,7 +10,6 @@ Install Python 3.12/3.13, PostgreSQL 17 tools and a C++17 `g++` compiler. From t
 repository root in PowerShell:
 
 ```powershell
-python scripts/build_backend.py
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_demo.ps1
 ```
 
@@ -24,10 +23,9 @@ or `-PostgresBin` (the PostgreSQL `bin` directory). The launcher does not instal
 system tools, modify Windows services or reset an unrelated database. Internet is
 needed for missing Python packages.
 
-Build before the first launch and after C++ changes. On Windows PowerShell a
-missing/stale engine can stop the launcher's freshness check before its intended
-rebuild fallback. The explicit build above avoids that limitation. Use
-`python scripts/build_backend.py --compiler PATH` if `g++` is outside PATH.
+The launcher builds a missing or stale engine before preparing the database.
+On subsequent launches it verifies the executable and source fingerprints and
+reuses a matching build. Supply `-CompilerPath` if `g++` is outside PATH.
 
 ## Persistent profiles and accounts
 
@@ -159,7 +157,6 @@ and `-WebPort 5001` selects a different web port.
 For a deliberately new fictional profile, `-Profile NAME`, `-PostgresPort PORT`,
 `-AcademicStart YYYY-MM-DD` and `-AcademicEnd YYYY-MM-DD` select its initial settings.
 These are new-profile options, not a migration/reset procedure for saved users.
-Rebuild a missing/stale engine before relaunching; database/configuration failures
-never fall back to CSV results. Use [database operations](database-operations.md) for manual
+The launcher checks the engine on every start. Use [database operations](database-operations.md) for manual
 setup, backup and controlled upgrades, and the [developer guide](../web/README.md)
 for environment configuration and tests.

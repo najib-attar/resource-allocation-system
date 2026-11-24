@@ -59,6 +59,20 @@ try {
     $demoPython = Join-Path $directory 'venv\Scripts\python.exe'
     if (-not (Test-Path -LiteralPath $demoPython)) { Invoke-Checked $python @('-m', 'venv', (Join-Path $directory 'venv')) }
     Invoke-Checked $demoPython @('-m', 'pip', 'install', '-r', (Join-Path $root 'requirements.txt'))
+    # The engine is shared by every demo profile in this checkout.
+    $backendDir = Join-Path $root 'build\backend'
+    [IO.Directory]::CreateDirectory($backendDir) | Out-Null
+    $buildLock = $null
+    $deadline = [DateTime]::UtcNow.AddMinutes(5)
+    while ($null -eq $buildLock) {
+        try { $buildLock = [IO.File]::Open((Join-Path $backendDir 'demo-build.lock'), 'OpenOrCreate', 'ReadWrite', 'None') }
+        catch [IO.IOException] {
+            if ([DateTime]::UtcNow -ge $deadline) { throw 'Could not acquire the backend build lock. Retry after the other launcher finishes.' }
+            Start-Sleep -Milliseconds 250
+        }
+    }
+    try { Invoke-Checked $demoPython @('scripts/build_backend.py', '--if-needed', '--compiler', $compiler) }
+    finally { $buildLock.Dispose() }
     $prepare = @('scripts/setup_local_demo.py', '--state-dir', $directory, 'prepare')
     foreach ($option in @(@('Seed','--seed'), @('AcademicStart','--start'), @('AcademicEnd','--end'), @('PostgresPort','--port'))) {
         if ($PSBoundParameters.ContainsKey($option[0])) { $prepare += @($option[1], [string](Get-Variable -Name $option[0] -ValueOnly)) }
@@ -99,8 +113,6 @@ try {
     $env:FLASK_DEBUG = '0'
     $env:RESOURCE_ALLOCATION_BACKEND = Join-Path $root 'build\backend\allocation_system.exe'
     Invoke-Checked $demoPython @('-m', 'alembic', 'upgrade', 'head')
-    & $demoPython -c 'from pathlib import Path; from web.backend_executable import resolve_backend_executable; resolve_backend_executable(Path.cwd())' 2>$null
-    if ($LASTEXITCODE -ne 0) { Invoke-Checked $demoPython @('scripts/build_backend.py', '--compiler', $compiler) }
     Invoke-Checked $demoPython @('scripts/setup_local_demo.py', '--state-dir', $directory, 'seed')
     if ($ServiceExamples) {
         Invoke-Checked $demoPython @('scripts/seed_service_examples.py', '--state-dir', $directory)

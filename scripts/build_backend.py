@@ -14,9 +14,11 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from web.backend_executable import (  # noqa: E402
+    BackendExecutableError,
     default_backend_path,
     file_sha256,
     manifest_path,
+    resolve_backend_executable,
     source_files,
     source_fingerprint,
 )
@@ -27,11 +29,21 @@ def main():
     parser.add_argument("--compiler", default=os.environ.get("CXX", "g++"),
                         help="Compiler executable path (not a shell command).")
     parser.add_argument("--output", help="Optional artifact path; relative to the project root.")
+    parser.add_argument("--if-needed", action="store_true",
+                        help="Reuse an executable whose binary and source fingerprints are current.")
     args = parser.parse_args()
     output = Path(args.output) if args.output else default_backend_path(PROJECT_ROOT)
     if not output.is_absolute():
         output = PROJECT_ROOT / output
     output = output.resolve()
+    if args.if_needed:
+        try:
+            resolve_backend_executable(PROJECT_ROOT, str(output))
+        except BackendExecutableError as error:
+            print(f"Preparing C++ backend: {error}")
+        else:
+            print(f"Verified current backend: {output}")
+            return 0
 
     try:
         before = source_fingerprint(PROJECT_ROOT)

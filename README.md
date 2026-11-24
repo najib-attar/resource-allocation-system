@@ -94,16 +94,15 @@ Prerequisites: **Python 3.12 or 3.13**, **PostgreSQL 17 tools**, and **g++ with 
 support**. Run commands from a cloned repository's root. Python dependencies are
 pinned in [requirements.txt](requirements.txt).
 
-With Python and `g++` on PATH, build first, then start an isolated Windows demo
-with generated fictional users and persistent data:
+With Python, PostgreSQL tools and `g++` available, start the persistent Windows demo
+from the repository root:
 
 ```powershell
-python scripts/build_backend.py
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_demo.ps1
 ```
 
 Open `http://127.0.0.1:5000`. The launcher prints the demo accounts and generated
-password, verifies the built engine, applies migrations to its owned demo database and
+password, builds or verifies the engine, applies migrations to its owned demo database and
 starts Flask. Rerunning the same profile preserves accounts, passwords, appointments
 and requests. Keep private `build/local-demos/` settings out of Git.
 
