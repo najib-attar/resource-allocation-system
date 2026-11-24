@@ -14,6 +14,30 @@ from .persistence.models import (Appointment, AppointmentEvent, AppointmentInvit
     EligibilityEvent, LoginAccount, RequestEligibility, ResourceRequest, Role)
 
 
+INBOX_KINDS = {
+    'all': 'All services',
+    'appointment': 'Appointments',
+    'room': 'Rooms',
+    'equipment': 'Equipment',
+    'feedback': 'Feedback',
+    'eligibility': 'Academic eligibility',
+}
+INBOX_READ_STATES = {'all': 'All updates', 'unread': 'Unread only', 'read': 'Read only'}
+
+
+def _filters(visible, kind, read_state):
+    if kind not in INBOX_KINDS or read_state not in INBOX_READ_STATES:
+        raise ValueError('Choose an available service and read status.')
+    clauses = []
+    if kind != 'all':
+        clauses.append(visible.c.kind == kind)
+    if read_state == 'unread':
+        clauses.append(visible.c.read_at.is_(None))
+    elif read_state == 'read':
+        clauses.append(visible.c.read_at.is_not(None))
+    return clauses
+
+
 def publish_event(session, event, *, recipient_ids=None, notify_actor=False):
     """Persist history and its recipient notifications in the caller's transaction."""
     if not isinstance(event, (AppointmentEvent, RoomEvent, EquipmentEvent, FeedbackEvent)):
@@ -134,6 +158,8 @@ def _visible(actor):
 
 
 class NotificationService:
+    PAGE_SIZE = 30
+
     def __init__(self, database):
         self.database = database
 
@@ -150,18 +176,46 @@ class NotificationService:
             visible = _visible(actor)
             unread = session.scalar(select(func.count()).select_from(visible).where(visible.c.read_at.is_(None)))
             through = session.scalar(select(func.max(visible.c.id))) or 0
-            sender, recipient = aliased(User), aliased(User)
-            rows = session.execute(select(visible, sender.name.label('sender_name'), recipient.name.label('recipient_name'))
-                .join(sender, sender.id == visible.c.actor_id).join(recipient, recipient.id == visible.c.recipient_id)
-                .order_by(visible.c.created_at.desc(), visible.c.id.desc()).limit(limit)).mappings()
-            items=[dict(row) for row in rows]
-            for kind in ('room','equipment'):
-                series=dated_occurrences(session,kind,{r['subject_id'] for r in items if r['kind']==kind})
-                for row in items:
-                    if row['kind']==kind and row['subject_id'] in series:row['current_status']=occurrence_summary(series[row['subject_id']])
-            return {'items': items, 'unreadCount': unread, 'throughId': through}
+            return {'items': self._items(session, visible, (), limit), 'unreadCount': unread, 'throughId': through}
 
-    def mark_read(self, actor, notification_id=None, through_id=None):
+    @staticmethod
+    def _items(session, visible, clauses, limit):
+        sender, recipient = aliased(User), aliased(User)
+        rows = session.execute(select(visible, sender.name.label('sender_name'), recipient.name.label('recipient_name'))
+            .join(sender, sender.id == visible.c.actor_id).join(recipient, recipient.id == visible.c.recipient_id)
+            .where(*clauses).order_by(visible.c.created_at.desc(), visible.c.id.desc()).limit(limit)).mappings()
+        items = [dict(row) for row in rows]
+        for kind in ('room', 'equipment'):
+            series = dated_occurrences(session, kind, {r['subject_id'] for r in items if r['kind'] == kind})
+            for row in items:
+                if row['kind'] == kind and row['subject_id'] in series:
+                    row['current_status'] = occurrence_summary(series[row['subject_id']])
+        return items
+
+    def inbox_page(self, actor, *, kind='all', read_state='all', before=None):
+        if before is not None and (type(before) is not int or not 1 <= before <= 9223372036854775807):
+            raise ValueError('This page of Inbox history is unavailable.')
+        with self.database.transaction(read_only=True) as session:
+            self._identity(session, actor)
+            visible = _visible(actor)
+            clauses = _filters(visible, kind, read_state)
+            unread, through_id = session.execute(select(func.count(), func.max(visible.c.id)).where(
+                *clauses, visible.c.read_at.is_(None))).one()
+            if before is not None:
+                # A read-state change may remove the anchor from the filter, while
+                # the recipient's authorized timestamp still anchors navigation.
+                anchor = session.execute(select(visible.c.created_at, visible.c.id)
+                    .where(visible.c.id == before)).one_or_none()
+                if anchor is None:
+                    raise ValueError('This page of Inbox history is unavailable.')
+                clauses.append(or_(visible.c.created_at < anchor.created_at,
+                    (visible.c.created_at == anchor.created_at) & (visible.c.id < anchor.id)))
+            items = self._items(session, visible, clauses, self.PAGE_SIZE + 1)
+            next_before = items[self.PAGE_SIZE - 1]['id'] if len(items) > self.PAGE_SIZE else None
+            return dict(items=items[:self.PAGE_SIZE], unreadCount=unread, throughId=through_id or 0,
+                        nextBefore=next_before, before=before, kind=kind, readState=read_state)
+
+    def mark_read(self, actor, notification_id=None, through_id=None, *, kind='all', read_state='all'):
         if (notification_id is None) == (through_id is None):
             raise ValueError('Choose a notification or a displayed inbox boundary.')
         key = notification_id if notification_id is not None else through_id
@@ -176,6 +230,6 @@ class NotificationService:
                 if session.scalar(eligible) is None:
                     raise PermissionError('This notification is unavailable or private.')
             else:
-                eligible = eligible.where(visible.c.id <= through_id)
+                eligible = eligible.where(visible.c.id <= through_id, *_filters(visible, kind, read_state))
             session.execute(update(Notification).where(Notification.id.in_(eligible), Notification.read_at.is_(None)).values(
                 read_at=datetime.now(timezone.utc)))
