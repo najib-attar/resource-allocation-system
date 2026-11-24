@@ -41,8 +41,14 @@ def create_administration_blueprint(database_provider):
 
     @blueprint.get('/reports')
     def reports():
+        run_page = request.args.get('run_page')
+        if run_page is not None:
+            try:
+                run_page = int(run_page)
+            except ValueError as error:
+                raise ValueError('Choose a valid allocation history page.') from error
         return render_template('administration/reports.html', report=AdminDashboardService(database_provider()).report(
             g.principal.user_id, request.args.get('domain', 'allocation'),
-            request.args.get('start'), request.args.get('end')))
+            request.args.get('start'), request.args.get('end'), run_page=run_page))
 
     return blueprint

@@ -20,6 +20,7 @@ from .persistence.repository import state_row
 
 class AdminDashboardService:
     LIMIT = 5
+    RUNS_PER_PAGE = 25
     DOMAINS = ('allocation', 'rooms', 'equipment', 'waiting', 'issues')
     QUEUES = ('all', 'academic', 'rooms', 'equipment', 'waiting', 'issues')
 
@@ -107,7 +108,7 @@ class AdminDashboardService:
                     EquipmentType, EquipmentType.id == EquipmentUnit.type_id).where(
                     EquipmentType.faculty_id.in_(custodian_faculties(actor)))))
 
-    def report(self, actor, domain='allocation', start=None, end=None, now=None):
+    def report(self, actor, domain='allocation', start=None, end=None, now=None, *, run_page=None):
         """Current statuses of records whose documented source date is in range.
 
         These are not historic occupancy percentages or status-at-that-date claims.
@@ -115,6 +116,8 @@ class AdminDashboardService:
         """
         if domain not in self.DOMAINS:
             raise ValueError('Choose a supported report domain.')
+        if run_page is not None and (domain != 'allocation' or type(run_page) is not int or run_page < 1):
+            raise ValueError('Choose a valid allocation history page.')
         today = (now or datetime.now(timezone.utc)).astimezone(university_zone()).date()
         try:
             first = date.fromisoformat(start) if start else today - timedelta(days=29)
@@ -136,7 +139,8 @@ class AdminDashboardService:
             upper = datetime.combine(last + timedelta(days=1), time.min, university_zone())
         except OverflowError as error:
             raise ValueError('Choose report dates before the end of year 9999.') from error
-        query = select(model.status.label('status')).where(column >= lower, column < upper)
+        in_period = and_(column >= lower, column < upper)
+        query = select(model.status.label('status')).where(in_period)
         with self.database.transaction(read_only=True) as session:
             administrator(session, actor)
             if domain != 'allocation':
@@ -144,8 +148,20 @@ class AdminDashboardService:
             rows = query.subquery()
             states = dict(session.execute(select(rows.c.status, func.count()).group_by(rows.c.status)
                 .order_by(rows.c.status)).all())
+            total = sum(states.values())
+            pages = max(1, (total + self.RUNS_PER_PAGE - 1) // self.RUNS_PER_PAGE)
+            runs = []
+            if run_page is not None:
+                if run_page > pages:
+                    raise ValueError('Choose a page within the selected allocation history.')
+                history = select(AllocationRun.id, AllocationRun.strategy, AllocationRun.status,
+                    AllocationRun.created_at).where(in_period).order_by(
+                    AllocationRun.created_at.desc(), AllocationRun.id.desc())
+                runs = session.execute(history.limit(self.RUNS_PER_PAGE).offset(
+                    (run_page - 1) * self.RUNS_PER_PAGE)).mappings().all()
             return dict(domain=domain, start=first.isoformat(), end=last.isoformat(), basis=basis,
-                timezone=university_zone().key, states=states, total=sum(states.values()),
+                timezone=university_zone().key, states=states, total=total,
+                runs=runs, run_page=run_page, run_pages=pages,
                 scope='Campus academic runs' if domain == 'allocation' else 'Your currently assigned faculties only')
 
     def run_detail(self, actor, key, page=1, allocation_page=1):

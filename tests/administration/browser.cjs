@@ -89,6 +89,22 @@ async function main() {
       await post(admin.page,'/feedback/'+ids.feedback+'/update',{action:'review',revision:'1',action_key:'a'.repeat(32),status:'Under Review',priority:'normal',response:'Stale response'},409);
       const staff=await login(browser,7);await go(staff.page,'/feedback/'+ids.feedback,403);await go(staff.page,'/waiting-lists/configuration',403);await staff.context.close();
       await views(admin.page,[['published-calendar','/calendar/?view=week&date=2030-01-09'],['assigned-waiting','/waiting-lists/'+ids.waiting],['responded-issue','/feedback/'+ids.feedback]]);
+    } else if (phase === 'ADM-REPORT-HISTORY') {
+      const page = admin.page;
+      const period = '/administration/reports?domain=allocation&start=2030-01-08&end=2030-01-08';
+      await go(page, period);
+      await page.getByRole('link', {name:'Inspect allocation runs'}).click();
+      assert.match(await page.locator('main').innerText(), /26 source record\(s\)/);
+      const runLinks = page.locator('#run-history tbody a');
+      assert.deepEqual(await runLinks.allTextContents(), ids.history.slice(0, 25).map(id => 'Run #' + id));
+      await page.getByRole('link', {name:'Next runs'}).click();
+      const oldest = ids.history.at(-1);
+      assert.deepEqual(await runLinks.allTextContents(), ['Run #' + oldest]);
+      await runLinks.first().click();
+      assert.match(await page.locator('h1').innerText(), new RegExp('Allocation run #' + oldest));
+      await page.getByRole('link', {name:'Back to filtered runs'}).click();
+      assert.deepEqual(await runLinks.allTextContents(), ['Run #' + oldest]);
+      await views(page, [['filtered-history', period + '&run_page=1'], ['last-history-page', period + '&run_page=2']]);
     } else if(phase==='ADM-UI-05') {
       await views(admin.page,[['reports','/administration/reports'],['room-report','/administration/reports?domain=rooms&start=2030-01-07&end=2030-01-13'],['equipment-report','/administration/reports?domain=equipment'],['waiting-report','/administration/reports?domain=waiting'],['issue-report','/administration/reports?domain=issues'],['report-invalid','/administration/reports?domain=invalid',400],['inbox','/notifications/']]);
       await go(admin.page,'/administration/reports?domain=rooms&start=2030-01-07&end=2030-01-13');

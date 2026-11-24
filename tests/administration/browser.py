@@ -219,6 +219,9 @@ def main():
             ids['room'] = fixture.request_room(room=301, purpose='Synthetic student study room')
             ids['foreignRoom'] = fixture.request_room(room=302, start=START+timedelta(days=1), purpose='Other faculty room')
             ids['academic'] = fixture.academic_request(day=3, title='Synthetic teaching declaration')
+        if phase == 'ADM-REPORT-HISTORY':
+            from administration.history_fixture import create_history
+            ids['history'] = create_history(fixture.database)
         if phase=='ADM-UI-05':
             fixture.request_room(room=301,start=START+timedelta(days=2),purpose='Synthetic second faculty decision')
             with fixture.database.transaction(read_only=True) as session:

@@ -9,6 +9,25 @@
 <section class="panel"><h2>Current status totals</h2><p>{{ report.total }} source record(s) · {{ report.scope }}</p><p><strong>Date basis:</strong> {{ report.basis }}. {{ report.start }} to {{ report.end }}, inclusive.</p>
 <div class="table-wrap" tabindex="0" role="region" aria-label="Current status totals"><table><thead><tr><th>Stored status</th><th>Records</th></tr></thead><tbody>{% for label,count in report.states.items() %}<tr><td>{{ status(label) }}</td><td>{{ count }}</td></tr>{% else %}<tr><td colspan="2">No source records in this period and scope.</td></tr>{% endfor %}</tbody></table></div>
 <p class="service-notice">These are current stored statuses of records selected by the date basis above, not historical status-at-date, occupied hours or utilization percentages. A recurring parent request is one record; its individual dates may have different outcomes.</p>
-{% if report.domain=='allocation' %}<p>Successful attempts can be historical. Only the active run supplies current allocations; dated calendar publication is separate.</p><a href="{{ url_for('administration.home') }}#recent-runs">Inspect allocation runs</a>{% elif report.domain=='equipment' %}<p>Approved means reserved. Physical collection and verified return are recorded separately.</p><a href="{{ url_for('equipment.index') }}">Open assigned equipment requests</a>{% elif report.domain=='rooms' %}<a href="{{ url_for('rooms.index') }}">Open assigned room requests and occurrence details</a>{% elif report.domain=='waiting' %}<p>Preapproved does not reserve a resource.</p><a href="{{ url_for('waiting.index') }}">Open authorized queues</a>{% else %}<a href="{{ url_for('feedback.index',scope='managed') }}">Open responsible staff inbox</a>{% endif %}
+{% if report.domain=='allocation' %}<p>Successful attempts can be historical. Only the active run supplies current allocations; dated calendar publication is separate.</p>{% if report.run_page is none %}<a href="{{ url_for('administration.reports', domain=report.domain, start=report.start, end=report.end, run_page=1, _anchor='run-history') }}">Inspect allocation runs</a>{% endif %}{% elif report.domain=='equipment' %}<p>Approved means reserved. Physical collection and verified return are recorded separately.</p><a href="{{ url_for('equipment.index') }}">Open assigned equipment requests</a>{% elif report.domain=='rooms' %}<a href="{{ url_for('rooms.index') }}">Open assigned room requests and occurrence details</a>{% elif report.domain=='waiting' %}<p>Preapproved does not reserve a resource.</p><a href="{{ url_for('waiting.index') }}">Open authorized queues</a>{% else %}<a href="{{ url_for('feedback.index',scope='managed') }}">Open responsible staff inbox</a>{% endif %}
 <p class="student-card-note">Downloads and broad personal-data exports are deferred. No academic notifications or scheduling actions are triggered by this report.</p></section>
+{% if report.run_page is not none %}
+<section id="run-history" class="panel" aria-labelledby="history-heading">
+  <h2 id="history-heading">Allocation runs in this period</h2>
+  <p>{{ report.start }} to {{ report.end }} آ· {{ report.timezone }} آ· Page {{ report.run_page }} of {{ report.run_pages }}</p>
+  {% if report.runs %}
+  <div class="table-wrap" tabindex="0" role="region" aria-label="Allocation runs in this period">
+    <table><thead><tr><th scope="col">Run</th><th scope="col">Created</th><th scope="col">Strategy</th><th scope="col">Stored status</th></tr></thead>
+    <tbody>{% for run in report.runs %}
+      <tr><td><a href="{{ url_for('administration.run', run_id=run.id, start=report.start, end=report.end, run_page=report.run_page) }}">Run #{{ run.id }}</a></td>
+      <td>{{ run.created_at|university_time }}</td><td>{{ run.strategy }}</td><td>{{ status(run.status) }}</td></tr>
+    {% endfor %}</tbody></table>
+  </div>
+  {% else %}<p>No allocation runs in this period.</p>{% endif %}
+  <nav class="service-actions" aria-label="Allocation history pages">
+    {% if report.run_page > 1 %}<a href="{{ url_for('administration.reports', domain='allocation', start=report.start, end=report.end, run_page=report.run_page - 1, _anchor='run-history') }}">Previous runs</a>{% endif %}
+    {% if report.run_page < report.run_pages %}<a href="{{ url_for('administration.reports', domain='allocation', start=report.start, end=report.end, run_page=report.run_page + 1, _anchor='run-history') }}">Next runs</a>{% endif %}
+  </nav>
+</section>
+{% endif %}
 {% endblock %}

@@ -2,7 +2,9 @@
 from unittest import mock
 from sqlalchemy import select
 
+from administration.history_fixture import create_history
 from auth_fixtures import authorized_client
+from test_student_portal_ui import Document
 from test_room_requests import RoomFixture
 from web import app as web_app
 from web.persistence.models import Role, User
@@ -81,6 +83,41 @@ class AdministrationPageTests(RoomFixture):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.headers['Cache-Control'], 'private, no-store')
         self.assertIn('0 source record(s)', response.get_data(as_text=True))
+
+    def test_report_links_page_through_exactly_the_runs_in_its_timezone_period(self):
+        expected = create_history(self.database)
+
+        def links(url):
+            response = self.client.get(url)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.headers['Cache-Control'], 'private, no-store')
+            source = response.get_data(as_text=True)
+            return source, {a.text: a.attrs['href'] for a in Document(source).root.find('a')}
+
+        base = '/administration/reports?domain=allocation&start=2030-01-08&end=2030-01-08'
+        with mock.patch('web.engine_gateway.EngineGateway._execute', side_effect=AssertionError('Read ran engine')):
+            report, actions = links(base)
+            self.assertIn('26 source record(s)', report)
+            _, first = links(actions['Inspect allocation runs'])
+            self.assertEqual([k for k in first if k.startswith('Run #')], [f'Run #{k}' for k in expected[:25]])
+            _, second = links(first['Next runs'])
+            oldest = f'Run #{expected[-1]}'
+            self.assertEqual([k for k in second if k.startswith('Run #')], [oldest])
+            self.assertNotIn('Next runs', second)
+            _, detail = links(second[oldest])
+            _, restored = links(detail['Back to filtered runs'])
+            self.assertEqual(restored, second)
+            self.assertEqual(links(second['Previous runs'])[1], first)
+
+    def test_report_history_handles_empty_invalid_and_unauthorized_requests(self):
+        base = '/administration/reports?start=2030-01-08&end=2030-01-08&run_page='
+        empty = self.client.get(base+'1')
+        self.assertIn('No allocation runs in this period.', empty.get_data(as_text=True))
+        for suffix in ('0', '-1', '2', 'bad', '1&domain=rooms'):
+            with self.subTest(suffix=suffix):
+                self.assertEqual(self.client.get(base+suffix).status_code, 400)
+        for actor in (1, 2, 7):
+            self.assertEqual(authorized_client(web_app.app, actor).get(base+'1').status_code, 403)
 
     def test_report_filter_counts_only_current_assigned_faculty(self):
         self.request_room(room=301)
