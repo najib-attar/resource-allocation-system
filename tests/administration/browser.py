@@ -28,7 +28,7 @@ from web.allocation_workflow import execute_allocation
 from web.persistence.models import LoginAccount, Notification, Role, User
 
 
-def state(database):
+def state(database, *, meeting=False):
     queries = {
         'rooms': 'SELECT id,status,revision,approved_by FROM student_room_request ORDER BY id',
         'roomReservations': 'SELECT request_id,resource_id,start_at,end_at FROM room_reservation ORDER BY request_id,start_at',
@@ -50,8 +50,13 @@ def state(database):
         'equipmentEvents': 'SELECT id,request_id,faculty_id,actor_id,message FROM equipment_event ORDER BY id',
         'periods': 'SELECT id,name,start_date,end_date FROM academic_period ORDER BY id',
         'feedbackEvents': 'SELECT id,report_id,revision,actor_id,message FROM feedback_event ORDER BY id',
-        'allocationInputs': "SELECT id, ARRAY(SELECT (r->>'id')::int FROM jsonb_array_elements(snapshot->'requests') r) AS request_ids FROM allocation_run ORDER BY id",
+        'allocationInputs': "SELECT id,status,error, ARRAY(SELECT (r->>'id')::int FROM jsonb_array_elements(snapshot->'requests') r) AS request_ids FROM allocation_run ORDER BY id",
     }
+    if meeting:
+        queries.update(
+            meetings='SELECT id,organizer_id,purpose,status FROM appointment ORDER BY id',
+            commitments='SELECT appointment_id,user_id,start_at,end_at FROM appointment_commitment ORDER BY appointment_id,user_id',
+            meetingNotices='SELECT e.appointment_id,n.recipient_id,n.read_at FROM notification n JOIN appointment_event e ON e.id=n.appointment_event_id ORDER BY n.id')
     with database.transaction(read_only=True) as session:
         result = {key: [dict(r) for r in session.execute(text(sql)).mappings()] for key, sql in queries.items()}
     result['academic'] = academic_state(database)
@@ -64,6 +69,17 @@ def verify(posts):
         if post['path'] in ('/login', '/logout'):
             continue
         if post['path'].startswith(('/academic-eligibility/', '/professor/requests')) or post['path'] == '/run-allocation':
+            if post['path'] == '/run-allocation' and 'commitments' in post['after']:
+                before, after = post['before'], post['after']
+                [attempt] = [r for r in after['allocationInputs'] if r['id'] not in
+                             {previous['id'] for previous in before['allocationInputs']}]
+                if attempt['status'] == 'failed':
+                    assert 'unresolved calendar dates' in attempt['error']
+                    assert after['commitments'] == before['commitments'] and len(after['commitments']) == 2
+                    for key in ('decisions', 'allocations', 'state'):
+                        assert after['academic'][key] == before['academic'][key]
+                    outcomes.append(dict(path=post['path'], result='undated exam refused; prior commitments intact'))
+                    continue
             entry = dict(post, before=post['before']['academic'], after=post['after']['academic'])
             outcomes.extend(verify_academic([entry]))
             if post['path']=='/run-allocation' and post['status']<400:
@@ -78,6 +94,28 @@ def verify(posts):
         if post['status'] >= 400:
             assert post['before'] == post['after'], ('Rejected mutation changed domain data', post['path'])
             outcomes.append(dict(path=post['path'], result='rejected; committed domain state unchanged'))
+        elif post['path'] == '/appointments/times':
+            assert post['before']['meetings'] == post['after']['meetings']
+            assert post['before']['commitments'] == post['after']['commitments']
+            outcomes.append(dict(path=post['path'], result='time recommendation made no reservation'))
+        elif post['path'] == '/appointments/new':
+            old = {r['id'] for r in post['before']['meetings']}
+            [new] = [r for r in post['after']['meetings'] if r['id'] not in old]
+            assert (new['organizer_id'], new['status']) == (1, 'Pending Approval')
+            assert not any(r['appointment_id'] == new['id'] for r in post['after']['commitments'])
+            assert any(r['appointment_id'] == new['id'] and r['recipient_id'] == 2 and r['read_at'] is None
+                       for r in post['after']['meetingNotices'])
+            outcomes.append(dict(path=post['path'], result='pending meeting and private professor notice committed'))
+        elif post['path'].startswith('/appointments/') and post['path'].endswith('/decision'):
+            key = int(post['path'].split('/')[2])
+            assert post['actor'] == 2
+            assert any(r['id'] == key and r['status'] == 'Confirmed' for r in post['after']['meetings'])
+            commitments = [r for r in post['after']['commitments'] if r['appointment_id'] == key]
+            assert [r['user_id'] for r in commitments] == [1, 2]
+            assert len({(r['start_at'], r['end_at']) for r in commitments}) == 1
+            assert any(r['appointment_id'] == key and r['recipient_id'] == 2 and r['read_at'] is not None
+                       for r in post['after']['meetingNotices'])
+            outcomes.append(dict(path=post['path'], result='confirmed with identical student and professor commitments'))
         elif post['path'] == '/set-strategy':
             assert post['after']['academic']['state'][0]['input_revision'] > post['before']['academic']['state'][0]['input_revision']
             assert post['after']['configuration'][0]['strategy'] == post['form']['strategy']
@@ -189,11 +227,12 @@ def verify(posts):
             outcomes.append(dict(path=post['path'], result='private response/clarification and audit committed without inventory mutation'))
         elif post['path']=='/notifications/read':
             key=int(post['form'].get('id',post['form'].get('throughId')))
-            targets=[r for r in post['after']['notifications'] if r['recipient_id']==6 and
+            actor = post['actor']
+            targets=[r for r in post['after']['notifications'] if r['recipient_id']==actor and
                 (r['id']==key if 'id' in post['form'] else r['id']<=key)]
             assert targets and all(r['read_at'] is not None for r in targets)
-            assert [r for r in post['before']['notifications'] if r['recipient_id']!=6]==[
-                r for r in post['after']['notifications'] if r['recipient_id']!=6]
+            assert [r for r in post['before']['notifications'] if r['recipient_id']!=actor]==[
+                r for r in post['after']['notifications'] if r['recipient_id']!=actor]
             outcomes.append(dict(path=post['path'], result='recipient read state committed; other recipients unchanged'))
         else:
             raise AssertionError(('Unverified successful domain mutation', post['path']))
@@ -265,14 +304,16 @@ def main():
         for key, username in users.items():
             AccountService(fixture.database).provision(key, username, password,
                 administrator=key == 6, reset=key in existing)
+        meeting = phase in ('MEETING-SMOKE', 'BETA-ACCEPTANCE')
         def before():
-            if request.method == 'POST': g.admin_before = state(fixture.database)
+            if request.method == 'POST': g.admin_before = state(fixture.database, meeting=meeting)
         def after(response):
             if request.method == 'POST':
                 posts.append(dict(path=request.path, status=response.status_code,
+                    actor=getattr(getattr(g, 'principal', None), 'user_id', None),
                     form={key: request.form.getlist(key) if len(request.form.getlist(key)) > 1 else value
                           for key, value in request.form.items() if key not in ('password','username','csrf_token')},
-                    before=g.admin_before, after=state(fixture.database)))
+                    before=g.admin_before, after=state(fixture.database, meeting=meeting)))
             return response
         web_app.app.before_request_funcs[None].insert(0, before)
         web_app.app.after_request_funcs[None].append(after)
@@ -294,6 +335,15 @@ def main():
         if result.returncode:
             raise RuntimeError('Browser failed: '+result.stderr[-1800:])
         outcomes = verify(posts)
+        if phase == 'BETA-ACCEPTANCE':
+            final = posts[-1]['after']
+            [exam] = [r for r in final['academic']['requests'] if r['type'] == 'Exam']
+            active = final['academic']['state'][0]['active_run_id']
+            [segment] = [r for r in final['academic']['allocations']
+                         if r['run_id'] == active and r['request_id'] == exam['id']]
+            assert (segment['resource_id'], segment['day'], segment['start_minutes'], segment['end_minutes']) == (302, 2, 780, 840)
+            assert any(r['id'] == exam['id'] and r['calendar_public'] and r['academic_instructor_id'] == 2
+                       for r in final['publication'])
         (output/'persistence-verification.json').write_text(json.dumps(dict(posts=len(posts), outcomes=outcomes), indent=2), encoding='utf-8')
         print(json.dumps(dict(phase=phase, exitCode=0, posts=len(posts), verifiedOutcomes=len(outcomes))))
     finally:

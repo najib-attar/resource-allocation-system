@@ -14,8 +14,12 @@ async function views(page,pages) {
 async function main() {
   const browser=await chromium.launch({channel:'msedge',headless:true});
   try {
-    const admin=await login(browser,6);
-    if(phase==='ADM-UI-01') {
+    const admin = phase === 'MEETING-SMOKE' ? null : await login(browser, 6);
+    if (['BETA-ACCEPTANCE', 'MEETING-SMOKE'].includes(phase)) {
+      const {meeting, exam} = require('./acceptance_flows.cjs');
+      await meeting(browser);
+      if (admin) await exam(browser, admin.page);
+    } else if(phase==='ADM-UI-01') {
       await views(admin.page,[['home','/administration/'],['filtered-home','/administration/?queue=rooms'],['invalid-queue','/administration/?queue=invalid',400]]);
       if(ids.room)assert.match(await (await admin.page.request.get(new URL('/administration/',admin.page.url()).href)).text(),new RegExp('/rooms/'+ids.room));
       for(const actor of [1,2,7,9]) {

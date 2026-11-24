@@ -4,10 +4,29 @@
 
 Date: 2026-11-08. Branch: `feature/admin-services-v1`.
 Reviewed base: `aae966bf8fa6390348c6e6a2d53a24faf6c0ab70`, the released integrated
-Student/Professor beta. Final application code checkpoint:
-`b6c9c78bbf9021aa36fdec539797bf499e019c96`. Subsequent acceptance changes are
-documentation and six representative screenshots. No merge or deployment is authorized
-by this report; the deliverable is a Draft PR for user review.
+Student/Professor beta. The November 8 application checkpoint was
+`b6c9c78bbf9021aa36fdec539797bf499e019c96`. Its original iteration evidence
+and six representative screenshots are listed below.
+
+## November 24 integrated beta review
+
+- Allocation reports and their paginated run lists share inclusive date bounds,
+  university timezone and a PostgreSQL read snapshot. All 23 Administration
+  service and page tests passed. Edge followed 26 matching runs across two
+  pages, restored the filter from the oldest detail, and exercised both pages at
+  1440, 1024, 768, 390 and 320 px (230 keyboard steps).
+- In separate browser sessions a student submitted a recommended meeting time
+  and the professor opened the Inbox notice and approved. Both day calendars
+  displayed the same confirmed meeting. PostgreSQL contained the read notice
+  and two personal commitments with identical start and end times.
+- The same professor submitted an exam. Eligibility approval left the rooms
+  unassigned. The first run refused an undated commitment and preserved the
+  confirmed meeting. After the administrator bound the exam week, the real C++
+  engine allocated Study Studio. The authorized calendar publication displayed
+  that room to the professor on January 8, 2030 at 13:00 Istanbul time.
+- The two walkthroughs used synthetic fixtures, 14 actual Flask POSTs and 10
+  verified outcomes, including the expected refusal. The disposable test schema
+  was removed. The replay is in [the acceptance scenarios](../../tests/administration/acceptance_flows.cjs).
 
 ## Iteration outcomes
 
