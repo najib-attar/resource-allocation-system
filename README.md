@@ -81,7 +81,7 @@ and [engine protocol](docs/engine-protocol.md).
 | --- | --- |
 | `src/` | C++ domain models, rules, strategies, services and JSON boundaries |
 | `web/` | Flask routes/services, Jinja templates, shared Campus Space assets and persistence |
-| `migrations/` | Alembic schema history; current head `0051b` |
+| `migrations/` | Alembic schema history; current head `0051c` |
 | `scripts/` | Backend build, trusted account provisioning, import and local demo tools |
 | `tests/` | C++, Python/PostgreSQL, security and real-browser regression tests |
 | `docs/` | Requirements, architecture, operations, portal coverage and historical reports |
@@ -156,8 +156,9 @@ deployment package. The Flask development server should remain loopback-only.
 Trusted account provisioning is implemented; public registration and password
 recovery are not offered.
 
-Academic-request notifications, academic-request cancellation and versioned
-replacements of published academic requests are deferred. Appointment notifications
+Professors receive private Inbox notices for eligibility decisions on requests
+they submit. Allocation notifications, academic-request cancellation and
+versioned replacements of published academic requests are deferred. Appointment notifications
 and authorized appointment cancellation are implemented. Weekly academic inputs
 need explicit date bindings for calendar use; enrollment and teaching assignments
 are not inferred from participant counts or course declarations.

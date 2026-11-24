@@ -138,8 +138,9 @@ visibility and, where appropriate, select the responsible instructor.
 
 After allocation, professors can inspect their own outcomes and actual resources.
 Eligible and allocated are different states. Active published inputs remain
-read-only; material unpublished revisions require review again. Academic
-notifications, cancellation and versioned replacements are deferred.
+read-only. A material unpublished revision requires another review. The
+professorâ€™s Inbox links to each recorded eligibility decision and its reason.
+Allocation notifications, cancellation and versioned replacements are deferred.
 
 The unified Calendar offers month/week/day navigation and category/status filters.
 Weekly academic inputs need explicit **Calendar Setup** applicability; authorized

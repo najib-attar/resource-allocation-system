@@ -78,7 +78,7 @@ Identity is resolved from the database on each authenticated request. Account
 revocation and durable per-login logout denials reject replayed or delayed cookies.
 Logout commits its denial before clearing the browser cookie; another independent
 login remains valid. Keep a stable private secret across normal restarts.
-See [session rollout and retention](../docs/database-operations.md#current-schema-0051b).
+See [session rollout and retention](../docs/database-operations.md#durable-logout-sessions-0051b).
 
 ## Student–professor appointments
 
@@ -201,13 +201,15 @@ preserve the previous active result; database failures never switch to file stor
 
 ### Migrations and existing data
 
-The current chain ends `0050b -> 0051a -> 0051b`:
+The current chain ends `0050b -> 0051a -> 0051b -> 0051c`:
 
 - `0051a` adds independent academic eligibility, immutable review history, per-run
   eligibility proofs and faculty declarations. Old inputs await explicit review;
   existing published results/reservations are preserved.
 - `0051b` adds durable logout denials without changing account credentials or saved
   appointments/allocations. Pre-fix cookies require fresh sign-in.
+- `0051c` adds private eligibility notices for professor-submitted requests. The
+  receipt and review commit together. Existing notice and audit histories are preserved.
 
 For an existing database: back up, stop old workers, run `python -m alembic upgrade head`
 against the intended database, then start matching code. Do not mix old/new
@@ -244,7 +246,7 @@ recorded revisions.
 
 ## Limitations and related documentation
 
-Deferred academic features: request notifications, cancellation and versioned
+Deferred academic features include allocation notifications, cancellation and versioned
 replacement of published requests. Appointment notifications/cancellation already
 work. Calendar dates/teaching responsibility are not inferred from declarations.
 A standalone student office-hours browser and unified cross-service activity API

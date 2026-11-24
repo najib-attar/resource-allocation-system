@@ -206,5 +206,5 @@ class ProfessorPortalTests(ProfessorFixture):
         self.assertIn('Declared courses',page.text)
         self.assertFalse(page.find('a',href='/calendar/publications'))
         inbox=Document(self.client.get('/notifications/').get_data(as_text=True)).root
-        self.assertIn('Academic allocation notifications are not enabled',inbox.text)
+        self.assertIn('Your eligibility notices link to the recorded decisions',inbox.text)
         self.assertTrue(inbox.find('form',action='/notifications/read'))

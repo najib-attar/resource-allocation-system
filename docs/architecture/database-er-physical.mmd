@@ -269,6 +269,7 @@ erDiagram
         bigint room_event_id FK "nullable"
         bigint equipment_event_id FK "nullable"
         bigint feedback_event_id FK "nullable"
+        bigint eligibility_event_id FK "nullable"
         timestamptz read_at "nullable"
     }
     organization_unit {
@@ -673,6 +674,7 @@ erDiagram
     resource ||--o{ meeting_suggestion : resource_id
     suggestion_group ||--o{ meeting_suggestion : run_id_request_id
     appointment_event o|--o{ notification : appointment_event_id
+    eligibility_event o|--o{ notification : eligibility_event_id
     equipment_event o|--o{ notification : equipment_event_id
     feedback_event o|--o{ notification : feedback_event_id
     university_user ||--o{ notification : recipient_id

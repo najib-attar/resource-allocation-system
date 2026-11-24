@@ -6,7 +6,7 @@ import json
 
 from sqlalchemy import or_, select
 from .persistence.models import (Allocation, ApplicationState, EligibilityEvent, LoginAccount,
-    RequestDecision, RequestEligibility, RequestHistory, ResourceRequest, Role, User,
+    Notification, RequestDecision, RequestEligibility, RequestHistory, ResourceRequest, Role, User,
     ExamDetails, RequestParticipant, RequestSlot, Resource)
 from .persistence.repository import PersistenceError, StaleRun, state_row
 
@@ -119,6 +119,11 @@ class EligibilityService:
             session.add(RequestHistory(request_id=key,kind='eligibility',
                 message=meta.status+': '+meta.reason+' Eligibility does not reserve resources or alter the current publication.'))
             session.flush()
+            if meta.origin == 'Professor' and meta.submitted_by == row.requester_id:
+                # The database records the immutable event when the review is flushed.
+                event_id = session.scalars(select(EligibilityEvent.id).where(
+                    EligibilityEvent.request_id == key, EligibilityEvent.version == meta.version)).one()
+                session.add(Notification(recipient_id=row.requester_id, eligibility_event_id=event_id))
             return meta.status
 
     def detail(self, actor, key):

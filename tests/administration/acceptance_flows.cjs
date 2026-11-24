@@ -63,6 +63,14 @@ async function exam(browser, admin) {
     await go(professor, detail);
     assert.match(await professor.locator('main').innerText(), /Examination declaration reviewed/);
     assert.equal(await professor.locator('article.academic-allocation').count(), 0);
+    await go(professor, '/notifications/');
+    const decisionNotice = professor.locator('main .is-unread a').filter({hasText:title});
+    const noticeUrl = await decisionNotice.getAttribute('href');
+    assert.match(noticeUrl, new RegExp('^' + detail + '#eligibility-review-\\d+$'));
+    await decisionNotice.click();
+    await professor.waitForURL(url => url.hash === new URL(noticeUrl, url).hash);
+    const recordedDecision = professor.locator(new URL(noticeUrl, professor.url()).hash);
+    assert.match(await recordedDecision.innerText(), /Examination declaration reviewed/);
     async function allocate() {
       await go(admin, '/');
       await submit(admin, admin.locator('form[action="/run-allocation"] button'));

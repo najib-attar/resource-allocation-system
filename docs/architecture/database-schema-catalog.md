@@ -652,20 +652,24 @@ Recipient-scoped event inbox and durable read state; exactly one appointment/roo
 | room_event_id | bigint | FK -> room_event.id | yes | - |
 | equipment_event_id | bigint | FK -> equipment_event.id | yes | - |
 | feedback_event_id | bigint | FK -> feedback_event.id | yes | - |
+| eligibility_event_id | bigint | FK -> eligibility_event.id | yes | - |
 | read_at | timestamp with time zone | - | yes | - |
 
 - Primary key: `id`.
 - Foreign key: `(appointment_event_id) -> appointment_event (id)`; NO ACTION.
+- Foreign key: `(eligibility_event_id) -> eligibility_event (id)`; NO ACTION.
 - Foreign key: `(equipment_event_id) -> equipment_event (id)`; NO ACTION.
 - Foreign key: `(feedback_event_id) -> feedback_event (id)`; NO ACTION.
 - Foreign key: `(recipient_id) -> university_user (id)`; NO ACTION.
 - Foreign key: `(room_event_id) -> room_event (id)`; NO ACTION.
-- Check: `num_nonnulls(appointment_event_id, room_event_id, equipment_event_id, feedback_event_id) = 1`.
+- Check: `num_nonnulls(appointment_event_id, room_event_id, equipment_event_id, feedback_event_id, eligibility_event_id) = 1`.
 - Unique: `recipient_id, appointment_event_id`.
+- Unique: `recipient_id, eligibility_event_id`.
 - Unique: `recipient_id, equipment_event_id`.
 - Unique: `recipient_id, feedback_event_id`.
 - Unique: `recipient_id, room_event_id`.
 - Index: `ix_notification_appointment_event_id (appointment_event_id)`.
+- Index: `ix_notification_eligibility_event_id (eligibility_event_id)`.
 - Index: `ix_notification_equipment_event_id (equipment_event_id)`.
 - Index: `ix_notification_feedback_event_id (feedback_event_id)`.
 - Index: `ix_notification_recipient_read_id (recipient_id, read_at, id)`.

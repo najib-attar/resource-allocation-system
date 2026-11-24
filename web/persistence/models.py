@@ -692,11 +692,12 @@ class RoomEvent(Base):
 class Notification(Base):
     __tablename__ = "notification"
     __table_args__ = (
-        CheckConstraint("num_nonnulls(appointment_event_id, room_event_id, equipment_event_id, feedback_event_id) = 1", name="ck_notification_source"),
+        CheckConstraint("num_nonnulls(appointment_event_id, room_event_id, equipment_event_id, feedback_event_id, eligibility_event_id) = 1", name="ck_notification_source"),
         UniqueConstraint("recipient_id", "appointment_event_id"),
         UniqueConstraint("recipient_id", "room_event_id"),
         UniqueConstraint("recipient_id", "equipment_event_id"),
         UniqueConstraint("recipient_id", "feedback_event_id"),
+        UniqueConstraint("recipient_id", "eligibility_event_id"),
         Index("ix_notification_recipient_read_id", "recipient_id", "read_at", "id"),
     )
     id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
@@ -705,6 +706,7 @@ class Notification(Base):
     room_event_id: Mapped[int | None] = mapped_column(ForeignKey("room_event.id"), index=True)
     equipment_event_id: Mapped[int | None] = mapped_column(ForeignKey("equipment_event.id"), index=True)
     feedback_event_id: Mapped[int | None] = mapped_column(ForeignKey("feedback_event.id"), index=True)
+    eligibility_event_id: Mapped[int | None] = mapped_column(ForeignKey("eligibility_event.id"), index=True)
     read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 
