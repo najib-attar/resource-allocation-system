@@ -11,23 +11,26 @@ from sqlalchemy import inspect, select, text
 from postgres_fixtures import ROOT
 from test_room_requests import RoomFixture
 from web.account_service import AccountService
-from web.persistence.models import LoginAccount, Role, User
+from web.persistence.models import Appointment, LoginAccount, Role, User
 from web.research_assistant_service import ResearchAssistantService
 
 
 class ResearchTaskMigrationTests(RoomFixture):
     def test_upgrade_keeps_credentials_and_confirmed_meeting_and_protects_tasks(self):
+        # Seed through a current-schema service, then verify the historical
+        # migration boundary with records that also exist in 0051c.
+        meeting = self.submit(professors=(2,))
+        self.service.decide(meeting, 2, 1, True)
         config = Config(str(ROOT / "alembic.ini"))
         with mock.patch.dict(os.environ, {"DATABASE_URL": self.url}):
             command.downgrade(config, "0051c")
-        meeting = self.submit(professors=(2,))
-        self.service.decide(meeting, 2, 1, True)
         with self.database.transaction() as session:
             assistant_role = session.scalar(select(Role.id).where(Role.name == "TeachingAssistant"))
             session.get(User, 4).primary_role_id = assistant_role
             session.get(User, 4).assistant_type = "Research Assistant"
             hashes = {actor: session.get(LoginAccount, actor).password_hash for actor in (1, 2, 4)}
             self.assertFalse(inspect(session.connection()).has_table("research_task"))
+            self.assertEqual(session.get(Appointment, meeting).status, "Confirmed")
 
         with mock.patch.dict(os.environ, {"DATABASE_URL": self.url}):
             command.upgrade(config, "head")

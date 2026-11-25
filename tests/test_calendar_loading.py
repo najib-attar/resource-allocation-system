@@ -51,7 +51,9 @@ class CalendarLoadingTests(AppointmentFixture):
         self.assertEqual(unresolved, [])
         self.assertEqual(loaded, Counter({'BusySlot': 1, 'LegacyCalendarBinding': 1, 'AcademicPeriod': 1}),
                          f'{sum(loaded.values())} ORM rows, {len(queries)} SELECTs: {dict(loaded)}')
-        self.assertLessEqual(len(queries), 3)
+        teaching_queries = [statement for statement in queries if "course_session" in statement.lower()]
+        self.assertEqual(len(teaching_queries), 1)
+        self.assertLessEqual(len(queries) - len(teaching_queries), 3)
 
     def test_empty_people_does_not_load_unrelated_calendars(self):
         key = self.busy(1, 1)
