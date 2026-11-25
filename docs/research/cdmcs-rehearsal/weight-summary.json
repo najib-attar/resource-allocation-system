@@ -1,0 +1,385 @@
+{
+  "archive_sha256": "b42cfae6362a1224e5fad9e2b5608c5bade947e8460a8d4bb10a02d3cfd642a3",
+  "observations": 576,
+  "paired_fixtures": 32,
+  "metrics": {
+    "default": {
+      "rates": [
+        1,
+        2,
+        4
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 120,
+      "gap_rule": "cutoff",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 765.46875,
+      "preferred_coverage_percent": 37.421875,
+      "new_gaps_per_person": 0.65078125,
+      "mean_max_personal_burden": 117.1875,
+      "peak_max_personal_burden": 210,
+      "moved_cases": 15,
+      "move_percent": 46.875
+    },
+    "preferred_hour_free": {
+      "rates": [
+        0,
+        2,
+        4
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 120,
+      "gap_rule": "cutoff",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 875.15625,
+      "preferred_coverage_percent": 44.6875,
+      "new_gaps_per_person": 0.6640625,
+      "mean_max_personal_burden": 122.8125,
+      "peak_max_personal_burden": 210,
+      "moved_cases": 16,
+      "move_percent": 50.0
+    },
+    "preferred_hour_double": {
+      "rates": [
+        2,
+        2,
+        4
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 120,
+      "gap_rule": "cutoff",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 676.875,
+      "preferred_coverage_percent": 28.59375,
+      "new_gaps_per_person": 0.63984375,
+      "mean_max_personal_burden": 120,
+      "peak_max_personal_burden": 210,
+      "moved_cases": 13,
+      "move_percent": 40.625
+    },
+    "outside_hour_equal": {
+      "rates": [
+        1,
+        1,
+        4
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 120,
+      "gap_rule": "cutoff",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 720.46875,
+      "preferred_coverage_percent": 28.203125,
+      "new_gaps_per_person": 0.62421875,
+      "mean_max_personal_burden": 119.53125,
+      "peak_max_personal_burden": 210,
+      "moved_cases": 13,
+      "move_percent": 40.625
+    },
+    "outside_hour_high": {
+      "rates": [
+        1,
+        4,
+        4
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 120,
+      "gap_rule": "cutoff",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 884.53125,
+      "preferred_coverage_percent": 43.828125,
+      "new_gaps_per_person": 0.67109375,
+      "mean_max_personal_burden": 132.1875,
+      "peak_max_personal_burden": 210,
+      "moved_cases": 17,
+      "move_percent": 53.125
+    },
+    "nonpreferred_day_low": {
+      "rates": [
+        1,
+        2,
+        2
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 120,
+      "gap_rule": "cutoff",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 866.71875,
+      "preferred_coverage_percent": 34.765625,
+      "new_gaps_per_person": 0.62265625,
+      "mean_max_personal_burden": 127.03125,
+      "peak_max_personal_burden": 210,
+      "moved_cases": 13,
+      "move_percent": 40.625
+    },
+    "nonpreferred_day_high": {
+      "rates": [
+        1,
+        2,
+        8
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 120,
+      "gap_rule": "cutoff",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 764.53125,
+      "preferred_coverage_percent": 36.875,
+      "new_gaps_per_person": 0.66640625,
+      "mean_max_personal_burden": 120.71875,
+      "peak_max_personal_burden": 240,
+      "moved_cases": 16,
+      "move_percent": 50.0
+    },
+    "uniform_rates": {
+      "rates": [
+        1,
+        1,
+        1
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 120,
+      "gap_rule": "cutoff",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 843.28125,
+      "preferred_coverage_percent": 22.8125,
+      "new_gaps_per_person": 0.69140625,
+      "mean_max_personal_burden": 137.34375,
+      "peak_max_personal_burden": 210,
+      "moved_cases": 11,
+      "move_percent": 34.375
+    },
+    "no_gap_weight": {
+      "rates": [
+        1,
+        2,
+        4
+      ],
+      "gap_weight": 0,
+      "nearby_minutes": 120,
+      "gap_rule": "cutoff",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 647.8125,
+      "preferred_coverage_percent": 48.984375,
+      "new_gaps_per_person": 0.53203125,
+      "mean_max_personal_burden": 136.875,
+      "peak_max_personal_burden": 225,
+      "moved_cases": 4,
+      "move_percent": 12.5
+    },
+    "triple_gap_weight": {
+      "rates": [
+        1,
+        2,
+        4
+      ],
+      "gap_weight": 3,
+      "nearby_minutes": 120,
+      "gap_rule": "cutoff",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 902.8125,
+      "preferred_coverage_percent": 28.515625,
+      "new_gaps_per_person": 0.68515625,
+      "mean_max_personal_burden": 126.5625,
+      "peak_max_personal_burden": 210,
+      "moved_cases": 16,
+      "move_percent": 50.0
+    },
+    "nearby_30": {
+      "rates": [
+        1,
+        2,
+        4
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 30,
+      "gap_rule": "cutoff",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 827.34375,
+      "preferred_coverage_percent": 44.0625,
+      "new_gaps_per_person": 0.7546875,
+      "mean_max_personal_burden": 149.78125,
+      "peak_max_personal_burden": 248,
+      "moved_cases": 13,
+      "move_percent": 40.625
+    },
+    "nearby_240": {
+      "rates": [
+        1,
+        2,
+        4
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 240,
+      "gap_rule": "cutoff",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 812.34375,
+      "preferred_coverage_percent": 40.46875,
+      "new_gaps_per_person": 0.60234375,
+      "mean_max_personal_burden": 147.4375,
+      "peak_max_personal_burden": 240,
+      "moved_cases": 11,
+      "move_percent": 34.375
+    },
+    "no_delay": {
+      "rates": [
+        1,
+        2,
+        4
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 120,
+      "gap_rule": "cutoff",
+      "delay_per_day": 0,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 765.46875,
+      "preferred_coverage_percent": 37.421875,
+      "new_gaps_per_person": 0.65078125,
+      "mean_max_personal_burden": 117.1875,
+      "peak_max_personal_burden": 210,
+      "moved_cases": 15,
+      "move_percent": 46.875
+    },
+    "delay_40": {
+      "rates": [
+        1,
+        2,
+        4
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 120,
+      "gap_rule": "cutoff",
+      "delay_per_day": 40,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 586.875,
+      "preferred_coverage_percent": 34.6875,
+      "new_gaps_per_person": 0.69296875,
+      "mean_max_personal_burden": 120,
+      "peak_max_personal_burden": 240,
+      "moved_cases": 13,
+      "move_percent": 40.625
+    },
+    "no_relocation_penalty": {
+      "rates": [
+        1,
+        2,
+        4
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 120,
+      "gap_rule": "cutoff",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 0,
+      "person_relocation_penalty": 0,
+      "feasible_cases": 32,
+      "waiting_minutes": 819.84375,
+      "preferred_coverage_percent": 36.171875,
+      "new_gaps_per_person": 0.68515625,
+      "mean_max_personal_burden": 117.65625,
+      "peak_max_personal_burden": 210,
+      "moved_cases": 18,
+      "move_percent": 56.25
+    },
+    "higher_fixed_move": {
+      "rates": [
+        1,
+        2,
+        4
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 120,
+      "gap_rule": "cutoff",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 150,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 685.3125,
+      "preferred_coverage_percent": 36.71875,
+      "new_gaps_per_person": 0.6046875,
+      "mean_max_personal_burden": 120.9375,
+      "peak_max_personal_burden": 240,
+      "moved_cases": 4,
+      "move_percent": 12.5
+    },
+    "higher_personal_move": {
+      "rates": [
+        1,
+        2,
+        4
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 120,
+      "gap_rule": "cutoff",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 50,
+      "feasible_cases": 32,
+      "waiting_minutes": 675,
+      "preferred_coverage_percent": 37.109375,
+      "new_gaps_per_person": 0.61015625,
+      "mean_max_personal_burden": 117.65625,
+      "peak_max_personal_burden": 210,
+      "moved_cases": 10,
+      "move_percent": 31.25
+    },
+    "tapered_nearby": {
+      "rates": [
+        1,
+        2,
+        4
+      ],
+      "gap_weight": 1,
+      "nearby_minutes": 120,
+      "gap_rule": "tapered",
+      "delay_per_day": 10,
+      "base_relocation_penalty": 25,
+      "person_relocation_penalty": 8,
+      "feasible_cases": 32,
+      "waiting_minutes": 813.28125,
+      "preferred_coverage_percent": 34.84375,
+      "new_gaps_per_person": 0.60078125,
+      "mean_max_personal_burden": 117.1875,
+      "peak_max_personal_burden": 210,
+      "moved_cases": 14,
+      "move_percent": 43.75
+    }
+  }
+}
