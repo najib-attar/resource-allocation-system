@@ -1,6 +1,14 @@
 # PostgreSQL setup and safe operations
 
-## Current schema (0051c)
+## Current schema (0051d)
+
+Revision `0051d` adds an empty `research_task` table for Research Assistant
+personal planning. Apply it using the existing backup and worker restart
+procedure. Tasks remain private to the account owner. Downgrading to
+`0051c` is supported while the table is empty. Once tasks exist, the migration
+refuses downgrade to preserve saved work.
+
+## Academic eligibility notices (0051c)
 
 Revision `0051c` adds a nullable eligibility event reference to `notification`.
 A committed administrator review of a professor-submitted request records one

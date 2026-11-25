@@ -1,0 +1,81 @@
+{% extends 'service_base.html' %}
+{% from 'components/ui.html' import icon %}
+{% block title %}My research tasks | Campus Space{% endblock %}
+{% block page_heading %}My research tasks{% endblock %}
+{% block service_eyebrow %}Research tasks{% endblock %}
+{% block service_intro %}Manage your private research tasks. Due dates stay on this list.{% endblock %}
+{% macro list_context(board) -%}
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+<input type="hidden" name="state" value="{{ board.state }}">
+<input type="hidden" name="page" value="{{ board.page }}">
+{%- endmacro %}
+{% macro fields(values) -%}
+<div class="appointment-grid">
+    <label>Task title
+        <input name="title" type="text" maxlength="160" value="{{ values.get('title', '') }}" required>
+    </label>
+    <label>Due date (optional)
+        <input name="due_date" type="date" value="{{ values.get('due_date', '') or '' }}">
+    </label>
+</div>
+{%- endmacro %}
+{% block service_content %}
+{% if message %}<p class="service-notice" role="alert">{{ message }}</p>{% endif %}
+<div class="service-split">
+    <section class="panel" aria-labelledby="add-task">
+        <h2 id="add-task">Add a task</h2>
+        <form method="post" action="{{ url_for('research_assistant.create') }}">
+            {{ list_context(board) }}
+            <input type="hidden" name="submission_key" value="{{ submission_key }}">
+            {{ fields(form_values|default({}, true)) }}
+            <button class="button-primary" type="submit">{{ icon('plus', 16) }} Add task</button>
+        </form>
+    </section>
+    <section class="panel" aria-labelledby="research-task-list">
+        <h2 id="research-task-list">Tasks</h2>
+        <nav class="service-tabs" aria-label="Filter research tasks">
+            {% for value, label in [('open', 'Open'), ('completed', 'Completed'), ('all', 'All tasks')] %}
+            <a href="{{ url_for('research_assistant.tasks', state=value) }}"{% if board.state == value %} aria-current="page"{% endif %}>{{ label }}</a>
+            {% endfor %}
+        </nav>
+        {% for task in board['items'] %}
+        {% set editing = edit_task_id|default(none) and task.id|string == edit_task_id|string %}
+        <article class="research-task">
+            <h3 class="research-task-title">{{ task.title }}</h3>
+            <div class="service-actions">
+                {% if task.completed %}
+                <span class="service-status service-status-success">Completed</span>
+                {% elif task.due and task.due|string < today|string %}
+                <span class="service-status service-status-warning">Overdue</span>
+                {% else %}
+                <span class="service-status service-status-info">Open</span>
+                {% endif %}
+                {% if task.due %}<span>Due <time datetime="{{ task.due }}">{{ task.due }}</time></span>{% else %}<span>No due date</span>{% endif %}
+            </div>
+            <form method="post" action="{{ url_for('research_assistant.set_state', task_id=task.id) }}">
+                {{ list_context(board) }}
+                <input type="hidden" name="revision" value="{{ task.revision }}">
+                <button type="submit" name="target" value="{{ 'reopen' if task.completed else 'complete' }}">{{ 'Reopen task' if task.completed else 'Complete task' }}</button>
+            </form>
+            <details{% if editing %} open{% endif %}>
+                <summary>Edit task</summary>
+                <form method="post" action="{{ url_for('research_assistant.edit', task_id=task.id) }}">
+                    {{ list_context(board) }}
+                    <input type="hidden" name="revision" value="{{ task.revision }}">
+                    {{ fields(edit_values|default({}, true) if editing else {'title': task.title, 'due_date': task.due}) }}
+                    <button type="submit">Save changes</button>
+                </form>
+            </details>
+        </article>
+        {% else %}
+        <p class="service-empty">{{ 'No open tasks.' if board.state == 'open' else 'No completed tasks.' if board.state == 'completed' else 'No tasks yet.' }}</p>
+        {% endfor %}
+        {% if board.page > 1 or board.has_next %}
+        <nav class="service-actions research-task-pages" aria-label="Research task pages">
+            {% if board.page > 1 %}<a class="button-secondary" href="{{ url_for('research_assistant.tasks', state=board.state, page=board.page - 1) }}">Previous page</a>{% endif %}
+            {% if board.has_next %}<a class="button-secondary" href="{{ url_for('research_assistant.tasks', state=board.state, page=board.page + 1) }}">Next page</a>{% endif %}
+        </nav>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

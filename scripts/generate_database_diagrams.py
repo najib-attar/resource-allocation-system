@@ -47,6 +47,7 @@ PURPOSES = {
     "request_history": "Timestamped save/import/decision events with optional run provenance.",
     "login_account": "Trusted login identity, password hash, administration grant, revocation and throttling.",
     "logged_out_session": "Durable per-login denial keyed by account generation and SHA-256 nonce digest; prevents signed-cookie replay after logout without ending other logins.",
+    "research_task": "Private owner-scoped research planning tasks with due dates and revisions.",
     "academic_period": "Explicit named calendar validity and timezone; no inferred legacy dates.",
     "legacy_calendar_binding": "Explicit period/planning-week association for an undated busy slot or request.",
     "professor_availability": "Bounded weekly published office-hour patterns and date exceptions.",

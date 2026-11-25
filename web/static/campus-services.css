@@ -173,6 +173,11 @@
     .campus-service .calendar-filter-row label { flex: 0 1 auto; }
 }
 
+.research-assistant-shell .research-task-title { overflow-wrap: anywhere; }
+.research-assistant-shell .research-task + .research-task,
+.research-assistant-shell .research-task-pages { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 18px; }
+.research-assistant-shell .research-task summary { color: var(--accent); cursor: pointer; padding-block: 12px; }
+
 .service-count { display: inline-block; margin-left: 8px; color: var(--muted); font-size: 13px; font-weight: 500; }
 .service-split { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; align-items: start; }
 .service-split > * { min-width: 0; }

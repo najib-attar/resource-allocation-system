@@ -372,7 +372,7 @@ class PolicyMigrationTests(PostgresTestCase):
     def test_additive_empty_upgrade_and_schema_drift(self):
         before = set(inspect(self.database.engine).get_table_names()); self.actor()
         self.migrate('upgrade', 'head')
-        self.assertEqual(set(inspect(self.database.engine).get_table_names()) - before, set(TABLES) | {'request_eligibility','eligibility_event','allocation_eligibility','logged_out_session'})
+        self.assertEqual(set(inspect(self.database.engine).get_table_names()) - before, set(TABLES) | {'request_eligibility','eligibility_event','allocation_eligibility','logged_out_session','research_task'})
         with self.database.transaction(read_only=True) as session:
             self.assertTrue(all(session.scalar(text('SELECT count(*) FROM ' + table)) == 0 for table in TABLES))
             self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), self.head_revision)

@@ -42,6 +42,7 @@ See [engine protocol v1](../docs/engine-protocol.md) and
 | `/appointments/availability` | Instructor office-hour management |
 | `/appointments/calendar` | Own timetable and personal blocks for signed-in roles |
 | `/rooms/`, `/equipment/`, `/waiting-lists/`, `/feedback/` | Student/borrower/participant actions and designated staff operations; service checks apply |
+| `/research-assistant/`, `/research-assistant/tasks` | Research Assistant Home and owner-only task planner |
 | `/calendar/`, `/notifications/` | Authorized calendar and recipient-scoped Inbox with service and read-status filters |
 | `/professor/requests`, `/professor/requests/new`, `/professor/requests/<id>` | Instructor-owned academic forms and tracking |
 | `/professor/requests/<id>/revise` | Own unpublished academic revisions only |
@@ -49,6 +50,11 @@ See [engine protocol v1](../docs/engine-protocol.md) and
 | `/professor/academic-requests`, `/professor/academic-requests/<id>` | Owner-scoped JSON list/detail; collection POST supports intake |
 | `/academic-eligibility/`, `/academic-eligibility/<id>` | Administrative review queue and reasoned decisions |
 | `/`, `/add-request`, `/requests`, `/request/<id>`, `/allocation-summary`, `/schedules`, `/raw-data` | Administrative technical workspace and allocation management |
+
+Research Assistant access uses the existing TeachingAssistant role with the
+trusted profile type `Research Assistant` or `Research and teaching`. It supplies
+a personal task planner and links to the already-authorized Calendar and Inbox.
+Tasks have optional due dates, revision-checked changes and owner-only access.
 
 The five university roles are Student, Instructor, TeachingAssistant, Staff and
 Administrator. Administration is an explicit account capability; faculty approval,
@@ -206,7 +212,7 @@ preserve the previous active result; database failures never switch to file stor
 
 ### Migrations and existing data
 
-The current chain ends `0050b -> 0051a -> 0051b -> 0051c`:
+The current chain ends `0050b -> 0051a -> 0051b -> 0051c -> 0051d`:
 
 - `0051a` adds independent academic eligibility, immutable review history, per-run
   eligibility proofs and faculty declarations. Old inputs await explicit review;
@@ -215,6 +221,8 @@ The current chain ends `0050b -> 0051a -> 0051b -> 0051c`:
   appointments/allocations. Pre-fix cookies require fresh sign-in.
 - `0051c` adds private eligibility notices for professor-submitted requests. The
   receipt and review commit together. Existing notice and audit histories are preserved.
+- `0051d` adds private `research_task` rows keyed by owner and form-generated UUID.
+  It preserves the existing university roles and scheduling inputs.
 
 For an existing database: back up, stop old workers, run `python -m alembic upgrade head`
 against the intended database, then start matching code. Do not mix old/new

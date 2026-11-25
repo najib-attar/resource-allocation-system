@@ -21,6 +21,8 @@ def home_endpoint(principal):
         return "administration.home"
     if principal.role == "Instructor":
         return "professor.home"
+    if principal.research_assistant:
+        return "research_assistant.home"
     return "student.home" if principal.role == "Student" else "appointments.index"
 
 
@@ -67,6 +69,10 @@ def init_security(app, database_provider):
         if request.endpoint and request.endpoint.startswith("professor."):
             if g.principal.role != "Instructor":
                 abort(403, description="Instructor access required.")
+            return None
+        if request.endpoint and request.endpoint.startswith("research_assistant."):
+            if not g.principal.research_assistant:
+                abort(403, description="Research Assistant access required.")
             return None
         if request.endpoint and request.endpoint.startswith("appointments."):
             return None

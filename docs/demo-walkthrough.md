@@ -116,6 +116,67 @@ preserves manual decisions. If a date/resource is unavailable, inspect the error
 the tool does not relax calendars or policies to force success. Do not use this
 seed against operational data.
 
+## ITU BBF local demonstration
+
+This separate profile uses a reviewed public personnel roster and OBS meeting
+times with 120 fictional students. Local UTF-8 inputs live in
+`data/itu_demo/roster.json` and `data/itu_demo/schedule.json`. They stay outside
+Git. Seed 42 and the official class dates are fixed for this profile.
+
+From a checkout containing the inputs, start the owned ITU database and Flask
+application using Windows PowerShell:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_demo.ps1 -Dataset itu -Profile itu-bbf-fall-2026 -WebPort 5001
+```
+
+The default ITU PostgreSQL port is 55546 and the database is `ras_itu_demo`.
+Use a different unused port for a different profile, and specify tool paths
+with `-PythonPath`, `-CompilerPath` or `-PostgresBin` when required.
+The saved dataset type prevents a profile from switching to a different seed.
+The data files are needed for initial setup. Keep an independently verified
+backup before retiring any previous demo.
+
+Retrieve a single password locally from the Windows-user-restricted profile
+directory. The launcher prints usernames and never prints ITU passwords.
+
+```powershell
+$credentials = Get-Content -LiteralPath .\build\local-demos\itu-bbf-fall-2026\credentials.json -Raw -Encoding UTF8 | ConvertFrom-Json
+$credentials.student001
+Remove-Variable credentials
+```
+
+Use `$credentials.admin` for the synthetic administrator or a quoted property
+such as `$credentials.'demo.feza.buzluca'` for a listed demo username. Staff are
+directory identities in this prototype. The supplied public titles confer no
+application approval rights. Visiting academics, affiliation-only coordinators
+and provisional entries stay directory-only.
+
+The separate profile manifest preserves provenance, source discrepancies,
+department and title, application account eligibility, and generated student
+cohorts and enrolments. OBS section schedules represent a partial demonstration
+timetable. Only a singly named instructor with an exact match in the supplied
+academic roster receives a published teaching commitment. The office hours,
+rooms and equipment are simulated. Academic requests, allocations and operational
+workflows start empty. Build any optional examples through the existing service
+screens so their approvals remain visible.
+
+[Official academic calendar](https://www.takvim.sis.itu.edu.tr/AkademikTakvim/TR/akademik-takvim/AkademikTakvimTablo.php) · [ITU OBS course schedules](https://obs.itu.edu.tr/public/DersProgram)
+
+## Research Assistant workspace
+
+A freshly seeded fictional profile prints an `assistant1` sign-in. Sign in
+and open **My research tasks**. Add a task, optionally set a due date, then
+edit, complete, or reopen it. **Completed** shows finished tasks. Task dates
+stay on the planner. The workspace links to your existing Calendar, schedule
+and Inbox.
+
+A profile already seeded by an older version keeps its accounts. For an
+existing university identity with the primary `TeachingAssistant` role and the
+trusted assistant type `Research Assistant` or `Research and teaching`, use
+[account provisioning](database-operations.md#accounts-and-appointment-calendars)
+to set up a sign-in if needed.
+
 ## Inbox and calendar downloads
 
 Use **Service** and **Read status** in the full Inbox to find updates. **Older

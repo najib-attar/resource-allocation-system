@@ -32,6 +32,12 @@
     <a class="app-nav-link" href="{{ url_for('professor.pages') }}" aria-label="My academic requests"{% if request.endpoint in ['professor.pages','professor.page','professor.form'] %} aria-current="page"{% endif %}>{{ icon('book',19) }}<span>My requests</span></a>
     {{ nav_link('calendar.index', 'Calendar', 'calendar', 'calendar.') }}
     {{ nav_link('notifications.index', 'Inbox', 'meeting', 'notifications.') }}
+    {% elif research_assistant_shell %}
+    <p class="app-nav-label">Your workspace</p>
+    {{ nav_link('research_assistant.home', 'Home', 'home') }}
+    {{ nav_link('research_assistant.tasks', 'My tasks', 'book') }}
+    {{ nav_link('calendar.index', 'Calendar', 'calendar', 'calendar.') }}
+    {{ nav_link('notifications.index', 'Inbox', 'meeting', 'notifications.') }}
     {% else %}
     <p class="app-nav-label">Workspace</p>
     {% if g.principal.role == 'Student' %}{{ nav_link('student.home', 'Home', 'home') }}{% endif %}

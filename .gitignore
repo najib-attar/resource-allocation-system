@@ -11,6 +11,9 @@
 __pycache__/
 *.pyc
 
+# Local ITU roster and public course schedule inputs
+data/itu_demo/*.json
+
 # Build folders
 data/.runtime/
 build/

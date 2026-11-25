@@ -1,6 +1,6 @@
 # Physical schema catalog
 
-Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 62 application tables.
+Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 63 application tables.
 
 Foreign keys use PostgreSQL **NO ACTION** unless explicitly marked RESTRICT; no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
 ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.
@@ -820,6 +820,25 @@ Ordered weekly occurrences; multiple rows represent recurrence.
 - Check: `day BETWEEN 1 AND 7`.
 - Check: `ordinal > 0`.
 - Check: `start_minutes >= 0 AND start_minutes < end_minutes AND end_minutes <= 1440`.
+
+## research_task
+
+Private owner-scoped research planning tasks with due dates and revisions.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| owner_id | integer | PK; FK -> university_user.id | no | - |
+| id | uuid | PK | no | - |
+| title | varchar(160) | - | no | - |
+| due_date | date | - | yes | - |
+| completed_at | timestamp with time zone | - | yes | - |
+| created_at | timestamp with time zone | - | no | now() |
+| revision | integer | - | no | 1 |
+
+- Primary key: `owner_id, id`.
+- Foreign key: `(owner_id) -> university_user (id)`; NO ACTION.
+- Check: `char_length(btrim(title)) > 0`.
+- Check: `revision > 0`.
 
 ## reservation_occurrence
 

@@ -1,8 +1,9 @@
 """Relational records for the existing weekly application, not C++ domain rules."""
 
 from datetime import date, datetime
+from uuid import UUID
 
-from sqlalchemy import BigInteger, Boolean, CheckConstraint, Computed, Date, DateTime, ForeignKey, ForeignKeyConstraint, Identity, Index, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy import BigInteger, Boolean, CheckConstraint, Computed, Date, DateTime, ForeignKey, ForeignKeyConstraint, Identity, Index, Integer, String, Text, UniqueConstraint, Uuid, func
 from sqlalchemy.dialects.postgresql import ExcludeConstraint, JSONB, TSTZRANGE
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -67,6 +68,21 @@ class UserRole(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True)
     role_id: Mapped[int] = mapped_column(ForeignKey("role.id"), primary_key=True, index=True)
     ordinal: Mapped[int] = mapped_column(Integer)
+
+
+class ResearchTask(Base):
+    __tablename__ = "research_task"
+    __table_args__ = (
+        CheckConstraint("char_length(btrim(title)) > 0", name="ck_research_task_title"),
+        CheckConstraint("revision > 0", name="ck_research_task_revision"),
+    )
+    owner_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True)
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
+    title: Mapped[str] = mapped_column(String(160))
+    due_date: Mapped[date | None] = mapped_column(Date)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    revision: Mapped[int] = mapped_column(Integer, server_default="1")
 
 
 class Resource(Base):

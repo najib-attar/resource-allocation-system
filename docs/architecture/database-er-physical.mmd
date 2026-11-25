@@ -330,6 +330,15 @@ erDiagram
         integer start_minutes
         integer end_minutes
     }
+    research_task {
+        integer owner_id PK,FK
+        char_32 id PK
+        varchar_160 title
+        date due_date "nullable"
+        timestamptz completed_at "nullable"
+        timestamptz created_at
+        integer revision
+    }
     reservation_occurrence {
         bigint id PK "identity"
         bigint series_id FK
@@ -691,6 +700,7 @@ erDiagram
     resource_request ||--o{ request_participant : request_id
     university_user ||--o{ request_participant : user_id
     resource_request ||--|{ request_slot : request_id
+    university_user ||--o{ research_task : owner_id
     login_account o|--o{ reservation_occurrence : decided_by
     reservation_series ||--o{ reservation_occurrence : series_id
     login_account ||--o{ reservation_priority_override : actor_id

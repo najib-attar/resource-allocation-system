@@ -37,6 +37,7 @@ app.jinja_env.filters["person_name"] = person_name
 from datetime import timedelta
 app.jinja_env.globals["timedelta"] = timedelta
 app.config.update(
+    LOCAL_DEMO_DATASET=os.environ.get("RESOURCE_ALLOCATION_DEMO_DATASET"),
     DATABASE_LOCK_TIMEOUT=float(os.environ.get("RESOURCE_ALLOCATION_DB_LOCK_TIMEOUT", "5")),
     BACKEND_TIMEOUT=float(os.environ.get("RESOURCE_ALLOCATION_ENGINE_TIMEOUT", "30")),
 )
@@ -150,6 +151,8 @@ app.register_blueprint(create_student_blueprint(lambda: get_repository().databas
 
 from web.professor_routes import create_professor_blueprint
 app.register_blueprint(create_professor_blueprint(lambda: get_repository().database))
+from web.research_assistant_routes import create_research_assistant_blueprint
+app.register_blueprint(create_research_assistant_blueprint(lambda: get_repository().database))
 from web.eligibility_routes import create_eligibility_blueprint
 app.register_blueprint(create_eligibility_blueprint(lambda: get_repository().database))
 
