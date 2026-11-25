@@ -13,6 +13,7 @@ contracts, PostgreSQL reservations and approval rules.
 | I3c | Disabled-by-default, explicitly invoked synthetic shadow runner | [Admission, transport and resource limits](i3c/README.md) |
 | I3d D1 | Synthetic preference contracts and deterministic cost compilation | [Compiler and mathematical mapping](i3d/d1/README.md) |
 | I3d D2 | Synthetic fixed-calendar batching with preserved delay semantics | [Partition proof and measurements](i3d/d2/README.md) |
+| Application rehearsal | Opt-in fictional Flask/PostgreSQL fixture and standard appointment handoff | [Rehearsal and weight evaluation](../../docs/research/cdmcs-rehearsal/README.md) |
 
 I3b projection is not permission to run real calendars through an optimizer.
 Synthetic fixtures and cost coefficients are not university preferences, consent
@@ -25,8 +26,8 @@ retention and activation require separate review.
 Stage READMEs retain dated local verification, source revisions, measurements and
 the CI status at that checkpoint. References such as migration `0049b`, 53 tables,
 “pending publication” and future stage recommendations describe those historical
-checkpoints; the application is now at `0051b`, and D2 is implemented within its
-documented synthetic boundary. Later integration is recorded in
+checkpoints. D2 is implemented within its documented synthetic boundary.
+Application integration is recorded in
 [Student PR #24](https://github.com/najib-attar/resource-allocation-system/pull/24)
 and [Professor PR #25](https://github.com/najib-attar/resource-allocation-system/pull/25).
 

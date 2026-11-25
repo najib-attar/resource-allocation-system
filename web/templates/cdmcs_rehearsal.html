@@ -1,0 +1,140 @@
+{% extends 'service_base.html' %}
+{% from 'components/ui.html' import icon, badge %}
+{% block title %}Meeting Rehearsal | University Scheduling{% endblock %}
+{% block page_heading %}Meeting Rehearsal{% endblock %}
+{% block service_eyebrow %}Appointments / Synthetic demo{% endblock %}
+{% block service_intro %}Compare times for a group meeting using CDMCS.{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='prototype.css') }}">{% endblock %}
+
+{% macro participant_picker(field, label, choices, selected, expanded) %}
+<div>
+    <span class="ui-field-label" id="{{ field }}-label">{{ label }}</span>
+    <details class="participant-picker"{% if expanded or selected %} open{% endif %}>
+        <summary>Choose {{ label|lower }}</summary>
+        <div class="picker-options" role="group" aria-labelledby="{{ field }}-label">
+            {% for person in choices if person.id != g.principal.user_id %}
+                <label class="picker-option">
+                    <input type="checkbox" name="{{ field }}" value="{{ person.id }}"{% if person.id in selected %} checked{% endif %}>
+                    <span><strong>{{ person.name }}</strong><small>{{ person.role }}</small></span>
+                </label>
+            {% else %}
+                <p class="picker-hint">There are no other demo participants.</p>
+            {% endfor %}
+        </div>
+    </details>
+</div>
+{% endmacro %}
+
+{% macro options(items, heading, group_id, empty, conditional=false) %}
+<section class="ui-card booking-section" aria-labelledby="{{ group_id }}">
+    <h2 id="{{ group_id }}">{{ heading }}</h2>
+    {% if items %}
+    {% if conditional %}
+    <p>These options would move one fictional flexible meeting. Everyone affected would need to consent to the same revision.</p>
+    {% else %}
+    <p>Fits required availability and commitments without a move.</p>
+    {% endif %}
+    <ol>
+        {% for item in items %}
+        <li>
+            <p><strong>{{ item.start }} – {{ item.end }}</strong></p>
+            {% if conditional %}
+                <p>Proposed replacement time {{ item.replacementStart }} – {{ item.replacementEnd }}.</p>
+            {% endif %}
+            {% if item.explanation %}<p>{{ item.explanation }}</p>{% endif %}
+        </li>
+        {% endfor %}
+    </ol>
+    {% else %}
+        <p>{{ empty }}</p>
+    {% endif %}
+</section>
+{% endmacro %}
+
+{% block service_content %}
+<div class="portal-prototype booking-prototype">
+    <div class="booking-layout">
+        <div>
+            {% if error %}<div class="ui-alert ui-alert--danger" role="alert">{{ icon('info', 17) }}{{ error }}</div>{% endif %}
+            <form method="post" action="{{ url_for('cdmcs_rehearsal.index') }}" class="booking-form" aria-describedby="rehearsal-scope">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <fieldset class="ui-card booking-section">
+                    <legend>Participants</legend>
+                    <p class="ui-note">You are included automatically. Choose at least one required attendee. Any co-hosts you add must also be available. Optional invitees can attend when available.</p>
+                    <div class="participant-picker-grid">
+                        {{ participant_picker('requiredIds', 'Required attendees', people, form.requiredIds|default([]), true) }}
+                        {{ participant_picker('cohostIds', 'Co-hosts', people, form.cohostIds|default([]), false) }}
+                        {{ participant_picker('optionalIds', 'Optional invitees', people, form.optionalIds|default([]), false) }}
+                    </div>
+                </fieldset>
+                <fieldset class="ui-card booking-section">
+                    <legend>Meeting time</legend>
+                    <div class="booking-fields-row">
+                        <label class="ui-field" for="rehearsal-from">Start date
+                            <input id="rehearsal-from" name="fromDate" type="date" min="{{ first }}" max="{{ last }}" value="{{ form.fromDate|default('') }}" aria-describedby="rehearsal-date-help" required>
+                        </label>
+                        <label class="ui-field" for="rehearsal-until">End date
+                            <input id="rehearsal-until" name="untilDate" type="date" min="{{ first }}" max="{{ last }}" value="{{ form.untilDate|default('') }}" aria-describedby="rehearsal-date-help" required>
+                        </label>
+                    </div>
+                    <p class="ui-field-help" id="rehearsal-date-help">Search within {{ first }} through {{ last }}. Dates and times use {{ zone }}.</p>
+                    <div class="booking-fields-row">
+                        <label class="ui-field" for="rehearsal-duration">Duration in minutes
+                            <input id="rehearsal-duration" name="duration" type="number" min="15" max="120" step="15" value="{{ form.duration|default(30) }}" required>
+                        </label>
+                        <label class="ui-field" for="rehearsal-preferred">Preferred start <span class="ui-optional">Optional</span>
+                            <input id="rehearsal-preferred" name="preferredStart" type="datetime-local" min="{{ first }}T00:00" max="{{ last }}T23:59" value="{{ form.preferredStart|default('') }}" aria-describedby="rehearsal-preferred-help">
+                        </label>
+                    </div>
+                    <p class="ui-field-help" id="rehearsal-preferred-help">Preferred start breaks ties between options with equal cost and burden.</p>
+                </fieldset>
+                <div class="booking-submit">
+                    <button class="ui-button ui-button--primary" type="submit">{{ icon('clock', 17) }}Find rehearsal times</button>
+                </div>
+            </form>
+            {% if result %}
+            <section aria-labelledby="rehearsal-results">
+                <h2 id="rehearsal-results">Recommended times</h2>
+                {% if result.relationship %}<p>Meeting shape {{ result.relationship }}</p>{% endif %}
+                {% if result.message %}<p role="status">{{ result.message }}</p>{% endif %}
+                <div class="appointment-grid">
+                    {{ options(result.direct, 'Direct options', 'rehearsal-direct', 'No direct time meets the required participants’ calendar constraints.') }}
+                    {{ options(result.relocation, 'Options requiring one move', 'rehearsal-relocation', 'No option with one flexible move meets the calendar constraints.', true) }}
+                </div>
+            </section>
+            {% if result.booking %}
+            <section class="ui-card booking-section" aria-labelledby="rehearsal-request">
+                <h2 id="rehearsal-request">Request a standard appointment</h2>
+                <p class="ui-note">These participants qualify for the existing student–professor workflow. The application checks the selected time again before submitting it for instructor approval.</p>
+                <form method="post" action="{{ url_for('appointments.new') }}" class="booking-form">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <input type="hidden" name="duration" value="{{ result.booking.duration }}">
+                    <input type="hidden" name="facultyId" value="{{ result.booking.faculty }}">
+                    {% for id in result.booking.professors %}<input type="hidden" name="professorIds" value="{{ id }}">{% endfor %}
+                    {% for id in result.booking.invitees %}<input type="hidden" name="invitedIds" value="{{ id }}">{% endfor %}
+                    <label class="ui-field">Direct option
+                        <select name="start" required>
+                            {% for option in result.direct %}<option value="{{ option.localStart }}">{{ option.start }} – {{ option.end }}</option>{% endfor %}
+                        </select>
+                    </label>
+                    <label class="ui-field">Purpose
+                        <textarea name="purpose" required maxlength="2000" rows="2"></textarea>
+                    </label>
+                    <div class="booking-submit"><button class="ui-button ui-button--primary" type="submit">Request appointment</button></div>
+                </form>
+            </section>
+            {% endif %}
+            {% endif %}
+        </div>
+        <aside class="booking-guide" aria-labelledby="rehearsal-guide">
+            <div class="ui-card">
+                {{ badge('Synthetic demo', 'warning') }}
+                <h2 id="rehearsal-guide">About the rehearsal</h2>
+                <p id="rehearsal-scope">CDMCS ranks options for one meeting. Eligible student–professor requests can use a direct option in the standard approval workflow.</p>
+                <p>Preferred hours, calendar gaps, waiting and relocation contribute to the rank. The greatest individual burden breaks equal-cost ties.</p>
+                <p><a href="{{ url_for('appointments.index') }}">Open Appointments</a> · <a href="{{ url_for('calendar.index') }}">Open Calendar</a></p>
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}
