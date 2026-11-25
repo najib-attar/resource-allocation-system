@@ -7,10 +7,34 @@ from unittest import TestCase, mock
 import json
 
 from scripts.setup_local_demo import prepare_settings
-from web.persistence.itu_demo import DEPARTMENTS, FACULTY, itu_inputs
+from web.persistence.itu_demo import DATA, DEPARTMENTS, FACULTY, itu_inputs
+from web.persistence.itu_resources import catalog_manifest, resource_spaces
 
 
 class ItuDemoTests(TestCase):
+    def test_catalog_matches_only_explicit_bbb_codes_and_same_term_supplement(self):
+        term = {"startDate": "2026-09-28", "endDate": "2026-12-31"}
+        meeting = dict(section="12345", courseCode="TEST", courseTitle="Fixture",
+                       day=1, startMinutes=600, endMinutes=660, buildingCode="BBB",
+                       roomCode="KON1", sourceUrl="https://example.invalid/obs")
+        schedule = {"academicPeriod": term, "sections": [meeting, dict(meeting, buildingCode="OTHER"),
+                                                        dict(meeting, roomCode="Z-23")]}
+        with TemporaryDirectory() as temp:
+            directory = Path(temp)
+            (directory / "resources.json").write_bytes((DATA / "resources.json").read_bytes())
+            additional = directory / "room_schedule.json"
+            more = dict(meeting, section="12346", roomCode="Z-17", validUntil="2026-12-19")
+            additional.write_text(json.dumps({"academicPeriod": term, "sections": [meeting, more]}), encoding="utf-8")
+            catalog = catalog_manifest(directory, schedule)
+            by_id = {space["id"]: space for space in resource_spaces(catalog)}
+            self.assertEqual([by_id[row["resourceId"]]["name"] for row in catalog["weeklyOccupancy"]],
+                             ["BBB Konferans Salonu", "BBB Z-17"])
+            self.assertEqual(catalog["weeklyOccupancy"][-1]["validUntil"], "2026-12-19")
+            self.assertEqual(len(catalog["unmappedMeetings"]), 2)
+            additional.write_text(json.dumps({"academicPeriod": {}, "sections": []}), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "different academic period"):
+                catalog_manifest(directory, schedule)
+
     def test_dataset_selection_preserves_existing_profile_and_fixes_itu_dates(self):
         with TemporaryDirectory() as temp:
             root = Path(temp)
@@ -53,6 +77,7 @@ class ItuDemoTests(TestCase):
                             else [1, 2, 3, 4]} for d in DEPARTMENTS}, sections=[dict(section, day=d) for d in (1, 3)])
             (directory / "roster.json").write_text(json.dumps(roster), encoding="utf-8")
             (directory / "schedule.json").write_text(json.dumps(schedule), encoding="utf-8")
+            (directory / "resources.json").write_bytes((DATA / "resources.json").read_bytes())
             result = itu_inputs(directory, 42)
             self.assertEqual(itu_inputs(directory, 42), result)
             snapshot, units, accounts, _, manifest = result

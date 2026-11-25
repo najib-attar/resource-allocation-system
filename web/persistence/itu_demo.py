@@ -15,6 +15,7 @@ from ..engine_gateway import EngineGateway, PROTOCOL_VERSION
 from ..room_request_service import RoomRequestService
 from .equipment_demo import seed_equipment_demo
 from .importer import populate_empty_database
+from .itu_resources import catalog_manifest, install_resource_policies, resource_spaces
 from .models import AcademicPeriod, BusySlot, LegacyCalendarBinding, OrganizationUnit, ProfessorAvailability
 from .repository import PROFILE_FIELDS, state_row
 from .validation import validate_snapshot
@@ -198,19 +199,15 @@ def itu_inputs(directory=DATA, seed=42):
     admin = len(users) + 1
     users.append(_person(admin, "ITU Demo Administrator", "Administrator", FACULTY, "admin"))
     accounts.append(dict(username="admin", userId=admin, name="ITU Demo Administrator", role="Administrator"))
-    spaces = [dict(id=1001 + i, name=f"Simulated BBF {kind} {i+1:02d}", type=kind, capacity=capacity,
-                   building="BBF Demo Facilities", available=True,
-                   features=dict(projector=True, whiteboard=True, computers=kind == "Laboratory"))
-              for i, (kind, capacity) in enumerate([("Classroom", 60)] * 6 +
-                  [("Laboratory", 28)] * 3 + [("MeetingRoom", 12)] * 3)]
+    resources = catalog_manifest(directory, schedule)
     snapshot = dict(protocolVersion=PROTOCOL_VERSION, runId=f"itu-demo-{seed}", strategy="greedy",
-                    users=users, spaces=spaces, requests=[], busySlots=busy)
+                    users=users, spaces=resource_spaces(resources), requests=[], busySlots=busy)
     validate_snapshot(snapshot)
     return snapshot, units, accounts, admin, dict(academicPeriod=schedule["academicPeriod"],
         rosterDate=roster["rosterDate"], sources=roster["sources"], discrepancies=roster["discrepancies"],
         directory=directory_rows, students=student_rows, instructorSlots=sum(staff_slots.values()),
         unmatchedSectionRows=unresolved, simulatedEnrollmentCounts=dict(simulated_enrollments),
-        simulatedResources=True)
+        simulatedResources=True, resources=resources)
 
 
 def seed_itu_demo(database, directory=DATA, seed=42):
@@ -243,12 +240,12 @@ def seed_itu_demo(database, directory=DATA, seed=42):
                             start_minutes=960, end_minutes=1020, valid_from=starts, valid_until=ends,
                             timezone="Europe/Istanbul", excluded_dates=excluded))
         faculty_id = session.scalar(select(OrganizationUnit.id).where(OrganizationUnit.name == FACULTY))
+        resources = manifest["resources"]
+        resources["datedOccupancyBlocks"] = install_resource_policies(session, resources, faculty_id)
         state_row(session, True).calendar_revision += 1
 
     rooms = RoomRequestService(database, EngineGateway(ROOT))
     rooms.configure_approver(admin, faculty_id, admin)
-    for room in snapshot["spaces"]:
-        rooms.configure_room(admin, room["id"], faculty_id, True, ["study", "meeting", "lecture", "club", "other"])
     equipment = seed_equipment_demo(database, admin, seed=seed)
     summary = dict(seed=seed, counts={key: len(snapshot[key]) for key in ("users", "spaces", "requests", "busySlots")},
                    accounts=accounts, equipment=equipment, officeHours="simulated")

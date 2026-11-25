@@ -12,7 +12,7 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.engine import URL
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -21,7 +21,8 @@ from web.allocation_workflow import execute_allocation
 from web.engine_gateway import EngineGateway, EngineIntegrationError
 from web.persistence.database import Database
 from web.persistence.demo import demo_snapshot
-from web.persistence.itu_demo import load_itu_schedule, seed_itu_demo
+from web.persistence.itu_demo import DATA as ITU_DATA, FACULTY as ITU_FACULTY, load_itu_schedule, seed_itu_demo
+from web.persistence.itu_resources import catalog_manifest, replace_legacy_resources
 from web.persistence.importer import populate_empty_database
 from web.persistence.models import (AcademicPeriod, BusySlot, CalendarBlock, LegacyCalendarBinding,
                                     LoginAccount, OrganizationUnit, ProfessorAvailability, ResourceRequest)
@@ -118,7 +119,7 @@ def seed_local_demo(database, password, start, end, seed=42, *, review_academics
 def write_settings(path, settings):
     temporary = path.with_name(path.name + "." + secrets.token_hex(8) + ".tmp")
     try:
-        temporary.write_text(json.dumps(settings, indent=2) + "\n", encoding="utf-8")
+        temporary.write_text(json.dumps(settings, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         temporary.chmod(0o600)
         os.replace(temporary, path)
     finally:
@@ -187,6 +188,7 @@ def main():
     seed_command=commands.add_parser("seed")
     seed_command.add_argument('--review-academics',action='store_true',help='Explicitly review newly generated fictional academic declarations before demo allocation.')
     commands.add_parser("show")
+    commands.add_parser("update-itu-resources", help="Replace the untouched legacy room seed in an owned ITU demo.")
     args = parser.parse_args()
     path = Path(args.state_dir).resolve() / "settings.json"
     database = None
@@ -195,11 +197,32 @@ def main():
             prepare_settings(path, args.seed, args.start, args.end, args.port, args.dataset)
             print("Private local demo configuration is ready.")
             return 0
+        if args.action == "update-itu-resources" and not path.is_file():
+            raise ValueError("Select an existing owned ITU demo profile.")
         settings = prepare_settings(path)
+        if args.action == "update-itu-resources":
+            marker = path.parent / "postgres-data" / "local-demo-owner"
+            if (settings.get("dataset") != "itu" or not settings["seeded"] or not marker.is_file()
+                    or marker.read_text(encoding="utf-8") != settings["profileId"]):
+                raise ValueError("Resource update requires an initialized ITU PostgreSQL profile with its owner marker.")
+            manifest = catalog_manifest(ITU_DATA, load_itu_schedule())
+            database = Database(connection_url(settings))
+            with database.transaction(read_only=True) as session:
+                if Path(session.scalar(text("SHOW data_directory"))).resolve() != marker.parent.resolve():
+                    raise ValueError("The connected PostgreSQL cluster does not belong to this ITU profile.")
+            changed = replace_legacy_resources(database, manifest, ITU_FACULTY)
+            resource_report = path.parent / "resource-manifest.json"
+            if changed or not resource_report.exists():
+                write_settings(resource_report, manifest)
+            if settings["summary"]["counts"]["spaces"] != len(manifest["resources"]):
+                settings["summary"]["counts"]["spaces"] = len(manifest["resources"])
+                write_settings(path, settings)
+            print("ITU building inventory installed." if changed else "ITU building inventory already installed.")
+            return 0
         if args.action == "show" and settings.get("dataset") == "itu":
             if not settings["seeded"]:
                 raise ValueError("Start the isolated ITU demo once to initialize its private accounts.")
-            print("ITU BBF LOCAL DEMO · Public directory, simulated accounts and resources.")
+            print("ITU BBF LOCAL DEMO · Public directory and facilities with simulated accounts and capacities.")
             print(f"Fall classes: {settings['academicStart']} through {settings['academicEnd']} (Europe/Istanbul)")
             roles = {account["role"] for account in settings["summary"]["accounts"]}
             for role in sorted(roles):
@@ -230,6 +253,7 @@ def main():
                 if args.review_academics:
                     raise ValueError("The ITU demo begins without academic requests or decisions.")
                 summary, manifest, credentials = seed_itu_demo(database, seed=settings["seed"])
+                write_settings(path.parent / "resource-manifest.json", manifest.pop("resources"))
                 write_settings(path.parent / "directory-manifest.json", manifest)
                 write_settings(path.parent / "credentials.json", credentials)
                 settings["summary"] = summary

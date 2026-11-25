@@ -43,7 +43,7 @@
         </header>
         <main id="main-content" class="{{ 'app-content' if g.principal else 'page-shell' }}{% if campus_shell and workspace_service %} campus-service{% if student_shell %} student-service{% endif %}{% endif %}" tabindex="-1">
             {% if config.LOCAL_DEMO_DATASET == 'itu' %}
-            <p class="service-notice">ITU BBF local demonstration. Staff names and listed teaching times are public records. Accounts, student enrolments, office hours and equipment are simulated.</p>
+            <p class="service-notice">ITU BBF local demonstration. Staff names and listed teaching times are public records. Accounts, student enrolments, office hours, room capacities, facilities and equipment are simulated.</p>
             {% endif %}
             {% block content %}{% endblock %}
         </main>

@@ -156,10 +156,50 @@ The separate profile manifest preserves provenance, source discrepancies,
 department and title, application account eligibility, and generated student
 cohorts and enrolments. OBS section schedules represent a partial demonstration
 timetable. Only a singly named instructor with an exact match in the supplied
-academic roster receives a published teaching commitment. The office hours,
-rooms and equipment are simulated. Academic requests, allocations and operational
+academic roster receives a published teaching commitment. Office hours and
+equipment are simulated. Academic requests, allocations and operational
 workflows start empty. Build any optional examples through the existing service
 screens so their approvals remain visible.
+
+### BBB room inventory and published occupancy
+
+Fresh ITU profiles load [the BBB catalog](../data/itu_demo/resources.json).
+`resource-manifest.json` in the private demo profile records the catalog,
+verification notes, and the published meetings linked to each room. The catalog
+uses one seating capacity per space. All capacities and facility tags are
+demonstration values. Projectors, whiteboards and computers map to the existing
+booking filters. Other facilities and the published research-lab areas are
+directory metadata.
+
+The eight standard classrooms, conference hall, and three meeting rooms use the
+existing faculty room approval workflow. Z-16, Z-18, 103, Yeni Lab, and the four
+historical teaching labs remain provisional and unavailable. The 16 named
+research labs have restricted policies, an empty allowlist, and availability
+off for both booking paths. Bringing a lab into use requires an explicit
+availability decision and appropriate access configuration. The weekly
+academic allocator has no per-user room allowlist.
+
+The local optional `data/itu_demo/room_schedule.json` adds BBB meetings from OBS
+without changing instructor or student schedules. If it is absent, occupancy is
+limited to the original published sections in `schedule.json`. Matched meetings
+become dated room holds during the published teaching period, with recess dates
+excluded. Room codes outside the catalog or missing in OBS remain in the local
+manifest. The student room engine sees the holds when recommending and validating
+bookings. The weekly academic engine can still propose a conflicting room.
+The existing publication guard rejects that result before it can reserve the
+room or replace an active publication.
+
+To update an already initialized ITU profile, back up its owned PostgreSQL
+database and run the following while PostgreSQL is running. The update
+replaces the exact, unused 12-room legacy seed in one transaction. A changed
+inventory, changed room policies, or related requests or history cause it to
+stop with the existing data intact. Repeating the command preserves the installed
+catalog and any subsequent room administration.
+
+```powershell
+$profile = '.\build\local-demos\itu-bbf-fall-2026'
+& "$profile\venv\Scripts\python.exe" .\scripts\setup_local_demo.py --state-dir $profile update-itu-resources
+```
 
 [Official academic calendar](https://www.takvim.sis.itu.edu.tr/AkademikTakvim/TR/akademik-takvim/AkademikTakvimTablo.php) · [ITU OBS course schedules](https://obs.itu.edu.tr/public/DersProgram)
 
