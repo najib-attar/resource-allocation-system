@@ -61,9 +61,9 @@ class LocalDemoDatabaseTests(PostgresTestCase):
         password = 'Isolated-demo-password-42'
         summary = seed_local_demo(self.database, password, date(2030, 1, 7), date(2030, 1, 31),review_academics=True)
         self.assertEqual(summary['counts'], {'users': 106, 'spaces': 20, 'requests': 120, 'busySlots': 12})
-        self.assertEqual(len(summary['accounts']), 94)
+        self.assertEqual(len(summary['accounts']), 100)
         with self.database.transaction(read_only=True) as session:
-            self.assertEqual(session.scalar(select(func.count()).select_from(LoginAccount)), 94)
+            self.assertEqual(session.scalar(select(func.count()).select_from(LoginAccount)), 100)
             self.assertEqual(session.scalar(select(func.count()).select_from(ProfessorAvailability)), 60)
             self.assertEqual(session.scalar(select(func.count()).select_from(AcademicPeriod)), 1)
             self.assertGreater(session.scalar(select(func.count()).select_from(Allocation)), 0)
@@ -73,6 +73,11 @@ class LocalDemoDatabaseTests(PostgresTestCase):
         accounts = AccountService(self.database)
         self.assertEqual(accounts.authenticate('student1', password).role, 'Student')
         self.assertEqual(accounts.authenticate('professor1', password).role, 'Instructor')
+        for index in range(1, 7):
+            assistant = accounts.authenticate(f'assistant{index}', password)
+            self.assertEqual(assistant.role, 'TeachingAssistant')
+            self.assertTrue(assistant.research_assistant)
+            self.assertFalse(assistant.administrator)
         self.assertTrue(accounts.authenticate('admin', password).administrator)
         client = self.configure_web()
         self.assertEqual(client.get('/appointments/').status_code, 200)

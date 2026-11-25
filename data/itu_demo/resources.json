@@ -1,0 +1,211 @@
+{
+  "university": "İstanbul Teknik Üniversitesi",
+  "faculty": "Bilgisayar ve Bilişim Fakültesi",
+  "campus": "Ayazağa Kampüsü",
+  "buildingCode": "BBB",
+  "capacityProvenance": "Classroom, conference, teaching laboratory and meeting room capacities are user-defined demonstration seating values. Research laboratory capacities are synthetic estimates. The dataset supplies no separate examination estimates.",
+  "facilityProvenance": "All facility tags are synthetic demo configuration, including categories also documented in the public laboratory registry.",
+  "sources": {
+    "activityReport": "https://bbf.itu.edu.tr/docs/librariesprovider62/faaliyet_raporlari/2025_yili_raporu.pdf?sfvrsn=1d3254bd_6",
+    "historicReport": "https://bbf.itu.edu.tr/docs/librariesprovider62/faaliyet_raporlari/2023-faaliyet-raporu.pdf",
+    "laboratoryDirectory": "https://bbf.itu.edu.tr/arastirma/ara%C5%9Ft%C4%B1rma-laboratuvarlar%C4%B1",
+    "laboratoryRegistry": "https://itulabs.itu.edu.tr/Birim/Detay/43",
+    "bilTeachingArchive": "https://bil.itu.edu.tr/mod/forum/discuss.php?d=226",
+    "obs": "https://obs.itu.edu.tr/public/DersProgram"
+  },
+  "notes": [
+    "The 2025 activity report lists the research laboratory names and areas on PDF pages 9–10. PDF page 7 confirms three meeting rooms and one conference hall. Meeting room labels are demonstration labels.",
+    "The 2023 activity report predates the present building opening. Each teaching laboratory name is retained as a provisional record pending confirmation of its current physical identity. No distinct reservable space is inferred from separate register names."
+  ],
+  "resources": [
+    {
+      "id": 2001, "name": "BBB Z-16", "kind": "classroom", "capacity": 150,
+      "status": "provisional", "roomCode": "Z-16", "sourceKeys": ["obs"],
+      "features": ["projector", "whiteboard", "desks"], "programFeatures": ["projector", "whiteboard"],
+      "notes": "Appears in the public timetable. The physical classroom identifier remains provisional in the demo."
+    },
+    {
+      "id": 2002, "name": "BBB Z-17", "kind": "classroom", "capacity": 150,
+      "status": "enabled", "roomCode": "Z-17", "sourceKeys": ["obs"],
+      "features": ["projector", "whiteboard", "desks"], "programFeatures": ["projector", "whiteboard"]
+    },
+    {
+      "id": 2003, "name": "BBB Z-18", "kind": "classroom", "capacity": 150,
+      "status": "provisional", "roomCode": "Z-18", "sourceKeys": ["obs"],
+      "features": ["projector", "whiteboard", "desks"], "programFeatures": ["projector", "whiteboard"],
+      "notes": "Appears in the public timetable. The physical classroom identifier remains provisional in the demo."
+    },
+    {
+      "id": 2004, "name": "BBB Z-19", "kind": "classroom", "capacity": 70,
+      "status": "enabled", "roomCode": "Z-19", "sourceKeys": ["obs"],
+      "features": ["projector", "whiteboard", "desks"], "programFeatures": ["projector", "whiteboard"]
+    },
+    {
+      "id": 2005, "name": "BBB Z-20", "kind": "classroom", "capacity": 70,
+      "status": "enabled", "roomCode": "Z-20", "sourceKeys": ["obs"],
+      "features": ["projector", "whiteboard", "desks"], "programFeatures": ["projector", "whiteboard"]
+    },
+    {
+      "id": 2006, "name": "BBB Z-21", "kind": "classroom", "capacity": 70,
+      "status": "enabled", "roomCode": "Z-21", "sourceKeys": ["obs"],
+      "features": ["projector", "whiteboard", "desks"], "programFeatures": ["projector", "whiteboard"]
+    },
+    {
+      "id": 2007, "name": "BBB Z-22", "kind": "classroom", "capacity": 70,
+      "status": "enabled", "roomCode": "Z-22", "sourceKeys": ["obs"],
+      "features": ["projector", "whiteboard", "desks"], "programFeatures": ["projector", "whiteboard"]
+    },
+    {
+      "id": 2008, "name": "BBB 101", "kind": "classroom", "capacity": 70,
+      "status": "enabled", "roomCode": "101", "sourceKeys": ["obs"],
+      "features": ["projector", "whiteboard", "desks"], "programFeatures": ["projector", "whiteboard"]
+    },
+    {
+      "id": 2009, "name": "BBB 102", "kind": "classroom", "capacity": 70,
+      "status": "enabled", "roomCode": "102", "sourceKeys": ["obs"],
+      "features": ["projector", "whiteboard", "desks"], "programFeatures": ["projector", "whiteboard"]
+    },
+    {
+      "id": 2010, "name": "BBB 103", "kind": "classroom", "capacity": 70,
+      "status": "provisional", "roomCode": "103", "sourceKeys": [],
+      "features": ["projector", "whiteboard", "desks"], "programFeatures": ["projector", "whiteboard"],
+      "notes": "User-supplied demo identifier. The imported timetable did not establish a matching room."
+    },
+    {
+      "id": 2011, "name": "BBB 104", "kind": "classroom", "capacity": 70,
+      "status": "enabled", "roomCode": "104", "sourceKeys": ["obs"],
+      "features": ["projector", "whiteboard", "desks"], "programFeatures": ["projector", "whiteboard"]
+    },
+    {
+      "id": 2012, "name": "BBB Konferans Salonu", "kind": "conference", "capacity": 250,
+      "status": "enabled", "roomCode": "KON1", "sourceKeys": ["activityReport", "obs"],
+      "features": ["projector", "microphone", "audio system"], "programFeatures": ["projector"],
+      "notes": "The demo maps the public timetable code KON1 to the faculty's single reported conference hall."
+    },
+    {
+      "id": 2013, "name": "Çoklu Ortam İşleme Laboratuvarı", "kind": "research_lab", "areaM2": 38.26, "capacity": 10,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "multimedia workstations", "audio and video capture"], "programFeatures": ["computers"]
+    },
+    {
+      "id": 2014, "name": "Veri Analitiği Laboratuvarı", "kind": "research_lab", "areaM2": 61.54, "capacity": 16,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "data analysis software", "visualization displays"], "programFeatures": ["computers"]
+    },
+    {
+      "id": 2015, "name": "Duygusal Bilişim Laboratuvarı", "kind": "research_lab", "areaM2": 37.17, "capacity": 10,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "interaction sensors", "audio and video capture"], "programFeatures": ["computers"]
+    },
+    {
+      "id": 2016, "name": "Yüksek Başarımlı Hesaplama ve Bulut Bilişim Laboratuvarı", "kind": "research_lab", "areaM2": 38.26, "capacity": 10,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "compute cluster", "virtualization software"], "programFeatures": ["computers"]
+    },
+    {
+      "id": 2017, "name": "Görsel Zeka Laboratuvarı", "kind": "research_lab", "areaM2": 44.43, "capacity": 12,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "imaging cameras", "computer vision software"], "programFeatures": ["computers"]
+    },
+    {
+      "id": 2018, "name": "Bilgisayar Ağları Laboratuvarı", "kind": "research_lab", "areaM2": 64.16, "capacity": 16,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "network testbed", "routers and switches"], "programFeatures": ["computers"]
+    },
+    {
+      "id": 2019, "name": "Siber Güvenlik ve Mahremiyet Laboratuvarı", "kind": "research_lab", "areaM2": 42.67, "capacity": 12,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "isolated network testbed", "security research software"], "programFeatures": ["computers"]
+    },
+    {
+      "id": 2020, "name": "Robotik Sistemler Laboratuvarı", "kind": "research_lab", "areaM2": 63.09, "capacity": 16,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "robotics platforms", "motion sensors"], "programFeatures": ["computers"]
+    },
+    {
+      "id": 2021, "name": "Kullanıcı Deneyimi Laboratuvarı", "kind": "research_lab", "areaM2": 150, "capacity": 30,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "usability testing stations", "screen recording"], "programFeatures": ["computers"],
+      "notes": "The demo uses the activity report name. The faculty research directory lists Kullanışlılık Laboratuvarı. No second room is inferred."
+    },
+    {
+      "id": 2022, "name": "Yumuşak Sensörler Laboratuvarı", "kind": "research_lab", "areaM2": 150, "capacity": 30,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "sensor prototyping benches", "measurement instruments"], "programFeatures": ["computers"]
+    },
+    {
+      "id": 2023, "name": "Nesnelerin İnterneti ve Gömülü Sistemler Laboratuvarı", "kind": "research_lab", "areaM2": 43.05, "capacity": 12,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "embedded development boards", "wireless sensor testbed"], "programFeatures": ["computers"]
+    },
+    {
+      "id": 2024, "name": "Doğal Dil İşleme Laboratuvarı", "kind": "research_lab", "areaM2": 43.41, "capacity": 12,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "language analysis software", "speech recording equipment"], "programFeatures": ["computers"]
+    },
+    {
+      "id": 2025, "name": "Yazılım Mühendisliği Laboratuvarı", "kind": "research_lab", "areaM2": 44.59, "capacity": 12,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "development software", "software testing tools"], "programFeatures": ["computers"]
+    },
+    {
+      "id": 2026, "name": "Yeni Lab", "kind": "research_lab", "areaM2": 41.64, "capacity": 10,
+      "status": "provisional", "sourceKeys": ["activityReport"], "features": [], "programFeatures": [],
+      "notes": "The activity report lists the area. The intended use, facilities and availability are unconfirmed."
+    },
+    {
+      "id": 2027, "name": "Yapay Zeka Sistemleri Laboratuvarı", "kind": "research_lab", "areaM2": 43.41, "capacity": 12,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "GPU workstations", "machine learning software"], "programFeatures": ["computers"]
+    },
+    {
+      "id": 2028, "name": "Sağlık Bilişimi Laboratuvarı", "kind": "research_lab", "areaM2": 33.73, "capacity": 8,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "health data analysis software", "signal analysis workstations"], "programFeatures": ["computers"]
+    },
+    {
+      "id": 2029, "name": "Biyoinformatik Laboratuvarı", "kind": "research_lab", "areaM2": 41.82, "capacity": 12,
+      "status": "restricted", "sourceKeys": ["activityReport", "laboratoryDirectory"],
+      "features": ["computers", "bioinformatics software", "sequence analysis workstations"], "programFeatures": ["computers"]
+    },
+    {
+      "id": 2030, "name": "Öğrenci PC Laboratuvarı I", "kind": "teaching_pc_lab", "capacity": 15,
+      "status": "provisional", "sourceKeys": ["historicReport"],
+      "features": ["computers", "network access", "development software"], "programFeatures": ["computers"],
+      "notes": "The 2023 report lists this separately from PC Laboratory II. Its physical identity at BBB is unconfirmed."
+    },
+    {
+      "id": 2031, "name": "Öğrenci PC Laboratuvarı II", "kind": "teaching_pc_lab", "capacity": 40,
+      "status": "provisional", "sourceKeys": ["historicReport"],
+      "features": ["computers", "network access", "development software"], "programFeatures": ["computers"],
+      "notes": "The 2023 report lists this separately from PC Laboratory I. Its physical identity at BBB is unconfirmed."
+    },
+    {
+      "id": 2032, "name": "BIL Dersleri PC Laboratuvarı", "kind": "teaching_pc_lab", "capacity": 40,
+      "status": "provisional", "sourceKeys": ["bilTeachingArchive"],
+      "features": ["computers", "network access", "development software"], "programFeatures": ["computers"],
+      "notes": "User-supplied teaching laboratory name. The BIL archive identifies 2022 sessions at Merkezi Derslik laboratories. A distinct current BBB room and any relationship to the historical PC labs remain unverified."
+    },
+    {
+      "id": 2033, "name": "Donanım Laboratuvarı", "kind": "teaching_hardware_lab", "capacity": 40,
+      "status": "provisional", "sourceKeys": ["historicReport", "laboratoryRegistry"],
+      "features": ["computers", "development boards", "measurement instruments", "hardware workstations"], "programFeatures": ["computers"],
+      "notes": "The 2023 report groups hardware, logic circuits, microcomputers and signal processing on one line. The separate logic-circuits registry entry does not establish a distinct physical room."
+    },
+    {
+      "id": 2034, "name": "BBB Toplantı Salonu 1", "kind": "meeting_room", "capacity": 15,
+      "status": "enabled", "sourceKeys": ["activityReport"],
+      "features": ["meeting table", "display", "whiteboard"], "programFeatures": ["whiteboard"]
+    },
+    {
+      "id": 2035, "name": "BBB Toplantı Salonu 2", "kind": "meeting_room", "capacity": 20,
+      "status": "enabled", "sourceKeys": ["activityReport"],
+      "features": ["meeting table", "display", "whiteboard"], "programFeatures": ["whiteboard"]
+    },
+    {
+      "id": 2036, "name": "BBB Toplantı Salonu 3", "kind": "meeting_room", "capacity": 30,
+      "status": "enabled", "sourceKeys": ["activityReport"],
+      "features": ["meeting table", "display", "whiteboard"], "programFeatures": ["whiteboard"]
+    }
+  ]
+}

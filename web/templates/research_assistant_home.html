@@ -1,0 +1,82 @@
+{% extends 'service_base.html' %}
+{% from 'components/ui.html' import icon %}
+{% block title %}Research Assistant Home | Campus Space{% endblock %}
+{% block page_heading %}Research Assistant Home{% endblock %}
+{% block service_eyebrow %}Overview{% endblock %}
+{% block service_intro %}Welcome, {{ home.name|person_name }}. {{ home.schedule.today.strftime('%A, %d %B %Y') }}.{% endblock %}
+{% block service_actions %}
+<a class="service-button" href="{{ url_for('research_assistant.tasks') }}">My research tasks</a>
+{% endblock %}
+{% block service_content %}
+<div class="service-split">
+    <section class="panel" aria-labelledby="research-tasks-heading">
+        <h2 id="research-tasks-heading">Research tasks</h2>
+        <p>{{ home.open_count }} open {{ 'task' if home.open_count == 1 else 'tasks' }}</p>
+        <div class="service-list">
+            {% for task in home.tasks %}
+            <article class="service-row">
+                <span class="service-row-icon" aria-hidden="true">{{ icon('book', 17) }}</span>
+                <div>
+                    <h3 class="research-task-title">{{ task.title }}</h3>
+                    <p>{% if task.due %}Due <time datetime="{{ task.due }}">{{ task.due }}</time>{% else %}No due date{% endif %}</p>
+                </div>
+            </article>
+            {% else %}
+            <p class="service-empty">Your open tasks will appear here.</p>
+            {% endfor %}
+        </div>
+        <div class="service-actions">
+            <a class="service-button" href="{{ url_for('research_assistant.tasks') }}#add-task">Add a task</a>
+        </div>
+    </section>
+
+    <section class="panel" aria-labelledby="research-schedule-heading">
+        <h2 id="research-schedule-heading">This week</h2>
+        {% set schedule = home.schedule %}
+        <p><time datetime="{{ schedule.weekStart.isoformat() }}">{{ schedule.weekStart.strftime('%d %b') }}</time> &ndash; <time datetime="{{ schedule.weekEnd.isoformat() }}">{{ schedule.weekEnd.strftime('%d %b %Y') }}</time> &middot; {{ schedule.zone }}</p>
+        {% set preview = namespace(events=[]) %}
+        {% for day in schedule.days %}
+            {% for event in day.entries %}
+                {% if event not in preview.events %}{% set preview.events = preview.events + [event] %}{% endif %}
+            {% endfor %}
+        {% endfor %}
+        {% for event in schedule.weekend %}
+            {% if event not in preview.events %}{% set preview.events = preview.events + [event] %}{% endif %}
+        {% endfor %}
+        <div class="service-list">
+            {% for event in (preview.events|sort(attribute='start'))[:5] %}
+            <article class="service-row">
+                <span class="service-row-icon" aria-hidden="true">{{ icon('calendar', 17) }}</span>
+                <div>
+                    <h3 class="research-task-title">
+                        {% if event.appointmentId %}
+                        <a href="{{ url_for('appointments.detail', appointment_id=event.appointmentId) }}">{{ event.title }}</a>
+                        {% elif event.roomRequestId %}
+                        <a href="{{ url_for('rooms.detail', request_id=event.roomRequestId) }}">{{ event.title }}</a>
+                        {% else %}
+                        {{ event.title }}
+                        {% endif %}
+                    </h3>
+                    <p><time datetime="{{ event.start.isoformat() }}">{{ event.start.strftime('%a %d %b, %H:%M') }}</time> &ndash; <time datetime="{{ event.end.isoformat() }}">{{ event.end.strftime('%H:%M' if event.start.date() == event.end.date() else '%a %d %b, %H:%M') }}</time> &middot; {{ event.kind }}</p>
+                </div>
+            </article>
+            {% else %}
+            <p class="service-empty">No dated commitments this week.</p>
+            {% endfor %}
+        </div>
+        {% if schedule.unresolved %}
+        <p class="service-notice">Some university commitments need dates. Open your schedule for details.</p>
+        {% endif %}
+        <div class="service-actions">
+            <a class="service-button" href="{{ url_for('appointments.calendar', month=schedule.month, week=schedule.weekStart.isoformat()) }}">My schedule &amp; blocks</a>
+            <a href="{{ url_for('calendar.index', view='week', date=schedule.weekStart.isoformat()) }}">University calendar</a>
+        </div>
+    </section>
+</div>
+
+<section class="panel" aria-labelledby="research-inbox-heading">
+    <h2 id="research-inbox-heading">Inbox</h2>
+    <p>{{ home.unread_count }} unread {{ 'update' if home.unread_count == 1 else 'updates' }}</p>
+    <a class="service-button" href="{{ url_for('notifications.index') }}">Open Inbox</a>
+</section>
+{% endblock %}

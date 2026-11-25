@@ -2,7 +2,10 @@
 {% set student_shell = g.principal and g.principal.role == 'Student' and not g.principal.administrator %}
 {% set professor_shell = g.principal and g.principal.role == 'Instructor' and not g.principal.administrator %}
 {% set admin_shell = g.principal and g.principal.administrator %}
-{% set campus_shell = student_shell or professor_shell or admin_shell %}
+{% set research_assistant_shell = g.principal and g.principal.role == 'TeachingAssistant' and (g.principal.research_assistant|default(false)) and not g.principal.administrator %}
+{% set campus_shell = student_shell or professor_shell or admin_shell or research_assistant_shell %}
+{% set workspace_home = 'administration.home' if admin_shell else 'student.home' if student_shell else 'professor.home' if professor_shell else 'research_assistant.home' if research_assistant_shell else 'index' %}
+{% set workspace_name = 'Administration' if admin_shell else 'Student' if student_shell else 'Professor' if professor_shell else 'Research Assistant' if research_assistant_shell else '' %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -18,12 +21,12 @@
     {% block styles %}{% endblock %}
     {% if campus_shell and workspace_service %}<link rel="stylesheet" href="{{ url_for('static', filename='campus-services.css') }}">{% endif %}
 </head>
-<body{% if g.principal %} class="app-body{% if campus_shell %} campus-shell{% endif %}{% if student_shell %} student-shell{% elif professor_shell %} professor-shell{% elif admin_shell %} admin-shell{% endif %}"{% endif %}>
+<body{% if g.principal %} class="app-body{% if campus_shell %} campus-shell{% endif %}{% if student_shell %} student-shell{% elif professor_shell %} professor-shell{% elif admin_shell %} admin-shell{% elif research_assistant_shell %} research-assistant-shell{% endif %}"{% endif %}>
     <a class="skip-link" href="#main-content">Skip to content</a>
     {% if g.principal %}
     <aside class="app-sidebar" id="app-sidebar" aria-label="University navigation">
-        <a class="app-brand" href="{{ url_for('administration.home' if admin_shell else 'student.home' if student_shell else 'professor.home' if professor_shell else 'index') }}">
-            {% if campus_shell %}<span class="app-brand-mark" aria-hidden="true">U</span><span>Campus Space<span class="app-brand-subtitle">{{ 'Administration' if admin_shell else 'Student' if student_shell else 'Professor' }} workspace</span></span>{% else %}<span class="app-brand-mark">{{ icon('book', 25) }}</span><span>University<span class="app-brand-subtitle">Resources &amp; scheduling</span></span>{% endif %}
+        <a class="app-brand" href="{{ url_for(workspace_home) }}">
+            {% if campus_shell %}<span class="app-brand-mark" aria-hidden="true">U</span><span>Campus Space<span class="app-brand-subtitle">{{ workspace_name }} workspace</span></span>{% else %}<span class="app-brand-mark">{{ icon('book', 25) }}</span><span>University<span class="app-brand-subtitle">Resources &amp; scheduling</span></span>{% endif %}
         </a>
         <button class="sidebar-close ui-icon-button" type="button" data-navigation-close aria-label="Close navigation" hidden>{{ icon('close') }}</button>
         {% include 'components/_navigation.html' %}
@@ -34,11 +37,14 @@
     <div{% if g.principal %} class="app-workspace"{% endif %}>
         <header class="{{ 'app-topbar' if g.principal else 'site-header' }}">
             {% if g.principal %}<button class="navigation-toggle ui-icon-button" type="button" data-navigation-toggle aria-label="Open navigation" aria-expanded="false" aria-controls="app-sidebar" hidden>{{ icon('menu') }}</button>{% endif %}
-            {% if campus_shell %}<a class="student-mobile-brand" href="{{ url_for('administration.home' if admin_shell else 'student.home' if student_shell else 'professor.home') }}"><span class="app-brand-mark" aria-hidden="true">U</span><span>Campus Space</span></a>{% endif %}
-            <div class="app-heading"><p class="{{ 'app-breadcrumb' if g.principal else 'eyebrow' }}">{{ 'Student workspace' if student_shell else 'Professor workspace' if professor_shell else 'Administration workspace' if admin_shell else ('University portal' if g.principal else 'Resource Allocation System') }}</p>{% if campus_shell and (request.endpoint in ['student.home','professor.home'] or workspace_service) %}<p class="student-current-page">{{ self.page_heading() }}</p>{% else %}<h1>{% block page_heading %}Dashboard{% endblock %}</h1>{% endif %}</div>
+            {% if campus_shell %}<a class="student-mobile-brand" href="{{ url_for(workspace_home) }}"><span class="app-brand-mark" aria-hidden="true">U</span><span>Campus Space</span></a>{% endif %}
+            <div class="app-heading"><p class="{{ 'app-breadcrumb' if g.principal else 'eyebrow' }}">{{ workspace_name ~ ' workspace' if campus_shell else ('University portal' if g.principal else 'Resource Allocation System') }}</p>{% if campus_shell and (request.endpoint in ['student.home','professor.home'] or workspace_service) %}<p class="student-current-page">{{ self.page_heading() }}</p>{% else %}<h1>{% block page_heading %}Dashboard{% endblock %}</h1>{% endif %}</div>
             {% if g.principal %}{% include 'components/_account_controls.html' %}{% endif %}
         </header>
         <main id="main-content" class="{{ 'app-content' if g.principal else 'page-shell' }}{% if campus_shell and workspace_service %} campus-service{% if student_shell %} student-service{% endif %}{% endif %}" tabindex="-1">
+            {% if config.LOCAL_DEMO_DATASET == 'itu' %}
+            <p class="service-notice">ITU BBF local demonstration. Staff names and listed teaching times are public records. Accounts, student enrolments, office hours, room capacities, facilities and equipment are simulated.</p>
+            {% endif %}
             {% block content %}{% endblock %}
         </main>
     </div>

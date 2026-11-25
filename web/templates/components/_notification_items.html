@@ -11,6 +11,6 @@
         </a>
     </li>
 {% else %}
-    <li class="notification-empty">No updates yet. Decisions and invitations will appear here.</li>
+    <li class="notification-empty">{{ notification_empty|default('No updates yet. Decisions and invitations will appear here.') }}</li>
 {% endfor %}
 </ul>

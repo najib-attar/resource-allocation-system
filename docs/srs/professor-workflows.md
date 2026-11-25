@@ -8,7 +8,7 @@ Student [PR #24](https://github.com/najib-attar/resource-allocation-system/pull/
 and Professor [PR #25](https://github.com/najib-attar/resource-allocation-system/pull/25)
 are merged into `main`. Professor Services was developed separately on
 `codex/professor-services-v1`, based on audited Student UI-10 commit `747c925`,
-then integrated with main. The current application migration head is `0051c`.
+then integrated with main. The Professor eligibility-notice migration is `0051c`.
 No deployment is implied by the merge.
 
 Initial reviewed main was `d9a63f3ef0f5f22b56a79af670c740a13f7bb6ad`.

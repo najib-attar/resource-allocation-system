@@ -320,7 +320,9 @@ class Repository:
                 raise PersistenceError("New university commitments have unresolved calendar dates for confirmed appointment participants. Configure explicit academic bindings before publishing.")
             assert_commitments_compatible(session, intervals)
         from ..room_calendar import assert_room_publication
+        from ..teaching_calendar import assert_teaching_participants_compatible
         assert_room_publication(session, run.id)
+        assert_teaching_participants_compatible(session, run.id)
         state.active_run_id = run.id
         state.calendar_revision += 1
 

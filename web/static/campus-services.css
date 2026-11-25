@@ -157,6 +157,7 @@
     .service-heading-actions { margin-top: 18px; }
     .campus-service .panel, .campus-service .ui-card, .campus-service .booking-section { padding: 19px; }
     .campus-service :is(.appointment-grid,.booking-fields-row,.participant-picker-grid) { grid-template-columns: minmax(0,1fr); gap: 0; }
+    .campus-service .notification-filters .service-actions { margin-top: 8px; }
     .service-row { grid-template-columns: 32px minmax(0,1fr); gap: 12px; }
     .service-row > .service-status { grid-column: 2; justify-self: start; }
     .service-row-state { grid-column: 2; }
@@ -171,6 +172,11 @@
     .campus-service .timetable-event { margin-top: 12px; }
     .campus-service .calendar-filter-row label { flex: 0 1 auto; }
 }
+
+.research-assistant-shell .research-task-title { overflow-wrap: anywhere; }
+.research-assistant-shell .research-task + .research-task,
+.research-assistant-shell .research-task-pages { border-top: 1px solid var(--line); margin-top: 18px; padding-top: 18px; }
+.research-assistant-shell .research-task summary { color: var(--accent); cursor: pointer; padding-block: 12px; }
 
 .service-count { display: inline-block; margin-left: 8px; color: var(--muted); font-size: 13px; font-weight: 500; }
 .service-split { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 24px; align-items: start; }

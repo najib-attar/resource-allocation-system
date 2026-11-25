@@ -365,6 +365,81 @@ class AppointmentWebTests(AppointmentFixture):
         form["untilDate"] = "9999-12-31"
         self.assertEqual(self.client.post("/appointments/times", data=form).status_code, 409)
 
+    def test_confirmed_calendar_download_is_private_and_tracks_appointment_revisions(self):
+        purpose = "Synthetic private subject\r\nSUMMARY:Hidden text"
+        pid = self.service.submit(1, [2, 3], [4], purpose, 60, START, self.faculty)
+        path = f"/appointments/{pid}"
+        download = path + "/calendar.ics"
+        professors = [authorized_client(web_app.app, uid) for uid in (2, 3)]
+        required = [self.client, *professors]
+        invitee, outsider = [authorized_client(web_app.app, uid) for uid in (4, 6)]
+        link = f'href="{download}"'.encode()
+
+        def forbidden(client, url=download):
+            response = client.get(url)
+            self.assertEqual(response.status_code, 403)
+            self.assertEqual(response.headers["Cache-Control"], "private, no-store")
+            self.assertNotIn("Content-Disposition", response.headers)
+            self.assertNotIn(b"BEGIN:VCALENDAR", response.data)
+
+        def confirm(revision):
+            for professor in professors:
+                response = professor.post(path + "/decision", data={"revision": revision, "decision": "approve"})
+                self.assertEqual(response.status_code, 302)
+
+        def calendar_file(client):
+            response = client.get(download)
+            self.assertEqual(response.status_code, 200)
+            self.assertEqual(response.mimetype, "text/calendar")
+            self.assertEqual(response.headers["Cache-Control"], "private, no-store")
+            self.assertEqual(response.headers["Content-Disposition"], 'attachment; filename="campus-space-appointment.ics"')
+            self.assertTrue(response.data.endswith(b"END:VCALENDAR\r\n"))
+            self.assertNotIn(b"\n", response.data.replace(b"\r\n", b""))
+            lines = response.data.decode("ascii").splitlines()
+            self.assertTrue(all(len(line) <= 75 for line in lines))
+            self.assertEqual(lines[:4],
+                             ["BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//Campus Space//Appointments//EN", "BEGIN:VEVENT"])
+            self.assertEqual(lines[-2:], ["END:VEVENT", "END:VCALENDAR"])
+            fields = dict(line.split(":", 1) for line in lines[4:-2])
+            self.assertEqual(set(fields), {"UID", "DTSTAMP", "DTSTART", "DTEND", "SEQUENCE", "SUMMARY", "CLASS", "STATUS"})
+            self.assertRegex(fields["UID"], r"^[0-9a-f-]{36}$")
+            self.assertRegex(fields["DTSTAMP"], r"^\d{8}T\d{6}Z$")
+            self.assertEqual(fields["SUMMARY"], "University appointment")
+            self.assertEqual(fields["CLASS"], "PRIVATE")
+            self.assertEqual(fields["STATUS"], "CONFIRMED")
+            return fields
+
+        for client in required:
+            self.assertNotIn(link, client.get(path).data)
+            forbidden(client)
+        self.assertEqual(web_app.app.test_client().get(download).status_code, 302)
+        confirm(1)
+        original = calendar_file(self.client)
+        self.assertEqual((original["DTSTART"], original["DTEND"], original["SEQUENCE"]),
+                         ("20300107T070000Z", "20300107T080000Z", "0"))
+        for client in required:
+            self.assertIn(link, client.get(path).data)
+            self.assertEqual(calendar_file(client), original)
+        self.assertEqual(invitee.get(path).status_code, 200)
+        self.assertNotIn(link, invitee.get(path).data)
+        for client in (invitee, outsider):
+            forbidden(client)
+        forbidden(outsider, "/appointments/9223372036854775807/calendar.ics")
+        forbidden(outsider, "/appointments/9223372036854775808/calendar.ics")
+
+        changed = self.client.post(path + "/reschedule", data={"revision": 1, "start": "2030-01-07T11:00"})
+        self.assertEqual(changed.status_code, 302)
+        forbidden(self.client)
+        confirm(2)
+        revised = calendar_file(self.client)
+        self.assertEqual(revised["UID"], original["UID"])
+        self.assertEqual((revised["DTSTART"], revised["DTEND"], revised["SEQUENCE"]),
+                         ("20300107T080000Z", "20300107T090000Z", "1"))
+        self.assertEqual(professors[0].post(path + "/cancel", data={"revision": 2}).status_code, 302)
+        for client in required:
+            self.assertNotIn(link, client.get(path).data)
+            forbidden(client)
+
     def test_invitation_reschedule_approval_and_cancel_routes_preserve_revision_rules(self):
         pid = self.submit(professors=(2, 3), invitees=(4,))
         path = f"/appointments/{pid}"

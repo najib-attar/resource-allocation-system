@@ -10,7 +10,7 @@ from .persistence.models import (FacultyRoomApprover, LoginAccount, Organization
     ROOM_CATEGORIES, RoomAccess, RoomClosure, RoomEvent, RoomInvitation, RoomOrganizerCommitment,
     RoomPolicy, RoomReservation, StudentRoomRequest)
 from .persistence.repository import state_row
-from .room_calendar import academic_room_intervals, assert_room_publication, room_snapshot, valid_approvers
+from .room_calendar import assert_room_publication, room_snapshot, room_usage_intervals, valid_approvers
 from .notification_service import event_history, publish_event
 from .waiting_list_state import close_waiting, guard_waiting, refresh_after_commit
 from .recurrence import expand_recurrence, recurrence_preview
@@ -630,19 +630,35 @@ class RoomRequestService:
         start=local_instant(datetime.combine(day,time()),zone)
         end=local_instant(datetime.combine(day+timedelta(days=1),time()),zone)
         with self.database.transaction(read_only=True) as session:
-            self._user(session,actor)
-            room=session.get(Resource,room_id)
-            policy=session.get(RoomPolicy,room_id)
-            account=session.get(LoginAccount,actor)
-            administrator=bool(account and account.enabled and (account.administrator or session.get(Role,session.get(User,actor).primary_role_id).name == 'Administrator'))
-            permitted=administrator or (policy and policy.enabled and (not policy.restricted or session.get(RoomAccess,(room_id,actor)) is not None))
-            if room is None or not permitted:
-                raise PermissionError('Room availability is not available to this identity.')
-            values,unresolved=academic_room_intervals(session,[room_id],start,end,state_row(session).active_run_id)
-            intervals=[{'start':datetime.fromtimestamp(v['start'],zone),'end':datetime.fromtimestamp(v['end'],zone)} for v in values]
-            for model in (RoomReservation,RoomClosure):
-                intervals.extend({'start':v.start_at.astimezone(zone),'end':v.end_at.astimezone(zone)} for v in session.scalars(select(model).where(
-                    model.resource_id == room_id,model.start_at < end,model.end_at > start)))
-            intervals.sort(key=lambda v:(v['start'],v['end']))
-            return {'id':room.id,'name':room.name,'date':day,'zone':zone.key,'unresolved':bool(unresolved),
-                    'enabled':bool(policy and policy.enabled and room.available),'busy':intervals}
+            return {**room_availability(session, actor, room_id, start, end), 'date': day}
+
+
+def room_availability_query(session, actor):
+    """The same room visibility policy applies to every availability view."""
+    user = session.get(User, actor) if type(actor) is int and actor > 0 else None
+    if user is None or user.status.casefold() != 'active':
+        raise PermissionError('An active university identity is necessary.')
+    account = session.get(LoginAccount, actor)
+    administrator = bool(account and account.enabled and
+        (account.administrator or session.get(Role, user.primary_role_id).name == 'Administrator'))
+    query = select(Resource, RoomPolicy).outerjoin(RoomPolicy, RoomPolicy.resource_id == Resource.id)
+    if not administrator:
+        allowlisted = select(RoomAccess.resource_id).where(
+            RoomAccess.resource_id == Resource.id, RoomAccess.user_id == actor).exists()
+        query = query.where(RoomPolicy.enabled.is_(True), or_(RoomPolicy.restricted.is_(False), allowlisted))
+    return query
+
+
+def room_availability(session, actor, room_id, start, end):
+    match = session.execute(room_availability_query(session, actor).where(Resource.id == room_id)).first()
+    if match is None:
+        raise PermissionError('Room availability is not available to this identity.')
+    room, policy = match
+    zone = university_zone()
+    values, unresolved = room_usage_intervals(session, [room.id], start, end, state_row(session).active_run_id)
+    intervals = [{'start': datetime.fromtimestamp(value['start'], zone),
+                  'end': datetime.fromtimestamp(value['end'], zone)} for value in values]
+    intervals.sort(key=lambda interval: (interval['start'], interval['end']))
+    return {'id': room.id, 'name': room.name, 'building': room.building, 'capacity': room.capacity,
+            'zone': zone.key, 'unresolved': room.id in unresolved,
+            'enabled': bool(policy and policy.enabled and room.available), 'busy': intervals}

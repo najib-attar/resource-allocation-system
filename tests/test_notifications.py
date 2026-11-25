@@ -8,9 +8,20 @@ from sqlalchemy.exc import IntegrityError
 from auth_fixtures import authorized_client
 from test_room_requests import RoomFixture, START
 from web import app as web_app
-from web.notification_service import NotificationService
+from web.notification_service import NotificationService, publish_event
 from web.persistence.database import Database
-from web.persistence.models import Notification, RoomEvent, RoomInvitation
+from web.persistence.models import AppointmentEvent, Notification, RoomEvent, RoomInvitation
+
+
+def seed_inbox_history(fixture, extra=32):
+    """Add distinct authorized notifications at one timestamp to exercise the cursor tie-breaker."""
+    meeting = fixture.submit(professors=(2,))
+    room = fixture.request_room(invitees=(2,), purpose='Filtered study room')
+    with fixture.database.transaction() as session:
+        for index in range(extra):
+            publish_event(session, AppointmentEvent(appointment_id=meeting, actor_id=1,
+                revision=1, message=f'Synthetic history update {index}', created_at=START))
+    return meeting, room
 
 
 class NotificationTests(RoomFixture):
@@ -112,6 +123,69 @@ class NotificationTests(RoomFixture):
         with self.assertRaises(PermissionError): self.notifications.mark_read(4,notification_id=key)
         for value in (-1,True,'1',9223372036854775808):
             with self.assertRaises(ValueError): self.notifications.mark_read(7,through_id=value)
+
+    def test_history_traverses_more_than_one_hundred_rows_after_an_anchor_is_read(self):
+        seed_inbox_history(self, extra=105)
+        expected = set()
+        with self.database.transaction(read_only=True) as session:
+            expected = set(session.scalars(select(Notification.id).where(
+                Notification.recipient_id == 2, Notification.appointment_event_id.is_not(None))))
+        first = self.notifications.inbox_page(2, kind='appointment', read_state='unread')
+        self.assertEqual(len(first['items']), 30)
+        self.assertEqual(first['unreadCount'], len(expected))
+        self.notifications.mark_read(2, notification_id=first['nextBefore'])
+
+        seen = [row['id'] for row in first['items']]
+        before = first['nextBefore']
+        while before:
+            page = self.notifications.inbox_page(2, kind='appointment', read_state='unread', before=before)
+            self.assertTrue(all(row['kind'] == 'appointment' and row['read_at'] is None for row in page['items']))
+            seen.extend(row['id'] for row in page['items'])
+            before = page['nextBefore']
+        self.assertEqual(seen, sorted(expected, reverse=True))
+        self.assertEqual(len(seen), 106)
+
+    def test_filter_bulk_read_uses_scope_and_boundary_without_touching_other_updates(self):
+        _, room = seed_inbox_history(self, extra=1)
+        page = self.notifications.inbox_page(2, kind='room', read_state='unread')
+        boundary = page['throughId']
+        self.assertEqual([row['subject_id'] for row in page['items']], [room])
+        self.rooms.respond(room, 2, 1, False)
+        with self.database.transaction() as session:
+            publish_event(session, RoomEvent(request_id=room, actor_id=1, revision=1,
+                message='Arrived after filtering'), recipient_ids=[2])
+        self.notifications.mark_read(2, through_id=boundary, kind='room', read_state='unread')
+
+        inbox = self.notifications.inbox(2)
+        self.assertTrue(all(row['read_at'] is None for row in inbox['items'] if row['id'] != boundary))
+        self.assertTrue(any(row['message'] == 'Arrived after filtering' for row in inbox['items']))
+        [read] = self.notifications.inbox_page(2, kind='room', read_state='read')['items']
+        self.assertEqual(read['id'], boundary)
+        self.assertTrue(all(row['read_at'] is None for row in self.notifications.inbox(7)['items']))
+
+    def test_filter_forms_are_private_and_restore_the_selection_after_bulk_read(self):
+        seed_inbox_history(self, extra=0)
+        self.configure_web()
+        client = authorized_client(web_app.app, 2)
+        query = '/notifications/?kind=room&state=unread'
+        result = client.get(query)
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.headers['Cache-Control'], 'no-store')
+        self.assertIn(b'Filtered study room', result.data)
+        self.assertNotIn(b'Fictional project review', result.data)
+        [room_notice] = self.notifications.inbox_page(2, kind='room')['items']
+        foreign = authorized_client(web_app.app, 3)
+        self.assertEqual(foreign.get(f"/notifications/?before={room_notice['id']}").status_code, 400)
+        for invalid in ('kind=bad', 'state=missing', 'before=-1', 'before=broken'):
+            error = client.get('/notifications/?' + invalid)
+            self.assertEqual(error.status_code, 400)
+            self.assertIn(b'Back to Inbox', error.data)
+        form = dict(throughId=room_notice['id'], kind='room', state='unread')
+        self.assertEqual(client.client.post('/notifications/read', data=form).status_code, 400)
+        self.assertEqual(client.post('/notifications/read', data=form).location, query)
+        self.assertNotIn(b'Filtered study room', client.get(query).data)
+        self.assertIn(b'Filtered study room', client.get('/notifications/?kind=room&state=read').data)
+        self.assertIn('Fictional project review', client.get('/notifications/feed').json['html'])
 
     def test_shared_header_is_role_based_without_granting_backend_permissions(self):
         self.configure_web()

@@ -1,0 +1,36 @@
+{% extends 'service_base.html' %}
+{% from 'courses/_timetable.html' import week_controls, class_rows, interval %}
+{% block title %}{{ schedule.room.name }} | Campus Space{% endblock %}
+{% block page_heading %}{{ schedule.room.name }}{% endblock %}
+{% block service_eyebrow %}Courses / Classroom timetable{% endblock %}
+{% block service_intro %}{{ schedule.room.capacity }} seats. Published classes and room occupancy update with the selected week.{% endblock %}
+{% block service_actions %}
+    <a class="service-button" href="{{ url_for('courses.rooms') }}">Classroom timetables</a>
+    <a class="service-button" href="{{ url_for('rooms.availability', room_id=schedule.room.id, date=schedule.week.date) }}">Day availability</a>
+{% endblock %}
+{% block service_content %}
+{{ week_controls(schedule.week, 'courses.room', {'room_id': schedule.room.id}) }}
+{% if not schedule.room.enabled %}
+    <p class="service-notice">This room is currently disabled for student booking.</p>
+{% endif %}
+{% if schedule.room.unresolved %}
+    <p class="service-notice" role="status">An academic allocation has unresolved dates. Only known occupied intervals appear.</p>
+{% else %}
+    <p>Available intervals have no recorded overlap. Room policy, organizer availability and faculty approval still apply to bookings.</p>
+{% endif %}
+{% for day in schedule.week.dates %}
+    <section class="panel" aria-labelledby="room-date-{{ day.isoformat() }}">
+        <h2 id="room-date-{{ day.isoformat() }}"><time datetime="{{ day }}">{{ day.strftime('%A, %d %B') }}</time></h2>
+        {{ class_rows(schedule.classes.get(day, []), false) }}
+        <h3>Room intervals</h3>
+        {% for start, end, occupied in schedule.periods[day] %}
+            <div class="service-person">
+                <p>{{ interval(start, end) }}</p>
+                <p class="service-status {{ 'service-status-warning' if occupied else 'service-status-success' }}">{{ 'Occupied' if occupied else 'Available' }}</p>
+            </div>
+        {% else %}
+            <p>No known occupied intervals.</p>
+        {% endfor %}
+    </section>
+{% endfor %}
+{% endblock %}

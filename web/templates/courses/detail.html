@@ -1,0 +1,13 @@
+{% extends 'service_base.html' %}
+{% from 'courses/_timetable.html' import section_cards %}
+{% block title %}{{ course.code }} | Campus Space{% endblock %}
+{% block page_heading %}{{ course.code }} &middot; {{ course.title }}{% endblock %}
+{% block service_eyebrow %}Courses / Sections{% endblock %}
+{% block service_intro %}Section names, times, locations and instructor names from the public timetable.{% endblock %}
+{% block service_actions %}
+    <a class="service-button" href="{{ url_for('courses.catalog') }}">Course catalogue</a>
+    {% if g.principal.role in ('Student', 'Instructor') %}<a class="service-button" href="{{ url_for('courses.mine') }}">My Courses</a>{% endif %}
+{% endblock %}
+{% block service_content %}
+{{ section_cards(sections) }}
+{% endblock %}

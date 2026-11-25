@@ -594,9 +594,9 @@ class PreferenceMigrationTests(PostgresTestCase):
         before = set(inspect(self.database.engine).get_table_names())
         self.migrate('upgrade', 'head')
         after = set(inspect(self.database.engine).get_table_names())
-        self.assertEqual(after - before, {'scheduling_preference_revision', 'scheduling_cost_policy_revision',
-            'scheduling_cost_policy_authority_revision', 'scheduling_cost_policy_event', 'scheduling_cost_policy_head',
-            'request_eligibility', 'eligibility_event', 'allocation_eligibility', 'logged_out_session'})
+        self.assertTrue(before <= after)
+        self.assertIn(Revision.__tablename__, after - before)
+        self.assertEqual(after, set(Base.metadata.tables) | {"alembic_version"})
         with self.database.transaction(read_only=True) as session:
             self.assertEqual(session.scalar(select(func.count()).select_from(Revision)), 0)
             self.assertEqual(session.get(User, 1).name, 'Fictional retained identity')

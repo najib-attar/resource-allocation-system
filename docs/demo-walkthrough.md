@@ -116,6 +116,159 @@ preserves manual decisions. If a date/resource is unavailable, inspect the error
 the tool does not relax calendars or policies to force success. Do not use this
 seed against operational data.
 
+## ITU BBF local demonstration
+
+This separate profile uses a reviewed public personnel roster and OBS meeting
+times with 120 fictional students. Local UTF-8 inputs live in
+`data/itu_demo/roster.json` and `data/itu_demo/schedule.json`. They stay outside
+Git. Seed 42 and the official class dates are fixed for this profile.
+
+From a checkout containing the inputs, start the owned ITU database and Flask
+application using Windows PowerShell:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_demo.ps1 -Dataset itu -Profile itu-bbf-fall-2026 -WebPort 5001
+```
+
+The default ITU PostgreSQL port is 55546 and the database is `ras_itu_demo`.
+Use a different unused port for a different profile, and specify tool paths
+with `-PythonPath`, `-CompilerPath` or `-PostgresBin` when required.
+The saved dataset type prevents a profile from switching to a different seed.
+The data files are needed for initial setup. Keep an independently verified
+backup before retiring any previous demo.
+
+Retrieve a single password locally from the Windows-user-restricted profile
+directory. The launcher prints usernames and never prints ITU passwords.
+
+```powershell
+$credentials = Get-Content -LiteralPath .\build\local-demos\itu-bbf-fall-2026\credentials.json -Raw -Encoding UTF8 | ConvertFrom-Json
+$credentials.student001
+Remove-Variable credentials
+```
+
+Use `$credentials.admin` for the synthetic administrator or a quoted property
+such as `$credentials.'demo.feza.buzluca'` for a listed demo username. Staff are
+directory identities in this prototype. The supplied public titles confer no
+application approval rights. Visiting academics, affiliation-only coordinators
+and provisional entries stay directory-only.
+
+The separate profile manifest preserves provenance, source discrepancies,
+department and title, application account eligibility, and generated student
+cohorts and enrolments. OBS section schedules represent a partial demonstration
+timetable until the full course archive is installed. Office hours and
+equipment are simulated. Academic requests, allocations and operational
+workflows start empty. Build any optional examples through the existing service
+screens so their approvals remain visible.
+
+### Fall course archive
+
+Place the supplied `itu_course_seed_2026_2027_fall.json` in
+`data/itu_demo/`. The file is local and Git-ignored. A new ITU profile
+installs it during setup. Once an existing profile has applied Alembic head,
+stop its Flask process, leave its PostgreSQL server running, and import the
+archive with the following command.
+
+```powershell
+$profile = '.\build\local-demos\itu-bbf-fall-2026'
+& "$profile\venv\Scripts\python.exe" .\scripts\setup_local_demo.py --state-dir $profile install-itu-courses
+```
+
+The transaction adds the course catalogue, CRNs, teaching assignments and
+simulated student enrollments. It replaces generated teaching and enrollment
+projections for this semester. It refuses changes that conflict with confirmed
+appointments, reservations, or the active academic publication. Repeating the
+import with the same files leaves the database unchanged. An altered archive
+requires a separately reviewed replacement.
+
+The supplied archive retains its 133 sections and 116 weekly meetings. Optional
+`course_room_schedule.json` adds official OBS sections with different CRNs
+occupying BBB rooms in the same term. The older `room_schedule.json` can supply
+room occupancy if the enriched file is absent. The supplied archive takes
+precedence. The private `course-import-report.json` lists unmatched names,
+archive/OBS differences, and quota/capacity discrepancies.
+
+Use **My Courses** from the student or professor home, or open **Course
+Catalogue** from University Calendar. Classroom timetable links show known
+availability for authorized users. The printed end minute is preserved. For
+feasibility, a printed `09:30–12:29` means the half-open interval
+`[09:30, 12:30)`. Sessions without known rooms still block the relevant
+person's time. MDB locations remain outside the reservable BBB inventory. The
+academic weekly engine uses its original wire contract and a transactional
+publication check rejects teaching conflicts.
+
+Choose **Download this week (.ics)** in My Courses to import the selected
+week's dated classes into a calendar app. The file includes your class times,
+course codes, CRNs, and known locations available to your account. It is a
+snapshot of the selected week.
+
+### BBB room inventory and published occupancy
+
+Fresh ITU profiles load [the BBB catalog](../data/itu_demo/resources.json).
+`resource-manifest.json` in the private demo profile records the catalog,
+verification notes, and the published meetings linked to each room. The catalog
+uses one seating capacity per space. All capacities and facility tags are
+demonstration values. Projectors, whiteboards and computers map to the existing
+booking filters. Other facilities and the published research-lab areas are
+directory metadata.
+
+The eight standard classrooms, conference hall, and three meeting rooms use the
+existing faculty room approval workflow. Z-16, Z-18, 103, Yeni Lab, and the four
+historical teaching labs remain provisional and unavailable. The 16 named
+research labs have restricted policies, an empty allowlist, and availability
+off for both booking paths. Bringing a lab into use requires an explicit
+availability decision and appropriate access configuration. The weekly
+academic allocator has no per-user room allowlist.
+
+The local optional `data/itu_demo/room_schedule.json` adds BBB meetings from OBS
+without changing instructor or student schedules. If it is absent, occupancy is
+limited to the original published sections in `schedule.json`. Matched meetings
+become dated room holds during the published teaching period, with recess dates
+excluded. Room codes outside the catalog or missing in OBS remain in the local
+manifest. The student room engine sees the holds when recommending and validating
+bookings. After the course archive is installed, the normalized sessions replace
+these initial holds. The weekly academic engine can still propose a conflicting
+room. The publication guard rejects that result before it can reserve the room
+or replace an active publication.
+
+To update an already initialized ITU profile, back up its owned PostgreSQL
+database and run the following while PostgreSQL is running. The update
+replaces the exact, unused 12-room legacy seed in one transaction. A changed
+inventory, changed room policies, or related requests or history cause it to
+stop with the existing data intact. Repeating the command preserves the installed
+catalog and any subsequent room administration.
+
+```powershell
+$profile = '.\build\local-demos\itu-bbf-fall-2026'
+& "$profile\venv\Scripts\python.exe" .\scripts\setup_local_demo.py --state-dir $profile update-itu-resources
+```
+
+[Official academic calendar](https://www.takvim.sis.itu.edu.tr/AkademikTakvim/TR/akademik-takvim/AkademikTakvimTablo.php) · [ITU OBS course schedules](https://obs.itu.edu.tr/public/DersProgram)
+
+## Research Assistant workspace
+
+A freshly seeded fictional profile prints an `assistant1` sign-in. Sign in
+and open **My research tasks**. Add a task, optionally set a due date, then
+edit, complete, or reopen it. **Completed** shows finished tasks. Task dates
+stay on the planner. The workspace links to your existing Calendar, schedule
+and Inbox.
+
+A profile already seeded by an older version keeps its accounts. For an
+existing university identity with the primary `TeachingAssistant` role and the
+trusted assistant type `Research Assistant` or `Research and teaching`, use
+[account provisioning](database-operations.md#accounts-and-appointment-calendars)
+to set up a sign-in if needed.
+
+## Inbox and calendar downloads
+
+Use **Service** and **Read status** in the full Inbox to find updates. **Older
+updates** keeps the selection while browsing. **Mark matching as read** clears
+unread updates matching that selection, including earlier pages.
+
+On a confirmed appointment, the student organizer and required professors can
+choose **Download calendar file (.ics)**. Import it into your calendar
+application. The file includes the time and a generic title. If the appointment
+is moved or cancelled, update your imported entry separately.
+
 ## Academic requests, eligibility and allocation
 
 As a professor, open Academic Requests and submit an Exam, OneTime, Recurring or

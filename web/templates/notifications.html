@@ -5,10 +5,38 @@
 {% block service_intro %}Updates on your requests, invitations, loans and private resource reports.{% endblock %}
 {% block service_content %}
 <section class="panel notification-inbox">
-    <div class="notification-heading"><div><h2>Your updates</h2><p>{{ inbox.unreadCount }} unread &middot; Updates relevant to your account.</p></div>
-    <form method="post" action="{{ url_for('notifications.read') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="throughId" value="{{ inbox.throughId }}"><button{% if not inbox.unreadCount %} disabled{% endif %}>Mark all as read</button></form></div>
+    {% set filtered = inbox.kind != 'all' or inbox.readState != 'all' %}
+    <form method="get" action="{{ url_for('notifications.index') }}" class="appointment-grid notification-filters" aria-label="Filter Inbox">
+        <div>
+            <label for="inbox-service">Service</label>
+            <select name="kind" id="inbox-service">{% for value, label in kinds.items() %}<option value="{{ value }}"{% if value == inbox.kind %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+        </div>
+        <div>
+            <label for="inbox-read-status">Read status</label>
+            <select name="state" id="inbox-read-status">{% for value, label in read_states.items() %}<option value="{{ value }}"{% if value == inbox.readState %} selected{% endif %}>{{ label }}</option>{% endfor %}</select>
+        </div>
+        <div class="service-actions">
+            <button type="submit">Apply filters</button>
+            {% if filtered %}<a href="{{ url_for('notifications.index') }}">Clear filters</a>{% endif %}
+        </div>
+    </form>
+    <div class="notification-heading">
+        <div><h2>Your updates</h2><p>{{ inbox.unreadCount }} unread{% if filtered %} matching your filters{% endif %}</p></div>
+        <form method="post" action="{{ url_for('notifications.read') }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="throughId" value="{{ inbox.throughId }}">
+            {% if filtered %}<input type="hidden" name="kind" value="{{ inbox.kind }}"><input type="hidden" name="state" value="{{ inbox.readState }}">{% endif %}
+            <button{% if not inbox.unreadCount %} disabled{% endif %}>{{ 'Mark matching as read' if filtered else 'Mark all as read' }}</button>
+        </form>
+    </div>
+    {% set notification_empty = 'No matching updates on this page.' if filtered or inbox.before else 'No updates yet. Decisions and invitations will appear here.' %}
     {% include 'components/_notification_items.html' %}
-    <p class="student-card-note">Showing the latest 100 updates. Full activity history stays on each request. Room/professor availability alerts are not enabled yet.</p>
+    {% if inbox.before or inbox.nextBefore %}
+    <nav class="service-actions" aria-label="Inbox pages">
+        {% if inbox.before %}<a class="button-secondary" href="{{ url_for('notifications.index', kind=inbox.kind, state=inbox.readState) }}">Newest updates</a>{% endif %}
+        {% if inbox.nextBefore %}<a class="button-secondary" href="{{ url_for('notifications.index', kind=inbox.kind, state=inbox.readState, before=inbox.nextBefore) }}">Older updates</a>{% endif %}
+    </nav>
+    {% endif %}
     {% if professor_shell %}<p class="service-notice">Your eligibility notices link to the recorded decisions. Follow allocation outcomes in <a href="{{ url_for('professor.pages') }}">My academic requests</a>.</p>{% endif %}
     {% if admin_shell %}<p class="service-notice">Use <a href="{{ url_for('eligibility.index') }}">academic eligibility review</a> for that work. Unread notifications and pending decisions are different counts.</p>{% endif %}
 </section>

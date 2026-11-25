@@ -36,6 +36,11 @@ Course, faculty and activity details in academic requests are declarations, not
 verified teaching affiliations. Professors cannot operate administrative allocation
 controls or inspect another professor's private requests.
 
+### Research Assistant workspace
+
+- Track private research tasks with optional due dates, edits, and completion.
+- View your weekly commitments and reach the shared Calendar and Inbox.
+
 ### Administration and resource operations
 
 Academic requests start as **Pending Eligibility Review**. An authorized administrator
@@ -81,7 +86,7 @@ and [engine protocol](docs/engine-protocol.md).
 | --- | --- |
 | `src/` | C++ domain models, rules, strategies, services and JSON boundaries |
 | `web/` | Flask routes/services, Jinja templates, shared Campus Space assets and persistence |
-| `migrations/` | Alembic schema history; current head `0051c` |
+| `migrations/` | Alembic schema history through `0051e` |
 | `scripts/` | Backend build, trusted account provisioning, import and local demo tools |
 | `tests/` | C++, Python/PostgreSQL, security and real-browser regression tests |
 | `docs/` | Requirements, architecture, operations, portal coverage and historical reports |

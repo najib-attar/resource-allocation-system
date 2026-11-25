@@ -1,6 +1,6 @@
 # Physical schema catalog
 
-Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 62 application tables.
+Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 69 application tables.
 
 Foreign keys use PostgreSQL **NO ACTION** unless explicitly marked RESTRICT; no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
 ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.
@@ -338,6 +338,94 @@ Private dated unavailable intervals for a university user.
 - Check: `start_at < end_at`.
 - Index: `ix_calendar_block_user_start (user_id, start_at)`.
 
+## course
+
+Shared catalogue identity with one course code and canonical title.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | integer | PK | no | identity |
+| code | varchar(40) | - | no | - |
+| title | text | - | no | - |
+
+- Primary key: `id`.
+- Check: `length(btrim(code)) > 0 AND length(btrim(title)) > 0`.
+- Unique: `code`.
+
+## course_import
+
+Source and supplement digests, provenance and validation report for one imported academic period.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| academic_period_id | integer | PK; FK -> academic_period.id | no | - |
+| source_sha256 | varchar(64) | - | no | - |
+| supplement_sha256 | varchar(64) | - | yes | - |
+| provenance | jsonb | - | no | - |
+| report | jsonb | - | no | - |
+
+- Primary key: `academic_period_id`.
+- Foreign key: `(academic_period_id) -> academic_period (id)`; NO ACTION.
+
+## course_section
+
+One published CRN per academic period with exact section title, source metadata and optional quota.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | integer | PK | no | identity |
+| course_id | integer | FK -> course.id | no | - |
+| academic_period_id | integer | FK -> academic_period.id | no | - |
+| crn | varchar(24) | - | no | - |
+| published_title | text | - | no | - |
+| branch | varchar(24) | - | no | - |
+| academic_level | varchar(12) | - | no | - |
+| instruction_method | text | - | no | - |
+| quota | integer | - | yes | - |
+| source_kind | varchar(12) | - | no | - |
+| source_url | text | - | no | - |
+| publication_status | varchar(20) | - | no | - |
+| published_schedule | jsonb | - | no | - |
+| excluded_dates | jsonb | - | no | - |
+
+- Primary key: `id`.
+- Foreign key: `(academic_period_id) -> academic_period (id)`; NO ACTION.
+- Foreign key: `(course_id) -> course (id)`; NO ACTION.
+- Check: `publication_status IN ('scheduled','unpublished')`.
+- Check: `quota IS NULL OR quota >= 0`.
+- Check: `source_kind IN ('archive','obs')`.
+- Unique: `academic_period_id, crn`.
+- Index: `ix_course_section_course_id (course_id)`.
+
+## course_session
+
+Ordered published weekly meeting with half-open interval boundaries and an optional existing room.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | integer | PK | no | identity |
+| section_id | integer | FK -> course_section.id | no | - |
+| ordinal | integer | - | no | - |
+| resource_id | integer | FK -> resource.id | yes | - |
+| building_code | text | - | yes | - |
+| room_code | text | - | yes | - |
+| day | integer | - | no | - |
+| start_minutes | integer | - | no | - |
+| end_minutes | integer | - | no | - |
+| published_day | text | - | yes | - |
+| published_start | varchar(5) | - | yes | - |
+| published_end | varchar(5) | - | yes | - |
+| published_building | text | - | yes | - |
+| published_room | text | - | yes | - |
+| valid_until | date | - | yes | - |
+
+- Primary key: `id`.
+- Foreign key: `(resource_id) -> resource (id)`; NO ACTION.
+- Foreign key: `(section_id) -> course_section (id)`; NO ACTION.
+- Check: `ordinal > 0 AND day BETWEEN 1 AND 7 AND start_minutes >= 0 AND start_minutes < end_minutes AND end_minutes <= 1440`.
+- Unique: `section_id, ordinal`.
+- Index: `ix_course_session_resource_id (resource_id)`.
+
 ## eligibility_event
 
 Append-only eligibility decision/revision audit, separate from allocation outcomes and calendar publication.
@@ -360,6 +448,20 @@ Append-only eligibility decision/revision audit, separate from allocation outcom
 - Unique: `request_id, version`.
 - Index: `ix_eligibility_event_actor_id (actor_id)`.
 - Index: `ix_eligibility_event_request_id (request_id)`.
+
+## enrollment
+
+Private synthetic student association to a course section for personal schedule and availability.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| section_id | integer | PK; FK -> course_section.id | no | - |
+| user_id | integer | PK; FK -> university_user.id | no | - |
+
+- Primary key: `section_id, user_id`.
+- Foreign key: `(section_id) -> course_section (id)`; NO ACTION.
+- Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
+- Index: `ix_enrollment_user_id (user_id)`.
 
 ## equipment_category
 
@@ -820,6 +922,25 @@ Ordered weekly occurrences; multiple rows represent recurrence.
 - Check: `day BETWEEN 1 AND 7`.
 - Check: `ordinal > 0`.
 - Check: `start_minutes >= 0 AND start_minutes < end_minutes AND end_minutes <= 1440`.
+
+## research_task
+
+Private owner-scoped research planning tasks with due dates and revisions.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| owner_id | integer | PK; FK -> university_user.id | no | - |
+| id | uuid | PK | no | - |
+| title | varchar(160) | - | no | - |
+| due_date | date | - | yes | - |
+| completed_at | timestamp with time zone | - | yes | - |
+| created_at | timestamp with time zone | - | no | now() |
+| revision | integer | - | no | 1 |
+
+- Primary key: `owner_id, id`.
+- Foreign key: `(owner_id) -> university_user (id)`; NO ACTION.
+- Check: `char_length(btrim(title)) > 0`.
+- Check: `revision > 0`.
 
 ## reservation_occurrence
 
@@ -1379,6 +1500,23 @@ Decision-specific suggestion scan, including a scan yielding no alternatives.
 - Foreign key: `(run_id, request_id) -> request_decision (run_id, request_id)`; NO ACTION.
 - Check: `ordinal > 0`.
 - Unique: `run_id, ordinal`.
+
+## teaching_assignment
+
+Ordered public instructor attribution with an optional existing university identity.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| section_id | integer | PK; FK -> course_section.id | no | - |
+| ordinal | integer | PK | no | - |
+| user_id | integer | FK -> university_user.id | yes | - |
+| published_name | text | - | no | - |
+
+- Primary key: `section_id, ordinal`.
+- Foreign key: `(section_id) -> course_section (id)`; NO ACTION.
+- Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
+- Check: `ordinal > 0 AND length(btrim(published_name)) > 0`.
+- Index: `ix_teaching_assignment_user_id (user_id)`.
 
 ## university_user
 

@@ -1,6 +1,7 @@
 [CmdletBinding()]
 param(
     [ValidatePattern('^[a-z][a-z0-9-]{0,40}$')][string]$Profile = 'university-demo',
+    [ValidateSet('fictional','itu')][string]$Dataset,
     [string]$PythonPath,
     [string]$CompilerPath,
     [string]$PostgresBin,
@@ -15,10 +16,12 @@ param(
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
+if ($Dataset -eq 'itu' -and -not $PSBoundParameters.ContainsKey('Profile')) { $Profile = 'itu-bbf-fall-2026' }
 $directory = Join-Path $root "build\local-demos\$Profile"
 $previousLocation = Get-Location
 $names = @('PATH','DATABASE_URL','PGPASSWORD','RESOURCE_ALLOCATION_SECRET_KEY','RESOURCE_ALLOCATION_TIMEZONE',
-           'RESOURCE_ALLOCATION_BACKEND','RESOURCE_ALLOCATION_DEBUG','RESOURCE_ALLOCATION_SECURE_COOKIE','FLASK_DEBUG')
+           'RESOURCE_ALLOCATION_BACKEND','RESOURCE_ALLOCATION_DEBUG','RESOURCE_ALLOCATION_SECURE_COOKIE','FLASK_DEBUG',
+           'RESOURCE_ALLOCATION_DEMO_DATASET','PYTHONUTF8')
 $previousEnvironment = @{}
 foreach ($name in $names) { $previousEnvironment[$name] = [Environment]::GetEnvironmentVariable($name, 'Process') }
 $lock = $null
@@ -73,12 +76,16 @@ try {
     }
     try { Invoke-Checked $demoPython @('scripts/build_backend.py', '--if-needed', '--compiler', $compiler) }
     finally { $buildLock.Dispose() }
+    $env:PYTHONUTF8 = '1'
     $prepare = @('scripts/setup_local_demo.py', '--state-dir', $directory, 'prepare')
+    if ($Dataset) { $prepare += @('--dataset', $Dataset) }
     foreach ($option in @(@('Seed','--seed'), @('AcademicStart','--start'), @('AcademicEnd','--end'), @('PostgresPort','--port'))) {
         if ($PSBoundParameters.ContainsKey($option[0])) { $prepare += @($option[1], [string](Get-Variable -Name $option[0] -ValueOnly)) }
     }
     Invoke-Checked $demoPython $prepare
-    $settings = Get-Content -LiteralPath (Join-Path $directory 'settings.json') -Raw | ConvertFrom-Json
+    $settings = Get-Content -LiteralPath (Join-Path $directory 'settings.json') -Raw -Encoding UTF8 | ConvertFrom-Json
+    if ($settings.dataset -eq 'itu' -and $ServiceExamples) { throw 'Initialize ITU workflow examples separately through the application.' }
+    $env:RESOURCE_ALLOCATION_DEMO_DATASET = $settings.dataset
     $data = Join-Path $directory 'postgres-data'
     $marker = Join-Path $data 'local-demo-owner'
     if (Test-Path -LiteralPath $data) {

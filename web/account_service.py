@@ -17,6 +17,13 @@ from .persistence.repository import PersistenceError
 DUMMY_HASH = generate_password_hash(secrets.token_urlsafe(32), method="scrypt")
 
 
+def is_research_assistant(role, assistant_type):
+    """The engine's assistant role covers distinct university profile types."""
+    return role == "TeachingAssistant" and " ".join((assistant_type or "").casefold().split()) in {
+        "research assistant", "research and teaching",
+    }
+
+
 @dataclass(frozen=True)
 class Principal:
     user_id: int
@@ -24,6 +31,7 @@ class Principal:
     role: str
     administrator: bool
     session_version: int
+    research_assistant: bool = False
 
 
 class AccountService:
@@ -61,7 +69,8 @@ class AccountService:
             return None
         role = session.get(Role, user.primary_role_id, populate_existing=refresh)
         return Principal(user.id, user.name, role.name,
-                         account.administrator or role.name == "Administrator", account.session_version)
+                         account.administrator or role.name == "Administrator", account.session_version,
+                         is_research_assistant(role.name, user.assistant_type))
 
     def authenticate(self, username, password):
         username = username.strip().casefold() if isinstance(username, str) else ""

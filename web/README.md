@@ -12,6 +12,7 @@ coordinates authorized workflows without reimplementing those algorithms.
 | Application and security | `app.py`, `security.py`, `account_service.py` | Blueprint registration, login/logout, sessions, CSRF and role boundaries |
 | Service workspaces | `student_routes.py`, `professor_routes.py`, appointment/room/equipment/calendar/notification routes | Authorized forms, navigation, errors and responses |
 | Academic intake/review | `professor_service.py`, `academic_eligibility.py`, `eligibility_routes.py` | Owner-only intake/revisions, administrative decisions and audit history |
+| Academic teaching | `course_service.py`, `course_routes.py`, `teaching_calendar.py` | Published section catalogue, private schedules and dated teaching commitments |
 | Allocation integration | `allocation_workflow.py`, `engine_gateway.py`, `backend_executable.py` | Revision-bound snapshots, verified executable and validated engine responses |
 | Persistence/read models | `persistence/`, `database_result_adapter.py`, dashboard services | Transactions, durable records and consistent authorized presentation |
 | Presentation | `templates/`, `static/` | Shared Campus Space shell, service components, scoped CSS and page JavaScript |
@@ -42,13 +43,22 @@ See [engine protocol v1](../docs/engine-protocol.md) and
 | `/appointments/availability` | Instructor office-hour management |
 | `/appointments/calendar` | Own timetable and personal blocks for signed-in roles |
 | `/rooms/`, `/equipment/`, `/waiting-lists/`, `/feedback/` | Student/borrower/participant actions and designated staff operations; service checks apply |
-| `/calendar/`, `/notifications/` | Authorized calendar and recipient-scoped Inbox |
+| `/research-assistant/`, `/research-assistant/tasks` | Research Assistant Home and owner-only task planner |
+| `/calendar/`, `/notifications/` | Authorized calendar and recipient-scoped Inbox with service and read-status filters |
+| `/courses/`, `/courses/<id>` | Signed-in view of published course codes, CRNs, instructor names and teaching times |
+| `/courses/mine` | Own published teaching assignments for instructors and own demo enrolments for students |
+| `/courses/rooms`, `/courses/rooms/<room_id>` | Weekly teaching and anonymous room occupancy under the existing room availability policy |
 | `/professor/requests`, `/professor/requests/new`, `/professor/requests/<id>` | Instructor-owned academic forms and tracking |
 | `/professor/requests/<id>/revise` | Own unpublished academic revisions only |
 | `/administration/`, `/administration/reports`, `/administration/runs/<id>` | Administrative Home, bounded read-only reports and persisted allocation-run history |
 | `/professor/academic-requests`, `/professor/academic-requests/<id>` | Owner-scoped JSON list/detail; collection POST supports intake |
 | `/academic-eligibility/`, `/academic-eligibility/<id>` | Administrative review queue and reasoned decisions |
 | `/`, `/add-request`, `/requests`, `/request/<id>`, `/allocation-summary`, `/schedules`, `/raw-data` | Administrative technical workspace and allocation management |
+
+Research Assistant access uses the existing TeachingAssistant role with the
+trusted profile type `Research Assistant` or `Research and teaching`. It supplies
+a personal task planner and links to the already-authorized Calendar and Inbox.
+Tasks have optional due dates, revision-checked changes and owner-only access.
 
 The five university roles are Student, Instructor, TeachingAssistant, Staff and
 Administrator. Administration is an explicit account capability; faculty approval,
@@ -90,7 +100,12 @@ explicit calendar applicability and existing mandatory commitments remain bindin
 Every required professor must approve the current revision. Pending requests hold
 no time; rescheduling clears approvals. Rejection prevents confirmation. Authorized
 cancellation releases commitments; optional student decline does not cancel the
-meeting. PostgreSQL stores approvals, histories, private notifications and half-open
+meeting. The organizer and required professors can download a confirmed
+appointment as an iCalendar file from its detail page. The file contains the
+event time and a generic title. Update the external entry if the appointment
+is moved or cancelled.
+
+PostgreSQL stores approvals, histories, private notifications and half-open
 mandatory-person reservations atomically. Professors cannot approve for a peer or
 initiate a student appointment. See [appointment design](../docs/architecture/appointments-design.md).
 
@@ -201,7 +216,7 @@ preserve the previous active result; database failures never switch to file stor
 
 ### Migrations and existing data
 
-The current chain ends `0050b -> 0051a -> 0051b -> 0051c`:
+The current chain ends `0050b -> 0051a -> 0051b -> 0051c -> 0051d -> 0051e`:
 
 - `0051a` adds independent academic eligibility, immutable review history, per-run
   eligibility proofs and faculty declarations. Old inputs await explicit review;
@@ -210,6 +225,11 @@ The current chain ends `0050b -> 0051a -> 0051b -> 0051c`:
   appointments/allocations. Pre-fix cookies require fresh sign-in.
 - `0051c` adds private eligibility notices for professor-submitted requests. The
   receipt and review commit together. Existing notice and audit histories are preserved.
+- `0051d` adds private `research_task` rows keyed by owner and form-generated UUID.
+  It preserves the existing university roles and scheduling inputs.
+- `0051e` adds the course catalogue, section, teaching, enrolment and import
+  provenance tables. The local İTÜ demo importer populates them separately.
+  Populated course tables prevent a downgrade.
 
 For an existing database: back up, stop old workers, run `python -m alembic upgrade head`
 against the intended database, then start matching code. Do not mix old/new

@@ -14,11 +14,47 @@ async function views(page,pages) {
 async function main() {
   const browser = await chromium.launch({channel:process.platform === 'win32' ? 'msedge' : undefined, headless:true});
   try {
-    const admin = phase === 'MEETING-SMOKE' ? null : await login(browser, 6);
+    const admin = ['MEETING-SMOKE', 'PORTAL-PRODUCTIVITY'].includes(phase) ? null : await login(browser, 6);
     if (['BETA-ACCEPTANCE', 'MEETING-SMOKE'].includes(phase)) {
       const {meeting, exam} = require('./acceptance_flows.cjs');
       await meeting(browser);
       if (admin) await exam(browser, admin.page);
+    } else if (phase === 'PORTAL-PRODUCTIVITY') {
+      const professor = await login(browser, 2);
+      const page = professor.page;
+      const inbox = '/notifications/';
+      const meeting = '/appointments/' + ids.meeting;
+      try {
+        await go(page, inbox);
+        await page.getByLabel('Service', {exact:true}).selectOption('appointment');
+        await page.getByLabel('Read status', {exact:true}).selectOption('unread');
+        await submit(page, page.getByRole('button', {name:'Apply filters'}));
+        assert.equal(await page.locator('main .notification-item').count(), 30);
+        await page.getByRole('link', {name:'Older updates'}).click();
+        assert.match(page.url(), /kind=appointment.*state=unread.*before=\d+/);
+        assert.equal(await page.locator('main .notification-item').count(), 3);
+        await page.getByRole('link', {name:'Newest updates'}).click();
+        assert.equal(await page.locator('main .notification-item').count(), 30);
+        await page.getByLabel('Service', {exact:true}).selectOption('room');
+        await submit(page, page.getByRole('button', {name:'Apply filters'}));
+        assert.match(await page.locator('main .notification-list').innerText(), /Filtered study room/);
+        await submit(page, page.getByRole('button', {name:'Mark matching as read'}));
+        assert.match(await page.locator('main .notification-list').innerText(), /No matching updates/);
+        await go(page, inbox + '?kind=appointment&state=unread');
+        assert.equal(await page.locator('main .notification-item').count(), 30);
+        await views(page, [['filtered-inbox', inbox + '?kind=room&state=read']]);
+        await go(page, meeting);
+        const [download] = await Promise.all([
+          page.waitForEvent('download'),
+          page.getByRole('link', {name:'Download calendar file (.ics)'}).click(),
+        ]);
+        assert.equal(download.suggestedFilename(), 'campus-space-appointment.ics');
+        const contents = fs.readFileSync(await download.path(), 'utf8');
+        assert.match(contents, /DTSTART:20300107T070000Z\r\n/);
+        assert.match(contents, /SUMMARY:University appointment\r\n/);
+        assert.doesNotMatch(contents, /Fictional project review|Professor Ada|Student Mira/);
+        await shot(page, 'confirmed-appointment-download');
+      } finally { await professor.context.close(); }
     } else if(phase==='ADM-UI-01') {
       await views(admin.page,[['home','/administration/'],['filtered-home','/administration/?queue=rooms'],['invalid-queue','/administration/?queue=invalid',400]]);
       if(ids.room)assert.match(await (await admin.page.request.get(new URL('/administration/',admin.page.url()).href)).text(),new RegExp('/rooms/'+ids.room));

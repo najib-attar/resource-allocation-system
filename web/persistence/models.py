@@ -1,8 +1,9 @@
 """Relational records for the existing weekly application, not C++ domain rules."""
 
 from datetime import date, datetime
+from uuid import UUID
 
-from sqlalchemy import BigInteger, Boolean, CheckConstraint, Computed, Date, DateTime, ForeignKey, ForeignKeyConstraint, Identity, Index, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy import BigInteger, Boolean, CheckConstraint, Computed, Date, DateTime, ForeignKey, ForeignKeyConstraint, Identity, Index, Integer, String, Text, UniqueConstraint, Uuid, func
 from sqlalchemy.dialects.postgresql import ExcludeConstraint, JSONB, TSTZRANGE
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -67,6 +68,21 @@ class UserRole(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True)
     role_id: Mapped[int] = mapped_column(ForeignKey("role.id"), primary_key=True, index=True)
     ordinal: Mapped[int] = mapped_column(Integer)
+
+
+class ResearchTask(Base):
+    __tablename__ = "research_task"
+    __table_args__ = (
+        CheckConstraint("char_length(btrim(title)) > 0", name="ck_research_task_title"),
+        CheckConstraint("revision > 0", name="ck_research_task_revision"),
+    )
+    owner_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True)
+    id: Mapped[UUID] = mapped_column(Uuid, primary_key=True)
+    title: Mapped[str] = mapped_column(String(160))
+    due_date: Mapped[date | None] = mapped_column(Date)
+    completed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    revision: Mapped[int] = mapped_column(Integer, server_default="1")
 
 
 class Resource(Base):
@@ -478,6 +494,87 @@ class AcademicPeriod(Base):
     end_date: Mapped[date] = mapped_column(Date)
     timezone: Mapped[str] = mapped_column(String(100))
     is_semester: Mapped[bool] = mapped_column(Boolean, server_default='false')
+
+
+class CourseImport(Base):
+    __tablename__ = "course_import"
+    academic_period_id: Mapped[int] = mapped_column(ForeignKey("academic_period.id"), primary_key=True)
+    source_sha256: Mapped[str] = mapped_column(String(64))
+    supplement_sha256: Mapped[str | None] = mapped_column(String(64))
+    provenance: Mapped[dict] = mapped_column(JSONB)
+    report: Mapped[dict] = mapped_column(JSONB)
+
+
+class Course(Base):
+    __tablename__ = "course"
+    __table_args__ = (CheckConstraint("length(btrim(code)) > 0 AND length(btrim(title)) > 0", name="ck_course_identity"),)
+    id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
+    code: Mapped[str] = mapped_column(String(40), unique=True)
+    title: Mapped[str] = mapped_column(Text)
+
+
+class CourseSection(Base):
+    __tablename__ = "course_section"
+    __table_args__ = (UniqueConstraint("academic_period_id", "crn"),
+        CheckConstraint("quota IS NULL OR quota >= 0", name="ck_course_section_quota"),
+        CheckConstraint("source_kind IN ('archive','obs')", name="ck_course_section_source"),
+        CheckConstraint("publication_status IN ('scheduled','unpublished')", name="ck_course_section_status"),
+    )
+    id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
+    course_id: Mapped[int] = mapped_column(ForeignKey("course.id"), index=True)
+    academic_period_id: Mapped[int] = mapped_column(ForeignKey("academic_period.id"))
+    crn: Mapped[str] = mapped_column(String(24))
+    published_title: Mapped[str] = mapped_column(Text)
+    branch: Mapped[str] = mapped_column(String(24))
+    academic_level: Mapped[str] = mapped_column(String(12))
+    instruction_method: Mapped[str] = mapped_column(Text)
+    quota: Mapped[int | None] = mapped_column(Integer)
+    source_kind: Mapped[str] = mapped_column(String(12))
+    source_url: Mapped[str] = mapped_column(Text)
+    publication_status: Mapped[str] = mapped_column(String(20))
+    published_schedule: Mapped[dict] = mapped_column(JSONB)
+    excluded_dates: Mapped[list] = mapped_column(JSONB)
+
+
+class TeachingAssignment(Base):
+    __tablename__ = "teaching_assignment"
+    __table_args__ = (
+        CheckConstraint("ordinal > 0 AND length(btrim(published_name)) > 0", name="ck_teaching_assignment_identity"),
+    )
+    section_id: Mapped[int] = mapped_column(ForeignKey("course_section.id"), primary_key=True)
+    ordinal: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int | None] = mapped_column(ForeignKey("university_user.id"), index=True)
+    published_name: Mapped[str] = mapped_column(Text)
+
+
+class CourseSession(Base):
+    __tablename__ = "course_session"
+    __table_args__ = (
+        UniqueConstraint("section_id", "ordinal"),
+        CheckConstraint("ordinal > 0 AND day BETWEEN 1 AND 7 AND start_minutes >= 0 "
+                        "AND start_minutes < end_minutes AND end_minutes <= 1440", name="ck_course_session_time"),
+    )
+    id: Mapped[int] = mapped_column(Integer, Identity(), primary_key=True)
+    section_id: Mapped[int] = mapped_column(ForeignKey("course_section.id"))
+    ordinal: Mapped[int] = mapped_column(Integer)
+    resource_id: Mapped[int | None] = mapped_column(ForeignKey("resource.id"), index=True)
+    building_code: Mapped[str | None] = mapped_column(Text)
+    room_code: Mapped[str | None] = mapped_column(Text)
+    day: Mapped[int] = mapped_column(Integer)
+    start_minutes: Mapped[int] = mapped_column(Integer)
+    end_minutes: Mapped[int] = mapped_column(Integer)
+    published_day: Mapped[str | None] = mapped_column(Text)
+    published_start: Mapped[str | None] = mapped_column(String(5))
+    published_end: Mapped[str | None] = mapped_column(String(5))
+    published_building: Mapped[str | None] = mapped_column(Text)
+    published_room: Mapped[str | None] = mapped_column(Text)
+    valid_until: Mapped[date | None] = mapped_column(Date)
+
+
+class Enrollment(Base):
+    __tablename__ = "enrollment"
+    section_id: Mapped[int] = mapped_column(ForeignKey("course_section.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True, index=True)
 
 
 class LegacyCalendarBinding(Base):

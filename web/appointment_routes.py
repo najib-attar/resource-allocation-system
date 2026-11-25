@@ -1,14 +1,39 @@
 """Thin authenticated appointment/form routes; application logic lives in services."""
 
 from datetime import date, datetime, time, timedelta, timezone
+from uuid import NAMESPACE_URL, uuid5
 
-from flask import Blueprint, abort, g, jsonify, redirect, render_template, request, url_for
+from flask import Blueprint, Response, abort, g, jsonify, redirect, render_template, request, url_for
 from sqlalchemy import select
 
 from .appointment_service import AppointmentError, AppointmentService, REASONS
+from .calendar_files import ics_timestamp
 from .calendar_service import CalendarError, local_instant, university_zone
 from .personal_schedule_service import PersonalScheduleService
 from .persistence.models import LegacyCalendarBinding, AcademicPeriod, BusySlot, ResourceRequest
+
+
+def _appointment_ics(item):
+    created = item["created"].astimezone(timezone.utc).isoformat()
+    uid = uuid5(NAMESPACE_URL, f"https://github.com/najib-attar/resource-allocation-system/appointments/{item['id']}/{created}")
+    # Only fixed ASCII text, UUIDs and numeric values enter the content lines.
+    return "\r\n".join([
+        "BEGIN:VCALENDAR",
+        "VERSION:2.0",
+        "PRODID:-//Campus Space//Appointments//EN",
+        "BEGIN:VEVENT",
+        f"UID:{uid}",
+        f"DTSTAMP:{ics_timestamp(item['confirmed'])}",
+        f"DTSTART:{ics_timestamp(item['start'])}",
+        f"DTEND:{ics_timestamp(item['end'])}",
+        f"SEQUENCE:{item['revision'] - 1}",
+        "SUMMARY:University appointment",
+        "CLASS:PRIVATE",
+        "STATUS:CONFIRMED",
+        "END:VEVENT",
+        "END:VCALENDAR",
+        "",
+    ])
 
 
 def create_appointment_blueprint(database_provider, gateway_provider):
@@ -115,6 +140,18 @@ def create_appointment_blueprint(database_provider, gateway_provider):
     @blueprint.get("/<int:appointment_id>")
     def detail(appointment_id):
         return render_template("appointment_detail.html", item=service().detail(appointment_id, g.principal.user_id), zone=university_zone().key, now=datetime.now(timezone.utc))
+
+    @blueprint.get("/<int:appointment_id>/calendar.ics")
+    def download_calendar(appointment_id):
+        item = service().calendar_export(appointment_id, g.principal.user_id)
+        return Response(_appointment_ics(item), content_type="text/calendar; charset=utf-8",
+                        headers={"Content-Disposition": 'attachment; filename="campus-space-appointment.ics"'})
+
+    @blueprint.after_request
+    def private_calendar_download(response):
+        if request.endpoint == "appointments.download_calendar":
+            response.headers["Cache-Control"] = "private, no-store"
+        return response
 
     @blueprint.post("/<int:appointment_id>/decision")
     def decision(appointment_id):

@@ -36,7 +36,7 @@ def state(database, *, meeting=False):
         'assets': 'SELECT r.id,i.request_id,r.unit_id,r.handed_at,r.returned_at,r.released FROM equipment_reservation r JOIN borrow_item i ON i.id=r.item_id ORDER BY r.id',
         'waiting': 'SELECT id,status,approved_by FROM waiting_list_entry ORDER BY id',
         'feedback': 'SELECT id,status,revision,response FROM resource_feedback ORDER BY id',
-        'notifications': 'SELECT id,recipient_id,read_at FROM notification ORDER BY id',
+        'notifications': 'SELECT id,recipient_id,read_at,room_event_id FROM notification ORDER BY id',
         'publication': 'SELECT id,calendar_public,academic_instructor_id FROM resource_request ORDER BY id',
         'bindings': 'SELECT id,request_id,period_id FROM legacy_calendar_binding ORDER BY id',
         'configuration': 'SELECT strategy,waiting_notice_minutes,recurring_limits,reservation_priorities FROM application_state',
@@ -230,6 +230,10 @@ def verify(posts):
             actor = post['actor']
             targets=[r for r in post['after']['notifications'] if r['recipient_id']==actor and
                 (r['id']==key if 'id' in post['form'] else r['id']<=key)]
+            if post['form'].get('kind') == 'room':
+                targets = [r for r in targets if r['room_event_id'] is not None]
+                assert [r for r in post['before']['notifications'] if r['room_event_id'] is None] == [
+                    r for r in post['after']['notifications'] if r['room_event_id'] is None]
             assert targets and all(r['read_at'] is not None for r in targets)
             assert [r for r in post['before']['notifications'] if r['recipient_id']!=actor]==[
                 r for r in post['after']['notifications'] if r['recipient_id']!=actor]
@@ -258,6 +262,10 @@ def main():
             ids['room'] = fixture.request_room(room=301, purpose='Synthetic student study room')
             ids['foreignRoom'] = fixture.request_room(room=302, start=START+timedelta(days=1), purpose='Other faculty room')
             ids['academic'] = fixture.academic_request(day=3, title='Synthetic teaching declaration')
+        if phase == 'PORTAL-PRODUCTIVITY':
+            from test_notifications import seed_inbox_history
+            ids['meeting'], _ = seed_inbox_history(fixture)
+            fixture.service.decide(ids['meeting'], 2, 1, True)
         if phase == 'ADM-REPORT-HISTORY':
             from administration.history_fixture import create_history
             ids['history'] = create_history(fixture.database)

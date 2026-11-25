@@ -2,6 +2,7 @@
 {% set display_name = g.principal.name|person_name %}
 {% set words = display_name.split() %}
 {% set roles = {'Instructor':'Professor', 'Student':'Student', 'TeachingAssistant':'Teaching Assistant', 'Staff':'Staff', 'Administrator':'Administrator'} %}
+{% set role_label = 'Research Assistant' if research_assistant_shell else roles.get(g.principal.role, g.principal.role) %}
 <div class="account-controls">
     <div class="notification-control" data-notifications data-feed-url="{{ url_for('notifications.feed') }}" data-read-url="{{ url_for('notifications.read') }}" data-csrf="{{ csrf_token() }}">
         <button type="button" class="notification-toggle" aria-label="Notifications" aria-expanded="false" aria-controls="notification-panel">
@@ -19,11 +20,11 @@
     <details class="account-menu" data-account-menu>
         <summary aria-label="Account menu for {{ display_name }}">
             <span class="profile-avatar" aria-hidden="true">{{ words[0][0]|upper if words else '?' }}{{ words[-1][0]|upper if words|length > 1 else '' }}</span>
-            <span class="profile-copy"><strong>{{ display_name }}</strong><small>{{ roles.get(g.principal.role, g.principal.role) }}{% if g.principal.administrator and g.principal.role != 'Administrator' %} &middot; Administrator{% endif %}</small></span>
+            <span class="profile-copy"><strong>{{ display_name }}</strong><small>{{ role_label }}{% if g.principal.administrator and g.principal.role != 'Administrator' %} &middot; Administrator{% endif %}</small></span>
             {{ icon('chevron', 14) }}
         </summary>
         <div class="account-menu-panel">
-            <p>{{ display_name }}<small>{{ roles.get(g.principal.role, g.principal.role) }}</small></p>
+            <p>{{ display_name }}<small>{{ role_label }}</small></p>
             <a href="{{ url_for('calendar.index') }}">{{ icon('calendar', 17) }}My calendar</a>
             <a href="{{ url_for('appointments.calendar') }}">{{ icon('clock', 17) }}My schedule &amp; blocks</a>
             <form class="sign-out-form" method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">{{ icon('logout', 17) }}Sign out</button></form>
