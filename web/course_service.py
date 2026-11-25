@@ -82,8 +82,12 @@ def _weekly_classes(session, week, allowed_rooms, **scope):
             occurrences, key=lambda row: (row[5], row[2].code, row[1].crn)):
         start, end = start.astimezone(zone), end.astimezone(zone)
         location, room_id = _location(meeting, room, allowed_rooms)
-        days[start.date()].append({"id": section.id, "course": course, "title": section.published_title,
+        published_location = room is None and all(value and value != "--"
+            for value in (meeting.building_code, meeting.room_code))
+        days[start.date()].append({"id": section.id, "session_id": meeting.id,
+            "course": course, "title": section.published_title,
             "crn": section.crn, "teachers": teachers[section.id], "location": location, "room_id": room_id,
+            "calendar_location": location if room_id is not None or published_location else None,
             "start": start, "end": end})
     return dict(days)
 
@@ -151,7 +155,7 @@ class CourseService:
         with self.database.transaction(read_only=True) as session:
             allowed_rooms = _room_ids(session, actor)
             sections = _details(session, query, allowed_rooms)
-            days = _weekly_classes(session, week, allowed_rooms, people=[actor])
+            days = _weekly_classes(session, week, allowed_rooms, section_ids=[row["id"] for row in sections])
         return {"sections": sections, "week": week, "classes": days}
 
     def rooms(self, actor):

@@ -12,6 +12,9 @@
 {{ week_controls(schedule.week, 'courses.mine') }}
 <section class="panel" aria-labelledby="my-course-week">
     <h2 id="my-course-week">{{ 'Weekly teaching schedule' if teaching else 'Weekly course schedule' }}</h2>
+    {% if schedule.classes %}
+        <a class="service-button" href="{{ url_for('courses.download_week', date=schedule.week.date) }}">Download this week (.ics)</a>
+    {% endif %}
     {% for day in schedule.week.dates %}
         {% if day in schedule.classes %}
             <h3><time datetime="{{ day }}">{{ day.strftime('%A, %d %B') }}</time></h3>

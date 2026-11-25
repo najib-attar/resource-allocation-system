@@ -1,7 +1,8 @@
 """Published course catalogue and permission-scoped personal and room timetables."""
 
-from flask import Blueprint, abort, g, render_template, request
+from flask import Blueprint, Response, abort, g, render_template, request
 
+from .calendar_files import course_calendar
 from .calendar_service import CalendarError
 from .course_service import CourseService
 
@@ -41,6 +42,16 @@ def create_course_blueprint(database_provider):
         principal = g.principal
         schedule = CourseService(database_provider()).personal(principal.user_id, principal.role, request.args.get("date"))
         return render_template("courses/mine.html", schedule=schedule, teaching=principal.role == "Instructor")
+
+    @blueprint.get("/mine/calendar.ics")
+    def download_week():
+        principal = g.principal
+        schedule = CourseService(database_provider()).personal(principal.user_id, principal.role, request.args.get("date"))
+        if not schedule["classes"]:
+            abort(404, description="There are no published classes in the selected week.")
+        filename = f"campus-space-courses-{schedule['week']['dates'][0].isoformat()}.ics"
+        return Response(course_calendar(schedule), content_type="text/calendar; charset=utf-8",
+                        headers={"Content-Disposition": f'attachment; filename="{filename}"'})
 
     @blueprint.get("/rooms")
     def rooms():

@@ -196,6 +196,11 @@ person's time. MDB locations remain outside the reservable BBB inventory. The
 academic weekly engine uses its original wire contract and a transactional
 publication check rejects teaching conflicts.
 
+Choose **Download this week (.ics)** in My Courses to import the selected
+week's dated classes into a calendar app. The file includes your class times,
+course codes, CRNs, and known locations available to your account. It is a
+snapshot of the selected week.
+
 ### BBB room inventory and published occupancy
 
 Fresh ITU profiles load [the BBB catalog](../data/itu_demo/resources.json).

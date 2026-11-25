@@ -34,7 +34,7 @@ def _expand(class_session, section, period, start, end):
         period.start_date, last, period.timezone, start, end, section.excluded_dates)
 
 
-def teaching_occurrences(session, start, end, *, people=None, room_ids=None):
+def teaching_occurrences(session, start, end, *, people=None, room_ids=None, section_ids=None):
     """Yield course records and their explicit occurrence instants within a horizon."""
     query = _sessions(start, end)
     if people is not None:
@@ -42,6 +42,8 @@ def teaching_occurrences(session, start, end, *, people=None, room_ids=None):
         query = query.where(CourseSection.id.in_(select(links.c.section_id)))
     if room_ids is not None:
         query = query.where(CourseSession.resource_id.in_(room_ids))
+    if section_ids is not None:
+        query = query.where(CourseSession.section_id.in_(section_ids))
     for class_session, section, course, period, room in session.execute(query):
         for a, b in _expand(class_session, section, period, start, end):
             yield class_session, section, course, period, room, a, b

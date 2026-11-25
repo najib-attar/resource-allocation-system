@@ -7,13 +7,10 @@ from flask import Blueprint, Response, abort, g, jsonify, redirect, render_templ
 from sqlalchemy import select
 
 from .appointment_service import AppointmentError, AppointmentService, REASONS
+from .calendar_files import ics_timestamp
 from .calendar_service import CalendarError, local_instant, university_zone
 from .personal_schedule_service import PersonalScheduleService
 from .persistence.models import LegacyCalendarBinding, AcademicPeriod, BusySlot, ResourceRequest
-
-
-def _ics_timestamp(value):
-    return value.astimezone(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
 
 def _appointment_ics(item):
@@ -26,9 +23,9 @@ def _appointment_ics(item):
         "PRODID:-//Campus Space//Appointments//EN",
         "BEGIN:VEVENT",
         f"UID:{uid}",
-        f"DTSTAMP:{_ics_timestamp(item['confirmed'])}",
-        f"DTSTART:{_ics_timestamp(item['start'])}",
-        f"DTEND:{_ics_timestamp(item['end'])}",
+        f"DTSTAMP:{ics_timestamp(item['confirmed'])}",
+        f"DTSTART:{ics_timestamp(item['start'])}",
+        f"DTEND:{ics_timestamp(item['end'])}",
         f"SEQUENCE:{item['revision'] - 1}",
         "SUMMARY:University appointment",
         "CLASS:PRIVATE",

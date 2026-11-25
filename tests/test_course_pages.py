@@ -104,6 +104,56 @@ class CoursePageTests(PostgresTestCase):
             self.assertIn("BBB Z-17", teaching)
         self.assertEqual(authorized_client(web_app.app, 5).get("/courses/mine").status_code, 403)
 
+    def test_course_calendar_download_is_private_and_tracks_the_selected_week(self):
+        with self.database.transaction() as session:
+            external = session.scalar(select(CourseSection.id).where(CourseSection.crn == "12347"))
+            session.add(TeachingAssignment(section_id=external, ordinal=2, user_id=1,
+                                           published_name="Other role"))
+            session.add(Enrollment(section_id=external, user_id=2))
+        route = "/courses/mine/calendar.ics"
+        self.assertEqual(web_app.app.test_client().get(route).status_code, 302)
+        self.assertEqual(authorized_client(web_app.app, 5).get(route).status_code, 403)
+        student = authorized_client(web_app.app, 1)
+        path = route + "?date=2030-01-08&user_id=4"
+        result = student.get(path)
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.mimetype, "text/calendar")
+        self.assertEqual(result.headers["Cache-Control"], "private, no-store")
+        self.assertEqual(result.headers["Content-Disposition"],
+                         'attachment; filename="campus-space-courses-2030-01-07.ics"')
+        lines = result.get_data(as_text=True).split("\r\n")
+        self.assertEqual(lines.count("BEGIN:VEVENT"), 3)
+        self.assertEqual(lines.count("CLASS:PRIVATE"), 3)
+        self.assertIn("DTSTART:20300107T070000Z", lines)
+        self.assertIn("DTEND:20300107T080000Z", lines)
+        self.assertEqual([line for line in lines if line.startswith("LOCATION:")], ["LOCATION:BBB Z-17"])
+        for private in ("CRN 12347", "Ada Published", "Grace Published", "Other role", "Private maintenance"):
+            self.assertNotIn(private, result.get_data(as_text=True))
+        uids = [line for line in lines if line.startswith("UID:")]
+        self.assertEqual(len(set(uids)), 3)
+        repeat = student.get(path).get_data(as_text=True).split("\r\n")
+        self.assertEqual([line for line in repeat if line.startswith("UID:")], uids)
+        self.assertNotIn("20300114T070000Z", self.page(1, route + "?date=2030-01-14"))
+        self.assertIn("LOCATION:MDB 204", self.page(4, path))
+        self.assertNotIn("CRN 12347", self.page(2, path))
+        self.assertIn("/courses/mine/calendar.ics?date=2030-01-08", self.page(1, "/courses/mine?date=2030-01-08"))
+        self.assertNotIn("Download this week", self.page(1, "/courses/mine?date=2030-02-04"))
+        self.assertEqual(student.get(route + "?date=2030-02-04").status_code, 404)
+        self.assertEqual(student.get(route + "?date=invalid").status_code, 400)
+
+    def test_course_calendar_keeps_unicode_and_escapes_text_before_folding(self):
+        title = "Ç" * 50 + ", etüt; C:\\ders\r\nLOCATION:Unexpected"
+        with self.database.transaction() as session:
+            section = session.scalar(select(CourseSection).where(CourseSection.crn == "12345"))
+            section.published_title = title
+        data = authorized_client(web_app.app, 1).get("/courses/mine/calendar.ics?date=2030-01-07").data
+        lines = data.split(b"\r\n")
+        self.assertTrue(all(len(line) <= 75 for line in lines))
+        unfolded = data.replace(b"\r\n ", b"").decode("utf-8")
+        expected = "SUMMARY:BLG 210 · " + "Ç" * 50 + r"\, etüt\; C:\\ders\nLOCATION:Unexpected (CRN 12345)"
+        self.assertIn(expected, unfolded.split("\r\n"))
+        self.assertNotIn("LOCATION:Unexpected", unfolded.split("\r\n"))
+
     def test_room_week_combines_occupied_and_available_intervals_without_leaking_private_titles(self):
         classroom = "/courses/rooms/301?date=2030-01-07"
         week = self.page(1, classroom)
