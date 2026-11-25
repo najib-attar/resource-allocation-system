@@ -17,7 +17,7 @@ from sqlalchemy.exc import DBAPIError, IntegrityError
 
 from postgres_fixtures import PostgresTestCase, ROOT
 from test_cost_policy_values import parse, policy_document
-from web.persistence.models import (Role, User, SchedulingCostPolicyAuthorityRevision as Authority,
+from web.persistence.models import (Base, Role, User, SchedulingCostPolicyAuthorityRevision as Authority,
     SchedulingCostPolicyRevision as Revision, SchedulingCostPolicyEvent as Event,
     SchedulingCostPolicyHead as Head)
 
@@ -372,7 +372,10 @@ class PolicyMigrationTests(PostgresTestCase):
     def test_additive_empty_upgrade_and_schema_drift(self):
         before = set(inspect(self.database.engine).get_table_names()); self.actor()
         self.migrate('upgrade', 'head')
-        self.assertEqual(set(inspect(self.database.engine).get_table_names()) - before, set(TABLES) | {'request_eligibility','eligibility_event','allocation_eligibility','logged_out_session','research_task'})
+        after = set(inspect(self.database.engine).get_table_names())
+        self.assertTrue(before <= after)
+        self.assertTrue(set(TABLES) <= after - before)
+        self.assertEqual(after, set(Base.metadata.tables) | {"alembic_version"})
         with self.database.transaction(read_only=True) as session:
             self.assertTrue(all(session.scalar(text('SELECT count(*) FROM ' + table)) == 0 for table in TABLES))
             self.assertEqual(session.scalar(text('SELECT version_num FROM alembic_version')), self.head_revision)

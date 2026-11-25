@@ -14,7 +14,7 @@ from web.engine_gateway import EngineGateway, EngineIntegrationError, validate_e
 from web.equipment_service import EquipmentService, EquipmentError
 from web.notification_service import NotificationService
 from web.persistence.database import Database
-from web.persistence.models import (BorrowRequest, BorrowItem, EquipmentReservation, EquipmentType,
+from web.persistence.models import (Base, BorrowRequest, BorrowItem, EquipmentReservation, EquipmentType,
     EquipmentCustodian, EquipmentEvent, OrganizationUnit)
 
 
@@ -261,7 +261,8 @@ class EquipmentWorkflowTests(EquipmentFixture):
         with self.assertRaises(IntegrityError),self.database.transaction() as session:
             line=session.scalar(select(BorrowItem).where(BorrowItem.request_id==key))
             session.add(EquipmentReservation(item_id=line.id,type_id=self.type_id,unit_id=self.units[0],start_at=START,due_at=START+timedelta(days=3)))
-        self.assertEqual(len(inspect(self.database.engine).get_table_names()),63)  # 62 application + Alembic.
+        self.assertEqual(set(inspect(self.database.engine).get_table_names()),
+                         set(Base.metadata.tables) | {"alembic_version"})
 
     def test_gateway_rejects_duplicate_or_foreign_engine_assets(self):
         with self.database.transaction(read_only=True) as session:
