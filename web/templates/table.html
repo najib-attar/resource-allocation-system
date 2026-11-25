@@ -1,10 +1,11 @@
-{% extends "base.html" %}
+{% extends "service_base.html" %}
 
 {% block title %}{{ title }} | Resource Allocation System{% endblock %}
 {% block page_heading %}{{ title }}{% endblock %}
 
-{% block content %}
+{% block service_content %}
 <section class="table-card">
+    {% if searchable %}<form method="get"><label for="space-search">Search spaces, buildings or facilities</label><input id="space-search" name="q" type="search" maxlength="100" value="{{ search_query }}"><button>Search spaces</button>{% if search_query %}<a href="{{ url_for('spaces') }}">Clear search</a>{% endif %}</form>{% endif %}
     {% if page_message %}
         <div class="page-message page-message-{{ page_message.status }}">
             <p>{{ page_message.text }}</p>

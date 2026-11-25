@@ -132,6 +132,12 @@ legacy requests block replacement; rejection preserves current published
 reservations until an authorized replacement. Eligibility review itself does not
 reserve a room. The administrative request-save shortcut leads to review first.
 
+For an exam requested by a professor who already has a confirmed meeting, use
+**Calendar Setup** to bind the exam to its actual week before running allocation.
+An undated exam can block the new run because the application must protect that
+meeting. After a successful run, use **Academic Publication** to set calendar
+visibility and, where appropriate, select the responsible instructor.
+
 After allocation, professors can inspect their own outcomes and actual resources.
 Eligible and allocated are different states. Active published inputs remain
 read-only; material unpublished revisions require review again. Academic

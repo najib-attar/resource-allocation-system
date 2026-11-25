@@ -29,7 +29,7 @@ async function login(browser, actor) {
   await page.locator('[name=password]').fill(fixture.password);
   await submit(page,page.locator('button[type=submit]'));
   const role=fixture.roles?.[actor];
-  assert.equal(new URL(page.url()).pathname,actor===6?'/':role==='Student'||actor===1?'/student/':role==='Instructor'||[2,3,12].includes(actor)?'/professor/':'/appointments/');
+  assert.equal(new URL(page.url()).pathname,actor===6?'/administration/':role==='Student'||actor===1?'/student/':role==='Instructor'||[2,3,12].includes(actor)?'/professor/':'/appointments/');
   actors.set(page,actor);
   if(independentAudit)page.on('response',response=>{
     if(['fetch','xhr'].includes(response.request().resourceType()))networkRequests.push({actor,

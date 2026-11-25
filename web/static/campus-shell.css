@@ -1,4 +1,4 @@
-/* Shared Campus Space workspace shell; staff and administrators keep legacy chrome. */
+/* Shared Campus Space workspace shell; non-administrative staff retain legacy chrome. */
 .campus-shell {
     --ui-sidebar-width: 220px;
     --ui-ink: #23313c;

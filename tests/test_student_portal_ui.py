@@ -195,15 +195,15 @@ class StudentPortalTemplateTests(TestCase):
                 _, page = self.render(administrator=administrator)
                 self.assertEqual(len(page.find('h1')), 1)
 
-    def test_professor_staff_and_administrator_keep_the_existing_shell(self):
+    def test_professor_staff_and_administrator_use_their_role_shell(self):
         for role, administrator in [('Instructor', False), ('TeachingAssistant', False), ('Staff', False), ('Administrator', True), ('Student', True)]:
             with self.subTest(role=role, administrator=administrator):
                 _, page = self.render(role, administrator, template='appointments.html')
                 sheets = [node.attrs['href'] for node in page.find('link', rel='stylesheet')]
-                self.assertEqual('/static/campus-shell.css' in sheets,role == 'Instructor' and not administrator)
+                self.assertEqual('/static/campus-shell.css' in sheets,role == 'Instructor' or administrator)
                 self.assertNotIn('/static/campus-home.css', sheets)
                 navigation = page.find('nav', **{'aria-label': 'Main navigation'})[0]
-                self.assertIn('/professor/' if role == 'Instructor' and not administrator else '/appointments/', [a.attrs['href'] for a in navigation.find('a')])
+                self.assertIn('/administration/' if administrator else '/professor/' if role == 'Instructor' else '/appointments/', [a.attrs['href'] for a in navigation.find('a')])
                 self.assertNotIn('/student/#my-activity', [a.attrs['href'] for a in navigation.find('a')])
                 if role == 'Instructor':
                     self.assertIn('/professor/', [a.attrs['href'] for a in navigation.find('a')])

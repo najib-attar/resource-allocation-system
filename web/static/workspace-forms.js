@@ -1,7 +1,7 @@
 "use strict";
 // Native POST forms keep their backend fields, validation and redirect behavior.
 (() => {
-    const selector = ".professor-shell form";
+    const selector = ".professor-shell form, .admin-shell form";
     function reset(form) {
         delete form.dataset.submitting;
         form.removeAttribute("aria-busy");

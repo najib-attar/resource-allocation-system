@@ -7,7 +7,7 @@
 <div class="student-home">
     <section class="student-welcome" aria-labelledby="welcome-heading">
         <p class="student-eyebrow">Student workspace / Overview</p>
-        {% if student_shell %}<h1 id="welcome-heading">Your campus, in order.</h1>{% else %}<h2 id="welcome-heading">Your campus, in order.</h2>{% endif %}
+        {% if campus_shell %}<h1 id="welcome-heading">Your campus, in order.</h1>{% else %}<h2 id="welcome-heading">Your campus, in order.</h2>{% endif %}
         <p>Start a service, follow a request, or see what's coming up.</p>
         <div class="student-welcome-meta"><span>Welcome, {{ home.profile.name|person_name }}.</span><time datetime="{{ home.now.date().isoformat() }}">{{ home.now.strftime('%A, %d %B %Y') }}</time></div>
     </section>

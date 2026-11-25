@@ -167,7 +167,8 @@ async function main(){
       const user=await login(browser,actor);assert.equal((await user.page.request.get(base+'/professor/requests')).status(),403);await post(user.page,'/professor/requests/new',{},403);
       if(actor!==6)await post(user.page,'/academic-eligibility/'+ids.pending,{revision:2,reviewVersion:1,decision:'approve',reason:'Unauthorized'},403);
       await user.page.setViewportSize({width:390,height:950});await go(user.page,actor===1?'/student/':'/calendar/?date=2030-01-07');
-      if(actor!==1) {await user.page.locator('[data-navigation-toggle]').click();await user.page.keyboard.press('Escape');assert.equal(await user.page.locator('[data-navigation-toggle]').getAttribute('aria-expanded'),'false');}
+      if(actor===7||actor===9) {await user.page.locator('[data-navigation-toggle]').click();await user.page.keyboard.press('Escape');assert.equal(await user.page.locator('[data-navigation-toggle]').getAttribute('aria-expanded'),'false');}
+      else {assert.equal(await user.page.locator('[data-navigation-toggle]').isVisible(),false);if(actor===6)assert.equal(await user.page.locator('.app-navigation a[href="/administration/reports"]').isVisible(),true);}
       await post(user.page,'/logout',{csrf_token:'invalid'},400);await user.page.locator('[data-account-menu] summary').click();await submit(user.page,user.page.locator('form[action="/logout"] button'));assert.equal((await user.page.request.get(base+'/professor/',{maxRedirects:0})).status(),302);await user.context.close();
     }
     await post(prof.page,'/academic-eligibility/'+ids.pending,{revision:2,reviewVersion:1,decision:'approve',reason:'Self approval'},403);await post(prof.page,'/run-allocation',{},403);

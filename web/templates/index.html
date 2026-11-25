@@ -1,16 +1,16 @@
-{% extends "base.html" %}
+{% extends "service_base.html" %}
 
-{% block title %}Dashboard | Resource Allocation System{% endblock %}
-{% block page_heading %}Dashboard{% endblock %}
+{% block title %}Academic Administration | Campus Space{% endblock %}
+{% block page_heading %}Academic Administration{% endblock %}
 
-{% block content %}
+{% block service_content %}
 <section class="dashboard-hero">
     <div class="hero-copy">
-        <p class="eyebrow">C++ Backend Controlled Dashboard</p>
+        <p class="eyebrow">Academic eligibility &amp; allocation</p>
         <h2>Plan requests first. Run allocation when you are ready.</h2>
         <p>
             Requests are saved to the database first. <strong>Run Allocation</strong>
-            processes all saved requests using the compiled C++ backend, selected
+            processes only current, explicitly eligible requests using the selected
             strategy, rules, participant availability, and meeting-time suggestions.
         </p>
         <div class="hero-actions">
@@ -18,6 +18,7 @@
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button class="button-primary" type="submit">Run Allocation</button>
             </form>
+            <a class="button-secondary" href="{{ url_for('eligibility.index') }}">Review eligibility</a>
             <a class="button-secondary" href="{{ url_for('add_request') }}">Add Request</a>
             <a class="button-secondary" href="{{ url_for('add_request', type='CommitteeMeeting') }}">Create Committee Meeting</a>
         </div>
@@ -48,6 +49,7 @@
 </section>
 {% endif %}
 
+<p class="service-notice">Eligibility approval reserves nothing. A successful allocation run activates validated allocation results; dated calendar visibility still requires explicit applicability and publication. <a href="{{ url_for('administration.home') }}#recent-runs">Allocation run history</a></p>
 <section class="stats-grid" aria-label="Request and allocation statistics">
     {% for stat in stats %}
     <article class="stat-card stat-card-{{ stat.tone|default('neutral') }}">
@@ -93,8 +95,8 @@
     <article class="panel-card">
         <div class="section-heading">
             <div>
-                <p class="eyebrow">Demo Flow</p>
-                <h2>Quick Paths</h2>
+                <p class="eyebrow">Academic workflow</p>
+                <h2>Requests &amp; results</h2>
             </div>
         </div>
         <div class="quick-link-grid">

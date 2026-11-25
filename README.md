@@ -51,6 +51,11 @@ The application also supports designated faculty room approvals, equipment custo
 waiting-list policy/review and private issue handling. These permissions are enforced
 by the backend, independently of which controls appear in the interface.
 
+The [Administration v1 guide](docs/administration/README.md) covers the shared
+Campus Space Home, scoped action queues, allocation history and bounded reports
+proposed for review on this branch. Sensitive account/resource extensions remain
+deferred; these changes are not included in the published beta release.
+
 ## Architecture
 
 ```text

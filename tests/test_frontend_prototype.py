@@ -44,7 +44,7 @@ class SharedShellTests(TestCase):
                 document = Document(html)
                 self.assertEqual(bool(document.select('a', href='/student/')), role == 'Student')
                 self.assertEqual(bool(document.select('a', href='/professor/')), role == 'Instructor')
-                self.assertEqual(bool(document.select('a', href='/users')), administrator)
+                self.assertEqual(bool(document.select('a', href='/administration/')), administrator)
                 self.assertIn('&lt;script&gt;Private name&lt;/script&gt;', html)
                 self.assertNotIn('<script>Private name</script>', html)
 
