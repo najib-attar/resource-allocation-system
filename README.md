@@ -86,7 +86,7 @@ and [engine protocol](docs/engine-protocol.md).
 | --- | --- |
 | `src/` | C++ domain models, rules, strategies, services and JSON boundaries |
 | `web/` | Flask routes/services, Jinja templates, shared Campus Space assets and persistence |
-| `migrations/` | Alembic schema history; current head `0051d` |
+| `migrations/` | Alembic schema history through `0051e` |
 | `scripts/` | Backend build, trusted account provisioning, import and local demo tools |
 | `tests/` | C++, Python/PostgreSQL, security and real-browser regression tests |
 | `docs/` | Requirements, architecture, operations, portal coverage and historical reports |

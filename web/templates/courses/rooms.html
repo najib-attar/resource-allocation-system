@@ -1,0 +1,26 @@
+{% extends 'service_base.html' %}
+{% from 'components/ui.html' import icon %}
+{% block title %}Classroom Timetables | Campus Space{% endblock %}
+{% block page_heading %}Classroom Timetables{% endblock %}
+{% block service_eyebrow %}Courses / Classrooms{% endblock %}
+{% block service_intro %}See published teaching and dated occupancy for classrooms visible to your account.{% endblock %}
+{% block service_actions %}<a class="service-button" href="{{ url_for('courses.catalog') }}">Course catalogue</a>{% endblock %}
+{% block service_content %}
+<section class="panel">
+    <h2>Classrooms</h2>
+    <div class="service-list">
+        {% for entry in entries %}
+            <article class="service-row">
+                <span class="service-row-icon service-icon-room">{{ icon('room', 18) }}</span>
+                <div>
+                    <h3><a href="{{ url_for('courses.room', room_id=entry.id) }}">{{ entry.name }}</a></h3>
+                    <p>{{ entry.capacity }} seats{% if entry.building %} &middot; {{ entry.building }}{% endif %}</p>
+                </div>
+                {% if not entry.enabled %}<span class="service-status service-status-warning">Booking unavailable</span>{% endif %}
+            </article>
+        {% else %}
+            <p>No classroom timetables are visible to this account.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,28 @@
+{% extends 'service_base.html' %}
+{% from 'courses/_timetable.html' import week_controls, class_rows, section_cards %}
+{% block title %}My Courses | Campus Space{% endblock %}
+{% block page_heading %}My Courses{% endblock %}
+{% block service_eyebrow %}Courses / {{ 'Teaching' if teaching else 'Weekly schedule' }}{% endblock %}
+{% block service_intro %}{{ 'See the published teaching assignments linked to your account.' if teaching else 'See the sections in your demo enrolment and their weekly meeting times.' }}{% endblock %}
+{% block service_actions %}
+    <a class="service-button" href="{{ url_for('courses.catalog') }}">Course catalogue</a>
+    <a class="service-button" href="{{ url_for('courses.rooms') }}">Classroom timetables</a>
+{% endblock %}
+{% block service_content %}
+{{ week_controls(schedule.week, 'courses.mine') }}
+<section class="panel" aria-labelledby="my-course-week">
+    <h2 id="my-course-week">{{ 'Weekly teaching schedule' if teaching else 'Weekly course schedule' }}</h2>
+    {% for day in schedule.week.dates %}
+        {% if day in schedule.classes %}
+            <h3><time datetime="{{ day }}">{{ day.strftime('%A, %d %B') }}</time></h3>
+            {{ class_rows(schedule.classes[day]) }}
+        {% endif %}
+    {% endfor %}
+    {% if not schedule.classes %}<p>No published classes in the selected week.</p>{% endif %}
+</section>
+{% if schedule.sections %}
+    {{ section_cards(schedule.sections, true) }}
+{% else %}
+    <section class="panel"><h2>{{ 'Teaching assignments' if teaching else 'Enrolled sections' }}</h2><p>{{ 'No published teaching assignments are linked to this account.' if teaching else 'No demo enrolments are linked to this account.' }}</p></section>
+{% endif %}
+{% endblock %}

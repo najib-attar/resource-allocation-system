@@ -14,6 +14,7 @@ from .persistence.models import (AcademicPeriod, Allocation, Appointment, Appoin
 from .persistence.repository import state_row
 from .room_calendar import valid_approvers
 from .recurring_records import dated_occurrences, overlapping_series
+from .teaching_calendar import teaching_occurrences
 
 
 CATEGORIES = {'academic': 'Academic / university', 'appointment': 'Appointments', 'room': 'Room activities',
@@ -203,6 +204,12 @@ class UniversityCalendarService:
         return events, warnings
 
     def _academic(self, session, actor, start, end, published, add, warnings):
+        for item, section, course, _, room, a, b in teaching_occurrences(
+                session, start, end, people=None if published else [actor]):
+            location = room.name if room else " ".join(part for part in (item.building_code, item.room_code) if part)
+            add(f'course:{item.id}:{int(a.timestamp())}', 'academic', f'{course.code} · {section.published_title}',
+                a, b, 'Confirmed', f'/courses/{course.id}', busy=not published, location=location,
+                note=f'Published teaching · CRN {section.crn}')
         run_id = state_row(session).active_run_id
         scope = ResourceRequest.calendar_public.is_(True) if published else or_(ResourceRequest.requester_id == actor,
             ResourceRequest.id.in_(select(RequestParticipant.request_id).where(RequestParticipant.user_id == actor)))

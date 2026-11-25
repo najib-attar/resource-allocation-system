@@ -358,5 +358,7 @@ class AppointmentService:
                                              max(row.end_at for row in commits), state.active_run_id)
                 assert_commitments_compatible(session, values)
             from .room_calendar import assert_room_publication
+            from .teaching_calendar import assert_teaching_participants_compatible
             assert_room_publication(session, state.active_run_id)
+            assert_teaching_participants_compatible(session, state.active_run_id)
             state.calendar_revision += 1

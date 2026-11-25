@@ -1,8 +1,27 @@
 # PostgreSQL application persistence and dated calendars
 
+## Academic course catalogue (0051e)
+
+The current schema has **69 application tables** plus Alembic. `course`
+identifies an offering by course code. A `course_section` has one CRN per
+`academic_period` and retains its published title, quota and source metadata.
+`teaching_assignment` preserves every named instructor in publication order
+and links to a university profile only when the identity is established.
+`course_session` records each scheduled weekly meeting with its original
+published values, normalized half-open times and a room link where known.
+`enrollment` links an existing student to a section for their private timetable.
+`course_import` records source digests, provenance and import results by period.
+
+Dated availability and calendars expand the same normalized course records.
+Missing rooms leave teaching and enrolment conflicts in effect for the linked
+people. An unscheduled section contributes no busy intervals. Room and
+appointment recommendations use the existing dated engine inputs. The weekly
+academic allocation publication gate rejects dated teaching conflicts before
+replacing an active run.
+
 ## Durable logout revocation (0051b)
 
-The schema now has **62 application tables** plus Alembic. `logged_out_session`
+That revision brought the schema to **62 application tables** plus Alembic. `logged_out_session`
 records one signed login's denial using university identity, account generation,
 SHA-256 nonce digest and server logout time. It contains no cookie or plaintext
 CSRF token. Logout commits before clearing the cookie; each subsequent authenticated
@@ -112,12 +131,11 @@ persistence.
 ![High-level ER diagram](database-er-high-level.svg)
 
 - [High-level Mermaid source](database-er-high-level.mmd): principal entities, using only actual foreign-key relationships.
-- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd): all 53 application tables plus Alembic's existing infrastructure table, every column, PK, FK and relationship.
+- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd) cover all 69 application tables, Alembic's infrastructure table, and their columns and relationships.
 - [Physical schema catalog](database-schema-catalog.md): every column's type/nullability/default, composite keys, unique/check constraints, indexes and deletion policy.
 
-`alembic_version` is the fifty-third physical table, used only by Alembic, not an
-application entity. Application sources/catalog are generated from the models;
-the existing Alembic revision marker is explicitly documented too. Use
+`alembic_version` is Alembic's migration infrastructure. The diagram sources
+and catalog are generated from the application models and include this marker. Use
 `python scripts/generate_database_diagrams.py`; `--check` detects drift in tests/CI.
 The zoomable SVGs reflect these same table/relationship sources (Graphviz layout).
 The portable Mermaid sources can also be rendered with Mermaid CLI, for example:

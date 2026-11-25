@@ -127,7 +127,8 @@ def replace_legacy_resources(database, manifest, faculty_name):
     with database.transaction() as session:
         state = state_row(session, lock=True)
         existing = list(session.scalars(select(Resource).order_by(Resource.source_order).with_for_update()))
-        if _same_catalog(existing, expected):
+        expected_ids = {room["id"] for room in expected}
+        if _same_catalog([room for room in existing if room.id in expected_ids], expected):
             manifest["datedOccupancyBlocks"] = session.scalar(select(func.count()).select_from(RoomClosure)
                 .where(RoomClosure.reason == OCCUPANCY_REASON))
             return False

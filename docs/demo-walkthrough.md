@@ -155,11 +155,46 @@ and provisional entries stay directory-only.
 The separate profile manifest preserves provenance, source discrepancies,
 department and title, application account eligibility, and generated student
 cohorts and enrolments. OBS section schedules represent a partial demonstration
-timetable. Only a singly named instructor with an exact match in the supplied
-academic roster receives a published teaching commitment. Office hours and
+timetable until the full course archive is installed. Office hours and
 equipment are simulated. Academic requests, allocations and operational
 workflows start empty. Build any optional examples through the existing service
 screens so their approvals remain visible.
+
+### Fall course archive
+
+Place the supplied `itu_course_seed_2026_2027_fall.json` in
+`data/itu_demo/`. The file is local and Git-ignored. A new ITU profile
+installs it during setup. Once an existing profile has applied Alembic head,
+stop its Flask process, leave its PostgreSQL server running, and import the
+archive with the following command.
+
+```powershell
+$profile = '.\build\local-demos\itu-bbf-fall-2026'
+& "$profile\venv\Scripts\python.exe" .\scripts\setup_local_demo.py --state-dir $profile install-itu-courses
+```
+
+The transaction adds the course catalogue, CRNs, teaching assignments and
+simulated student enrollments. It replaces generated teaching and enrollment
+projections for this semester. It refuses changes that conflict with confirmed
+appointments, reservations, or the active academic publication. Repeating the
+import with the same files leaves the database unchanged. An altered archive
+requires a separately reviewed replacement.
+
+The supplied archive retains its 133 sections and 116 weekly meetings. Optional
+`course_room_schedule.json` adds official OBS sections with different CRNs
+occupying BBB rooms in the same term. The older `room_schedule.json` can supply
+room occupancy if the enriched file is absent. The supplied archive takes
+precedence. The private `course-import-report.json` lists unmatched names,
+archive/OBS differences, and quota/capacity discrepancies.
+
+Use **My Courses** from the student or professor home, or open **Course
+Catalogue** from University Calendar. Classroom timetable links show known
+availability for authorized users. The printed end minute is preserved. For
+feasibility, a printed `09:30–12:29` means the half-open interval
+`[09:30, 12:30)`. Sessions without known rooms still block the relevant
+person's time. MDB locations remain outside the reservable BBB inventory. The
+academic weekly engine uses its original wire contract and a transactional
+publication check rejects teaching conflicts.
 
 ### BBB room inventory and published occupancy
 
@@ -185,9 +220,10 @@ limited to the original published sections in `schedule.json`. Matched meetings
 become dated room holds during the published teaching period, with recess dates
 excluded. Room codes outside the catalog or missing in OBS remain in the local
 manifest. The student room engine sees the holds when recommending and validating
-bookings. The weekly academic engine can still propose a conflicting room.
-The existing publication guard rejects that result before it can reserve the
-room or replace an active publication.
+bookings. After the course archive is installed, the normalized sessions replace
+these initial holds. The weekly academic engine can still propose a conflicting
+room. The publication guard rejects that result before it can reserve the room
+or replace an active publication.
 
 To update an already initialized ITU profile, back up its owned PostgreSQL
 database and run the following while PostgreSQL is running. The update

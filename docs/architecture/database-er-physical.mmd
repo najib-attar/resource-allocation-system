@@ -138,6 +138,51 @@ erDiagram
         timestamptz end_at
         text reason
     }
+    course {
+        integer id PK "identity"
+        varchar_40 code UK
+        text title
+    }
+    course_import {
+        integer academic_period_id PK,FK
+        varchar_64 source_sha256
+        varchar_64 supplement_sha256 "nullable"
+        jsonb provenance
+        jsonb report
+    }
+    course_section {
+        integer id PK "identity"
+        integer course_id FK
+        integer academic_period_id FK
+        varchar_24 crn
+        text published_title
+        varchar_24 branch
+        varchar_12 academic_level
+        text instruction_method
+        integer quota "nullable"
+        varchar_12 source_kind
+        text source_url
+        varchar_20 publication_status
+        jsonb published_schedule
+        jsonb excluded_dates
+    }
+    course_session {
+        integer id PK "identity"
+        integer section_id FK
+        integer ordinal
+        integer resource_id FK "nullable"
+        text building_code "nullable"
+        text room_code "nullable"
+        integer day
+        integer start_minutes
+        integer end_minutes
+        text published_day "nullable"
+        varchar_5 published_start "nullable"
+        varchar_5 published_end "nullable"
+        text published_building "nullable"
+        text published_room "nullable"
+        date valid_until "nullable"
+    }
     eligibility_event {
         bigint id PK "identity"
         integer request_id FK
@@ -148,6 +193,10 @@ erDiagram
         integer actor_id FK "nullable"
         text reason
         timestamptz created_at
+    }
+    enrollment {
+        integer section_id PK,FK
+        integer user_id PK,FK
     }
     equipment_category {
         integer id PK "identity"
@@ -585,6 +634,12 @@ erDiagram
         integer request_id PK,FK
         integer ordinal
     }
+    teaching_assignment {
+        integer section_id PK,FK
+        integer ordinal PK
+        integer user_id FK "nullable"
+        text published_name
+    }
     university_user {
         integer id PK "identity"
         integer source_order UK
@@ -654,8 +709,15 @@ erDiagram
     organization_unit ||--o{ borrow_request : faculty_id
     university_user ||--o{ busy_slot : user_id
     university_user ||--o{ calendar_block : user_id
+    academic_period ||--o| course_import : academic_period_id
+    academic_period ||--o{ course_section : academic_period_id
+    course ||--o{ course_section : course_id
+    resource o|--o{ course_session : resource_id
+    course_section ||--o{ course_session : section_id
     university_user o|--o{ eligibility_event : actor_id
     resource_request ||--o{ eligibility_event : request_id
+    course_section ||--o{ enrollment : section_id
+    university_user ||--o{ enrollment : user_id
     organization_unit ||--o| equipment_custodian : faculty_id
     login_account ||--o{ equipment_custodian : user_id
     university_user ||--o{ equipment_event : actor_id
@@ -750,6 +812,8 @@ erDiagram
     organization_unit o|--o{ student_room_request : preferred_faculty_id
     resource ||--o{ student_room_request : resource_id
     request_decision ||--o| suggestion_group : run_id_request_id
+    course_section ||--o{ teaching_assignment : section_id
+    university_user o|--o{ teaching_assignment : user_id
     role ||--o{ university_user : primary_role_id
     organization_unit o|--o{ university_user : primary_unit_id
     role ||--o{ user_role : role_id

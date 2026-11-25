@@ -82,7 +82,7 @@ def init_security(app, database_provider):
             return None
         if request.endpoint and request.endpoint.startswith("equipment."):
             return None
-        if request.endpoint and request.endpoint.startswith("calendar."):
+        if request.endpoint and request.endpoint.startswith(("calendar.", "courses.")):
             return None
         if request.endpoint and request.endpoint.startswith("waiting."):
             return None

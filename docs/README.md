@@ -3,14 +3,14 @@
 The Student Portal and Professor Services are implemented in `main`. Student
 [PR #24](https://github.com/najib-attar/resource-allocation-system/pull/24) and
 Professor [PR #25](https://github.com/najib-attar/resource-allocation-system/pull/25)
-record their integration. The application migration head is **0051d**.
+record their integration. The application migration head is **0051e**.
 
 ## Start here
 
 | Reader / task | Guide |
 | --- | --- |
 | Project overview and quick start | [Repository README](../README.md) |
-| Run a persistent fictional demo; try student/professor sign-in | [Demo walkthrough](demo-walkthrough.md) |
+| Run a persistent local demo and try student/professor sign-in | [Demo walkthrough](demo-walkthrough.md) |
 | Develop the Flask application | [Web developer guide](../web/README.md) |
 | Set up, migrate, back up or recover PostgreSQL | [Database operations](database-operations.md) |
 | Understand persistence and schema | [Database design](architecture/database-design.md), [generated schema catalog](architecture/database-schema-catalog.md) |
@@ -29,6 +29,7 @@ record their integration. The application migration head is **0051d**.
 | Waiting lists | [Requirements](srs/UC-STU-05-requirements.md), [design](architecture/waiting-lists-design.md) | [Acceptance cases](testing/waiting-list-test-cases.md) |
 | Feedback and issues | [Requirements](srs/UC-STU-06-requirements.md), [design](architecture/resource-feedback-design.md) | Student portal feature/control matrices above |
 | Calendar and personal schedule | [Requirements](srs/unified-calendar-requirements.md), [calendar design](architecture/unified-calendar-design.md) | Portal acceptance and screen/control matrices above |
+| Published courses and classroom schedules | [Teaching schema](architecture/database-design.md#academic-course-catalogue-0051e) | [Web routes and permissions](../web/README.md#routes-and-permissions) |
 | Recurring room/equipment reservations | [Design and lifecycle](architecture/recurring-reservations-design.md) | [Operations and configuration](database-operations.md#recurring-room-and-equipment-reservations) |
 
 Representative screenshots come from the actual Flask application with synthetic

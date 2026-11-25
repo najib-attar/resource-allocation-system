@@ -70,6 +70,7 @@
                     <a class="student-inline-link" href="{{ url_for('calendar.index', view='week', date=home.weekStart.isoformat()) }}">View week {{ icon('arrow', 15) }}</a>
                 </div>
                 <p class="student-caption">Your own dated commitments. Equipment reminders appear in the <a href="{{ url_for('calendar.index') }}">University Calendar</a>; they do not reserve time.</p>
+                <a class="student-inline-link" href="{{ url_for('courses.mine', date=home.weekStart) }}">My Courses {{ icon('arrow', 15) }}</a>
                 <a class="student-inline-link" href="{{ url_for('appointments.calendar', month=home.schedule.month, week=home.weekStart.isoformat()) }}">My schedule &amp; personal blocks {{ icon('arrow', 15) }}</a>
                 {% if home.calendarUnresolved %}<p class="student-calendar-warning" role="status">{{ icon('info', 18) }} Some university commitments need an academic-period binding. Open your schedule for details; empty cells are not proof of availability.</p>{% endif %}
             </section>

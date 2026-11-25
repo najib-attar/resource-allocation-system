@@ -12,20 +12,21 @@ from zoneinfo import ZoneInfo
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from sqlalchemy import select, text
+from sqlalchemy import func, select, text
 from sqlalchemy.engine import URL
 from sqlalchemy.exc import SQLAlchemyError
 
 from web.account_service import AccountService, is_research_assistant
 from web.allocation_workflow import execute_allocation
 from web.engine_gateway import EngineGateway, EngineIntegrationError
-from web.persistence.database import Database
+from web.persistence.database import Database, DatabaseBusy
 from web.persistence.demo import demo_snapshot
 from web.persistence.itu_demo import DATA as ITU_DATA, FACULTY as ITU_FACULTY, load_itu_schedule, seed_itu_demo
+from web.persistence.itu_courses import COURSE_SEED, install_itu_courses
 from web.persistence.itu_resources import catalog_manifest, replace_legacy_resources
 from web.persistence.importer import populate_empty_database
 from web.persistence.models import (AcademicPeriod, BusySlot, CalendarBlock, LegacyCalendarBinding,
-                                    LoginAccount, OrganizationUnit, ProfessorAvailability, ResourceRequest)
+                                    LoginAccount, OrganizationUnit, ProfessorAvailability, Resource, ResourceRequest)
 from web.persistence.repository import PersistenceError, Repository, state_row
 from web.room_request_service import RoomRequestService
 from web.persistence.equipment_demo import seed_equipment_demo
@@ -175,6 +176,25 @@ def connection_url(settings):
                       host="127.0.0.1", port=settings["postgresPort"], database=settings["databaseName"]).render_as_string(hide_password=False)
 
 
+def verify_itu_owner(database, path, settings):
+    marker = path.parent / "postgres-data" / "local-demo-owner"
+    if (settings.get("dataset") != "itu" or not settings["seeded"] or not marker.is_file()
+            or marker.read_text(encoding="utf-8") != settings["profileId"]):
+        raise ValueError("This operation requires an initialized ITU profile with its PostgreSQL owner marker.")
+    with database.transaction(read_only=True) as session:
+        if Path(session.scalar(text("SHOW data_directory"))).resolve() != marker.parent.resolve():
+            raise ValueError("The connected PostgreSQL cluster does not belong to this ITU profile.")
+
+
+def install_course_catalog(database, path, settings):
+    verify_itu_owner(database, path, settings)
+    report = install_itu_courses(database, seed=settings["seed"])
+    write_settings(path.parent / "course-import-report.json", report)
+    settings["summary"]["counts"]["spaces"] = report["resourceCount"]
+    write_settings(path, settings)
+    print(f"ITU course catalog ready: {report['sectionCount']} sections and {report['weeklySessions']} weekly sessions.")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--state-dir", required=True)
@@ -189,6 +209,7 @@ def main():
     seed_command.add_argument('--review-academics',action='store_true',help='Explicitly review newly generated fictional academic declarations before demo allocation.')
     commands.add_parser("show")
     commands.add_parser("update-itu-resources", help="Replace the untouched legacy room seed in an owned ITU demo.")
+    commands.add_parser("install-itu-courses", help="Install the archived course dataset in an initialized ITU demo.")
     args = parser.parse_args()
     path = Path(args.state_dir).resolve() / "settings.json"
     database = None
@@ -197,25 +218,25 @@ def main():
             prepare_settings(path, args.seed, args.start, args.end, args.port, args.dataset)
             print("Private local demo configuration is ready.")
             return 0
-        if args.action == "update-itu-resources" and not path.is_file():
+        if args.action in {"update-itu-resources", "install-itu-courses"} and not path.is_file():
             raise ValueError("Select an existing owned ITU demo profile.")
         settings = prepare_settings(path)
-        if args.action == "update-itu-resources":
-            marker = path.parent / "postgres-data" / "local-demo-owner"
-            if (settings.get("dataset") != "itu" or not settings["seeded"] or not marker.is_file()
-                    or marker.read_text(encoding="utf-8") != settings["profileId"]):
-                raise ValueError("Resource update requires an initialized ITU PostgreSQL profile with its owner marker.")
-            manifest = catalog_manifest(ITU_DATA, load_itu_schedule())
+        if args.action == "install-itu-courses":
             database = Database(connection_url(settings))
-            with database.transaction(read_only=True) as session:
-                if Path(session.scalar(text("SHOW data_directory"))).resolve() != marker.parent.resolve():
-                    raise ValueError("The connected PostgreSQL cluster does not belong to this ITU profile.")
+            install_course_catalog(database, path, settings)
+            return 0
+        if args.action == "update-itu-resources":
+            database = Database(connection_url(settings))
+            verify_itu_owner(database, path, settings)
+            manifest = catalog_manifest(ITU_DATA, load_itu_schedule())
             changed = replace_legacy_resources(database, manifest, ITU_FACULTY)
             resource_report = path.parent / "resource-manifest.json"
             if changed or not resource_report.exists():
                 write_settings(resource_report, manifest)
-            if settings["summary"]["counts"]["spaces"] != len(manifest["resources"]):
-                settings["summary"]["counts"]["spaces"] = len(manifest["resources"])
+            with database.transaction(read_only=True) as session:
+                resource_count = session.scalar(select(func.count()).select_from(Resource))
+            if settings["summary"]["counts"]["spaces"] != resource_count:
+                settings["summary"]["counts"]["spaces"] = resource_count
                 write_settings(path, settings)
             print("ITU building inventory installed." if changed else "ITU building inventory already installed.")
             return 0
@@ -262,9 +283,11 @@ def main():
                                                        date.fromisoformat(settings["academicEnd"]), settings["seed"],review_academics=args.review_academics)
             settings["seeded"] = True
             write_settings(path, settings)
+            if settings.get("dataset") == "itu" and (ITU_DATA / COURSE_SEED).is_file():
+                install_course_catalog(database, path, settings)
             print(json.dumps({key: value for key, value in settings["summary"].items() if key != "accounts"}, indent=2))
         return 0
-    except (ValueError, PersistenceError, EngineIntegrationError) as error:
+    except (ValueError, PersistenceError, DatabaseBusy, EngineIntegrationError) as error:
         print(str(error), file=sys.stderr)
         return 1
     except (OSError, SQLAlchemyError):

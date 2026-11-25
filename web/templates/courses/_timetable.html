@@ -1,0 +1,63 @@
+{% macro week_controls(week, endpoint, params={}) %}
+<section class="panel" aria-labelledby="timetable-week">
+    <h2 id="timetable-week">{{ week.title }}</h2>
+    <p>{{ week.zone }}</p>
+    <nav class="service-actions" aria-label="Week navigation">
+        {% if week.previous %}<a class="service-button" rel="prev" href="{{ url_for(endpoint, date=week.previous, **params) }}">Previous week</a>{% endif %}
+        <a class="service-button" href="{{ url_for(endpoint, date=week.today, **params) }}">This week</a>
+        {% if week.next %}<a class="service-button" rel="next" href="{{ url_for(endpoint, date=week.next, **params) }}">Next week</a>{% endif %}
+    </nav>
+    <form method="get" action="{{ url_for(endpoint, **params) }}">
+        <label for="course-week-date">Choose a date in the week</label>
+        <input id="course-week-date" name="date" type="date" value="{{ week.date }}" min="1970-01-01" max="2099-12-31" required>
+        <p><button type="submit">Show week</button></p>
+    </form>
+</section>
+{% endmacro %}
+
+{% macro interval(start, end) -%}
+    <time datetime="{{ start.isoformat() }}">{{ start.strftime('%H:%M') }}</time>
+    &ndash;
+    <time datetime="{{ end.isoformat() }}">{{ end.strftime('%H:%M') if start.date() == end.date() else '24:00' }}</time>
+{%- endmacro %}
+
+{% macro class_rows(items, show_room=true) %}
+{% for entry in items %}
+    <article class="service-person">
+        <div>
+            <p><a href="{{ url_for('courses.detail', course_id=entry.course.id, _anchor='section-' ~ entry.id) }}"><strong>{{ entry.course.code }} &middot; {{ entry.title }}</strong></a></p>
+            <p>CRN {{ entry.crn }} &middot; {{ entry.teachers|join(', ') if entry.teachers else 'Instructor unspecified' }}</p>
+            {% if show_room %}<p>{% if entry.room_id %}<a href="{{ url_for('courses.room', room_id=entry.room_id, date=entry.start.date()) }}">{{ entry.location }}</a>{% else %}{{ entry.location }}{% endif %}</p>{% endif %}
+        </div>
+        <p>{{ interval(entry.start, entry.end) }}</p>
+    </article>
+{% else %}
+    <p>No published classes on this date.</p>
+{% endfor %}
+{% endmacro %}
+
+{% macro section_cards(sections, link_courses=false) %}
+{% for section in sections %}
+    <section class="panel" id="section-{{ section.id }}" aria-labelledby="section-heading-{{ section.id }}">
+        <h2 id="section-heading-{{ section.id }}">{% if link_courses %}<a href="{{ url_for('courses.detail', course_id=section.course.id, _anchor='section-' ~ section.id) }}">{{ section.course.code }} &middot; {{ section.title }}</a> &middot; {% endif %}CRN {{ section.crn }}</h2>
+        {% if not link_courses and section.title != section.course.title %}<p>{{ section.title }}</p>{% endif %}
+        <p>{{ section.term }}{% if section.branch %} &middot; {{ section.branch }}{% endif %}{% if section.level %} &middot; {{ section.level }}{% endif %}</p>
+        <p><strong>Instructors</strong> {{ section.teachers|join(', ') if section.teachers else 'Unspecified in the source' }}</p>
+        {% if section.instruction %}<p><strong>Delivery</strong> {{ section.instruction }}</p>{% endif %}
+        {% if section.quota is not none %}<p><strong>Published section quota</strong> {{ section.quota }}</p>{% endif %}
+        {% if section.meetings %}
+            <h3>Published weekly meetings</h3>
+            {% for meeting in section.meetings %}
+                <div class="service-person">
+                    <p>{{ meeting.day }} &middot; {{ meeting.start }} &ndash; {{ meeting.end }}</p>
+                    <p>{% if meeting.room_id %}<a href="{{ url_for('courses.room', room_id=meeting.room_id) }}">{{ meeting.location }}</a>{% else %}{{ meeting.location }}{% endif %}{% if meeting.external %} &middot; External classroom{% endif %}
+                    {% if meeting.capacity is not none and section.quota is not none and section.quota > meeting.capacity %}<span class="service-status service-status-warning">Quota exceeds {{ meeting.capacity }} configured seats</span>{% endif %}</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No teaching time was published for this section.</p>
+        {% endif %}
+        {% if section.source %}<p><a href="{{ section.source }}">{{ 'Public OBS archive' if section.source_kind == 'archive' else 'Public OBS schedule' }}</a></p>{% endif %}
+    </section>
+{% endfor %}
+{% endmacro %}

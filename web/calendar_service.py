@@ -135,6 +135,8 @@ def legacy_intervals(session, people, start, end, active_run_id=None, include_de
     for row, request in allocations:
         project([request.requester_id] + participants.get(request.id, []), row, request_bindings.get(request.id, []),
                 request.title or request.purpose or "University commitment")
+    from .teaching_calendar import person_teaching_intervals
+    output.extend(person_teaching_intervals(session, people, start, end, include_details))
     return output, sorted(unresolved)
 
 

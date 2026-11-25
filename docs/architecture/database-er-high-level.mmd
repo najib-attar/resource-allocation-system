@@ -62,10 +62,30 @@ erDiagram
         bigint id PK "identity"
         integer user_id FK
     }
+    course {
+        integer id PK "identity"
+    }
+    course_import {
+        integer academic_period_id PK,FK
+    }
+    course_section {
+        integer id PK "identity"
+        integer course_id FK
+        integer academic_period_id FK
+    }
+    course_session {
+        integer id PK "identity"
+        integer section_id FK
+        integer resource_id FK "nullable"
+    }
     eligibility_event {
         bigint id PK "identity"
         integer request_id FK
         integer actor_id FK "nullable"
+    }
+    enrollment {
+        integer section_id PK,FK
+        integer user_id PK,FK
     }
     equipment_category {
         integer id PK "identity"
@@ -250,6 +270,11 @@ erDiagram
         integer preferred_faculty_id FK "nullable"
         integer approved_by FK "nullable"
     }
+    teaching_assignment {
+        integer section_id PK,FK
+        integer ordinal PK
+        integer user_id FK "nullable"
+    }
     university_user {
         integer id PK "identity"
         integer primary_role_id FK
@@ -284,8 +309,15 @@ erDiagram
     organization_unit ||--o{ borrow_request : faculty_id
     university_user ||--o{ busy_slot : user_id
     university_user ||--o{ calendar_block : user_id
+    academic_period ||--o| course_import : academic_period_id
+    academic_period ||--o{ course_section : academic_period_id
+    course ||--o{ course_section : course_id
+    resource o|--o{ course_session : resource_id
+    course_section ||--o{ course_session : section_id
     university_user o|--o{ eligibility_event : actor_id
     resource_request ||--o{ eligibility_event : request_id
+    course_section ||--o{ enrollment : section_id
+    university_user ||--o{ enrollment : user_id
     organization_unit ||--o| equipment_custodian : faculty_id
     login_account ||--o{ equipment_custodian : user_id
     university_user ||--o{ equipment_event : actor_id
@@ -365,6 +397,8 @@ erDiagram
     university_user ||--o{ student_room_request : organizer_id
     organization_unit o|--o{ student_room_request : preferred_faculty_id
     resource ||--o{ student_room_request : resource_id
+    course_section ||--o{ teaching_assignment : section_id
+    university_user o|--o{ teaching_assignment : user_id
     role ||--o{ university_user : primary_role_id
     organization_unit o|--o{ university_user : primary_unit_id
     login_account o|--o{ waiting_list_entry : approved_by

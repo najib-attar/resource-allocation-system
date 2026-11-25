@@ -1,6 +1,5 @@
 """Explicit dated projections and publication integrity, not room-selection rules."""
 
-from datetime import datetime, timezone
 import uuid
 from sqlalchemy import select
 
@@ -9,6 +8,7 @@ from .persistence.models import (AcademicPeriod, Allocation, AppointmentCommitme
     FacultyRoomApprover, LegacyCalendarBinding, LoginAccount, Resource,
     RoomAccess, RoomClosure, RoomOrganizerCommitment, RoomPolicy, RoomReservation, Role, User)
 from .persistence.repository import state_row
+from .teaching_calendar import overlaps_intervals, teaching_room_bounds, teaching_room_intervals
 
 
 def valid_approvers(session):
@@ -52,6 +52,19 @@ def person_busy(session, actor, start, end, active_run, exclude_request=None):
     return values, not unresolved
 
 
+def room_usage_intervals(session, room_ids, start, end, active_run_id, exclude_request=None):
+    """One anonymous occupied-interval projection for scheduling and room pages."""
+    busy, unresolved = academic_room_intervals(session, room_ids, start, end, active_run_id)
+    busy.extend(teaching_room_intervals(session, room_ids, start, end))
+    for model in (RoomClosure, RoomReservation):
+        query = select(model).where(model.resource_id.in_(room_ids), model.start_at < end, model.end_at > start)
+        if model is RoomReservation and exclude_request is not None:
+            query = query.where(model.request_id != exclude_request)
+        busy.extend({"resourceId": row.resource_id, "start": epoch(row.start_at), "end": epoch(row.end_at)}
+                    for row in session.scalars(query))
+    return busy, unresolved
+
+
 def room_snapshot(session, actor, role, values, horizon, strategy='best_fit', selected=None,
                   action='recommend', exclude_request=None):
     state = state_row(session)
@@ -62,12 +75,8 @@ def room_snapshot(session, actor, role, values, horizon, strategy='best_fit', se
     whitelist = {}
     for row in session.scalars(select(RoomAccess)):
         whitelist.setdefault(row.resource_id, []).append(row.user_id)
-    busy, unresolved = academic_room_intervals(session, [row.id for row in rooms], start, end, state.active_run_id)
-    for model in (RoomClosure, RoomReservation):
-        query = select(model).where(model.start_at < end, model.end_at > start)
-        if model is RoomReservation and exclude_request is not None:
-            query = query.where(model.request_id != exclude_request)
-        busy.extend({'resourceId': row.resource_id, 'start': epoch(row.start_at), 'end': epoch(row.end_at)} for row in session.scalars(query))
+    busy, unresolved = room_usage_intervals(session, [row.id for row in rooms], start, end, state.active_run_id,
+                                         exclude_request)
     grouped = {}
     for row in busy:
         grouped.setdefault(row['resourceId'], []).append({'start': row['start'], 'end': row['end']})
@@ -96,14 +105,25 @@ def room_snapshot(session, actor, role, values, horizon, strategy='best_fit', se
 
 def assert_room_publication(session, run_id):
     """Final exclusivity gate under the same lock as approval; shared exams stay valid."""
-    protected = [row for model in (RoomReservation, RoomClosure) for row in session.scalars(select(model))]
-    if not protected:
+    if run_id is None:
         return
-    values, unresolved = academic_room_intervals(session, {row.resource_id for row in protected},
-        min(row.start_at for row in protected), max(row.end_at for row in protected), run_id)
-    if unresolved:
-        raise CalendarError('Academic room allocations have unresolved dates for reserved/closed rooms. Configure explicit calendar bindings before publishing.')
-    for value in values:
-        a, b = datetime.fromtimestamp(value['start'], timezone.utc), datetime.fromtimestamp(value['end'], timezone.utc)
-        if any(row.resource_id == value['resourceId'] and row.start_at < b and row.end_at > a for row in protected):
+    protected = [row for model in (RoomReservation, RoomClosure) for row in session.scalars(select(model))]
+    if protected:
+        values, unresolved = academic_room_intervals(session, {row.resource_id for row in protected},
+            min(row.start_at for row in protected), max(row.end_at for row in protected), run_id)
+        if unresolved:
+            raise CalendarError('Academic room allocations have unresolved dates for reserved/closed rooms. Configure explicit calendar bindings before publishing.')
+        dated = [{"resourceId": row.resource_id, "start": row.start_at.timestamp(), "end": row.end_at.timestamp()}
+                 for row in protected]
+        if overlaps_intervals(values, dated, "resourceId"):
             raise CalendarError('Academic allocation conflicts with a confirmed student room reservation or closure. Previous results remain active.')
+
+    room_ids, start, end = teaching_room_bounds(session,
+        select(Allocation.resource_id).where(Allocation.run_id == run_id))
+    if not room_ids:
+        return
+    values, unresolved = academic_room_intervals(session, room_ids, start, end, run_id)
+    if unresolved:
+        raise CalendarError('Academic room allocations have unresolved dates for rooms with published teaching. Configure explicit calendar bindings before publishing.')
+    if overlaps_intervals(values, teaching_room_intervals(session, room_ids, start, end), "resourceId"):
+        raise CalendarError('Academic allocation conflicts with published teaching. Previous results remain active.')

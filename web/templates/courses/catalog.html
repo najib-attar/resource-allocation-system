@@ -1,0 +1,36 @@
+{% extends 'service_base.html' %}
+{% from 'components/ui.html' import icon %}
+{% block title %}Course Catalogue | Campus Space{% endblock %}
+{% block page_heading %}Course Catalogue{% endblock %}
+{% block service_eyebrow %}Courses{% endblock %}
+{% block service_intro %}Look up published course sections by name, course code or CRN.{% endblock %}
+{% block service_actions %}
+    {% if g.principal.role in ('Student', 'Instructor') %}<a class="service-button" href="{{ url_for('courses.mine') }}">My Courses</a>{% endif %}
+    <a class="service-button" href="{{ url_for('courses.rooms') }}">Classroom timetables</a>
+{% endblock %}
+{% block service_content %}
+<section class="panel" aria-label="Course catalogue search">
+    <form method="get" action="{{ url_for('courses.catalog') }}">
+        <label for="course-search">Course name, code or CRN</label>
+        <input id="course-search" name="q" type="search" value="{{ search }}" maxlength="120">
+        <p class="service-actions">
+            <button type="submit">Search</button>
+            {% if search %}<a class="service-button" href="{{ url_for('courses.catalog') }}">Clear search</a>{% endif %}
+        </p>
+    </form>
+    <h2>{{ entries|length }} {{ 'course' if entries|length == 1 else 'courses' }}</h2>
+    <div class="service-list">
+        {% for entry in entries %}
+            <article class="service-row">
+                <span class="service-row-icon">{{ icon('book', 18) }}</span>
+                <div>
+                    <h3><a href="{{ url_for('courses.detail', course_id=entry.id) }}">{{ entry.code }} &middot; {{ entry.title }}</a></h3>
+                    <p>{{ entry.sections }} {{ 'section' if entry.sections == 1 else 'sections' }}</p>
+                </div>
+            </article>
+        {% else %}
+            <p>{{ 'No courses match your search.' if search else 'No course catalogue is available yet.' }}</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}
