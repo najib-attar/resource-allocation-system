@@ -9,7 +9,7 @@
     <form method="post" action="{{ url_for('notifications.read') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="throughId" value="{{ inbox.throughId }}"><button{% if not inbox.unreadCount %} disabled{% endif %}>Mark all as read</button></form></div>
     {% include 'components/_notification_items.html' %}
     <p class="student-card-note">Showing the latest 100 updates. Full activity history stays on each request. Room/professor availability alerts are not enabled yet.</p>
-    {% if professor_shell %}<p class="service-notice">Academic allocation notifications are not enabled. Follow eligibility decisions and allocation outcomes in <a href="{{ url_for('professor.pages') }}">My academic requests</a>.</p>{% endif %}
-    {% if admin_shell %}<p class="service-notice">Academic request notifications are not enabled. Use <a href="{{ url_for('eligibility.index') }}">academic eligibility review</a> for that work. Unread notifications and pending decisions are different counts.</p>{% endif %}
+    {% if professor_shell %}<p class="service-notice">Your eligibility notices link to the recorded decisions. Follow allocation outcomes in <a href="{{ url_for('professor.pages') }}">My academic requests</a>.</p>{% endif %}
+    {% if admin_shell %}<p class="service-notice">Use <a href="{{ url_for('eligibility.index') }}">academic eligibility review</a> for that work. Unread notifications and pending decisions are different counts.</p>{% endif %}
 </section>
 {% endblock %}

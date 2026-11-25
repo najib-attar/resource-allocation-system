@@ -1,7 +1,7 @@
 """Private event inbox; no scheduling rules or parsing of lifecycle messages."""
 
 from datetime import datetime, timezone
-from sqlalchemy import case, func, literal, or_, select, union_all, update
+from sqlalchemy import String, case, cast, func, literal, or_, select, union_all, update
 from sqlalchemy.orm import aliased
 from .equipment_access import custodian_faculties
 from .feedback_access import visible_scope
@@ -10,7 +10,8 @@ from .reservation_policy import occurrence_summary
 
 from .persistence.models import (Appointment, AppointmentEvent, AppointmentInvitation,
     AppointmentProfessor, Notification, RoomEvent, RoomInvitation, StudentRoomRequest, User,
-    BorrowRequest, EquipmentCustodian, EquipmentEvent, WaitingListEntry, FeedbackEvent, ResourceFeedback)
+    BorrowRequest, EquipmentCustodian, EquipmentEvent, WaitingListEntry, FeedbackEvent, ResourceFeedback,
+    EligibilityEvent, LoginAccount, RequestEligibility, ResourceRequest, Role)
 
 
 def publish_event(session, event, *, recipient_ids=None, notify_actor=False):
@@ -88,14 +89,14 @@ def _visible(actor):
     appointments = select(Notification.id, Notification.read_at, AppointmentEvent.created_at,
         AppointmentEvent.message, Appointment.purpose.label('subject'), Appointment.id.label('subject_id'),
         literal('appointment').label('kind'), AppointmentEvent.actor_id, Notification.recipient_id,
-        Appointment.status.label('current_status')).join(AppointmentEvent, AppointmentEvent.id == Notification.appointment_event_id).join(
+        Appointment.status.label('current_status'), literal(0).label('review_version')).join(AppointmentEvent, AppointmentEvent.id == Notification.appointment_event_id).join(
         Appointment, Appointment.id == AppointmentEvent.appointment_id).where(Notification.recipient_id == actor, appointment_scope)
     rooms = select(Notification.id, Notification.read_at, RoomEvent.created_at, RoomEvent.message,
         StudentRoomRequest.purpose.label('subject'), StudentRoomRequest.id.label('subject_id'),
         literal('room').label('kind'), RoomEvent.actor_id, Notification.recipient_id,
         case((WaitingListEntry.status.in_(['Pending Review', 'Preapproved']),
             literal('Waiting list: ') + WaitingListEntry.status),
-            else_=StudentRoomRequest.status).label('current_status')).join(RoomEvent, RoomEvent.id == Notification.room_event_id).join(
+            else_=StudentRoomRequest.status).label('current_status'), literal(0).label('review_version')).join(RoomEvent, RoomEvent.id == Notification.room_event_id).join(
         StudentRoomRequest, StudentRoomRequest.id == RoomEvent.request_id).outerjoin(
         WaitingListEntry, WaitingListEntry.room_request_id == StudentRoomRequest.id).where(Notification.recipient_id == actor, room_scope)
     authorized_faculties = custodian_faculties(actor)
@@ -105,7 +106,7 @@ def _visible(actor):
         EquipmentEvent.actor_id, Notification.recipient_id,
         case((WaitingListEntry.status.in_(['Pending Review', 'Preapproved']),
             literal('Waiting list: ') + WaitingListEntry.status),
-            else_=BorrowRequest.status).label('current_status')).join(
+            else_=BorrowRequest.status).label('current_status'), literal(0).label('review_version')).join(
         EquipmentEvent, EquipmentEvent.id == Notification.equipment_event_id).join(
         BorrowRequest, BorrowRequest.id == EquipmentEvent.request_id).outerjoin(
         WaitingListEntry, WaitingListEntry.borrow_request_id == BorrowRequest.id).where(Notification.recipient_id == actor, equipment_scope)
@@ -113,9 +114,23 @@ def _visible(actor):
         literal('A private resource report has an update. Open it to review.').label('message'),
         literal('Resource feedback').label('subject'), ResourceFeedback.id.label('subject_id'),
         literal('feedback').label('kind'), FeedbackEvent.actor_id, Notification.recipient_id,
-        ResourceFeedback.status.label('current_status')).join(FeedbackEvent, FeedbackEvent.id == Notification.feedback_event_id).join(
+        ResourceFeedback.status.label('current_status'), literal(0).label('review_version')).join(FeedbackEvent, FeedbackEvent.id == Notification.feedback_event_id).join(
         ResourceFeedback, ResourceFeedback.id == FeedbackEvent.report_id).where(Notification.recipient_id == actor, visible_scope(actor))
-    return union_all(appointments, rooms, equipment, feedback).subquery()
+    instructor = select(User.id).join(LoginAccount, LoginAccount.user_id == User.id).join(
+        Role, Role.id == User.primary_role_id).where(User.id == actor, User.status.ilike('active'),
+        LoginAccount.enabled.is_(True), Role.name == 'Instructor')
+    eligibility = select(Notification.id, Notification.read_at, EligibilityEvent.created_at,
+        (EligibilityEvent.status + ' for request revision ' + cast(EligibilityEvent.request_revision, String)
+         + '. Open the recorded reason.').label('message'),
+        ResourceRequest.title.label('subject'), ResourceRequest.id.label('subject_id'),
+        literal('eligibility').label('kind'), EligibilityEvent.actor_id, Notification.recipient_id,
+        RequestEligibility.status.label('current_status'), EligibilityEvent.version.label('review_version')).join(
+        EligibilityEvent, EligibilityEvent.id == Notification.eligibility_event_id).join(
+        ResourceRequest, ResourceRequest.id == EligibilityEvent.request_id).join(
+        RequestEligibility, RequestEligibility.request_id == ResourceRequest.id).where(
+        Notification.recipient_id == actor, ResourceRequest.requester_id.in_(instructor),
+        EligibilityEvent.origin == 'Professor', EligibilityEvent.status.in_(('Eligible', 'Eligibility Rejected')))
+    return union_all(appointments, rooms, equipment, feedback, eligibility).subquery()
 
 
 class NotificationService:

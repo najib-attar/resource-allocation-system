@@ -81,7 +81,7 @@ and [engine protocol](docs/engine-protocol.md).
 | --- | --- |
 | `src/` | C++ domain models, rules, strategies, services and JSON boundaries |
 | `web/` | Flask routes/services, Jinja templates, shared Campus Space assets and persistence |
-| `migrations/` | Alembic schema history; current head `0051b` |
+| `migrations/` | Alembic schema history; current head `0051c` |
 | `scripts/` | Backend build, trusted account provisioning, import and local demo tools |
 | `tests/` | C++, Python/PostgreSQL, security and real-browser regression tests |
 | `docs/` | Requirements, architecture, operations, portal coverage and historical reports |
@@ -94,16 +94,15 @@ Prerequisites: **Python 3.12 or 3.13**, **PostgreSQL 17 tools**, and **g++ with 
 support**. Run commands from a cloned repository's root. Python dependencies are
 pinned in [requirements.txt](requirements.txt).
 
-With Python and `g++` on PATH, build first, then start an isolated Windows demo
-with generated fictional users and persistent data:
+With Python, PostgreSQL tools and `g++` available, start the persistent Windows demo
+from the repository root:
 
 ```powershell
-python scripts/build_backend.py
 powershell -NoProfile -ExecutionPolicy Bypass -File .\scripts\run_demo.ps1
 ```
 
 Open `http://127.0.0.1:5000`. The launcher prints the demo accounts and generated
-password, verifies the built engine, applies migrations to its owned demo database and
+password, builds or verifies the engine, applies migrations to its owned demo database and
 starts Flask. Rerunning the same profile preserves accounts, passwords, appointments
 and requests. Keep private `build/local-demos/` settings out of Git.
 
@@ -157,8 +156,9 @@ deployment package. The Flask development server should remain loopback-only.
 Trusted account provisioning is implemented; public registration and password
 recovery are not offered.
 
-Academic-request notifications, academic-request cancellation and versioned
-replacements of published academic requests are deferred. Appointment notifications
+Professors receive private Inbox notices for eligibility decisions on requests
+they submit. Allocation notifications, academic-request cancellation and
+versioned replacements of published academic requests are deferred. Appointment notifications
 and authorized appointment cancellation are implemented. Weekly academic inputs
 need explicit date bindings for calendar use; enrollment and teaching assignments
 are not inferred from participant counts or course declarations.

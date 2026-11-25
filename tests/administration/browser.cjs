@@ -12,7 +12,7 @@ async function views(page,pages) {
   }
 }
 async function main() {
-  const browser=await chromium.launch({channel:'msedge',headless:true});
+  const browser = await chromium.launch({channel:process.platform === 'win32' ? 'msedge' : undefined, headless:true});
   try {
     const admin = phase === 'MEETING-SMOKE' ? null : await login(browser, 6);
     if (['BETA-ACCEPTANCE', 'MEETING-SMOKE'].includes(phase)) {

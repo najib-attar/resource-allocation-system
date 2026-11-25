@@ -3,7 +3,7 @@
 The Student Portal and Professor Services are implemented in `main`. Student
 [PR #24](https://github.com/najib-attar/resource-allocation-system/pull/24) and
 Professor [PR #25](https://github.com/najib-attar/resource-allocation-system/pull/25)
-record their integration. The application migration head is **0051b**.
+record their integration. The application migration head is **0051c**.
 
 ## Start here
 
@@ -45,7 +45,10 @@ beta. Its [guide](administration/README.md),
 [acceptance record](administration/acceptance-report.md) describe the new shared
 workspace and preserved service-specific authorization.
 
-## Research and inactive foundations
+## Evaluation, research and inactive foundations
+
+- [Application strategy comparison](allocation-strategy-comparison.md) explains
+  how to reproduce the five-strategy evaluation with synthetic requests.
 
 - [CDMCS research guide](../research/cdmcs/README.md): isolated experiments, explicit
   synthetic execution and authorized read-only projection; no live scheduler activation.
@@ -70,7 +73,8 @@ These foundations do not grant new scheduling, delegation or booking permissions
   [design reports](design/) preserve development history. Their version-specific
   schema counts, branch states and test results apply to their recorded checkpoints.
 
-Deferred application functionality includes academic-request notifications,
+Professors receive private Inbox links to their recorded eligibility decisions.
+Deferred application functionality includes academic allocation notifications,
 academic cancellation, versioned replacement of published academic requests,
 a standalone student office-hours browser and a unified cross-service activity API.
 Appointment notifications/cancellation and existing service-specific activity pages

@@ -39,7 +39,7 @@ existing four worktrees and local demo data preserved. Requirements are in
 ## Decisions and deferred scope
 
 No policy decision is needed for read-only composition. UC-03's browser console,
-arbitrary resource editing, PII exports, academic notifications, published version
+arbitrary resource editing, PII exports, allocation notifications, published version
 replacement/cancellation, SIS import and CDMCS activation remain explicitly deferred.
 No schema, C++ protocol, scheduling semantics or permissions change is planned.
 

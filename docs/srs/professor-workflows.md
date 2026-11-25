@@ -8,7 +8,7 @@ Student [PR #24](https://github.com/najib-attar/resource-allocation-system/pull/
 and Professor [PR #25](https://github.com/najib-attar/resource-allocation-system/pull/25)
 are merged into `main`. Professor Services was developed separately on
 `codex/professor-services-v1`, based on audited Student UI-10 commit `747c925`,
-then integrated with main. The current application migration head is `0051b`.
+then integrated with main. The current application migration head is `0051c`.
 No deployment is implied by the merge.
 
 Initial reviewed main was `d9a63f3ef0f5f22b56a79af670c740a13f7bb6ad`.
@@ -64,6 +64,11 @@ UC-PROF-01–05 retain appointment hours/approvals, personal blocks, optional ro
 
 UC-PROF-06–08 have shared Jinja intake/revision forms and JSON submission. UC-PROF-09 has owner list/detail filters, allocations, reasons/history and explicit bindings. Reads are private/no-store. Academic service errors use JSON for the API; existing authentication, CSRF and general HTTP errors retain their established response behavior. Database failures return safe errors; invalid/private/stale operations commit no partial change.
 
-Academic outcome notifications remain deferred: Notification has no ResourceRequest event source. Source/schema, producers and recipient/destination policy need separate approval. Existing notifications remain supported. The Professor Portal frontend now follows the implemented [frontend sequence](../professor-services/frontend-plan.md), reusing the Student Campus Space system. Academic notifications, cancellation and versioned published replacement remain deferred.
+A recorded administrator eligibility decision on a professor-submitted request
+creates a private Inbox receipt for its owner. The receipt links to the exact
+review reason. The Professor Portal follows the implemented
+[frontend sequence](../professor-services/frontend-plan.md), using the shared
+Campus Space system. Allocation notifications, cancellation and versioned
+published replacements remain deferred.
 
 See [traceability](../professor-services/traceability.md) and [acceptance](../professor-services/acceptance-report.md) for executed evidence and limitations.

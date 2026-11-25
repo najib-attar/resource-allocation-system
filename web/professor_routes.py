@@ -10,6 +10,7 @@ from .professor_service import ProfessorRequestError, ProfessorService
 from .input_validation import integer, parse_time_slots
 from .engine_gateway import EngineIntegrationError
 from .professor_dashboard_service import ProfessorDashboardService
+from .notification_routes import add_notification_urls
 from .calendar_service import CalendarError, university_zone
 
 
@@ -61,8 +62,10 @@ def create_professor_blueprint(database_provider):
 
     @blueprint.get('/')
     def home():
-        return render_template('professor_home.html',home=ProfessorDashboardService(database_provider()).load(
-            g.principal.user_id,week=request.args.get('week'),month=request.args.get('month')))
+        dashboard = ProfessorDashboardService(database_provider()).load(
+            g.principal.user_id, week=request.args.get('week'), month=request.args.get('month'))
+        add_notification_urls(dashboard['inbox'])
+        return render_template('professor_home.html', home=dashboard)
 
     @blueprint.get('/academic-requests')
     def academic_requests():

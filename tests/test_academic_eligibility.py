@@ -141,9 +141,11 @@ class EligibilityGateTests(ProfessorFixture):
                 status='Eligible',version=1,reviewed_revision=1,reviewer_id=2,reason='Self review',decided_at=text('now()')))
         with self.assertRaises(IntegrityError),self.database.transaction() as session:
             session.execute(text('UPDATE eligibility_event SET reason=:reason'),dict(reason='rewritten'))
-        for table in ('request_eligibility','eligibility_event','allocation_eligibility'):
-            with self.subTest(table=table),self.assertRaises(IntegrityError),self.database.transaction() as session:
-                session.execute(text('TRUNCATE '+table))
+        # Include the referencing table in this disposable transaction so
+        # PostgreSQL reaches the eligibility immutability trigger.
+        for tables in ('request_eligibility', 'eligibility_event, notification', 'allocation_eligibility'):
+            with self.subTest(tables=tables), self.assertRaises(IntegrityError), self.database.transaction() as session:
+                session.execute(text('TRUNCATE ' + tables))
 
     def test_publication_and_owner_revision_race_cannot_change_published_inputs(self):
         key=self.academic_request()

@@ -36,6 +36,18 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Build authoritative backend
         run: python scripts/build_backend.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Run student and professor meeting browser smoke
+        timeout-minutes: 8
+        env:
+          ADMIN_PHASE: MEETING-SMOKE
+          ADMIN_EMPTY: '1'
+        run: |
+          npm install --prefix "$RUNNER_TEMP/ras-browser" --no-save --no-package-lock playwright@1.62.1
+          "$RUNNER_TEMP/ras-browser/node_modules/.bin/playwright" install --with-deps --only-shell chromium
+          PLAYWRIGHT_NODE_MODULE="$RUNNER_TEMP/ras-browser/node_modules/playwright" python -B tests/administration/browser.py
       - name: Verify schema documentation matches models
         run: python scripts/generate_database_diagrams.py --check
       - name: Require private preference validation, security, concurrency and migration tests

@@ -1,6 +1,18 @@
 # PostgreSQL setup and safe operations
 
-## Current schema (0051b)
+## Current schema (0051c)
+
+Revision `0051c` adds a nullable eligibility event reference to `notification`.
+A committed administrator review of a professor-submitted request records one
+private receipt for its instructor owner. Source exclusivity, a foreign key
+and recipient/event uniqueness protect delivery. Existing notices and eligibility
+history are preserved. Earlier decisions do not generate retroactive notices.
+
+Back up and stop application workers before upgrading. Start matching workers
+afterward. Downgrade to `0051b` is supported while the new source has no receipts.
+Once eligibility notices exist, the migration refuses downgrade to protect them.
+
+## Durable logout sessions (0051b)
 
 Revision `0051b` adds `logged_out_session` (62 application tables plus Alembic).
 Logout commits a denial for the signed login's random nonce before clearing the

@@ -57,6 +57,25 @@ class BackendExecutableTests(BackendFixture, TestCase):
         self.assertEqual(backend.metadata["compiler"], "test compiler")
         self.assertEqual(path.name, "allocation_system.exe" if os.name == "nt" else "allocation_system")
 
+    def test_conditional_build_creates_reuses_and_rebuilds_the_real_binary(self):
+        from scripts import build_backend
+        with mock.patch.object(build_backend, "PROJECT_ROOT", self.root):
+            def build(compiler):
+                with mock.patch("sys.argv", ["build_backend.py", "--if-needed", "--compiler", compiler]):
+                    return build_backend.main()
+
+            compiler = os.environ.get("CXX", "g++")
+            self.assertEqual(build(compiler), 0)
+            path = default_backend_path(self.root)
+            manifest = manifest_path(path).read_bytes()
+            self.assertEqual(build("intentionally-absent-test-compiler"), 0)
+            self.assertEqual(manifest_path(path).read_bytes(), manifest)
+            self.source.write_text("int main() { return 3; }\n", encoding="utf-8")
+            self.assertEqual(build(compiler), 0)
+            self.assertNotEqual(manifest_path(path).read_bytes(), manifest)
+            resolve_backend_executable(self.root)
+            self.assertEqual(subprocess.run([str(path)]).returncode, 3)
+
     def test_old_root_binaries_are_not_fallbacks(self):
         for name in ("allocation_system.exe", "allocation_system_test.exe", "allocation_system"):
             (self.root / name).write_bytes(b"old")

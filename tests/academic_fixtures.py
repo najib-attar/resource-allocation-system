@@ -4,7 +4,12 @@ These tests predate human eligibility and test allocation/calendar behavior.
 Security/gate tests call production execute_allocation directly and never use
 this helper. No production seeder or service grants eligibility automatically.
 """
+import os
 import re
+from unittest import mock
+from alembic import command
+from alembic.config import Config
+from postgres_fixtures import ROOT
 from sqlalchemy import inspect, select, text
 from web.account_service import AccountService
 from web.academic_eligibility import EligibilityService
@@ -63,10 +68,18 @@ def prepare_historical_gate_replay(database):
     publications. Their whole random schema is disposable; this is not a
     production rollback path or an allocation/authentication bypass.
     """
-    with database.transaction() as session:
+    with database.transaction(read_only=True) as session:
         schema=session.scalar(text('SELECT current_schema()'))
         if not re.fullmatch('ras_test_[0-9a-f]{32}',schema or ''):
             raise RuntimeError('Historical replay is restricted to owned test schemas.')
+        have_receipts = any(c['name'] == 'eligibility_event_id'
+            for c in inspect(session.connection()).get_columns('notification'))
+    if have_receipts:
+        # Remove the empty FK before replay. The real downgrade rejects any receipt loss.
+        url = database.engine.url.render_as_string(hide_password=False)
+        with mock.patch.dict(os.environ, {'DATABASE_URL': url}):
+            command.downgrade(Config(str(ROOT/'alembic.ini')), '0051b')
+    with database.transaction() as session:
         if inspect(session.connection()).has_table('request_eligibility'):
             for table,name in (('request_eligibility','eligibility_no_truncate'),
                     ('eligibility_event','eligibility_event_no_truncate'),('allocation_eligibility','allocation_eligibility_no_truncate')):

@@ -4,16 +4,28 @@ from flask import Blueprint, g, jsonify, redirect, render_template, request, url
 from .notification_service import NotificationService
 
 
+def add_notification_urls(inbox):
+    destinations = {
+        'appointment': ('appointments.detail', 'appointment_id'),
+        'room': ('rooms.detail', 'request_id'),
+        'equipment': ('equipment.detail', 'request_id'),
+        'feedback': ('feedback.detail', 'report_id'),
+        'eligibility': ('professor.page', 'request_id'),
+    }
+    for item in inbox['items']:
+        endpoint, parameter = destinations[item['kind']]
+        arguments = {parameter: item['subject_id']}
+        if item['kind'] == 'eligibility':
+            arguments['_anchor'] = f"eligibility-review-{item['review_version']}"
+        item['url'] = url_for(endpoint, **arguments)
+    return inbox
+
+
 def create_notification_blueprint(database_provider):
     blueprint = Blueprint('notifications', __name__, url_prefix='/notifications')
 
     def inbox(limit=20):
-        result = NotificationService(database_provider()).inbox(g.principal.user_id, limit)
-        for item in result['items']:
-            endpoint = {'appointment': 'appointments.detail', 'room': 'rooms.detail', 'equipment': 'equipment.detail', 'feedback':'feedback.detail'}[item['kind']]
-            key = 'appointment_id' if item['kind'] == 'appointment' else 'report_id' if item['kind'] == 'feedback' else 'request_id'
-            item['url'] = url_for(endpoint, **{key: item['subject_id']})
-        return result
+        return add_notification_urls(NotificationService(database_provider()).inbox(g.principal.user_id, limit))
 
     @blueprint.errorhandler(PermissionError)
     def private(error):

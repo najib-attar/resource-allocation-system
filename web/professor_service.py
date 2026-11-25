@@ -58,7 +58,7 @@ class ProfessorService:
     def _context(self, run_id, changed):
         return dict(publicationId=run_id, inputsChangedSincePublication=changed,
             eligibilityReviewSupported=True, creationEnabled=True,
-            academicNotificationsSupported=False,
+            academicNotificationsSupported=True,
             warnings=[
                 'Pending is an allocation state. Eligibility review and calendar publication are separate.',
                 'Eligibility approval does not reserve resources or guarantee an allocation.',

@@ -54,7 +54,7 @@ class ProfessorReadTests(ProfessorFixture):
         self.assertEqual((data['items'], data['total'], data['publicationId']), ([], 0, None))
         self.assertIs(data['creationEnabled'], True)
         self.assertIs(data['eligibilityReviewSupported'], True)
-        self.assertIs(data['academicNotificationsSupported'], False)
+        self.assertIs(data['academicNotificationsSupported'], True)
         self.assertIn('Eligibility approval does not reserve', ' '.join(data['warnings']))
 
     def test_all_four_types_are_owned_pending_with_validated_filters_and_pagination(self):
