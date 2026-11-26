@@ -14,6 +14,49 @@ from research.cdmcs.final_validation.model import FullCalendarScoring, Plan, can
 from research.cdmcs.final_validation.sensitivity import alternatives
 
 
+def select_configuration(metrics):
+    baseline = metrics["default"]
+    coverage_floor = baseline["preferred_coverage_percent"] - 1
+    burden_ceiling = baseline["peak_max_personal_burden"]
+    eligible = {}
+    exclusions = {}
+    for name, row in metrics.items():
+        reasons = []
+        if row["peak_max_personal_burden"] > burden_ceiling:
+            reasons.append(f"peak burden {row['peak_max_personal_burden']} exceeds {burden_ceiling}")
+        if row["preferred_coverage_percent"] < coverage_floor:
+            reasons.append(f"coverage {row['preferred_coverage_percent']:.2f}% is below {coverage_floor:.2f}%")
+        if reasons:
+            exclusions[name] = " and ".join(reasons)
+        else:
+            eligible[name] = (row["moved_cases"], row["waiting_minutes"])
+
+    selected = min(eligible, key=eligible.__getitem__)
+    for name, row in metrics.items():
+        if name == selected:
+            decision, reason = "selected", "fewest moves among configurations meeting both thresholds"
+        elif name in exclusions:
+            decision, reason = "excluded", exclusions[name]
+        else:
+            decision = "ranked_lower"
+            moves, wait = eligible[name]
+            selected_moves, selected_wait = eligible[selected]
+            if moves != selected_moves:
+                reason = f"{moves} moves versus {selected_moves} for the selected configuration"
+            elif wait != selected_wait:
+                reason = f"equal moves and longer mean wait ({wait:.2f} versus {selected_wait:.2f} min)"
+            else:
+                reason = "equal moves and mean wait, later in archive configuration order"
+        row.update(decision=decision, decision_reason=reason)
+    return {
+        "baseline": "default",
+        "coverage_floor_percent": coverage_floor,
+        "peak_burden_ceiling": burden_ceiling,
+        "selection_order": ["moved_cases", "waiting_minutes", "archive_configuration_order"],
+        "selected": selected,
+    }
+
+
 def gaps(events, days):
     ordered = sorted(events, key=lambda event: event.start)
     return sum(
@@ -109,6 +152,7 @@ def evaluate(archive, output):
             "gap_weight": settings.gap_weight,
             "nearby_minutes": settings.nearby_limit,
             "gap_rule": "tapered" if name == "tapered_nearby" else "cutoff",
+            "taper_minutes": 30 if name == "tapered_nearby" else 0,
             "delay_per_day": settings.delay,
             "base_relocation_penalty": settings.fixed_move,
             "person_relocation_penalty": settings.participant_move,
@@ -122,6 +166,7 @@ def evaluate(archive, output):
             "move_percent": 100 * moves / len(values),
         }
 
+    selection = select_configuration(metrics)
     output.mkdir(parents=True, exist_ok=True)
     with (output / "weight-observations.csv").open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, lineterminator="\n", fieldnames=list(dict.fromkeys(field for sample in raw for field in sample)))
@@ -129,11 +174,23 @@ def evaluate(archive, output):
         writer.writerows(raw)
     (output / "weight-summary.json").write_text(
         json.dumps({"archive_sha256": sha256(archive.read_bytes()).hexdigest(), "observations": len(raw),
-                    "paired_fixtures": len(cases), "metrics": metrics}, indent=2) + "\n", encoding="utf-8",
+                    "paired_fixtures": len(cases), "selection": selection, "metrics": metrics},
+                   indent=2) + "\n", encoding="utf-8",
     )
+    comparison = []
+    for name, row in metrics.items():
+        preferred, outside_window, outside_day = row["rates"]
+        comparison.append({"configuration": name, "preferred_rate": preferred,
+                           "outside_window_rate": outside_window, "outside_day_rate": outside_day,
+                           **{field: value for field, value in row.items() if field != "rates"}})
+    with (output / "weight-comparison.csv").open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, lineterminator="\n", fieldnames=comparison[0])
+        writer.writeheader()
+        writer.writerows(comparison)
+
     table = [
-        "| Configuration | Rates | Gap | Cutoff min | Delay/day | Move fixed/person | Wait min | Preferred min % | Gap change/person | Max burden mean / peak | Moved |",
-        "| --- | --- | ---: | --- | ---: | --- | ---: | ---: | ---: | ---: | ---: |",
+        "| Configuration | Rates | Gap | Cutoff min | Delay/day | Move fixed/person | Wait min | Preferred min % | Gap change/person | Max burden mean / peak | Moved | Decision |",
+        "| --- | --- | ---: | --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | --- |",
     ]
     for name, row in metrics.items():
         rule = f"{row['nearby_minutes']} + taper" if row["gap_rule"] == "tapered" else str(row["nearby_minutes"])
@@ -143,7 +200,7 @@ def evaluate(archive, output):
             f"| {row['base_relocation_penalty']}/{row['person_relocation_penalty']} | {row['waiting_minutes']:.2f} "
             f"| {row['preferred_coverage_percent']:.2f} | {row['new_gaps_per_person']:+.3f} "
             f"| {row['mean_max_personal_burden']:.2f} / {row['peak_max_personal_burden']} "
-            f"| {row['moved_cases']}/{row['feasible_cases']} |"
+            f"| {row['moved_cases']}/{row['feasible_cases']} | {row['decision_reason'].capitalize()} |"
         )
     markdown = "\n".join(table) + "\n"
     (output / "weight-table.md").write_text(markdown, encoding="utf-8")
