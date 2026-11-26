@@ -92,9 +92,12 @@ def existing_postgres(directory, pg_bin):
         raise ValueError("Cannot verify the existing PostgreSQL server state.")
     owned = None
     if status.returncode == 3:
-        with (directory / "postgres.log").open("ab") as log:
+        # pg_ctl must open the server log itself. On Windows, sharing its
+        # inherited console output handle with that log prevents startup.
+        with (directory / "postgres-control.log").open("ab") as log:
             subprocess.run([*command, "-l", str(directory / "postgres.log"), "-o", "-p 55546 -h 127.0.0.1",
-                            "-w", "-t", "20", "start"], stdout=log, stderr=log, env=environment, timeout=25, check=True)
+                            "-w", "-t", "20", "start"], stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT,
+                            env=environment, timeout=25, check=True)
         owned = server_identity()
         if owned is None:
             raise ValueError("Could not verify the started PostgreSQL process. Check the existing server locally.")

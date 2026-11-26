@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from subprocess import CompletedProcess
 from tempfile import TemporaryDirectory
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
@@ -72,3 +73,16 @@ class ItuCdmcsLauncherTests(TestCase):
         ):
             self.assertEqual(launcher.main(), 0)
         self.assertEqual(serve.call_args.args[2], 5080)
+
+    def test_pg_ctl_console_output_is_separate_from_the_server_log(self):
+        data = self.directory / "postgres-data"
+        (data / "postmaster.pid").write_text(f"1234\n{data}\n5678\n55546\n", encoding="utf-8")
+        with patch.object(launcher.subprocess, "run", side_effect=[
+            CompletedProcess([], 3), CompletedProcess([], 0), CompletedProcess([], 0),
+        ]) as run:
+            with launcher.existing_postgres(self.directory, self.directory / "bin"):
+                pass
+        launch = run.call_args_list[1]
+        self.assertIn(str(self.directory / "postgres.log"), launch.args[0])
+        self.assertEqual(Path(launch.kwargs["stdout"].name), self.directory / "postgres-control.log")
+        self.assertEqual(run.call_args.args[0][-1], "stop")
