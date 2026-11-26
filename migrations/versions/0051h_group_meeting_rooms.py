@@ -9,6 +9,14 @@ down_revision = "0051g"
 branch_labels = None
 depends_on = None
 
+GROUP_FK_INDEXES = (
+    ("group_meeting_consent", "user_id"),
+    ("group_meeting_event", "actor_id"),
+    ("group_meeting_reschedule", "original_room_request_id"),
+    ("group_meeting_reschedule", "room_request_id"),
+    ("group_meeting_reschedule_decision", "user_id"),
+)
+
 STUDENT_ROLE = ("NOT EXISTS (SELECT 1 FROM university_user u JOIN role p ON p.id=u.primary_role_id "
                 "WHERE u.id=r.organizer_id AND p.name='Student')")
 GROUP_OR_STUDENT = (f"(r.group_participant_ids IS NULL AND {STUDENT_ROLE})"
@@ -46,6 +54,8 @@ ACTIVE_SCOPED_ROOM = ("(m.status = 'Confirmed' OR (m.status = 'Pending Approval'
 
 
 def upgrade():
+    for table, column in GROUP_FK_INDEXES:
+        op.create_index(f"ix_{table}_{column}", table, [column])
     op.add_column("student_room_request", sa.Column("group_participant_ids", postgresql.JSONB()))
     op.add_column("student_room_request", sa.Column("group_submission_key", sa.String(64)))
     op.create_unique_constraint("uq_student_room_group_submission_key", "student_room_request", ["group_submission_key"])
@@ -109,3 +119,5 @@ def downgrade():
     op.drop_constraint("uq_student_room_group_submission_key", "student_room_request", type_="unique")
     op.drop_column("student_room_request", "group_submission_key")
     op.drop_column("student_room_request", "group_participant_ids")
+    for table, column in reversed(GROUP_FK_INDEXES):
+        op.drop_index(f"ix_{table}_{column}", table_name=table)

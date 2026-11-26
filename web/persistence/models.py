@@ -867,7 +867,7 @@ class GroupMeetingConsent(Base):
     __tablename__ = "group_meeting_consent"
     __table_args__ = (CheckConstraint("revision > 0"), CheckConstraint(allowed("decision", ("Pending", "Approved", "Declined"))))
     meeting_id: Mapped[int] = mapped_column(ForeignKey("group_meeting.id"), primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True, index=True)
     revision: Mapped[int] = mapped_column(Integer)
     decision: Mapped[str] = mapped_column(String(10))
 
@@ -890,10 +890,10 @@ class GroupMeetingReschedule(Base):
     source_revision: Mapped[int] = mapped_column(Integer)
     original_start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     original_end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    original_room_request_id: Mapped[int | None] = mapped_column(ForeignKey("student_room_request.id"))
+    original_room_request_id: Mapped[int | None] = mapped_column(ForeignKey("student_room_request.id"), index=True)
     start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
-    room_request_id: Mapped[int | None] = mapped_column(ForeignKey("student_room_request.id"))
+    room_request_id: Mapped[int | None] = mapped_column(ForeignKey("student_room_request.id"), index=True)
     status: Mapped[str] = mapped_column(String(20))
     submission_key: Mapped[str | None] = mapped_column(String(64), unique=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
@@ -907,7 +907,7 @@ class GroupMeetingRescheduleDecision(Base):
         CheckConstraint("(decision = 'Pending') = (decided_at IS NULL)"),
     )
     proposal_id: Mapped[int] = mapped_column(ForeignKey("group_meeting_reschedule.id"), primary_key=True)
-    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True, index=True)
     decision: Mapped[str] = mapped_column(String(10))
     decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
@@ -917,7 +917,7 @@ class GroupMeetingEvent(Base):
     __table_args__ = (CheckConstraint("revision > 0"),)
     id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
     meeting_id: Mapped[int] = mapped_column(ForeignKey("group_meeting.id"), index=True)
-    actor_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"))
+    actor_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), index=True)
     revision: Mapped[int] = mapped_column(Integer)
     message: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())

@@ -168,6 +168,12 @@ class PostgresCompletionTests(PostgresTestCase):
             'allocation_eligibility_no_truncate', 'request_eligibility', 'request_material_revision',
             'allocation_eligibility_start', 'allocation_eligibility_publish',
             'request_slot_eligibility', 'exam_details_eligibility', 'request_participant_eligibility')})
+        expected.update({name: (True, True) for name in (
+            "check_group_meeting", "check_group_meeting_participant", "check_group_meeting_commitment",
+            "check_group_meeting_consent", "check_group_meeting_room", "check_group_reschedule",
+            "check_group_reschedule_decision")})
+        expected.update({name: (False, False) for name in (
+            "protect_group_reschedule_history", "group_meeting_room_scope")})
         self.assertEqual({row[0]: (row[1], row[2]) for row in rows}, expected)
 
     def test_concurrent_child_deletions_cannot_leave_empty_recurring_request(self):

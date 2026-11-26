@@ -744,6 +744,7 @@ Explicit revision-scoped move decision by each required participant affected by 
 - Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
 - Check: `decision IN ('Pending','Approved','Declined')`.
 - Check: `revision > 0`.
+- Index: `ix_group_meeting_consent_user_id (user_id)`.
 
 ## group_meeting_event
 
@@ -762,6 +763,7 @@ Participant-scoped lifecycle, confirmation and relocation history for the pilot 
 - Foreign key: `(actor_id) -> university_user (id)`; NO ACTION.
 - Foreign key: `(meeting_id) -> group_meeting (id)`; NO ACTION.
 - Check: `revision > 0`.
+- Index: `ix_group_meeting_event_actor_id (actor_id)`.
 - Index: `ix_group_meeting_event_meeting_id (meeting_id)`.
 
 ## group_meeting_participant
@@ -813,6 +815,8 @@ A replacement proposal for a confirmed meeting, recording its source revision an
 - Check: `status IN ('Pending Approval','Applied','Declined','Withdrawn','Superseded')`.
 - Unique: `submission_key`.
 - Index: `ix_group_meeting_reschedule_meeting_id (meeting_id)`.
+- Index: `ix_group_meeting_reschedule_original_room_request_id (original_room_request_id)`.
+- Index: `ix_group_meeting_reschedule_room_request_id (room_request_id)`.
 - Index: `uq_group_reschedule_applied (meeting_id, source_revision)`.
 - Index: `uq_group_reschedule_pending (meeting_id)`.
 
@@ -832,6 +836,7 @@ A required participant's decision on one confirmed meeting replacement proposal.
 - Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
 - Check: `(decision = 'Pending') = (decided_at IS NULL)`.
 - Check: `decision IN ('Pending','Approved','Declined')`.
+- Index: `ix_group_meeting_reschedule_decision_user_id (user_id)`.
 
 ## legacy_calendar_binding
 
