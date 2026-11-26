@@ -36,6 +36,25 @@ jobs:
         run: python -m pip install -r requirements.txt
       - name: Build authoritative backend
         run: python scripts/build_backend.py
+      - name: Build native CDMCS for opt-in meeting regressions
+        timeout-minutes: 8
+        run: |
+          deps="$RUNNER_TEMP/cdmcs-deps"
+          native="$RUNNER_TEMP/cdmcs-native"
+          mkdir -p "$deps"
+          curl --fail --location --retry 3 --connect-timeout 15 --max-time 120 \
+            https://archives.boost.io/release/1.85.0/source/boost_1_85_0.tar.bz2 \
+            --output "$deps/boost.tar.bz2"
+          printf '%s  %s\n' \
+            7009fe1faa1697476bdc7027703a2badb84e849b7b0baad5086b087b971f8617 \
+            "$deps/boost.tar.bz2" | sha256sum --check --strict
+          tar -xjf "$deps/boost.tar.bz2" -C "$deps" boost_1_85_0/boost boost_1_85_0/LICENSE_1_0.txt
+          cmake -S research/cdmcs/i1 -B "$native" -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_CXX_EXTENSIONS=OFF -DBUILD_TESTING=OFF \
+            -DBOOST_JSON_INCLUDE_DIR="$deps/boost_1_85_0"
+          cmake --build "$native" --parallel 2
+          test -x "$native/cdmcs_i1"
+          echo "CDMCS_REHEARSAL_TEST_ENGINE=$native/cdmcs_i1" >> "$GITHUB_ENV"
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
