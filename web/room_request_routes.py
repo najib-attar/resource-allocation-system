@@ -111,6 +111,8 @@ def create_room_blueprint(database_provider, gateway_provider, strategy_provider
     def revise(request_id):
         student()
         item=service().detail(request_id,actor())
+        if item['groupRoom']:
+            raise RoomRequestError('Group meeting room requests keep their exact scope. Cancel and choose a new candidate.')
         if item['organizerId'] != actor() or item['status'] not in {'Pending Faculty Approval','Needs Revision','Rejected'}:
             raise RoomRequestError('Only a pending organizer request may be revised. Cancel confirmed events and create a new request.')
         if request.method == 'POST':

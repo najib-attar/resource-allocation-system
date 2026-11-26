@@ -214,6 +214,8 @@ def decide(session, fixture, actor, roster, meeting_id, revision, action):
         target, affected, replacement_end = checked
         if {p.user_id for p in consents} != affected:
             raise MeetingError("The group affected by the move changed. Search again.")
+        from .group_meeting_reschedule import supersede_active
+        supersede_active(session, target.id)
         _release(session, target)
         target.start_at, target.end_at = meeting.move_start_at, replacement_end
         target.revision += 1
@@ -262,6 +264,8 @@ def cancel(session, actor, meeting_id, revision):
     if meeting.revision != revision or meeting.status not in ACTIVE or meeting.start_at <= datetime.now(timezone.utc):
         raise MeetingError("This meeting cannot be cancelled from the current revision.")
     if meeting.status == "Confirmed":
+        from .group_meeting_reschedule import supersede_active
+        supersede_active(session, meeting.id)
         _release(session, meeting)
         state_row(session, True).calendar_revision += 1
     meeting.status = "Cancelled"

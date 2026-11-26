@@ -15,6 +15,35 @@ rehearsal. [Raw comparison data](weight-observations.csv) ·
 [Machine-readable summary](weight-summary.json) · [Comparison export](weight-comparison.csv) ·
 [Preliminary W0–W5 record](preliminary-w0-w5.md)
 
+## Existing İTÜ demonstration profile
+
+The persistent deployment uses `ras_itu_demo` on PostgreSQL port `55546`.
+Point the verification launcher to the existing
+`build/local-demos/itu-bbf-fall-2026` directory in the checkout that owns it.
+With its PostgreSQL listener running, omit `--serve` to verify profile ownership
+and schema in read-only transactions.
+
+~~~powershell
+$python = 'C:\path\to\venv\Scripts\python.exe'
+$postgresBin = 'C:\path\to\PostgreSQL\17\bin'
+$profile = 'C:\path\to\owning-checkout\build\local-demos\itu-bbf-fall-2026'
+& $python -B scripts/run_itu_cdmcs.py --state-dir $profile
+~~~
+
+After a separately approved migration has brought the profile to this
+checkout's schema head, the same launcher can serve the regular Campus
+Space application from that database.
+
+~~~powershell
+& $python -B scripts/build_backend.py --if-needed
+& $python -B scripts/run_itu_cdmcs.py --state-dir $profile --serve --postgres-bin $postgresBin
+~~~
+
+The launcher can start the existing owned PostgreSQL cluster. It reuses
+the profile's credentials and server settings, and has no initialization or
+migration path. The persistent profile continues using the regular
+scheduler. Native CDMCS recommendations use the separate opt-in pilot below.
+
 ## Run on Windows
 
 Run from the application integration checkout with the repository's Python
@@ -70,11 +99,16 @@ fixture dates do not contain a matching session inside the academic term.
    with the entire old required set included. Propose a conditional option
    and record both the new meeting approvals and the separate move consents.
    A refusal keeps the original booking, and the organizer can search again.
-4. For a physical meeting, use the existing Student room request form with
-   category **Meeting**, the exact time, the full headcount and facilities.
-   Use the assigned Staff approver to decide the request. Attach the
-   approved booking in the group form and finish the required approvals.
-   The group uses that existing reservation and creates participant commitments.
+4. Choose **Find a room** and select facilities to see feasible room and time
+   pairs. Submit an exact choice to the designated faculty approver. After
+   the room approval, open the room request and choose **Use this room for
+   the group meeting**. Verify the participant sides and send the meeting
+   for required approvals. An organizer can also attach a compatible
+   existing one-time Student booking.
+5. In a confirmed meeting, open **Rescheduling and replacement approvals**.
+   Search and propose an alternative. Confirmed commitments stay in the
+   calendar until all required participants approve the replacement. A
+   physical replacement also requires a separately approved room interval.
 
 ## Integration stages and boundaries
 
@@ -85,16 +119,18 @@ fixture dates do not contain a matching session inside the academic term.
 | Book | The existing calendar lock protects required approval, both possible interval writes, and recipient-scoped updates. PostgreSQL rejects incomplete confirmation, overlapping group commitments, and release of a room for a confirmed group. |
 | Retain the fallback | Regular Student–Instructor appointments continue through the existing scheduler. The old rehearsal comparison keeps its opt-in test fixtures and standard direct booking handoff. |
 
-The pilot supports only fictional identities. Physical meetings attach an
-already approved one-time Student room booking. Physical meetings and
-ordinary academic commitments stay fixed. A move considers up to three
-eligible flexible targets and four replacement starts per target, including
-the earliest and latest available starts. A pending online meeting can be
-revised by its organizer. A confirmed group retains its reservation until
-an authorized cancellation or a separately consented move. Fully general
-confirmed replacement requests, rankings that combine unapproved rooms
-with calendar options, and activation on real private calendars remain
-outside this pilot.
+The pilot supports only fictional identities. Open a separate room request
+with a designated approver for each physical proposal. The room/time search
+accounts for teaching schedules, existing reservations, capacity and access
+for everyone invited. The existing room lifecycle approves and owns the
+reservation. The meeting finalizes its participant commitments separately.
+An automatic relocation candidate can move at most one confirmed flexible
+online meeting. Search is bounded to three eligible flexible targets and four
+replacement starts per target. Ordinary academic commitments stay protected.
+Explicit rescheduling of a confirmed meeting uses a standalone approval
+proposal instead of moving another meeting. A standalone proposal preserves
+the duration, participants and location mode. Activation on real private
+calendars still requires agreed participant consent and disclosure policy.
 
 ## Verification commands
 
@@ -104,12 +140,16 @@ $env:CDMCS_REHEARSAL_TEST_ENGINE = $cdmcs
 $env:PLAYWRIGHT_NODE_MODULE = 'C:\path\to\node_modules\playwright-core'
 node tests/cdmcs_rehearsal_browser.cjs 'C:\path\to\fictional-logins.json' 'C:\path\to\evidence'
 node tests/group_meeting_pilot_browser.cjs 'C:\path\to\fictional-logins.json' 'C:\path\to\pilot-evidence'
+& $python -B tests/group_meeting_pilot_acceptance.py --postgres-bin $postgresBin --engine $cdmcs --engine-sha256 $reviewedHash --screenshots 'C:\path\to\pilot-evidence'
 ~~~
 
 Launch a fresh pilot for each browser script. The original comparison
 script verifies a standard student–instructor appointment. The group
 script verifies persisted requests, decisions, preferences, room linking,
 and change consent. Both capture screenshots from the running Flask server.
+The acceptance runner checks the committed rows and repeats a read-only
+browser walkthrough through a fresh Flask process on the same PostgreSQL
+database.
 
 ## Prior rehearsal verification
 

@@ -1,0 +1,116 @@
+{% extends 'service_base.html' %}
+{% block title %}Meeting rescheduling | Campus Space{% endblock %}
+{% block page_heading %}Meeting rescheduling{% endblock %}
+{% block service_intro %}{{ meeting.purpose }}{% endblock %}
+{% block service_actions %}<a class="button-secondary" href="{{ url_for('group_meetings.detail', meeting_id=meeting.id) }}">Meeting details</a>{% endblock %}
+{% block service_content %}
+{% if not campus_shell %}
+<div class="service-actions"><p>{{ self.service_intro() }}</p>{{ self.service_actions() }}</div>
+{% endif %}
+<div class="appointment-grid">
+    <section class="panel" aria-labelledby="current-meeting">
+        <h2 id="current-meeting">Current meeting</h2>
+        <p>{{ meeting.start_at|university_time }} – {{ meeting.end_at|university_time }}</p>
+        <p>{{ meeting.status }} · {{ meeting.location_mode|capitalize }}</p>
+        {% if can_search %}
+        <h3>Find a replacement time</h3>
+        <p>The participant list and duration stay the same. The confirmed meeting stays on calendars until every required participant approves and calendars are rechecked.</p>
+        {% if meeting.location_mode == 'physical' %}
+        <p>Use a separate approved booking of the same duration for these participants and facilities. The replacement releases any preceding booking created for this group. An independently booked room remains on its own reservation.</p>
+        {% if booking %}
+        <p><a href="{{ url_for('rooms.detail', request_id=booking.id) }}">Replacement room request</a> · {{ booking.status }}</p>
+        <p>Once the room is approved, choose it below and search again to send the replacement for participant approval.</p>
+        {% endif %}
+        {% endif %}
+        <form method="post" action="{{ url_for('group_meeting_reschedule.detail', meeting_id=meeting.id, booking=booking.id if booking else none) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="revision" value="{{ meeting.revision }}">
+            <label class="ui-field">First date <input name="fromDate" type="date" required min="{{ first }}" max="{{ last }}" value="{{ dates.fromDate }}"></label>
+            <label class="ui-field">Last date <input name="untilDate" type="date" required min="{{ first }}" max="{{ last }}" value="{{ dates.untilDate }}"></label>
+            <label class="ui-field">Preferred start <input name="preferredStart" type="datetime-local" value="{{ dates.preferredStart }}"></label>
+            {% if meeting.location_mode == 'physical' %}
+            <label class="ui-field">Replacement room
+                <select name="roomId">
+                    <option value="">Find a room that needs faculty approval</option>
+                    {% for room in rooms %}
+                    <option value="{{ room.request_id }}"{% if dates.roomId|string == room.request_id|string %} selected{% endif %}>{{ room.name }} · {{ room.start|university_time }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            {% endif %}
+            <p>Times use {{ zone }}. A preferred start breaks ties between otherwise equally ranked options.</p>
+            <button type="submit" class="button-primary">Find replacement times</button>
+        </form>
+        {% endif %}
+    </section>
+    {% if results is not none %}
+    <section class="panel" aria-labelledby="replacement-options">
+        <h2 id="replacement-options">{{ 'Room and time options' if find_room else 'Replacement options' }}</h2>
+        {% if find_room %}<p>Faculty must approve the room before participants can approve the replacement. Select a time that leaves the current meeting in place.</p>{% endif %}
+        {% if results %}
+        <form action="{{ url_for('group_meeting_reschedule.create', meeting_id=meeting.id) }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <fieldset>
+                <legend>Select a time to send for approval</legend>
+                {% for option in results %}
+                <label class="meeting-choice">
+                    <input type="radio" name="ticket" value="{{ option.ticket }}" required>
+                    <span class="meeting-choice-text">
+                        <strong>{{ option.display }}</strong>
+                        {% if option.candidate_room %}<span>{{ option.candidate_room.name }} · {{ option.candidate_room.building }} · {{ option.candidate_room.capacity }} seats</span>{% endif %}
+                        <span>{{ option.coverage }}% preferred-time coverage, {{ option.wait }} min after the first option, {{ '%+d'|format(option.gaps) }} calendar gaps.</span>
+                    </span>
+                </label>
+                {% endfor %}
+            </fieldset>
+            <button type="submit" class="button-primary">{{ 'Request replacement room approval' if find_room else 'Propose replacement' }}</button>
+        </form>
+        {% else %}
+        <p>{{ 'No eligible room and time pair was found in this range.' if find_room else 'Required calendars have no replacement time in this range.' }}</p>
+        {% endif %}
+    </section>
+    {% endif %}
+    {% if pending %}
+    <section class="panel" aria-labelledby="replacement-review">
+        <h2 id="replacement-review">Replacement proposal</h2>
+        <p>{{ pending.start_at|university_time }} – {{ pending.end_at|university_time }}{% if pending.room_request_id in room_names %} · {{ room_names[pending.room_request_id] }}{% endif %}</p>
+        {% if current %}
+        <p>{{ votes|selectattr('decision', 'equalto', 'Approved')|list|length }} of {{ votes|length }} required approvals recorded. The current meeting remains in place.</p>
+        {% else %}
+        <p>This proposal expired or the original meeting changed.</p>
+        {% endif %}
+        <ul>
+            {% for vote in votes %}
+            <li>{{ roster[vote.user_id].name if vote.user_id in roster else 'Unavailable participant' }} · {{ vote.decision }}</li>
+            {% endfor %}
+        </ul>
+        {% if current and own or actor == meeting.organizer_id %}
+        <form method="post" action="{{ url_for('group_meeting_reschedule.response', meeting_id=meeting.id, proposal_id=pending.id) }}" class="service-actions">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="revision" value="{{ pending.source_revision }}">
+            {% if actor == meeting.organizer_id %}
+            <button name="action" value="withdraw" type="submit" class="service-danger">Withdraw proposal</button>
+            {% else %}
+            {% if own.decision != 'Approved' %}<button name="action" value="approve" type="submit" class="button-primary">Approve replacement</button>{% endif %}
+            <button name="action" value="decline" type="submit" class="service-danger">Decline replacement</button>
+            {% endif %}
+        </form>
+        {% endif %}
+    </section>
+    {% endif %}
+    <section class="panel" aria-labelledby="replacement-history">
+        <h2 id="replacement-history">Rescheduling history</h2>
+        <ul>
+            {% for item in proposals if item.status != 'Pending Approval' %}
+            <li>{{ item.status }} · {{ item.original_start_at|university_time }} → {{ item.start_at|university_time }}{% if item.room_request_id in room_names %} · {{ room_names[item.room_request_id] }}{% endif %}
+                {% if item.room_request_id and item.status in ['Declined', 'Withdrawn', 'Superseded'] and actor == meeting.organizer_id %}
+                · <a href="{{ url_for('rooms.detail', request_id=item.room_request_id) }}">Manage unused room booking</a>
+                {% endif %}
+            </li>
+            {% else %}
+            <li>No resolved rescheduling proposals.</li>
+            {% endfor %}
+        </ul>
+    </section>
+</div>
+{% endblock %}

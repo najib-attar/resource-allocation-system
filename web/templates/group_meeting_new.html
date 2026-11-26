@@ -5,30 +5,33 @@
 {% block service_intro %}Search the fictional İTÜ calendars, then request an arrangement for approval.{% endblock %}
 {% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='prototype.css') }}">{% endblock %}
 
-{% macro options(rows, heading, section_id, conditional, room) %}
+{% macro options(rows, heading, section_id, conditional, room, find_room=false) %}
 <section class="ui-card booking-section" aria-labelledby="{{ section_id }}">
     <h2 id="{{ section_id }}">{{ heading }}</h2>
     {% if conditional %}<p>Each option moves one online meeting after everyone affected approves its replacement time.</p>{% endif %}
+    {% if find_room %}<p>Request faculty approval for your room and time. Once approved, attach the booking to send the meeting for participant approval.</p>{% endif %}
     {% if rows %}
     <form method="post" action="{{ url_for('group_meetings.create') }}" class="booking-form">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <fieldset><legend>Select an arrangement</legend>
         {% for item in rows %}
-        <div class="service-row">
-            <div>
-                <label><input type="radio" name="ticket" value="{{ item.ticket }}" required> {{ item.display }}</label>
-                {% if item.replacement %}<p>Replacement for the flexible meeting {{ item.replacement }}.</p>{% endif %}
-                <p>Required calendars fit. {{ item.coverage }}% preferred-time coverage across the group, {{ item.wait }} min after the first candidate, {{ '%+d'|format(item.gaps) }} calendar gaps, cost {{ item.cost }} units.</p>
-            </div>
-        </div>
+        <label class="meeting-choice">
+            <input type="radio" name="ticket" value="{{ item.ticket }}" required>
+            <span class="meeting-choice-text">
+                <strong>{{ item.display }}</strong>
+                {% if item.candidate_room %}<span>{{ item.candidate_room.name }} · {{ item.candidate_room.building }} · {{ item.candidate_room.capacity }} seats</span>{% endif %}
+                {% if item.replacement %}<span>Replacement for the flexible meeting {{ item.replacement }}.</span>{% endif %}
+                <span>Required calendars fit. {{ item.coverage }}% preferred-time coverage across the group, {{ item.wait }} min after the first candidate, {{ '%+d'|format(item.gaps) }} calendar gaps, cost {{ item.cost }} units.</span>
+            </span>
+        </label>
         {% endfor %}
         </fieldset>
         <label class="ui-field">Purpose <textarea name="purpose" maxlength="2000" rows="2" required></textarea></label>
-        {% if not room %}
+        {% if not room and not find_room %}
         <label class="ui-field">HTTPS join link <input name="join_url" type="url" maxlength="512"></label>
         {% if not conditional %}<label><input type="checkbox" name="flexible" value="yes"> This online meeting may be considered for a move after confirmation</label>{% endif %}
         {% endif %}
-        <div class="booking-submit"><button class="ui-button ui-button--primary" type="submit">Request meeting</button></div>
+        <div class="booking-submit"><button class="ui-button ui-button--primary" type="submit">{{ 'Request room approval' if find_room else 'Request meeting' }}</button></div>
     </form>
     {% else %}
     <p>No valid {{ 'relocation' if conditional else 'direct' }} option was found in this range.</p>
@@ -68,26 +71,25 @@
                     <label class="ui-field">Location
                         <select name="roomId">
                             <option value="">Online</option>
+                            <option value="find"{% if form.findRoom %} selected{% endif %}>Find a room</option>
                             {% for room in rooms %}
                             <option value="{{ room.request_id }}"{% if form.roomId|string == room.request_id|string %} selected{% endif %}>{{ room.name }} · {{ room.start|university_time }} ({{ room.attendee_count }} approved)</option>
                             {% endfor %}
                         </select>
                     </label>
-                    {% if g.principal.role == 'Student' %}
-                    <p>For a physical meeting, <a href="{{ url_for('rooms.new') }}">request a room</a> in the Meeting category for the full headcount and facilities. After faculty approval, attach the booking and use its exact interval.</p>
-                    {% endif %}
-                    {% if rooms %}
-                        {% for feature in ['projector', 'whiteboard', 'computers'] %}
-                        <label><input type="checkbox" name="features" value="{{ feature }}"{% if feature in form.features %} checked{% endif %}> {{ feature|capitalize }}</label>
-                        {% endfor %}
-                    {% endif %}
+                    <p>Faculty reviews new room requests. Approved bookings use their exact date and duration.</p>
+                    <fieldset><legend>Required room facilities</legend>
+                    {% for feature in ['projector', 'whiteboard', 'computers'] %}
+                    <label><input type="checkbox" name="features" value="{{ feature }}"{% if feature in form.features %} checked{% endif %}> {{ feature|capitalize }}</label>
+                    {% endfor %}
+                    </fieldset>
                 </fieldset>
                 <div class="booking-submit"><button class="ui-button ui-button--primary" type="submit">Find times</button></div>
             </form>
             {% if result %}
             <p>Meeting shape {{ result.relationship }}</p>
-            {{ options(result.direct, 'Direct options', 'direct-options', false, result.room) }}
-            {% if not result.room %}{{ options(result.moves, 'Options requiring one move', 'move-options', true, none) }}{% endif %}
+            {{ options(result.direct, 'Direct options', 'direct-options', false, result.room, form.findRoom) }}
+            {% if not result.room and not form.findRoom %}{{ options(result.moves, 'Options requiring one move', 'move-options', true, none) }}{% endif %}
             {% endif %}
         </div>
         <aside class="booking-guide">

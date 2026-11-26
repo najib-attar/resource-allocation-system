@@ -14,7 +14,7 @@ class DatabaseDiagramTests(TestCase):
             self.assertEqual((ROOT / "docs/architecture" / name).read_text(encoding="utf-8"), expected)
         physical = artifacts()["database-er-physical.mmd"]
         self.assertIn("    alembic_version {", physical)
-        self.assertEqual(len(Base.metadata.tables), 75)
+        self.assertEqual(len(Base.metadata.tables), 77)
         for table in Base.metadata.tables.values():
             self.assertIn("    " + table.name + " {", physical)
             self.assertTrue(all(column.name in physical for column in table.columns))
@@ -26,3 +26,5 @@ class DatabaseDiagramTests(TestCase):
         meeting = artifacts()["group-meeting-er.mmd"]
         self.assertIn("student_room_request o|--o{ group_meeting : room_request_id", meeting)
         self.assertIn("group_meeting_event o|--o{ notification : group_meeting_event_id", meeting)
+        self.assertIn("group_meeting ||--o{ group_meeting_reschedule : meeting_id", meeting)
+        self.assertIn("group_meeting_reschedule ||--o{ group_meeting_reschedule_decision : proposal_id", meeting)

@@ -1,12 +1,14 @@
 """Student/faculty lifecycle and policy transactions; C++ owns room decisions."""
 
 from datetime import datetime, timedelta, timezone, time
+from re import fullmatch
 from zoneinfo import ZoneInfo
 from sqlalchemy import delete, or_, select
 from sqlalchemy.exc import IntegrityError
 
 from .calendar_service import CalendarError, aware, epoch, local_instant, university_zone
-from .persistence.models import (FacultyRoomApprover, GroupMeeting, LoginAccount, OrganizationUnit, Resource, Role, User,
+from .group_meeting_rooms import allowed_group_rooms, group_room_members, meeting_room_features
+from .persistence.models import (FacultyRoomApprover, GroupMeeting, GroupMeetingReschedule, LoginAccount, OrganizationUnit, Resource, Role, User,
     ROOM_CATEGORIES, RoomAccess, RoomClosure, RoomEvent, RoomInvitation, RoomOrganizerCommitment,
     RoomPolicy, RoomReservation, StudentRoomRequest)
 from .persistence.repository import state_row
@@ -195,6 +197,50 @@ class RoomRequestService:
     def _event(self, session, record, actor, message):
         publish_event(session, RoomEvent(request_id=record.id, actor_id=actor, revision=record.revision, message=message))
 
+    def _group_snapshot(self, session, actor, values, room_id, participants, exclude=None, *, lock_members=False):
+        role = group_room_members(session, actor, participants, lock=lock_members)
+        allowed = allowed_group_rooms(session, actor, participants, values['features'], room_id=room_id)
+        snapshot, revision = room_snapshot(session, actor, role, values, (values['start'], values['end']),
+            self.strategy, room_id, 'validate', exclude, candidate_ids=[room_id])
+        snapshot['groupMeeting'] = True
+        for room in snapshot['rooms']:
+            room['enabled'] = bool(allowed) and room['enabled']
+        return snapshot, revision
+
+    def submit_group_meeting(self, session, actor, *, purpose, start, duration, participant_ids,
+                             features, room_id, submission_key):
+        """Submit one signed, organizer-owned candidate in the authenticated pilot transaction."""
+        group_room_members(session, actor, participant_ids)
+        if (not isinstance(purpose, str) or not purpose.strip() or len(purpose) > 2000
+                or type(room_id) is not int or not 1 <= room_id < 2**31
+                or type(duration) is not int or not 15 <= duration <= 120 or duration % 15
+                or not isinstance(submission_key, str) or not fullmatch(r'[a-f0-9]{64}', submission_key)):
+            raise RoomRequestError('Choose a current meeting room candidate and enter a short purpose.')
+        start = aware(start)
+        end = start + timedelta(minutes=duration)
+        if start <= datetime.now(timezone.utc):
+            raise RoomRequestError('Select a future meeting room interval.')
+        chosen_features = list(meeting_room_features(features))
+        state_row(session, True)
+        existing = session.scalar(select(StudentRoomRequest.id).where(StudentRoomRequest.organizer_id == actor,
+            StudentRoomRequest.group_submission_key == submission_key))
+        if existing is not None:
+            return existing
+        values = {'purpose': purpose, 'category': 'meeting', 'count': len(participant_ids),
+                  'duration': duration, 'start': start, 'end': end, 'features': chosen_features}
+        snapshot, _ = self._group_snapshot(session, actor, values, room_id, participant_ids, lock_members=True)
+        result, _ = self.gateway.execute_room(snapshot)
+        if not result['feasible']:
+            raise RoomRequestError('The room or organizer is no longer eligible for this time. Refresh meeting candidates.')
+        faculty, approver = self._selected(session, snapshot, room_id)
+        record = StudentRoomRequest(organizer_id=actor, group_participant_ids=sorted(participant_ids),
+                                   group_submission_key=submission_key, status='Pending Faculty Approval',
+                                   explanation='The owning faculty must approve this exact room and time. No room is reserved yet.')
+        session.add(record)
+        self._store(session, record, values, [], room_id, faculty, approver)
+        self._event(session, record, actor, 'Submitted an exact group meeting room proposal for faculty approval. No reservation.')
+        return record.id
+
     def submit(self, actor, values, invitees, room_id, request_id=None, revision=None, submission_key=None):
         values=self._recurring_values(values)
         fingerprint=None
@@ -225,6 +271,8 @@ class RoomRequestService:
             faculty, approver = self._selected(session, snapshot, room_id)
             if request_id is not None:
                 record = self._visible(session, request_id, actor)
+                if record.group_participant_ids is not None:
+                    raise RoomRequestError('Group meeting room requests keep their exact scope. Cancel and choose a new candidate.')
                 if series_for(session,record):raise RoomRequestError('A series calendar is historical. Cancel the affected future occurrences and submit a fresh proposal for approval.')
                 guard_waiting(session, room=request_id)
                 if actor != record.organizer_id or record.revision != revision or record.status not in {'Pending Faculty Approval','Needs Revision','Rejected'}:
@@ -287,7 +335,12 @@ class RoomRequestService:
             names = {u.id:u.name for u in session.scalars(select(User).where(User.id.in_({row.organizer_id,row.approver_id,*[i.user_id for i in invitees]})))}
             students = set(self._member_ids(session,row.id)[1])
             room, faculty = session.get(Resource,row.resource_id), session.get(OrganizationUnit,row.faculty_id)
-            can_approve = row.approver_id == actor and valid_approvers(session).get(row.faculty_id) == actor
+            group_room = row.group_participant_ids is not None
+            group_meeting_id = (session.scalar(select(GroupMeeting.id).where(GroupMeeting.room_request_id == row.id,
+                GroupMeeting.status.in_(['Pending Approval', 'Confirmed']))) if group_room
+                and session.info.get('group_meeting_pilot') else None)
+            can_approve = (row.approver_id == actor and valid_approvers(session).get(row.faculty_id) == actor
+                           and (not group_room or bool(session.info.get('group_meeting_pilot'))))
             recurring=series_view(session,row)
             used=any(r['status']=='Reserved' and r['start']<=datetime.now(timezone.utc) for r in recurring['occurrences']) if recurring else row.start_at<=datetime.now(timezone.utc)
             return {'id':row.id,'organizerId':row.organizer_id,'organizerName':names[row.organizer_id],
@@ -297,6 +350,8 @@ class RoomRequestService:
                 'count':row.attendee_count,'features':row.required_features,'start':row.start_at,'end':row.end_at,
                 'duration':row.duration_minutes,'preferredFaculty':row.preferred_faculty_id,'preferredBuilding':row.preferred_building,
                 'revision':row.revision,'status':row.status,'explanation':row.explanation,
+                'groupRoom':group_room,'groupHasMeeting':group_meeting_id is not None,
+                'groupMeetingId':group_meeting_id if row.organizer_id == actor else None,
                 'recurrence':recurring,'priority':row.priority,'priorities':state_row(session).reservation_priorities,
                 'canApprove':can_approve, 'canAudit':can_approve,
                 'canFeedback':row.status == 'Confirmed' and used and (row.organizer_id == actor or any(i.user_id == actor and i.status == 'Accepted' for i in invitees)),
@@ -336,8 +391,16 @@ class RoomRequestService:
         result = snapshot = calendar_revision = None
         approval_start=current['start']
         if approve and approval_start > datetime.now(timezone.utc):
-            result, calendar_revision, snapshot, _ = self._evaluate(current['organizerId'],self._values(current),
-                [i['id'] for i in current['invitations']],current['roomId'],request_id)
+            if current['groupRoom']:
+                with self.database.transaction(read_only=True) as session:
+                    record = self._visible(session, request_id, actor)
+                    snapshot, calendar_revision = self._group_snapshot(session, record.organizer_id,
+                        {**self._values(current), 'end': current['end']}, record.resource_id,
+                        record.group_participant_ids, exclude=request_id)
+                result, _ = self.gateway.execute_room(snapshot)
+            else:
+                result, calendar_revision, snapshot, _ = self._evaluate(current['organizerId'],self._values(current),
+                    [i['id'] for i in current['invitations']],current['roomId'],request_id)
         if not approve and (not isinstance(reason,str) or not reason.strip() or len(reason)>2000):
             raise RoomRequestError('Enter a rejection explanation of 1-2000 characters.')
         try:
@@ -349,11 +412,18 @@ class RoomRequestService:
                     raise RoomRequestError('This request revision is not awaiting approval. Refresh its status.')
                 if valid_approvers(session).get(record.faculty_id) != actor or record.approver_id != actor:
                     raise PermissionError('Only the currently designated room-faculty approver can decide.')
+                if record.group_participant_ids is not None and not session.info.get('group_meeting_pilot'):
+                    raise PermissionError('The group meeting room pilot is not active.')
                 if not approve:
                     record.status, record.explanation = 'Rejected', reason.strip()
                 else:
                     if result is not None:
                         self._same_calendar(state,calendar_revision)
+                    if record.group_participant_ids is not None and result and result['feasible']:
+                        group_room_members(session, record.organizer_id, record.group_participant_ids, lock=True)
+                        if not allowed_group_rooms(session, record.organizer_id, record.group_participant_ids,
+                                                   record.required_features, room_id=record.resource_id):
+                            raise RoomRequestError('Room permissions changed. Refresh the request before approval.')
                     if result is None or not result['feasible']:
                         record.status = 'Needs Revision'
                         record.explanation = 'Selected room/time no longer available. Choose a fresh candidate and obtain a new faculty approval.'
@@ -437,16 +507,48 @@ class RoomRequestService:
                 raise PermissionError('Only the organizer or current assigned faculty approver may cancel.')
             if record.revision != revision or record.status == 'Cancelled':
                 raise RoomRequestError('The request changed or is already cancelled.')
-            if session.info.get("group_meeting_pilot") and session.scalar(select(GroupMeeting.id).where(
-                    GroupMeeting.room_request_id == record.id, GroupMeeting.status == "Confirmed").limit(1)) is not None:
-                raise RoomRequestError("Cancel the confirmed group meeting before releasing its room.")
-            record.status = 'Cancelled'
-            close_waiting(session, actor, room=request_id)
-            session.execute(delete(RoomReservation).where(RoomReservation.request_id == record.id))
-            session.execute(delete(RoomOrganizerCommitment).where(RoomOrganizerCommitment.request_id == record.id))
-            state.calendar_revision += 1
-            self._event(session,record,actor,'Cancelled; room and organizer reservations released. History retained.')
-            refresh_after_commit(session, self.database, self.gateway, 'room', record.faculty_id, self.strategy)
+            if session.info.get("group_meeting_pilot"):
+                linked_states = ("Confirmed", "Pending Approval") if record.group_participant_ids is not None else ("Confirmed",)
+                linked = session.scalar(select(GroupMeeting.status).where(
+                    GroupMeeting.room_request_id == record.id, GroupMeeting.status.in_(linked_states)).limit(1))
+                if linked is not None:
+                    description = "confirmed" if linked == "Confirmed" else "pending"
+                    raise RoomRequestError(f"Cancel the {description} group meeting before releasing its room.")
+            self._cancel_single(session, state, record, actor,
+                'Cancelled; room and organizer reservations released. History retained.')
+
+    def _cancel_single(self, session, state, record, actor, message):
+        record.status = 'Cancelled'
+        close_waiting(session, actor, room=record.id)
+        session.execute(delete(RoomReservation).where(RoomReservation.request_id == record.id))
+        session.execute(delete(RoomOrganizerCommitment).where(RoomOrganizerCommitment.request_id == record.id))
+        state.calendar_revision += 1
+        self._event(session, record, actor, message)
+        refresh_after_commit(session, self.database, self.gateway, 'room', record.faculty_id, self.strategy)
+
+    def release_replaced_group_booking(self, session, request_id, organizer):
+        """Release a detached scoped booking in the same confirmed-reschedule transaction."""
+        if not session.info.get('group_meeting_pilot'):
+            raise PermissionError('This release belongs to the meeting pilot.')
+        state = state_row(session, True)
+        self._user(session, organizer)
+        record = session.scalar(select(StudentRoomRequest).where(StudentRoomRequest.id == request_id,
+            StudentRoomRequest.organizer_id == organizer, StudentRoomRequest.group_participant_ids.is_not(None),
+            StudentRoomRequest.status == 'Confirmed').with_for_update())
+        if record is None:
+            raise RoomRequestError('The previous scoped room booking changed.')
+        applied = session.scalar(select(GroupMeetingReschedule.id).join(GroupMeeting).where(
+            GroupMeetingReschedule.original_room_request_id == record.id, GroupMeetingReschedule.status == 'Applied',
+            GroupMeeting.organizer_id == organizer, GroupMeeting.status == 'Confirmed',
+            GroupMeeting.revision == GroupMeetingReschedule.source_revision + 1,
+            GroupMeeting.room_request_id == GroupMeetingReschedule.room_request_id).limit(1))
+        if applied is None:
+            raise RoomRequestError('No current confirmed replacement releases this room.')
+        if session.scalar(select(GroupMeeting.id).where(GroupMeeting.room_request_id == record.id,
+                GroupMeeting.status.in_(('Confirmed', 'Pending Approval'))).limit(1)) is not None:
+            raise RoomRequestError('A current group meeting still uses this booking.')
+        self._cancel_single(session, state, record, organizer,
+            'A confirmed group meeting replacement released this room and organizer reservation. History retained.')
 
     def cancel_occurrence(self, request_id, actor, revision, occurrence_id=None):
         with self.database.transaction() as session:

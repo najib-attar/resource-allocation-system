@@ -129,6 +129,7 @@ class UniversityCalendarService:
 
     def _read(self, session, actor, selected, categories, scope):
         events, warnings = [], set()
+        scoped_rooms = set()
         start, end, now = selected['start'], selected['end'], selected['now']
         zone = university_zone()
 
@@ -171,6 +172,8 @@ class UniversityCalendarService:
                     state='rejected' if row.status != 'Cancelled' and not mandatory and invited[row.id] == 'Declined' else None)
             for entry in group_meeting_entries(session, actor, start, end):
                 status, decision = entry['status'], entry['decision']
+                if entry['busy'] and entry['scopedRoomId']:
+                    scoped_rooms.add(entry['scopedRoomId'])
                 if entry['required']:
                     note, state = f'Required participant. Your decision for revision {entry["revision"]} is {decision.lower()}.', None
                 else:
@@ -196,6 +199,8 @@ class UniversityCalendarService:
                 .where(RoomInvitation.user_id == actor)).all())
             for row, room in room_rows:
                 own = row.organizer_id == actor
+                if own and row.id in scoped_rooms:
+                    continue
                 periods=series.get(row.id,[None])
                 for occurrence in periods:
                     status=({'Reserved':'Confirmed','Completed':'Completed','Cancelled':'Cancelled','Rejected':'Rejected',

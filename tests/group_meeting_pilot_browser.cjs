@@ -16,6 +16,7 @@ const flexiblePurpose = 'Pilot browser flexible original';
 const refusedPurpose = 'Pilot browser declined replacement';
 const movedPurpose = 'Pilot browser accepted move';
 const physicalPurpose = 'Pilot browser physical group';
+const instructorRoomPurpose = 'Pilot browser instructor room group';
 
 async function visit(page, url, expected = 200) {
     const response = await page.goto(url);
@@ -91,9 +92,13 @@ async function measure(page) {
     const observed = {};
     for (const width of range) {
         await page.setViewportSize({ width, height: 1000 });
-        const view = await page.evaluate(() => ({ viewport: innerWidth, content: document.documentElement.scrollWidth }));
+        const view = await page.evaluate(() => ({ viewport: innerWidth, content: document.documentElement.scrollWidth,
+            cramped: [...document.querySelectorAll('.meeting-choice')].some(choice =>
+                choice.querySelector('.meeting-choice-text').getBoundingClientRect().width
+                    < choice.getBoundingClientRect().width * 0.7) }));
         assert.equal(view.viewport, width);
         assert.ok(view.content <= width, 'Horizontal overflow at ' + width + ': ' + view.content);
+        assert.ok(!view.cramped, 'Meeting option text is squeezed at ' + width);
         observed[width] = view.content;
     }
     await page.setViewportSize({ width: 1440, height: 1000 });
@@ -288,8 +293,167 @@ async function verifyPhysical(users, fixture, output, checks) {
         groupCalendarBlockedLegacyRoom: true };
 }
 
+async function verifyStandaloneReplacement(users, fixture, output, checks) {
+    const organizer = users.get(6).page;
+    const route = checks.online.route;
+    const reschedule = route + '/reschedule';
+    const arrangement = page => page.getByRole('region', { name: 'Arrangement' }).locator('p').first().innerText();
+    await visit(organizer, fixture.url + route);
+    const original = await arrangement(organizer);
+    await click(organizer, organizer.getByRole('link', { name: 'Rescheduling and replacement approvals' }), 200, true);
+    await visit(users.get(7).page, fixture.url + reschedule, 403);
+
+    async function propose() {
+        await visit(organizer, fixture.url + reschedule);
+        await click(organizer, organizer.getByRole('button', { name: 'Find replacement times' }), 200, true);
+        const options = organizer.getByRole('region', { name: 'Replacement options' });
+        await measure(organizer);
+        await options.getByRole('radio').first().check();
+        await click(organizer, options.getByRole('button', { name: 'Propose replacement' }));
+        assert.match(await organizer.getByRole('region', { name: 'Replacement proposal' }).innerText(),
+            /1 of 4 required approvals recorded/);
+        await visit(organizer, fixture.url + route);
+        assert.equal(await arrangement(organizer), original);
+    }
+
+    await propose();
+    await response(users.get(3).page, fixture, reschedule, 'Decline replacement');
+    assert.match(await users.get(3).page.getByRole('region', { name: 'Rescheduling history' }).innerText(), /Declined/);
+    await visit(organizer, fixture.url + route);
+    assert.equal(await arrangement(organizer), original);
+    await propose();
+    await response(users.get(3).page, fixture, reschedule, 'Approve replacement');
+    await response(users.get(1).page, fixture, reschedule, 'Approve replacement');
+    const guest = users.get(4).page;
+    await visit(guest, fixture.url + reschedule);
+    const widths = await measure(guest);
+    await guest.setViewportSize({ width: 390, height: 1000 });
+    await guest.screenshot({ path: path.join(output, 'replacement-review-mobile.png') });
+    await guest.setViewportSize({ width: 1440, height: 1000 });
+    await visit(organizer, fixture.url + route);
+    assert.equal(await arrangement(organizer), original);
+    await response(guest, fixture, reschedule, 'Approve replacement');
+    assert.match(await guest.getByRole('region', { name: 'Rescheduling history' }).innerText(), /Applied/);
+    await guest.screenshot({ path: path.join(output, 'replacement-applied-desktop.png') });
+    await visit(organizer, fixture.url + route);
+    const updated = await arrangement(organizer);
+    assert.notEqual(updated, original);
+    for (const id of [6, 3, 1, 4]) {
+        await verifyCalendar(users.get(id).page, fixture, route, updated.slice(0, 10), onlinePurpose);
+    }
+    checks.replacement = { route: reschedule, original, updated, unchangedUntilFinalApproval: true, widths };
+}
+
+async function verifyRoomSearch(users, fixture, output, checks) {
+    const organizer = users.get(3);
+    const approver = users.get(6).page;
+    const guest = users.get(5).page;
+    await plan(organizer.page, fixture, { required: [5], room: 'find', facilities: ['Projector'] });
+    const direct = organizer.page.getByRole('region', { name: 'Direct options' });
+    await measure(organizer.page);
+    const first = direct.getByRole('radio').first();
+    assert.ok(await first.isVisible(), 'An authorized instructor must be offered an eligible free room.');
+    const ticket = await first.inputValue();
+    const csrf = await direct.locator('[name=csrf_token]').inputValue();
+    await first.check();
+    await direct.getByLabel('Purpose').fill(instructorRoomPurpose);
+    await direct.screenshot({ path: path.join(output, 'room-time-options-desktop.png') });
+    await click(organizer.page, direct.getByRole('button', { name: 'Request room approval' }), 200, true);
+    const roomRoute = new URL(organizer.page.url()).pathname;
+    assert.match(roomRoute, /^\/rooms\/\d+$/);
+    assert.match(await organizer.page.locator('#main-content').innerText(), /Pending Faculty Approval/);
+    assert.equal(await organizer.page.getByRole('link', { name: 'Use this room for the group meeting' }).count(), 0);
+    const replay = await organizer.context.request.post(fixture.url + '/meetings/submit', { maxRedirects: 0,
+        form: { ticket, csrf_token: csrf, purpose: instructorRoomPurpose } });
+    assert.equal(replay.status(), 303);
+    assert.equal(replay.headers().location, roomRoute);
+    await visit(approver, fixture.url + roomRoute);
+    await click(approver, approver.getByRole('button', { name: 'Recheck and approve' }));
+    await visit(organizer.page, fixture.url + roomRoute);
+    await click(organizer.page, organizer.page.getByRole('link', { name: 'Use this room for the group meeting' }));
+    assert.ok(await organizer.page.locator('input[name="requiredIds"][value="5"]').isChecked());
+    await click(organizer.page, organizer.page.getByRole('button', { name: 'Find times' }));
+    const { route } = await submitPlan(organizer.page, instructorRoomPurpose);
+    await response(guest, fixture, route, 'Approve revision');
+    assert.match(await guest.locator('#main-content').innerText(), /Approved room booking/);
+    await guest.screenshot({ path: path.join(output, 'instructor-physical-meeting-desktop.png') });
+    const start = await guest.getByRole('region', { name: 'Arrangement' }).locator('p').first().innerText();
+    await verifyCalendar(guest, fixture, route, start.slice(0, 10), instructorRoomPurpose);
+    checks.roomSearch = { route, roomRoute, approvedByDesignatedStaff: true, replaySameRoom: true };
+}
+
+async function verifyOtherRelationships(users, fixture, checks) {
+    const outcomes = [];
+    for (const [scenario, purpose] of [
+        [scenarios[1], 'Pilot browser one-to-many'],
+        [scenarios[2], 'Pilot browser many-to-one'],
+    ]) {
+        const organizer = users.get(scenario.actor).page;
+        await plan(organizer, fixture, scenario);
+        const { route } = await submitPlan(organizer, purpose);
+        const voters = [...scenario.cohosts, ...scenario.required];
+        for (const id of voters) await response(users.get(id).page, fixture, route, 'Approve revision');
+        await visit(organizer, fixture.url + route);
+        assert.match(await organizer.locator('#main-content').innerText(), /Confirmed/);
+        const time = await organizer.getByRole('region', { name: 'Arrangement' }).locator('p').first().innerText();
+        for (const id of [scenario.actor, ...voters]) {
+            await verifyCalendar(users.get(id).page, fixture, route, time.slice(0, 10), purpose);
+        }
+        outcomes.push({ route, required: [scenario.actor, ...voters], confirmed: true });
+    }
+    checks.additionalRelationships = outcomes;
+}
+
+async function verifyPhysicalReplacement(users, fixture, output, checks) {
+    const { route, roomRoute } = checks.roomSearch;
+    const reschedule = route + '/reschedule';
+    const organizer = users.get(3).page;
+    const required = users.get(5).page;
+    const faculty = users.get(6).page;
+    const currentTime = page => page.getByRole('region', { name: 'Arrangement' }).locator('p').first().innerText();
+    await visit(organizer, fixture.url + route);
+    const original = await currentTime(organizer);
+    const replacementDate = localDate(fixture, original.startsWith(localDate(fixture, 2)) ? 1 : 2);
+    await visit(organizer, fixture.url + reschedule);
+    async function findTimes() {
+        await organizer.getByLabel('First date').fill(replacementDate);
+        await organizer.getByLabel('Last date').fill(replacementDate);
+        await click(organizer, organizer.getByRole('button', { name: 'Find replacement times' }), 200, true);
+    }
+    await findTimes();
+    await organizer.getByRole('region', { name: 'Room and time options' }).getByRole('radio').first().check();
+    const widths = await measure(organizer);
+    await organizer.setViewportSize({ width: 390, height: 1000 });
+    await organizer.screenshot({ path: path.join(output, 'replacement-room-options-mobile.png') });
+    await organizer.setViewportSize({ width: 1440, height: 1000 });
+    await click(organizer, organizer.getByRole('button', { name: 'Request replacement room approval' }), 200, true);
+    const tracking = organizer.url();
+    const nextRoom = await organizer.getByRole('link', { name: 'Replacement room request' }).getAttribute('href');
+    assert.notEqual(nextRoom, roomRoute);
+    assert.match(await organizer.locator('#main-content').innerText(), /Pending Faculty Approval/);
+    await visit(faculty, fixture.url + nextRoom);
+    await click(faculty, faculty.getByRole('button', { name: 'Recheck and approve' }));
+    await visit(organizer, tracking);
+    await findTimes();
+    await organizer.getByRole('region', { name: 'Replacement options' }).getByRole('radio').first().check();
+    await click(organizer, organizer.getByRole('button', { name: 'Propose replacement' }));
+    assert.match(await organizer.getByRole('region', { name: 'Replacement proposal' }).innerText(),
+        /1 of 2 required approvals recorded/);
+    await visit(organizer, fixture.url + route);
+    assert.equal(await currentTime(organizer), original);
+    await visit(organizer, fixture.url + roomRoute);
+    assert.match(await organizer.locator('#main-content').innerText(), /Confirmed/);
+    await response(required, fixture, reschedule, 'Approve replacement');
+    assert.match(await required.getByRole('region', { name: 'Rescheduling history' }).innerText(), /Applied/);
+    await required.screenshot({ path: path.join(output, 'replacement-room-applied-desktop.png') });
+    for (const page of [organizer, required]) await verifyCalendar(page, fixture, route, replacementDate, instructorRoomPurpose);
+    await visit(organizer, fixture.url + roomRoute);
+    assert.match(await organizer.locator('#main-content').innerText(), /Cancelled/);
+    checks.physicalReplacement = { reschedule, priorRoom: roomRoute, nextRoom, replacementDate, widths };
+}
+
 async function main() {
-    const [loginRecord, output] = process.argv.slice(2);
+    const [loginRecord, output, mode] = process.argv.slice(2);
     assert.ok(loginRecord && output, 'Provide the fictional logins file and screenshot folder.');
     const fixture = JSON.parse(await fs.readFile(loginRecord, 'utf8'));
     const base = new URL(fixture.url);
@@ -300,6 +464,23 @@ async function main() {
     const checks = { browser: 'Microsoft Edge', shapes: [] };
     const users = new Map();
     try {
+        if (mode === '--verify-restart') {
+            const evidence = JSON.parse(await fs.readFile(path.join(output, 'group-meeting-browser-checks.json'), 'utf8'));
+            const staff = await login(browser, fixture, 6);
+            const instructor = await login(browser, fixture, 3);
+            const assistant = await login(browser, fixture, 5);
+            await visit(staff.page, fixture.url + evidence.replacement.route);
+            assert.match(await staff.page.getByRole('region', { name: 'Rescheduling history' }).innerText(), /Applied/);
+            await verifyCalendar(instructor.page, fixture, evidence.online.route,
+                evidence.replacement.updated.slice(0, 10), onlinePurpose);
+            await visit(assistant.page, fixture.url + evidence.roomSearch.route);
+            assert.match(await assistant.page.locator('#main-content').innerText(), /Approved room booking/);
+            await visit(staff.page, fixture.url + '/meetings/preferences');
+            assert.equal(await staff.page.locator('input[name=desired_gap]').inputValue(), '33');
+            for (const user of [staff, instructor, assistant]) assert.deepEqual(user.errors, []);
+            console.log('Fresh browser sessions verified the applied replacement, calendar, approved room and preferences after restart.');
+            return;
+        }
         const untrusted = await browser.newContext();
         const anonymous = await untrusted.request.get(fixture.url + '/meetings/', { maxRedirects: 0 });
         assert.equal(anonymous.status(), 302);
@@ -308,6 +489,9 @@ async function main() {
         for (const id of [1, 2, 3, 4, 5, 6, 7]) users.set(id, await login(browser, fixture, id));
         const noCsrf = await users.get(1).context.request.post(fixture.url + '/meetings/new', { form: {} });
         assert.equal(noCsrf.status(), 400);
+        const admin = users.get(7).page;
+        await click(admin, admin.locator('a[href="/meetings/"]:visible').first(), 200, true);
+        assert.equal(new URL(admin.url()).pathname, '/meetings/');
         for (const scenario of scenarios) {
             const { page } = users.get(scenario.actor);
             if (scenario.role === 'Staff') await visit(page, fixture.url + '/appointments/');
@@ -337,6 +521,10 @@ async function main() {
         await verifyOnline(users, fixture, output, checks);
         await verifyRelocation(users, fixture, output, checks);
         await verifyPhysical(users, fixture, output, checks);
+        await verifyStandaloneReplacement(users, fixture, output, checks);
+        await verifyRoomSearch(users, fixture, output, checks);
+        await verifyPhysicalReplacement(users, fixture, output, checks);
+        await verifyOtherRelationships(users, fixture, checks);
         for (const { errors } of users.values()) assert.deepEqual(errors, []);
         checks.security = { anonymous: 302, noCsrf: 400 };
         await fs.writeFile(path.join(output, 'group-meeting-browser-checks.json'), JSON.stringify(checks, null, 2) + '\n');

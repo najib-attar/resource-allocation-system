@@ -77,6 +77,8 @@ PURPOSES = {
     "group_meeting_participant": "One required host, required attendee or optional invitee identity per meeting with a current revision response.",
     "group_meeting_commitment": "Exact interval reserved for each confirmed required participant. Optional invitees have no commitment row.",
     "group_meeting_consent": "Explicit revision-scoped move decision by each required participant affected by the proposed replacement.",
+    "group_meeting_reschedule": "A replacement proposal for a confirmed meeting, recording its source revision and original arrangement.",
+    "group_meeting_reschedule_decision": "A required participant's decision on one confirmed meeting replacement proposal.",
     "group_meeting_event": "Participant-scoped lifecycle, confirmation and relocation history for the pilot inbox.",
     "notification": "Recipient-scoped event inbox and durable read state with exactly one appointment, room, equipment, feedback, eligibility or group meeting event.",
     "equipment_category": "Extensible named equipment categories, independent of room types.",
@@ -90,7 +92,8 @@ PURPOSES = {
     "equipment_event": "Actor/time/faculty-scoped inventory, configuration and borrowing lifecycle audit.",
 }
 GROUP_MEETING_TABLES = {"group_meeting", "group_meeting_availability", "group_meeting_participant",
-                        "group_meeting_commitment", "group_meeting_consent", "group_meeting_event"}
+                        "group_meeting_commitment", "group_meeting_consent", "group_meeting_event",
+                        "group_meeting_reschedule", "group_meeting_reschedule_decision"}
 MAIN_TABLES = {"role", "organization_unit", "university_user", "resource", "resource_request",
                "busy_slot", "allocation_run", "request_decision", "allocation", "application_state", "request_history"}
 MAIN_TABLES |= {"login_account", "academic_period", "legacy_calendar_binding", "appointment", "appointment_professor",
@@ -186,6 +189,7 @@ def catalog(tables):
               "Revision `0051f` adds six tables and links group events to the existing private notification inbox.",
               "The pilot serializes confirmation under the calendar lock. Deferred constraints require the current required approvals and exact participant commitment rows. A GiST exclusion forbids overlapping group meeting commitments for a person.",
               "One active group meeting may link to a room request. The already approved room interval is reused. Deferred protection prevents the release of that room while its linked meeting is confirmed.",
+              "Revision `0051g` retains confirmed meeting replacement proposals and required decisions. Revision `0051h` adds scoped group room requests to the existing faculty approval lifecycle.",
               "Downgrade requires an empty group meeting and hard-availability history. See the [pilot architecture and permission matrix](../research/cdmcs-rehearsal/group-meeting-architecture.md).", ""]
     lines += ["## alembic_version (infrastructure)", "", "Alembic's existing revision marker, not an additional application entity.", "",
               "| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |", "|---|---|---|---|---|",

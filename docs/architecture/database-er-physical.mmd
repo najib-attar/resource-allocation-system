@@ -328,6 +328,27 @@ erDiagram
         varchar_10 side
         varchar_10 decision
     }
+    group_meeting_reschedule {
+        bigint id PK "identity"
+        bigint meeting_id FK
+        integer source_revision
+        timestamptz original_start_at
+        timestamptz original_end_at
+        bigint original_room_request_id FK "nullable"
+        timestamptz start_at
+        timestamptz end_at
+        bigint room_request_id FK "nullable"
+        varchar_20 status
+        varchar_64 submission_key UK "nullable"
+        timestamptz created_at
+        timestamptz resolved_at "nullable"
+    }
+    group_meeting_reschedule_decision {
+        bigint proposal_id PK,FK
+        integer user_id PK,FK
+        varchar_10 decision
+        timestamptz decided_at "nullable"
+    }
     legacy_calendar_binding {
         bigint id PK "identity"
         integer period_id FK
@@ -683,6 +704,8 @@ erDiagram
         integer approved_revision "nullable"
         integer approved_by FK "nullable"
         text explanation
+        jsonb group_participant_ids "nullable"
+        varchar_64 group_submission_key UK "nullable"
         timestamptz created_at
     }
     suggestion_group {
@@ -804,6 +827,11 @@ erDiagram
     group_meeting ||--o{ group_meeting_event : meeting_id
     group_meeting ||--o{ group_meeting_participant : meeting_id
     university_user ||--o{ group_meeting_participant : user_id
+    group_meeting ||--o{ group_meeting_reschedule : meeting_id
+    student_room_request o|--o{ group_meeting_reschedule : original_room_request_id
+    student_room_request o|--o{ group_meeting_reschedule : room_request_id
+    group_meeting_reschedule ||--o{ group_meeting_reschedule_decision : proposal_id
+    university_user ||--o{ group_meeting_reschedule_decision : user_id
     busy_slot o|--o{ legacy_calendar_binding : busy_slot_id
     academic_period ||--o{ legacy_calendar_binding : period_id
     resource_request o|--o{ legacy_calendar_binding : request_id

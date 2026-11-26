@@ -73,9 +73,19 @@ int RoomRequestJsonProtocol::run(std::istream& stream, std::ostream& out, std::o
         if (action != "recommend" && action != "validate" && action != "attendance") throw std::invalid_argument("Unknown action.");
         RoomSelectionInput data;
         data.organizerId = static_cast<int>(integer(input.at("organizerId"),1,2147483647));
-        if (label(input.at("organizerRole")) != (action == "attendance" ? "Instructor" : "Student")) throw std::invalid_argument("Invalid organizer role.");
+        const auto organizerRole = label(input.at("organizerRole"));
+        const bool groupMeeting = input.contains("groupMeeting") && flag(input.at("groupMeeting"));
         data.attendeeCount = static_cast<int>(integer(input.at("attendeeCount"),1,2147483647));
         data.category = label(input.at("category"),100);
+        if (groupMeeting) {
+            const std::set<std::string> groupRoles{"Student", "Instructor", "Research Assistant", "Staff", "Administrator"};
+            if (series || action != "validate" || data.category != "meeting" || !groupRoles.count(organizerRole)
+                || data.attendeeCount < 2 || data.attendeeCount > 8) {
+                throw std::invalid_argument("Invalid scoped group meeting room validation.");
+            }
+        } else if (organizerRole != (action == "attendance" ? "Instructor" : "Student")) {
+            throw std::invalid_argument("Invalid organizer role.");
+        }
         const std::set<std::string> categories{"study","meeting","lecture","club","other"};
         if (!categories.count(data.category)) throw std::invalid_argument("Unsupported category.");
         data.strategy = label(input.at("strategy"),100);
@@ -88,6 +98,9 @@ int RoomRequestJsonProtocol::run(std::istream& stream, std::ostream& out, std::o
         data.proposed = interval(input.at("proposed"));
         data.horizon = interval(input.at("horizon"));
         auto duration = data.proposed.end-data.proposed.start;
+        if (groupMeeting && (duration < 15*60 || duration > 120*60 || duration % (15*60) != 0)) {
+            throw std::invalid_argument("Invalid scoped group meeting duration.");
+        }
         if (duration > 86400 || data.horizon.end-data.horizon.start > (series ? 732 : 32)*86400LL || data.proposed.start < data.horizon.start || data.proposed.end > data.horizon.end)
             throw std::invalid_argument("Invalid duration or search horizon.");
         const auto& rooms = input.at("rooms");

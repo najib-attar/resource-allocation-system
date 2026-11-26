@@ -13,6 +13,9 @@
         <p>{{ meeting.start_at|university_time }} – {{ meeting.end_at|university_time }}</p>
         <p>{{ meeting.location_mode|capitalize }}{% if meeting.room_request_id %} · Approved room booking #{{ meeting.room_request_id }}{% endif %}</p>
         {% if room_name %}<p>{{ room_name }}</p>{% endif %}
+        {% if meeting.status == 'Confirmed' %}
+        <p><a href="{{ url_for('group_meeting_reschedule.detail', meeting_id=meeting.id) }}">Rescheduling and replacement approvals</a></p>
+        {% endif %}
         {% if meeting.join_url and meeting.status == 'Confirmed' and (own.side != 'optional' or own.decision == 'Accepted') %}
         <p><a href="{{ meeting.join_url }}" rel="noreferrer">Open the organizer's join link</a></p>
         {% endif %}

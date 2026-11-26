@@ -10,7 +10,7 @@ from research.cdmcs.i3a.execution import validate_cdmcs
 
 from .calendar_service import calendar_snapshot, epoch, university_zone
 from .cdmcs_rehearsal import FlexibleMeeting, TIER_POLICY, _compile, _relocation_rows, _run
-from .group_meeting_rooms import require_meeting_room
+from .group_meeting_rooms import meeting_room_candidates, require_meeting_room
 from .group_meeting_service import MeetingError, hard_windows, relocation_target
 from .persistence.models import GroupMeeting, GroupMeetingParticipant
 
@@ -91,7 +91,7 @@ def _rank(fixture, selection, payload, rows, *, earliest=None, target=None):
     return result
 
 
-def plan(session, fixture, actor, roster, selection, room_id, features):
+def plan(session, fixture, actor, roster, selection, room_id, features, *, replace_meeting=None, find_room=False):
     required, optional, duration, first, last, _ = selection
     future = datetime.now(timezone.utc).replace(second=0, microsecond=0) + timedelta(minutes=1)
     minutes = max(0, int((future - first).total_seconds() // 60))
@@ -112,15 +112,30 @@ def plan(session, fixture, actor, roster, selection, room_id, features):
     if any(not windows[uid] for uid in required):
         return [], [], room
     fixed = replace(fixture, flexible=())
-    facts = _facts(session, fixture, actor, selection, room=room_id)
+    # A newly requested room must coexist with the original commitment
+    # until faculty and participant approvals complete.
+    exclude = (replace_meeting.id,) if replace_meeting is not None and not find_room else ()
+    facts = _facts(session, fixture, actor, selection, exclude=exclude, room=room_id)
     payload, _, _, _ = _compile(session, fixed, actor, roster, selection, hard_windows=windows, facts_snapshot=facts)
     if payload is None:
         return [], [], room
+    if replace_meeting is not None:
+        original = (epoch(replace_meeting.start_at) - epoch(fixture.start)) // 60
+        payload["candidate_starts"] = [value for value in payload["candidate_starts"] if value != original]
+        if not payload["candidate_starts"]:
+            return [], [], room
     direct = _run(fixture, payload)
     validate_cdmcs(direct, payload)
     direct_rows = _rank(fixture, selection, payload, direct["recommendations"])
+    if find_room:
+        rooms = meeting_room_candidates(session, actor, [*required, *optional],
+            (item["start"] for item in direct_rows), duration, features)
+        options = [{**item, "candidate_room": candidate}
+                   for item in sorted(direct_rows, key=lambda item: item["rank"])
+                   for candidate in rooms.get(item["start"], ())]
+        return options[:8], [], None
     moved = []
-    if room_id is None:
+    if room_id is None and replace_meeting is None:
         query = select(GroupMeeting.id).join(GroupMeetingParticipant).where(
             GroupMeeting.status == "Confirmed", GroupMeeting.flexible.is_(True), GroupMeeting.move_target_id.is_(None),
             GroupMeeting.start_at < last, GroupMeeting.end_at > first, GroupMeetingParticipant.user_id == actor,

@@ -22,7 +22,7 @@ flowchart LR
     O --> E["Direct choices and one-move proposals"]
     E --> M
     M --> V["Current approvals, explicit move consent and calendar recheck"]
-    R["Existing Student Room Request and faculty approval"] --> V
+    R["Existing room request and faculty approval"] --> V
     V --> T["Shared calendar lock and transaction"]
     T --> D
     D --> I["Private inbox and participant calendars"]
@@ -50,11 +50,11 @@ and an authenticated session on the disposable pilot database.
 
 | Fictional identity | Start as organizer and select participants | Respond as a member | Physical booking authority |
 | --- | --- | --- | --- |
-| Student | May organize under their own identity | May respond within their assigned membership | May attach their own approved one-time room request |
-| Instructor | May organize under their own identity | May respond within their assigned membership | May attend a meeting whose organizer has an approved room |
-| Research Assistant | May organize under their own identity | May respond within their assigned membership | May attend a meeting whose organizer has an approved room |
-| Staff | May organize under their own identity | May respond within their assigned membership | Existing faculty decision permissions require a designated approver assignment |
-| Administrator | May organize under their own identity | May respond within their assigned membership | Existing faculty decision permissions require a designated approver assignment |
+| Student | May organize under their own identity | May respond within their assigned membership | May request an exact scoped room or attach an existing compatible approved booking |
+| Instructor | May organize under their own identity | May respond within their assigned membership | May submit an exact scoped room request for designated faculty review |
+| Research Assistant | May organize under their own identity | May respond within their assigned membership | May submit an exact scoped room request for designated faculty review |
+| Staff | May organize under their own identity | May respond within their assigned membership | May submit an exact scoped room request when another account is the designated approver |
+| Administrator | May organize under their own identity | May respond within their assigned membership | May submit an exact scoped room request when another account is the designated approver |
 
 | Operation | Actor and state |
 | --- | --- |
@@ -64,11 +64,56 @@ and an authenticated session on the disposable pilot database.
 | Consent to or refuse relocation | Each required participant of the affected meeting decides explicitly. The requesting organizer also needs explicit consent if affected. |
 | Cancel | Any required participant may cancel the current future pending or confirmed meeting. A confirmed cancellation releases group commitments. The room booking keeps its existing owner and lifecycle. |
 | Propose a different time | The organizer may revise a current pending online meeting. The revision clears earlier required approvals and the move proposal. |
+| Replace a confirmed arrangement | The organizer proposes a replacement for the same duration and participant set. Every required participant must accept. Physical replacements require faculty approval of the replacement room before the proposal can be sent. |
 | Manage personal scheduling settings | The owner publishes their own hard availability and updates their own private soft preferences. |
 
 These permissions are available only through the opt-in pilot. Staff and
 Administrator roles have no general access to other participants'
 meetings, preferences, or approvals.
+
+## Persistent profile and migration
+
+The existing İTÜ profile and the native pilot have separate launch paths.
+The profile verification launcher reads the owner marker, confirms the
+listener's cluster directory and checks the actual database revision. It
+serves the regular app after operator-approved migration. It does not enable
+the synthetic authorization boundary on that profile.
+
+On 26 November 2026 the owned PostgreSQL 17.11 profile at `0051e` held
+239 identities, 220 enabled logins, 117 courses, 147 sections, 132 scheduled
+sessions, 147 teaching assignments, 338 enrollments and 38 resources.
+All 120 seeded students had enrollments. They comprised 100 BLG, 10 YZV
+and 10 SGM students over four academic years. There were 214 published
+availability patterns. Appointments, room reservations, allocation runs,
+private preference revisions and notifications were empty at inspection.
+
+A private custom-format backup was restored on a separate loopback PostgreSQL
+cluster. All 69 existing tables and all 41 existing sequences matched across
+the `0051e → 0051h → 0051e → 0051h` rehearsal. Alembic reported no pending
+schema changes at the upgraded head. The shared CDMCS fact projection
+retained 544 participant teaching intervals, 101 room teaching intervals,
+and 169 published availability intervals in the week of 23 November.
+Native ranking and mutations use synthetic test identities. The existing
+profile remained at `0051e`.
+
+The persistent aggregate was introduced in revision `0051f`. Revision
+`0051g` keeps separate proposal history and required-participant decisions
+when a confirmed meeting is rescheduled. Both the original and replacement
+intervals remain in the record. On the final approval, one transaction
+rechecks calendars and any replacement room, updates the meeting's exact
+commitments, and publishes private notifications. Decline and withdrawal
+leave the original in place. A cancelled or otherwise moved original
+supersedes a pending replacement.
+
+Revision `0051h` records the exact group room scope on the existing room
+request. Candidate hints use the same room occupancy and access policies as
+the room service. Submission and approval revalidate the signed room/time
+through the established C++ room operation. The faculty approver is distinct
+from the organizer. One confirmed reservation is reused by the group. When
+a scoped room is replaced, the previous scoped hold is released with the
+calendar change. A separately created Student room booking keeps its
+own lifecycle. Empty pilot additions can be downgraded. With pilot history,
+the migration guards refuse loss of proposal and scoped booking records.
 
 ## Confirmation and relocation
 

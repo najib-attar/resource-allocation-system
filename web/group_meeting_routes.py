@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta, timezone
 from hashlib import sha256
+from pathlib import Path
 
 from flask import Blueprint, current_app, redirect, render_template, request, session as login_session, url_for
 from itsdangerous import BadData, URLSafeTimedSerializer
@@ -12,6 +13,7 @@ from research.cdmcs.i3c.process import ProcessFailure
 
 from .calendar_service import CalendarError, local_instant, university_zone
 from .cdmcs_rehearsal import _selection
+from .engine_gateway import EngineGateway, EngineIntegrationError
 from .group_meeting_access import group_session
 from .group_meeting_planning import plan
 from .group_meeting_rooms import meeting_room_choices, meeting_room_features
@@ -19,6 +21,7 @@ from .group_meeting_service import ACTIVE, PENDING, MeetingError, cancel, consen
 from .persistence.database import DatabaseBusy
 from .persistence.models import GroupMeeting, GroupMeetingEvent, GroupMeetingParticipant, Resource, StudentRoomRequest
 from .persistence.repository import state_row
+from .room_request_service import RoomRequestService
 
 
 def _ticket():
@@ -66,6 +69,7 @@ def register_group_meetings(app, fixture):
     @blueprint.errorhandler(ValueError)
     @blueprint.errorhandler(DatabaseBusy)
     @blueprint.errorhandler(ProcessFailure)
+    @blueprint.errorhandler(EngineIntegrationError)
     @blueprint.errorhandler(SQLAlchemyError)
     def unavailable(_):
         return render_template("workspace_error.html", status=409,
@@ -86,13 +90,24 @@ def register_group_meetings(app, fixture):
         first = fixture.start.astimezone(zone).date()
         last = (fixture.end - timedelta(minutes=1)).astimezone(zone).date()
         data = {"cohostIds": [], "requiredIds": [], "optionalIds": [], "fromDate": first.isoformat(),
-                "untilDate": last.isoformat(), "duration": 30, "preferredStart": "", "roomId": "", "features": []}
+                "untilDate": last.isoformat(), "duration": 30, "preferredStart": "", "roomId": "",
+                "findRoom": False, "features": []}
         result = None
         with group_session(fixture) as (db, actor, roster):
             people = sorted((person for uid, person in roster.items() if uid != actor), key=lambda value: value["name"])
             attached = set(db.scalars(select(GroupMeeting.room_request_id).where(GroupMeeting.organizer_id == actor,
                 GroupMeeting.room_request_id.is_not(None), GroupMeeting.status.in_(ACTIVE))))
             rooms = [item for item in meeting_room_choices(db, actor) if item.request_id not in attached]
+            if request.method == "GET" and request.args.get("booking"):
+                booking = next((item for item in rooms
+                                if item.request_id == _identifier(request.args["booking"])), None)
+                if booking is None:
+                    raise MeetingError("Choose one of your approved and unused meeting room bookings.")
+                approval = db.get(StudentRoomRequest, booking.request_id)
+                data.update(roomId=booking.request_id, duration=int((booking.end - booking.start).total_seconds() // 60),
+                    fromDate=booking.start.astimezone(zone).date().isoformat(),
+                    untilDate=booking.end.astimezone(zone).date().isoformat(), features=list(booking.features),
+                    requiredIds=[uid for uid in approval.group_participant_ids or () if uid != actor and uid in roster])
             if request.method == "GET" and request.args.get("retry"):
                 old, members = visible_meeting(db, _identifier(request.args.get("retry")), actor)
                 if old.organizer_id != actor:
@@ -106,16 +121,18 @@ def register_group_meetings(app, fixture):
                     data[key] = list(map(int, request.form.getlist(key)))
                 for key in ("fromDate", "untilDate", "duration", "preferredStart", "roomId"):
                     data[key] = request.form.get(key, "")
-                room = _identifier(data["roomId"], optional=True)
+                data["findRoom"] = data["roomId"] == "find"
+                room = None if data["findRoom"] else _identifier(data["roomId"], optional=True)
                 if room in attached:
                     raise MeetingError("That room booking already belongs to an active group meeting.")
                 data["features"] = list(meeting_room_features(request.form.getlist("features")))
-                if room is None and data["features"]:
-                    raise MeetingError("Select an already approved physical booking for the required facilities.")
+                if room is None and not data["findRoom"] and data["features"]:
+                    raise MeetingError("Select a room option for the required facilities.")
                 if not fixture.admission.acquire(blocking=False):
                     raise MeetingError("Another search is running. Retry shortly.")
                 try:
-                    direct, moves, room_view = plan(db, fixture, actor, roster, selection, room, data["features"])
+                    direct, moves, room_view = plan(db, fixture, actor, roster, selection, room, data["features"],
+                        find_room=data["findRoom"])
                 finally:
                     fixture.admission.release()
                 sides = {actor: "host", **dict.fromkeys(data["cohostIds"], "host"),
@@ -124,7 +141,9 @@ def register_group_meetings(app, fixture):
                     "duration": selection[2], "room": room, "features": data["features"],
                     "calendar": state_row(db).calendar_revision}
                 for option in direct + moves:
-                    option["ticket"] = _ticket().dumps({**context, "start": option["start"].isoformat(), "move": option["move"]})
+                    candidate = option.get("candidate_room")
+                    option["ticket"] = _ticket().dumps({**context, "start": option["start"].isoformat(),
+                        "move": option["move"], "candidate_room": candidate.room_id if candidate else None})
                 result = {"direct": direct, "moves": moves, "room": room_view,
                           "relationship": f"{1 + len(data['cohostIds'])} to {len(data['requiredIds'])}"}
         return render_template("group_meeting_new.html", form=data, people=people,
@@ -143,12 +162,27 @@ def register_group_meetings(app, fixture):
             if value["actor"] != actor or value["login"] != _login_key():
                 raise PermissionError("The recommendation belongs to another session.")
             digest = sha256(raw.encode("utf-8")).hexdigest()
+            candidate = value.get("candidate_room")
+            if candidate:
+                previous = db.scalar(select(StudentRoomRequest.id).where(
+                    StudentRoomRequest.organizer_id == actor, StudentRoomRequest.group_submission_key == digest))
+                if previous:
+                    return redirect(url_for("rooms.detail", request_id=previous), code=303)
             existing = db.scalar(select(GroupMeeting.id).where(
                 GroupMeeting.organizer_id == actor, GroupMeeting.submission_key == digest))
             if existing:
                 return redirect(url_for("group_meetings.detail", meeting_id=existing))
             if value["calendar"] != state_row(db, True).calendar_revision:
                 raise MeetingError("Calendars or preferences changed. Search again for current options.")
+            if candidate:
+                room_service = RoomRequestService(fixture.database,
+                    EngineGateway(Path(current_app.root_path).parent, current_app.config["BACKEND_TIMEOUT"], current_app.logger),
+                    current_app.config["ROOM_SELECTION_STRATEGY"])
+                booking_id = room_service.submit_group_meeting(db, actor, purpose=request.form.get("purpose"),
+                    start=datetime.fromisoformat(value["start"]), duration=value["duration"],
+                    participant_ids=list(dict(value["sides"])), features=value["features"], room_id=candidate,
+                    submission_key=digest)
+                return redirect(url_for("rooms.detail", request_id=booking_id), code=303)
             move = value["move"]
             meeting_id = submit(db, fixture, actor, roster, sides=dict(value["sides"]), purpose=request.form.get("purpose"),
                 start=datetime.fromisoformat(value["start"]), duration=value["duration"],
@@ -204,5 +238,7 @@ def register_group_meetings(app, fixture):
 
     app.register_blueprint(blueprint)
     from .group_meeting_preferences import create_preferences_blueprint
+    from .group_meeting_reschedule_routes import register_group_meeting_reschedule
     app.register_blueprint(create_preferences_blueprint(fixture))
+    register_group_meeting_reschedule(app, fixture)
     app.jinja_env.globals["group_meetings_enabled"] = True

@@ -46,7 +46,7 @@ def group_meeting_entries(session, actor, start, end):
     if not session.info.get("group_meeting_pilot"):
         return
     query = select(GroupMeeting, GroupMeetingParticipant, GroupMeetingCommitment.meeting_id,
-        Resource.name, Resource.building).join(
+        Resource.name, Resource.building, StudentRoomRequest.group_participant_ids.is_not(None)).join(
         GroupMeetingParticipant, GroupMeetingParticipant.meeting_id == GroupMeeting.id).outerjoin(
         GroupMeetingCommitment, and_(GroupMeetingCommitment.meeting_id == GroupMeetingParticipant.meeting_id,
             GroupMeetingCommitment.user_id == GroupMeetingParticipant.user_id)).outerjoin(
@@ -54,11 +54,12 @@ def group_meeting_entries(session, actor, start, end):
         Resource, Resource.id == StudentRoomRequest.resource_id).where(
         GroupMeetingParticipant.user_id == actor, GroupMeetingParticipant.revision == GroupMeeting.revision,
         GroupMeeting.start_at < end, GroupMeeting.end_at > start)
-    for meeting, participant, commitment_id, room, building in session.execute(query):
+    for meeting, participant, commitment_id, room, building, scoped_room in session.execute(query):
         required = participant.side != "optional"
         yield {"id": meeting.id, "title": meeting.purpose, "start": meeting.start_at, "end": meeting.end_at,
                "status": meeting.status, "revision": meeting.revision, "decision": participant.decision,
                "required": required, "busy": required and meeting.status == "Confirmed" and commitment_id is not None,
+               "scopedRoomId": meeting.room_request_id if scoped_room else None,
                "location": "Online" if meeting.location_mode == "online" else " - ".join(filter(None, (room, building)))}
 
 
@@ -80,10 +81,12 @@ def read_schedule(session, actor, selection):
     events = [{"start": row.start_at.astimezone(zone), "end": row.end_at.astimezone(zone), "title": row.purpose,
                "kind": "Appointment" if row.organizer_id == actor or professor_id == actor else "Optional invitation",
                "appointmentId": row.id} for row, professor_id in session.execute(query)]
+    group_entries = list(group_meeting_entries(session, actor, start, end))
+    scoped_rooms = {entry["scopedRoomId"] for entry in group_entries if entry["busy"] and entry["scopedRoomId"]}
     events += [{"start": entry["start"].astimezone(zone), "end": entry["end"].astimezone(zone),
                 "title": entry["title"], "kind": "Group meeting" if entry["required"] else "Optional invitation",
                 "appointmentId": None, "groupMeetingId": entry["id"]}
-               for entry in group_meeting_entries(session, actor, start, end)
+               for entry in group_entries
                if entry["busy"] or (entry["status"] == "Confirmed" and not entry["required"]
                                     and entry["decision"] == "Accepted")]
     room_query = select(StudentRoomRequest, Resource.name,RoomReservation).join(Resource,Resource.id == StudentRoomRequest.resource_id).join(
@@ -93,7 +96,7 @@ def read_schedule(session, actor, selection):
         or_(StudentRoomRequest.organizer_id == actor,RoomInvitation.status == 'Accepted')).order_by(StudentRoomRequest.start_at,StudentRoomRequest.id)
     events += [{'start':booking.start_at.astimezone(zone),'end':booking.end_at.astimezone(zone),'title':row.purpose+' - '+room_name,
                 'kind':'Room booking' if row.organizer_id == actor else 'Optional invitation','appointmentId':None,'roomRequestId':row.id}
-               for row,room_name,booking in session.execute(room_query)]
+               for row,room_name,booking in session.execute(room_query) if row.id not in scoped_rooms]
     blocks = list(session.scalars(select(CalendarBlock).where(CalendarBlock.user_id == actor).order_by(CalendarBlock.start_at, CalendarBlock.id)))
     events += [{"start": row.start_at.astimezone(zone), "end": row.end_at.astimezone(zone),
                 "title": row.reason or "Personal blocked time", "kind": "Personal block", "appointmentId": None}
