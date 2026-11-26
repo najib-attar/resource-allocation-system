@@ -6,7 +6,7 @@ from sqlalchemy import delete, or_, select
 from sqlalchemy.exc import IntegrityError
 
 from .calendar_service import CalendarError, aware, epoch, local_instant, university_zone
-from .persistence.models import (FacultyRoomApprover, LoginAccount, OrganizationUnit, Resource, Role, User,
+from .persistence.models import (FacultyRoomApprover, GroupMeeting, LoginAccount, OrganizationUnit, Resource, Role, User,
     ROOM_CATEGORIES, RoomAccess, RoomClosure, RoomEvent, RoomInvitation, RoomOrganizerCommitment,
     RoomPolicy, RoomReservation, StudentRoomRequest)
 from .persistence.repository import state_row
@@ -437,6 +437,9 @@ class RoomRequestService:
                 raise PermissionError('Only the organizer or current assigned faculty approver may cancel.')
             if record.revision != revision or record.status == 'Cancelled':
                 raise RoomRequestError('The request changed or is already cancelled.')
+            if session.info.get("group_meeting_pilot") and session.scalar(select(GroupMeeting.id).where(
+                    GroupMeeting.room_request_id == record.id, GroupMeeting.status == "Confirmed").limit(1)) is not None:
+                raise RoomRequestError("Cancel the confirmed group meeting before releasing its room.")
             record.status = 'Cancelled'
             close_waiting(session, actor, room=request_id)
             session.execute(delete(RoomReservation).where(RoomReservation.request_id == record.id))

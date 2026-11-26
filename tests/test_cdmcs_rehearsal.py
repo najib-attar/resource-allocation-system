@@ -167,7 +167,7 @@ class RehearsalTests(TestCase):
         rows = [
             (SimpleNamespace(id=user_id, name=data["name"], status="Active",
                              assistant_type="Research Assistant" if user_id == 3 else None),
-             "TeachingAssistant" if user_id == 3 else data["role"])
+             "TeachingAssistant" if user_id == 3 else data["role"], True)
             for user_id, data in self.roster.items()
         ]
         principal = SimpleNamespace(user_id=1)
@@ -183,12 +183,14 @@ class RehearsalTests(TestCase):
                 self.assertEqual(roster, self.roster)
             identity.assert_called_once_with(1, 4, session=self.database_session, session_token="synthetic-token")
             self.database.transaction.assert_called_once_with(read_only=True)
-            for condition in ("foreign database", "new roster user", "stale principal"):
+            for condition in ("foreign database", "new roster user", "stale principal", "disabled account"):
                 with self.subTest(condition=condition):
                     g.authenticated_database_url = self.url.set(port=55498) if condition == "foreign database" else self.url
-                    self.database_session.execute.return_value = (
-                        rows + [(SimpleNamespace(id=7), "Student")] if condition == "new roster user" else rows
-                    )
+                    self.database_session.execute.return_value = rows
+                    if condition == "new roster user":
+                        self.database_session.execute.return_value = rows + [(SimpleNamespace(id=7), "Student", True)]
+                    if condition == "disabled account":
+                        self.database_session.execute.return_value = [(*rows[0][:2], False), *rows[1:]]
                     identity.return_value = None if condition == "stale principal" else principal
                     with self.assertRaises(Forbidden):
                         with rehearsal._read(self.fixture):

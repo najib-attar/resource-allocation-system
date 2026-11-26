@@ -1,19 +1,19 @@
-# CDMCS meeting rehearsal
+# CDMCS group meeting pilot
 
-The Campus Space **Meeting rehearsal** demonstrates native CDMCS rankings
-over one required participant set. The organizer stays accountable for
-the search, co-hosts and required attendees share the same hard checks, and
-optional invitees do not block a time. The rehearsal supports one-to-one,
-one-to-many, many-to-one, and many-to-many searches under fictional Student,
-Instructor, Research Assistant and Staff identities. A fictional Administrator
-can inspect the rehearsal under the same membership rules.
+The opt-in Campus Space pilot supports persistent one-to-one, one-to-many,
+many-to-one, and many-to-many meetings among fictional students,
+instructors, research assistants, staff and administrators. It shares
+the application session, PostgreSQL calendar, Inbox, and room approval
+services. Standard appointments and the original **Meeting rehearsal**
+remain available. [Architecture, role matrix and diagrams](group-meeting-architecture.md)
 
 The [weight evaluation](weight-analysis.md) compares all 18 configurations
 on common metrics. Use rates 1/2/4, gap weight 1, a 120-minute hard cutoff,
 delay 10 per local day, and relocation costs of 25 fixed plus 50 per affected
 participant. The weight comparison is provisional and applies to the
 rehearsal. [Raw comparison data](weight-observations.csv) ·
-[Machine-readable summary](weight-summary.json)
+[Machine-readable summary](weight-summary.json) · [Comparison export](weight-comparison.csv) ·
+[Preliminary W0–W5 record](preliminary-w0-w5.md)
 
 ## Run on Windows
 
@@ -38,42 +38,63 @@ The application executable defaults to the current checkout's
 executable with `--backend`. The launcher creates an owned loopback
 PostgreSQL cluster, migrates its fresh database, and prints the loopback
 web address and path to the generated fictional sign-ins. Open
-`fictional-logins.json` privately. Sign in and choose **Account menu →
-Meeting rehearsal**. Press Ctrl+C in the launcher terminal to stop the
-rehearsal and its database process.
+`fictional-logins.json` privately. Open **Group meetings** from your role
+home or from **Appointments**. Staff reaches it from Appointments.
+**Account menu → Meeting rehearsal** opens the original comparison preview.
+Press Ctrl+C in the launcher terminal to stop the pilot and its database
+process. Each launch owns a fresh synthetic database with its own accounts.
 
 The default fixture includes a protected class, a confirmed advising
 appointment, a lab block, published instructor hours, and synthetic private
 preference revisions. An optional `--course-archive` argument accepts the
 reviewed İTÜ Fall 2026–27 JSON and mirrors one published BBB teaching interval
-on day two or three in the existing course entities. Only the public slot and
-its source metadata are mirrored. The instructor and enrollment in the
-rehearsal are fictional. The option reports when there is no usable session
-inside the archived term.
+inside the fixture's first three days in the existing course entities.
+Only the public slot and its source metadata are mirrored. The instructor
+and enrollment are fictional. Omit the optional archive if the available
+fixture dates do not contain a matching session inside the academic term.
 
-Select the fictional student Aylin as the signed-in user and instructor Cem as
-a required attendee to see a case with both direct times and proposals to
-move one fictional flexible meeting. The **Request a standard appointment**
-form on that result posts the selected direct time to the existing booking
-route. The instructor can approve the same revision from Appointments.
-Check the date in each participant's Calendar after approval.
+## Demonstration
+
+1. Sign in as any organizer and open **Group meetings → Find meeting times**.
+   Choose required guests, any co-hosts, and optional invitees. Direct options
+   show group-level preferred coverage, wait, net gaps and modeled cost.
+   A positive gap count means the arrangement adds idle gaps.
+2. Select a direct option, enter a purpose, and submit. Sign in separately
+   as each required guest or co-host and approve the current revision.
+   Verify the confirmation in both Calendar and Inbox. Optional invitees
+   may accept or decline without reserving their calendars.
+3. Open **Scheduling preferences** to edit the separate dated hard windows
+   and soft preferences. To demonstrate relocation, enable consideration
+   in each affected person's settings and confirm one online meeting
+   explicitly marked flexible. Search again as one of its required attendees
+   with the entire old required set included. Propose a conditional option
+   and record both the new meeting approvals and the separate move consents.
+   A refusal keeps the original booking, and the organizer can search again.
+4. For a physical meeting, use the existing Student room request form with
+   category **Meeting**, the exact time, the full headcount and facilities.
+   Use the assigned Staff approver to decide the request. Attach the
+   approved booking in the group form and finish the required approvals.
+   The group uses that existing reservation and creates participant commitments.
 
 ## Integration stages and boundaries
 
 | Stage | Behavior |
 | --- | --- |
-| Read | The rehearsal requires the dedicated startup path, current authenticated session, exact fictional roster and local request origin. It reads the same teaching, appointment, room-organizer, and personal commitments used by the appointment calendar service. |
-| Rank | The existing D1 compiler consumes scoped preference revisions or clearly defined fixture defaults. The existing coefficient contract validates the rehearsal-only policy. The isolated runner verifies the native executable and caps its runtime and output. The response contains dates and explanations, with opaque identities and individual preference scores confined to the server. |
-| Relocation | The known fictional blocker can be considered for one move when all its attendees are in the required set. All persisted commitments stay protected. The separate list gives the proposed replacement time and consent condition. A result is discarded if the calendar or preference revisions change during the search. |
-| Book | A direct eligible student–instructor selection can enter the existing appointment flow and inherits its time validation, revision approval and atomic calendar writes. Other combinations remain recommendations in the rehearsal. |
+| Read | The dedicated startup path verifies an owned loopback database, current authenticated session and exact fictional roster. Calendar reads use the regular teaching, appointment, room-organizer, and personal projections. |
+| Rank | The D1 compiler uses scoped private preference revisions and the provisional coefficient contract. Separate result lists summarize group-level metrics. Signed selections are bound to the organizer's session and calendar revision. |
+| Book | The existing calendar lock protects required approval, both possible interval writes, and recipient-scoped updates. PostgreSQL rejects incomplete confirmation, overlapping group commitments, and release of a room for a confirmed group. |
+| Retain the fallback | Regular Student–Instructor appointments continue through the existing scheduler. The old rehearsal comparison keeps its opt-in test fixtures and standard direct booking handoff. |
 
-The existing appointment aggregate enforces Student organizer, Instructor
-approver and Student invitee roles in PostgreSQL. Extending durable group
-bookings needs the approved initiation, approval and visibility matrix and
-an additive aggregate design. Executing a relocation needs explicit
-revision-bound consent from affected participants, resource authority where
-applicable, and an atomic revalidation and commit. Required-room appointment
-booking and institution-wide activation remain outside this rehearsal.
+The pilot supports only fictional identities. Physical meetings attach an
+already approved one-time Student room booking. Physical meetings and
+ordinary academic commitments stay fixed. A move considers up to three
+eligible flexible targets and four replacement starts per target, including
+the earliest and latest available starts. A pending online meeting can be
+revised by its organizer. A confirmed group retains its reservation until
+an authorized cancellation or a separately consented move. Fully general
+confirmed replacement requests, rankings that combine unapproved rooms
+with calendar options, and activation on real private calendars remain
+outside this pilot.
 
 ## Verification commands
 
@@ -82,13 +103,15 @@ $env:CDMCS_REHEARSAL_TEST_ENGINE = $cdmcs
 & $python -B -m unittest discover -s tests -p test_cdmcs_rehearsal.py -v
 $env:PLAYWRIGHT_NODE_MODULE = 'C:\path\to\node_modules\playwright-core'
 node tests/cdmcs_rehearsal_browser.cjs 'C:\path\to\fictional-logins.json' 'C:\path\to\evidence'
+node tests/group_meeting_pilot_browser.cjs 'C:\path\to\fictional-logins.json' 'C:\path\to\pilot-evidence'
 ~~~
 
-Run the browser check against a fresh rehearsal. It creates one synthetic
-appointment, approves it and checks both calendars. It captures desktop and
-mobile screenshots from the running Flask server.
+Launch a fresh pilot for each browser script. The original comparison
+script verifies a standard student–instructor appointment. The group
+script verifies persisted requests, decisions, preferences, room linking,
+and change consent. Both capture screenshots from the running Flask server.
 
-## Executed verification
+## Prior rehearsal verification
 
 On 25 November 2026, 17 rehearsal tests passed with the standalone native
 executable. The appointment, calendar and teaching integration suite passed
@@ -104,3 +127,34 @@ contained two matching commitment rows. The public timetable mirror
 retained CRN 12367 and its normalized 27 November interval of
 14:00–17:00 Istanbul time. A date-scoped browser search excluded that
 interval.
+
+## Persistent pilot verification
+
+Verified on 26 November 2026 with disposable PostgreSQL, the verified
+standalone CDMCS executable and the existing production C++ executable.
+
+| Scope | Passed | Failed | Skipped |
+| --- | ---: | ---: | ---: |
+| Group meetings, relocation, physical booking and teaching protection | 14 | 0 | 0 |
+| Group preferences, Inbox/calendar projection and room checks | 18 | 0 | 0 |
+| Appointment, calendar loading, course and migration regressions | 36 | 0 | 0 |
+| Original rehearsal and native integration | 17 | 0 | 0 |
+| Database diagrams and schema catalogue | 1 | 0 | 0 |
+
+Migration checks verified `0051e` → `0051f`, an empty pilot downgrade,
+preserved password hashes and prior notifications, and refusal to discard
+populated availability. Lifecycle tests exercised concurrent confirmations,
+current-revision approval, explicit move refusal, a failed final recheck
+with rollback, and direct PostgreSQL rejection when a required move consent
+is missing.
+
+Edge exercised the four group shapes through the role workspaces at
+320, 390, 768, 1024 and 1440 pixels. It verified private Inbox links,
+CSRF and participant denials, optional decisions, a refused move, an
+executed move, and physical confirmation through a faculty-approved
+booking. The moved group kept its original commitment until the last
+required decision. The room workflow rejected an interval that conflicted
+with the new commitment and refused to release the linked booking while
+the physical group remained confirmed. A read-only PostgreSQL check
+confirmed both sets of committed intervals and their notification
+recipients.

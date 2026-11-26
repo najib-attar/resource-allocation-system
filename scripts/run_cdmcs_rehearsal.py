@@ -32,10 +32,11 @@ from web.engine_gateway import EngineGateway
 from web.persistence.importer import populate_empty_database
 from web.persistence.itu_course_inputs import TERM_END, TERM_START, course_inputs
 from web.persistence.models import (
-    AcademicPeriod, CalendarBlock, Course, CourseSection, CourseSession, Enrollment,
+    AcademicPeriod, CalendarBlock, Course, CourseSection, CourseSession, Enrollment, GroupMeetingAvailability,
     OrganizationUnit, ProfessorAvailability, SchedulingPreferenceRevision, TeachingAssignment,
 )
 from web.preference_values import parse_values
+from web.room_request_service import RoomRequestService
 from web.teaching_calendar import assert_teaching_commitments_compatible
 
 
@@ -137,19 +138,22 @@ def _public_slot(path, first, last):
     if file_sha256(path) != COURSE_ARCHIVE_SHA:
         raise ValueError("Use the reviewed 2026–2027 Fall İTÜ archive for the public schedule mirror.")
     archive = course_inputs(path, [], {})
-    days = [(first + timedelta(days=offset)).isoweekday() for offset in (1, 2)
-            if TERM_START <= first + timedelta(days=offset) <= min(last, TERM_END)]
-    choices = [(section, slot) for section in archive["sections"] for slot in section["sessions"]
-               if slot["day"] in days and slot["building"] == "BBB" and slot["room"]
-               and 540 <= slot["start_minutes"] < slot["end_minutes"] <= 1020
-               and slot["start_minutes"] % 15 == slot["end_minutes"] % 15 == 0]
-    if not choices:
-        raise ValueError("No aligned published BBB session falls on days two or three within the archived term.")
-    return choices[0]
+    for offset in (1, 2, 0):
+        day = first + timedelta(days=offset)
+        if not TERM_START <= day <= min(last, TERM_END):
+            continue
+        floor = 540 if offset else 840
+        for section in archive["sections"]:
+            for slot in section["sessions"]:
+                if (slot["day"] == day.isoweekday() and slot["building"] == "BBB" and slot["room"]
+                        and floor <= slot["start_minutes"] < slot["end_minutes"] <= 1020
+                        and slot["start_minutes"] % 15 == slot["end_minutes"] % 15 == 0):
+                    return section, slot, day
+    raise ValueError("No aligned published BBB session fits the fixture dates and protected intervals.")
 
 
 def _mirror_public_slot(session, period, first, last, path):
-    section, slot = _public_slot(path, first, last)
+    section, slot, day = _public_slot(path, first, last)
     title = "Public timetable mirror · " + section["course_code"]
     course = Course(code=section["course_code"], title=title)
     session.add(course)
@@ -171,8 +175,6 @@ def _mirror_public_slot(session, period, first, last, path):
             published_end=slot["end_time_published"], published_building=slot["building_published"],
             published_room=slot["room_published"]),
     ))
-    day = next(first + timedelta(days=offset) for offset in (1, 2)
-               if (first + timedelta(days=offset)).isoweekday() == slot["day"])
     midnight = datetime.combine(day, time(), ZONE)
     return {"crn": section["crn"], "sourceSha256": COURSE_ARCHIVE_SHA,
             "start": (midnight + timedelta(minutes=slot["start_minutes"])).isoformat(),
@@ -218,6 +220,9 @@ def seed_rehearsal(database, course_archive=None):
     with database.transaction() as session:
         faculty_id = session.scalar(select(OrganizationUnit.id).where(OrganizationUnit.name == faculty))
         weekdays = sorted((first + timedelta(days=day)).isoweekday() for day in range(3))
+        session.add_all(GroupMeetingAvailability(owner_id=uid, revision=1, valid_from=first, valid_until=last,
+            windows=[{"weekday": day, "start": "09:00", "end": "17:00"} for day in weekdays],
+            allow_relocation=False) for uid, _, _, _ in PEOPLE)
         session.add_all(
             ProfessorAvailability(user_id=person, day=weekday, start_minutes=9 * 60, end_minutes=17 * 60,
                                   valid_from=first, valid_until=last, timezone=ZONE.key, excluded_dates=[])
@@ -271,6 +276,9 @@ def seed_rehearsal(database, course_archive=None):
     appointments = AppointmentService(database, EngineGateway(ROOT))
     appointment = appointments.submit(2, [4], [], "Fictional protected advising", 30, at(0, 14), faculty_id)
     appointments.decide(appointment, 4, 1, True)
+    rooms = RoomRequestService(database, EngineGateway(ROOT))
+    rooms.configure_approver(7, faculty_id, 6)
+    rooms.configure_room(7, 301, faculty_id, True, ["meeting"])
     return credentials, at, mirror
 
 
@@ -298,6 +306,7 @@ def rehearsal_server(args):
 
             from web.app import app, get_repository
             from web.cdmcs_rehearsal import FlexibleMeeting, RehearsalFixture, register_rehearsal
+            from web.group_meeting_routes import register_group_meetings
 
             app.config.update(DATABASE_URL=encoded_url, SECRET_KEY=secrets.token_hex(32), DEBUG=False,
                               SESSION_COOKIE_SECURE=False, LOCAL_DEMO_DATASET="cdmcs-rehearsal")
@@ -314,6 +323,7 @@ def rehearsal_server(args):
                     start=at(0, 0), end=at(3, 0), flexible=(flexible,),
                 )
                 register_rehearsal(app, fixture)
+                register_group_meetings(app, fixture)
                 with make_server("127.0.0.1", args.port, app, threaded=True) as server:
                     address = f"http://127.0.0.1:{server.server_port}"
                     info = {"url": address, "accounts": credentials, "starts": at(0, 0).isoformat(),

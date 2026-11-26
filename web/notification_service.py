@@ -11,7 +11,8 @@ from .reservation_policy import occurrence_summary
 from .persistence.models import (Appointment, AppointmentEvent, AppointmentInvitation,
     AppointmentProfessor, Notification, RoomEvent, RoomInvitation, StudentRoomRequest, User,
     BorrowRequest, EquipmentCustodian, EquipmentEvent, WaitingListEntry, FeedbackEvent, ResourceFeedback,
-    EligibilityEvent, LoginAccount, RequestEligibility, ResourceRequest, Role)
+    EligibilityEvent, GroupMeeting, GroupMeetingEvent, GroupMeetingParticipant,
+    LoginAccount, RequestEligibility, ResourceRequest, Role)
 
 
 INBOX_KINDS = {
@@ -25,8 +26,14 @@ INBOX_KINDS = {
 INBOX_READ_STATES = {'all': 'All updates', 'unread': 'Unread only', 'read': 'Read only'}
 
 
-def _filters(visible, kind, read_state):
-    if kind not in INBOX_KINDS or read_state not in INBOX_READ_STATES:
+def _kinds(session):
+    if session.info.get('group_meeting_pilot'):
+        return {**INBOX_KINDS, 'group_meeting': 'Group meetings'}
+    return INBOX_KINDS
+
+
+def _filters(visible, kind, read_state, kinds):
+    if kind not in kinds or read_state not in INBOX_READ_STATES:
         raise ValueError('Choose an available service and read status.')
     clauses = []
     if kind != 'all':
@@ -40,7 +47,9 @@ def _filters(visible, kind, read_state):
 
 def publish_event(session, event, *, recipient_ids=None, notify_actor=False):
     """Persist history and its recipient notifications in the caller's transaction."""
-    if not isinstance(event, (AppointmentEvent, RoomEvent, EquipmentEvent, FeedbackEvent)):
+    if isinstance(event, GroupMeetingEvent) and not session.info.get('group_meeting_pilot'):
+        raise PermissionError('Group meeting updates are unavailable outside the pilot.')
+    if not isinstance(event, (AppointmentEvent, RoomEvent, EquipmentEvent, FeedbackEvent, GroupMeetingEvent)):
         raise TypeError('Unsupported notification event.')
     session.add(event)
     session.flush()
@@ -62,6 +71,10 @@ def publish_event(session, event, *, recipient_ids=None, notify_actor=False):
         if assignment:
             people.add(assignment.user_id)
         source = {'equipment_event_id': event.id}
+    elif isinstance(event, GroupMeetingEvent):
+        people = set(session.scalars(select(GroupMeetingParticipant.user_id)
+            .where(GroupMeetingParticipant.meeting_id == event.meeting_id)))
+        source = {'group_meeting_event_id': event.id}
     else:
         # Reports have a private audience, never all members of the booking.
         if recipient_ids is None:
@@ -69,17 +82,21 @@ def publish_event(session, event, *, recipient_ids=None, notify_actor=False):
         people = set()
         source = {'feedback_event_id': event.id}
     if recipient_ids is not None:
-        people = set(recipient_ids)
+        recipients = set(recipient_ids)
+        people = people & recipients if isinstance(event, GroupMeetingEvent) else recipients
     session.add_all(Notification(recipient_id=person, **source) for person in people if notify_actor or person != event.actor_id)
 
 
 def event_history(session, model, parent_id, actor, *, audit=False):
     """Project personal updates or staff audit after authorizing the parent."""
+    if model is GroupMeetingEvent and not session.info.get('group_meeting_pilot'):
+        raise PermissionError('Group meeting history is unavailable outside the pilot.')
     parent, source = {
         AppointmentEvent: (AppointmentEvent.appointment_id, Notification.appointment_event_id),
         RoomEvent: (RoomEvent.request_id, Notification.room_event_id),
         EquipmentEvent: (EquipmentEvent.request_id, Notification.equipment_event_id),
         FeedbackEvent: (FeedbackEvent.report_id, Notification.feedback_event_id),
+        GroupMeetingEvent: (GroupMeetingEvent.meeting_id, Notification.group_meeting_event_id),
     }[model]
     query = select(model).where(parent == parent_id)
     if not audit:
@@ -104,7 +121,7 @@ def event_history(session, model, parent_id, actor, *, audit=False):
              'unitId': getattr(event, 'unit_id', None)} for event in events]
 
 
-def _visible(actor):
+def _visible(actor, pilot_enabled=False):
     appointment_scope = or_(Appointment.organizer_id == actor,
         Appointment.id.in_(select(AppointmentProfessor.appointment_id).where(AppointmentProfessor.user_id == actor)),
         Appointment.id.in_(select(AppointmentInvitation.appointment_id).where(AppointmentInvitation.user_id == actor)))
@@ -154,7 +171,18 @@ def _visible(actor):
         RequestEligibility, RequestEligibility.request_id == ResourceRequest.id).where(
         Notification.recipient_id == actor, ResourceRequest.requester_id.in_(instructor),
         EligibilityEvent.origin == 'Professor', EligibilityEvent.status.in_(('Eligible', 'Eligibility Rejected')))
-    return union_all(appointments, rooms, equipment, feedback, eligibility).subquery()
+    sources = [appointments, rooms, equipment, feedback, eligibility]
+    if pilot_enabled:
+        meetings = select(Notification.id, Notification.read_at, GroupMeetingEvent.created_at, GroupMeetingEvent.message,
+            GroupMeeting.purpose.label('subject'), GroupMeeting.id.label('subject_id'), literal('group_meeting').label('kind'),
+            GroupMeetingEvent.actor_id, Notification.recipient_id, GroupMeeting.status.label('current_status'),
+            literal(0).label('review_version')).join(
+            GroupMeetingEvent, GroupMeetingEvent.id == Notification.group_meeting_event_id).join(
+            GroupMeeting, GroupMeeting.id == GroupMeetingEvent.meeting_id).join(
+            GroupMeetingParticipant, (GroupMeetingParticipant.meeting_id == GroupMeeting.id) &
+            (GroupMeetingParticipant.user_id == actor)).where(Notification.recipient_id == actor)
+        sources.append(meetings)
+    return union_all(*sources).subquery()
 
 
 class NotificationService:
@@ -173,7 +201,7 @@ class NotificationService:
             raise ValueError('Use a bounded notification count.')
         with self.database.transaction(read_only=True) as session:
             self._identity(session, actor)
-            visible = _visible(actor)
+            visible = _visible(actor, session.info.get('group_meeting_pilot'))
             unread = session.scalar(select(func.count()).select_from(visible).where(visible.c.read_at.is_(None)))
             through = session.scalar(select(func.max(visible.c.id))) or 0
             return {'items': self._items(session, visible, (), limit), 'unreadCount': unread, 'throughId': through}
@@ -197,8 +225,9 @@ class NotificationService:
             raise ValueError('This page of Inbox history is unavailable.')
         with self.database.transaction(read_only=True) as session:
             self._identity(session, actor)
-            visible = _visible(actor)
-            clauses = _filters(visible, kind, read_state)
+            kinds = _kinds(session)
+            visible = _visible(actor, session.info.get('group_meeting_pilot'))
+            clauses = _filters(visible, kind, read_state, kinds)
             unread, through_id = session.execute(select(func.count(), func.max(visible.c.id)).where(
                 *clauses, visible.c.read_at.is_(None))).one()
             if before is not None:
@@ -213,7 +242,7 @@ class NotificationService:
             items = self._items(session, visible, clauses, self.PAGE_SIZE + 1)
             next_before = items[self.PAGE_SIZE - 1]['id'] if len(items) > self.PAGE_SIZE else None
             return dict(items=items[:self.PAGE_SIZE], unreadCount=unread, throughId=through_id or 0,
-                        nextBefore=next_before, before=before, kind=kind, readState=read_state)
+                        nextBefore=next_before, before=before, kind=kind, readState=read_state, kinds=kinds)
 
     def mark_read(self, actor, notification_id=None, through_id=None, *, kind='all', read_state='all'):
         if (notification_id is None) == (through_id is None):
@@ -223,13 +252,13 @@ class NotificationService:
             raise ValueError('Invalid notification identifier.')
         with self.database.transaction() as session:
             self._identity(session, actor)
-            visible = _visible(actor)
+            visible = _visible(actor, session.info.get('group_meeting_pilot'))
             eligible = select(visible.c.id)
             if notification_id is not None:
                 eligible = eligible.where(visible.c.id == notification_id)
                 if session.scalar(eligible) is None:
                     raise PermissionError('This notification is unavailable or private.')
             else:
-                eligible = eligible.where(visible.c.id <= through_id, *_filters(visible, kind, read_state))
+                eligible = eligible.where(visible.c.id <= through_id, *_filters(visible, kind, read_state, _kinds(session)))
             session.execute(update(Notification).where(Notification.id.in_(eligible), Notification.read_at.is_(None)).values(
                 read_at=datetime.now(timezone.utc)))

@@ -216,7 +216,7 @@ preserve the previous active result; database failures never switch to file stor
 
 ### Migrations and existing data
 
-The current chain ends `0050b -> 0051a -> 0051b -> 0051c -> 0051d -> 0051e`:
+The current chain ends `0050b -> 0051a -> 0051b -> 0051c -> 0051d -> 0051e -> 0051f`.
 
 - `0051a` adds independent academic eligibility, immutable review history, per-run
   eligibility proofs and faculty declarations. Old inputs await explicit review;
@@ -230,6 +230,10 @@ The current chain ends `0050b -> 0051a -> 0051b -> 0051c -> 0051d -> 0051e`:
 - `0051e` adds the course catalogue, section, teaching, enrolment and import
   provenance tables. The local İTÜ demo importer populates them separately.
   Populated course tables prevent a downgrade.
+- `0051f` adds generalized meeting approvals, commitments, move consents,
+  availability and private Inbox updates for the opt-in synthetic pilot.
+  The ordinary app keeps its existing scheduler. Populated pilot records
+  prevent a downgrade. [Pilot guide](../docs/research/cdmcs-rehearsal/README.md)
 
 For an existing database: back up, stop old workers, run `python -m alembic upgrade head`
 against the intended database, then start matching code. Do not mix old/new

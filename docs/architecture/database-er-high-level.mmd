@@ -128,6 +128,32 @@ erDiagram
         bigint report_id FK
         integer actor_id FK
     }
+    group_meeting {
+        bigint id PK "identity"
+        integer organizer_id FK
+        bigint room_request_id FK "nullable"
+        bigint move_target_id FK "nullable"
+    }
+    group_meeting_availability {
+        integer owner_id PK,FK
+    }
+    group_meeting_commitment {
+        bigint meeting_id PK,FK
+        integer user_id PK,FK
+    }
+    group_meeting_consent {
+        bigint meeting_id PK,FK
+        integer user_id PK,FK
+    }
+    group_meeting_event {
+        bigint id PK "identity"
+        bigint meeting_id FK
+        integer actor_id FK
+    }
+    group_meeting_participant {
+        bigint meeting_id PK,FK
+        integer user_id PK,FK
+    }
     legacy_calendar_binding {
         bigint id PK "identity"
         integer period_id FK
@@ -150,6 +176,7 @@ erDiagram
         bigint equipment_event_id FK "nullable"
         bigint feedback_event_id FK "nullable"
         bigint eligibility_event_id FK "nullable"
+        bigint group_meeting_event_id FK "nullable"
     }
     organization_unit {
         integer id PK "identity"
@@ -336,6 +363,17 @@ erDiagram
     login_account ||--o{ faculty_room_approver : user_id
     university_user ||--o{ feedback_event : actor_id
     resource_feedback ||--o{ feedback_event : report_id
+    group_meeting o|--o{ group_meeting : move_target_id
+    university_user ||--o{ group_meeting : organizer_id
+    student_room_request o|--o{ group_meeting : room_request_id
+    university_user ||--o| group_meeting_availability : owner_id
+    group_meeting_participant ||--o| group_meeting_commitment : meeting_id_user_id
+    group_meeting ||--o{ group_meeting_consent : meeting_id
+    university_user ||--o{ group_meeting_consent : user_id
+    university_user ||--o{ group_meeting_event : actor_id
+    group_meeting ||--o{ group_meeting_event : meeting_id
+    group_meeting ||--o{ group_meeting_participant : meeting_id
+    university_user ||--o{ group_meeting_participant : user_id
     busy_slot o|--o{ legacy_calendar_binding : busy_slot_id
     academic_period ||--o{ legacy_calendar_binding : period_id
     resource_request o|--o{ legacy_calendar_binding : request_id
@@ -344,6 +382,7 @@ erDiagram
     eligibility_event o|--o{ notification : eligibility_event_id
     equipment_event o|--o{ notification : equipment_event_id
     feedback_event o|--o{ notification : feedback_event_id
+    group_meeting_event o|--o{ notification : group_meeting_event_id
     university_user ||--o{ notification : recipient_id
     organization_unit o|--o{ organization_unit : parent_id
     university_user ||--o{ professor_availability : user_id

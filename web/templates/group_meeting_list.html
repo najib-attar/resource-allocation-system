@@ -1,0 +1,26 @@
+{% extends 'service_base.html' %}
+{% block title %}Group meetings | Campus Space{% endblock %}
+{% block page_heading %}Group meetings{% endblock %}
+{% block service_intro %}Track approvals, optional invitations and relocation consent in the fictional İTÜ pilot.{% endblock %}
+{% block service_actions %}
+<a class="button-primary" href="{{ url_for('group_meetings.new') }}">Find meeting times</a>
+<a class="button-secondary" href="{{ url_for('group_meeting_preferences.index') }}">Scheduling preferences</a>
+{% endblock %}
+{% block service_content %}
+{% if not campus_shell %}<div class="service-actions">{{ self.service_actions() }}</div>{% endif %}
+<section class="panel">
+    <h2>Your requests and invitations</h2>
+    <div class="service-list">
+        {% for meeting, membership in meetings %}
+        <article class="service-row">
+            <div>
+                <h3><a href="{{ url_for('group_meetings.detail', meeting_id=meeting.id) }}">{{ meeting.purpose }}</a></h3>
+                <p>{{ meeting.start_at|university_time }} · {{ meeting.location_mode|capitalize }} · {{ membership.decision }}</p>
+            </div>
+            <span>{{ meeting.status }}</span>
+        </article>
+        {% else %}<p>No group meetings yet.</p>{% endfor %}
+    </div>
+    <p><a href="{{ url_for('appointments.index') }}">Open standard appointments</a></p>
+</section>
+{% endblock %}

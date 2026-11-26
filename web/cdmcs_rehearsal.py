@@ -22,7 +22,7 @@ from .backend_executable import file_sha256
 from .calendar_service import CalendarError, calendar_snapshot, epoch, local_instant, university_zone
 from .cost_policy_values import OPERATION, OBJECTIVE, RATE_MODEL
 from .persistence.database import DatabaseBusy
-from .persistence.models import Role, User
+from .persistence.models import LoginAccount, Role, User
 from .persistence.repository import state_row
 from .scheduling_preference_service import SchedulingPreferenceService
 
@@ -63,25 +63,30 @@ def _role(role, assistant_type):
 
 
 @contextmanager
-def _read(fixture):
+def _read(fixture, *, write=False):
     authenticated = getattr(g, "authenticated_database_url", None)
     principal = getattr(g, "principal", None)
     token = login_session.get("csrf")
     if (not principal or principal.user_id not in fixture.people or login_session.get("login_format") != 2
             or not isinstance(token, str) or not token or authenticated != fixture.database.engine.url):
         abort(403)
-    with fixture.database.transaction(read_only=True) as session, session.no_autoflush:
+    with fixture.database.transaction(read_only=not write) as session, session.no_autoflush:
         if session.get_bind().url != authenticated:
             abort(403)
+        if write:
+            state_row(session, True)
+            if session.get(LoginAccount, principal.user_id, with_for_update=True) is None:
+                abort(403)
         current = AccountService(fixture.database).identity(login_session.get("user_id"),
             login_session.get("session_version"), session=session, session_token=token)
         if current != principal:
             abort(403)
-        rows = list(session.execute(select(User, Role.name).join(Role, Role.id == User.primary_role_id)))
-        if {user.id for user, _ in rows} != set(fixture.people):
+        rows = list(session.execute(select(User, Role.name, LoginAccount.enabled)
+            .join(Role, Role.id == User.primary_role_id).outerjoin(LoginAccount, LoginAccount.user_id == User.id)))
+        if {user.id for user, _, _ in rows} != set(fixture.people):
             abort(403)
         roster = {user.id: {"id": user.id, "name": user.name, "role": _role(role, user.assistant_type)}
-                  for user, role in rows if user.status.casefold() == "active"
+                  for user, role, enabled in rows if enabled and user.status.casefold() == "active"
                   and _role(role, user.assistant_type) in DEMO_ROLES}
         if principal.user_id not in roster:
             abort(403)
@@ -134,30 +139,20 @@ def _preference(session, actor, opaque, fixture, zone):
             "state": "configured", **values, "provenance": ORIGIN}, view.revision
 
 
-def _compile(session, fixture, actor, roster, selection):
+def _compile(session, fixture, actor, roster, selection, *, hard_windows=None, facts_snapshot=None):
     required, optional, duration, start, end, preferred = selection
     zone = university_zone()
     anchor, boundary = epoch(fixture.start), epoch(fixture.end)
     low, high = epoch(start), epoch(end)
     # This adapter reads the existing publication and busy facts for the same
     # role-neutral participant set. It grants no standard appointment capability.
-    facts, revision = calendar_snapshot(session, actor, required, optional, duration, fixture.start, fixture.end)
+    facts, revision = (calendar_snapshot(session, actor, required, optional, duration, fixture.start, fixture.end)
+                       if facts_snapshot is None else facts_snapshot)
     if set(facts["unresolvedIds"]) & set(required):
         raise RehearsalError("A required calendar has unresolved commitments.")
     opaque = {pid: f"person-{index}" for index, pid in enumerate(required)}
-    publications = {pid: [] for pid in required}
-    for row in facts["published"]:
-        if roster[row["userId"]]["role"] == "Instructor":
-            publications[row["userId"]].append(Interval(max(anchor, row["start"]), min(boundary, row["end"])))
-    for pid in required:
-        if roster[pid]["role"] == "Instructor":
-            continue
-        current = fixture.start.astimezone(zone).date()
-        while current <= (fixture.end - timedelta(minutes=1)).astimezone(zone).date():
-            a = epoch(local_instant(datetime.combine(current, time(9)), zone))
-            b = epoch(local_instant(datetime.combine(current, time(17)), zone))
-            publications[pid].append(Interval(a, b))
-            current += timedelta(days=1)
+    publications = window_map(fixture, roster, facts, required) if hard_windows is None else {
+        uid: [Interval(epoch(a), epoch(b)) for a, b in hard_windows[uid]] for uid in required}
     # Clip occupancy to the complete, intentionally bounded rehearsal calendar.
     # Deduplicate overlaps while preserving touching events and their zero gap.
     busy = {pid: [] for pid in required}
@@ -215,6 +210,25 @@ def _compile(session, fixture, actor, roster, selection):
         payload["profiles"][opaque[pid]]["published"] = [
             [(window.start - anchor) // 60, (window.end - anchor) // 60] for window in windows]
     return payload, flexible, revision, tuple(revisions)
+
+
+def window_map(fixture, roster, facts, required):
+    zone = university_zone()
+    anchor, boundary = epoch(fixture.start), epoch(fixture.end)
+    publications = {pid: [] for pid in required}
+    for row in facts["published"]:
+        if roster[row["userId"]]["role"] == "Instructor":
+            publications[row["userId"]].append(Interval(max(anchor, row["start"]), min(boundary, row["end"])))
+    for pid in required:
+        if roster[pid]["role"] == "Instructor":
+            continue
+        current = fixture.start.astimezone(zone).date()
+        while current <= (fixture.end - timedelta(minutes=1)).astimezone(zone).date():
+            a = epoch(local_instant(datetime.combine(current, time(9)), zone))
+            b = epoch(local_instant(datetime.combine(current, time(17)), zone))
+            publications[pid].append(Interval(a, b))
+            current += timedelta(days=1)
+    return publications
 
 
 def _run(fixture, payload):

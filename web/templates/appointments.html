@@ -6,6 +6,10 @@
 {% block service_intro %}{{ 'Review student requests, follow shared approvals and manage your confirmed meetings.' if professor_shell else 'Plan a conversation, follow professor approvals and manage your invitations.' }}{% endblock %}
 {% block service_actions %}{% if professor_shell %}<a class="service-button" href="{{ url_for('appointments.availability') }}">Office hours</a><a class="service-button" href="{{ url_for('appointments.calendar') }}">My schedule</a>{% endif %}{% endblock %}
 {% block service_content %}
+{% if group_meetings_enabled %}
+<section class="panel"><h2>Group meetings</h2><p>Plan a group meeting, review approvals and respond to move requests in the fictional İTÜ pilot.</p>
+<div class="service-actions"><a class="button-primary" href="{{ url_for('group_meetings.index') }}">Open group meetings</a><a class="button-secondary" href="{{ url_for('group_meeting_preferences.index') }}">Scheduling preferences</a></div></section>
+{% endif %}
 <section class="panel"><p>Dates use {{ zone }}. Pending requests reserve no time; all required professors must approve.</p>{% if g.principal.role=='Student' %}<a class="button" href="{{ url_for('appointments.new') }}">Schedule an appointment</a>{% endif %}</section>
 {% if professor_shell %}
   {% for state,title,note in [('Pending Approval','Pending student requests','Open a request to review your decision and the current approval progress.'),('Confirmed','Confirmed appointments','Only confirmed meetings reserve required participants\' time.'),('history','Appointment history','Declined and cancelled meetings remain available with their history.')] %}

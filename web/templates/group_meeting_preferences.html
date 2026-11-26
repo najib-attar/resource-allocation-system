@@ -1,0 +1,92 @@
+{% extends 'service_base.html' %}
+
+{% block title %}Meeting settings | Campus Space{% endblock %}
+{% block page_heading %}Meeting settings{% endblock %}
+{% block service_eyebrow %}Meetings / Settings{% endblock %}
+{% block service_intro %}Manage when people may request your time and how feasible meeting options are ranked.{% endblock %}
+
+{% macro weekly_windows(windows, submitted, preferred_days=none) %}
+  <div class="service-list">
+    {% for name in weekdays %}
+      {% set weekday = loop.index %}
+      {% set start_name = 'start_' ~ weekday %}
+      {% set end_name = 'end_' ~ weekday %}
+      {% set submitted_starts = submitted.getlist(start_name)[:64] if submitted is not none else [] %}
+      {% set submitted_ends = submitted.getlist(end_name)[:64] if submitted is not none else [] %}
+      {% set entries = windows[weekday] or [('', '')] %}
+      {% set count = [submitted_starts|length, submitted_ends|length, 1]|max if submitted is not none else entries|length %}
+      <fieldset>
+        <legend>{{ name }}</legend>
+        {% if preferred_days is not none %}
+          <label><input type="checkbox" name="preferred_weekday" value="{{ weekday }}"{% if (weekday|string) in preferred_days %} checked{% endif %}> Prefer {{ name }}</label>
+        {% endif %}
+        {% for index in range(count) %}
+          <div class="appointment-grid">
+            {% set default_start = entries[index][0] if index < entries|length else '' %}
+            {% set default_end = entries[index][1] if index < entries|length else '' %}
+            {% set start = (submitted_starts[index] if index < submitted_starts|length else '') if submitted is not none else default_start %}
+            {% set end = (submitted_ends[index] if index < submitted_ends|length else '') if submitted is not none else default_end %}
+            <label>Start <input type="time" name="{{ start_name }}" value="{{ start }}"{% if count > 1 %} aria-label="{{ name }} interval {{ loop.index }} start"{% endif %}></label>
+            {% if end == '24:00' %}
+              <label>End <input type="text" name="{{ end_name }}" value="{{ end }}" pattern="[0-9]{2}:[0-9]{2}" inputmode="numeric"{% if count > 1 %} aria-label="{{ name }} interval {{ loop.index }} end"{% endif %}></label>
+            {% else %}
+              <label>End <input type="time" name="{{ end_name }}" value="{{ end }}"{% if count > 1 %} aria-label="{{ name }} interval {{ loop.index }} end"{% endif %}></label>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </fieldset>
+    {% endfor %}
+  </div>
+{% endmacro %}
+
+{% block service_actions %}
+  <a class="service-button" href="{{ url_for('group_meetings.index') }}">Meetings</a>
+  <a class="service-button" href="{{ url_for('appointments.calendar') }}">My schedule &amp; blocks</a>
+{% endblock %}
+
+{% block service_content %}
+  {% if not campus_shell %}<p><a href="{{ url_for('group_meetings.index') }}">Back to meetings</a></p>{% endif %}
+  {% if error %}<p class="service-notice" role="alert">{{ error }}</p>{% endif %}
+  {% if saved == 'preferences' %}<p class="service-notice" role="status">Your preferences were saved.</p>{% endif %}
+  {% if saved == 'availability' %}<p class="service-notice" role="status">Your availability was saved.</p>{% endif %}
+  <p>All times use {{ zone }}. These settings apply to the synthetic meeting period from {{ first }} through {{ last }}.</p>
+  <div class="service-split">
+    <section class="panel" aria-labelledby="meeting-preferences">
+      <h2 id="meeting-preferences">Preferred schedule</h2>
+      <p>Preferred weekdays and hours improve the ranking of feasible times. Leave weekdays unchecked to give all days equal preference. If you select specific days, enter preferred hours on those days. Leave both times blank if you have no preferred hours for a day.</p>
+      {% set submitted = attempted if action == 'preferences' else none %}
+      {% set preferred_days = submitted.getlist('preferred_weekday') if submitted is not none else (soft.values.weekdays|map('string')|list if soft.values else []) %}
+      {% set gap = submitted.get('desired_gap', '') if submitted is not none else (soft.values.desired_gap if soft.values else 15) %}
+      {% set indifferent = '1' in submitted.getlist('gap_indifferent') if submitted is not none else gap == 'indifferent' %}
+      <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="preferences">
+        <input type="hidden" name="revision" value="{{ soft.revision }}">
+        {{ weekly_windows(soft_windows, submitted, preferred_days) }}
+        <label>Desired break in minutes <input type="number" name="desired_gap" min="0" max="1440" step="1" value="{{ gap if gap != 'indifferent' else '' }}" aria-describedby="desired-break-help"></label>
+        <label><input type="checkbox" name="gap_indifferent" value="1"{% if indifferent %} checked{% endif %}> Any break length works</label>
+        <p id="desired-break-help">Times closer to this break length may rank higher. This setting leaves meeting eligibility unchanged.</p>
+        <button class="button-primary" type="submit">Save preferences</button>
+      </form>
+    </section>
+    <section class="panel" aria-labelledby="meeting-availability">
+      <h2 id="meeting-availability">Meeting availability</h2>
+      <p>When you are a required participant, new proposals must use these hours. Leave both times blank to withhold availability on that day. Confirmed commitments, teaching and private calendar blocks still take priority.</p>
+      {% set submitted = attempted if action == 'availability' else none %}
+      <form method="post">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="availability">
+        <input type="hidden" name="revision" value="{{ hard.revision if hard else 0 }}">
+        <div class="appointment-grid">
+          <label>Valid from <input type="date" name="valid_from" min="{{ first }}" max="{{ last }}" required value="{{ submitted.get('valid_from', '') if submitted is not none else (hard.valid_from if hard else first) }}"></label>
+          <label>Valid through <input type="date" name="valid_until" min="{{ first }}" max="{{ last }}" required value="{{ submitted.get('valid_until', '') if submitted is not none else (hard.valid_until if hard else last) }}"></label>
+        </div>
+        {{ weekly_windows(hard_windows, submitted) }}
+        {% set allow = '1' in submitted.getlist('allow_relocation') if submitted is not none else (hard and hard.allow_relocation) %}
+        <label><input type="checkbox" name="allow_relocation" value="1"{% if allow %} checked{% endif %}> Consider relocating my eligible flexible meetings</label>
+        <p>Each proposed move still requires explicit consent from all required participants and a fresh conflict check. Protected commitments stay fixed.</p>
+        <button class="button-primary" type="submit">Save availability</button>
+      </form>
+    </section>
+  </div>
+{% endblock %}

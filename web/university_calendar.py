@@ -7,6 +7,7 @@ from sqlalchemy import and_, or_, select
 
 from .calendar_service import CalendarError, aware, expand_weekly, local_instant, university_zone
 from .equipment_access import custodian_faculties
+from .personal_schedule_service import group_meeting_entries
 from .persistence.models import (AcademicPeriod, Allocation, Appointment, AppointmentInvitation,
     AppointmentProfessor, BorrowItem, BorrowRequest, BusySlot, CalendarBlock, EquipmentReservation,
     EquipmentUnit, LegacyCalendarBinding, LoginAccount, RequestHistory,
@@ -168,6 +169,19 @@ class UniversityCalendarService:
                 add('appointment:'+str(row.id), 'appointment', row.purpose, row.start_at, row.end_at, row.status,
                     '/appointments/'+str(row.id), busy=mandatory and row.status == 'Confirmed', note=note,
                     state='rejected' if row.status != 'Cancelled' and not mandatory and invited[row.id] == 'Declined' else None)
+            for entry in group_meeting_entries(session, actor, start, end):
+                status, decision = entry['status'], entry['decision']
+                if entry['required']:
+                    note, state = f'Required participant. Your decision for revision {entry["revision"]} is {decision.lower()}.', None
+                else:
+                    note, state = f'Optional invitation ({decision.lower()}). Attendance is optional.', None
+                    if status not in {'Cancelled', 'Declined'} and decision == 'Declined':
+                        state = 'rejected'
+                    elif status == 'Confirmed' and decision == 'Invited':
+                        state = 'pending'
+                add(f'group-meeting:{entry["id"]}', 'appointment', entry['title'], entry['start'], entry['end'],
+                    status, f'/meetings/{entry["id"]}', busy=entry['busy'], note=note, state=state,
+                    location=entry['location'])
         if 'room' in categories:
             managed = [fid for fid, uid in valid_approvers(session).items() if uid == actor] if scope == 'relevant' else []
             invited_ids = select(RoomInvitation.request_id).where(RoomInvitation.user_id == actor)

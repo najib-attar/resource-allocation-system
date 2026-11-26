@@ -86,11 +86,11 @@ and [engine protocol](docs/engine-protocol.md).
 | --- | --- |
 | `src/` | C++ domain models, rules, strategies, services and JSON boundaries |
 | `web/` | Flask routes/services, Jinja templates, shared Campus Space assets and persistence |
-| `migrations/` | Alembic schema history through `0051e` |
+| `migrations/` | Alembic schema history through `0051f` |
 | `scripts/` | Backend build, trusted account provisioning, import and local demo tools |
 | `tests/` | C++, Python/PostgreSQL, security and real-browser regression tests |
 | `docs/` | Requirements, architecture, operations, portal coverage and historical reports |
-| `research/cdmcs/` | Isolated experimental scheduling research; not the live scheduler |
+| `research/cdmcs/` | Standalone scheduling research and the opt-in group meeting pilot guide |
 | `data/` | Offline CSV inputs for import/CLI demonstrations |
 
 ## Run locally
@@ -168,8 +168,7 @@ and authorized appointment cancellation are implemented. Weekly academic inputs
 need explicit date bindings for calendar use; enrollment and teaching assignments
 are not inferred from participant counts or course declarations.
 
-**CDMCS remains experimental and inactive in application scheduling.** Its synthetic
-comparisons, read-only projection boundary and research measurements are documented
-separately in the [research guide](research/cdmcs/README.md). Private preference and
-institutional cost-policy foundations do not activate an optimizer or establish
-calibrated university weights.
+**CDMCS runs in the opt-in synthetic group meeting pilot.** Ordinary appointment
+scheduling uses the existing solver. The synthetic weight selection remains
+provisional until human calibration. [Pilot guide](docs/research/cdmcs-rehearsal/README.md) ·
+[Research guide](research/cdmcs/README.md)

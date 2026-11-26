@@ -9,7 +9,8 @@ from sqlalchemy import or_, select
 
 from .persistence.models import (AcademicPeriod, Allocation, AppointmentCommitment, BusySlot,
                                  CalendarBlock, LegacyCalendarBinding, ProfessorAvailability,
-                                 ResourceRequest, RequestParticipant, RoomOrganizerCommitment)
+                                 ResourceRequest, RequestParticipant, RoomOrganizerCommitment,
+                                 GroupMeetingCommitment)
 from .persistence.repository import PersistenceError, state_row
 
 
@@ -140,8 +141,14 @@ def legacy_intervals(session, people, start, end, active_run_id=None, include_de
     return output, sorted(unresolved)
 
 
+def commitment_models(session):
+    models = (AppointmentCommitment, RoomOrganizerCommitment)
+    return (*models, GroupMeetingCommitment) if session.info.get("group_meeting_pilot") else models
+
+
 def calendar_snapshot(session, organizer_id, professor_ids, invited_ids, duration, start, end,
-                      action="recommend", proposed=None, preferred=None, exclude_appointment=None):
+                      action="recommend", proposed=None, preferred=None, exclude_appointment=None,
+                      exclude_group_meetings=(), linked_room_request=None):
     start, end = aware(start), aware(end)
     epoch(start)
     epoch(end)
@@ -157,10 +164,14 @@ def calendar_snapshot(session, organizer_id, professor_ids, invited_ids, duratio
                          expand_weekly(row.day, row.start_minutes, row.end_minutes, row.valid_from, row.valid_until,
                                        row.timezone, start, end, row.excluded_dates))
     busy, unresolved = legacy_intervals(session, people, start, end, state.active_run_id)
-    for model in (CalendarBlock, AppointmentCommitment, RoomOrganizerCommitment):
+    for model in (CalendarBlock, *commitment_models(session)):
         query = select(model).where(model.user_id.in_(people), model.start_at < end, model.end_at > start)
         if model is AppointmentCommitment and exclude_appointment is not None:
             query = query.where(model.appointment_id != exclude_appointment)
+        if model is GroupMeetingCommitment and exclude_group_meetings:
+            query = query.where(model.meeting_id.not_in(exclude_group_meetings))
+        if model is RoomOrganizerCommitment and linked_room_request is not None and session.info.get("group_meeting_pilot"):
+            query = query.where(or_(model.request_id != linked_room_request, model.user_id != organizer_id))
         busy.extend({"userId": row.user_id, "start": epoch(row.start_at), "end": epoch(row.end_at)}
                     for row in session.scalars(query))
     snapshot = {"protocolVersion": 1, "operation": "appointment", "runId": uuid.uuid4().hex,
@@ -179,8 +190,7 @@ def assert_commitments_compatible(session, intervals):
     for value in intervals:
         start = datetime.fromtimestamp(value["start"], timezone.utc)
         end = datetime.fromtimestamp(value["end"], timezone.utc)
-        for model in (AppointmentCommitment, RoomOrganizerCommitment):
-            key = model.appointment_id if model is AppointmentCommitment else model.request_id
-            if session.scalar(select(key).where(model.user_id == value["userId"], model.start_at < end,
+        for model in commitment_models(session):
+            if session.scalar(select(model.user_id).where(model.user_id == value["userId"], model.start_at < end,
                     model.end_at > start).limit(1)) is not None:
                 raise CalendarError("This calendar change conflicts with a confirmed appointment or room booking. Cancel or reschedule it first.")

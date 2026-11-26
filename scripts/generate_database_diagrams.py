@@ -72,7 +72,13 @@ PURPOSES = {
     "room_reservation": "Exact confirmed exclusive room interval; GiST overlap exclusion.",
     "room_organizer_commitment": "Confirmed organizing-student interval with cross-appointment conflict protection.",
     "room_event": "Private timestamped room request lifecycle and invitation history.",
-    "notification": "Recipient-scoped event inbox and durable read state; exactly one appointment/room/equipment/private-feedback history event.",
+    "group_meeting_availability": "Owner-published weekly hard availability for the synthetic meeting pilot, with date bounds, relocation opt-in and optimistic revision.",
+    "group_meeting": "Persistent synthetic pilot meeting with an accountable organizer, a dated revision, an optional approved room link and at most one move target.",
+    "group_meeting_participant": "One required host, required attendee or optional invitee identity per meeting with a current revision response.",
+    "group_meeting_commitment": "Exact interval reserved for each confirmed required participant. Optional invitees have no commitment row.",
+    "group_meeting_consent": "Explicit revision-scoped move decision by each required participant affected by the proposed replacement.",
+    "group_meeting_event": "Participant-scoped lifecycle, confirmation and relocation history for the pilot inbox.",
+    "notification": "Recipient-scoped event inbox and durable read state with exactly one appointment, room, equipment, feedback, eligibility or group meeting event.",
     "equipment_category": "Extensible named equipment categories, independent of room types.",
     "equipment_custodian": "One current designated equipment staff/administrator account per owning faculty.",
     "equipment_type": "Faculty-owned equipment catalog, exact specifications and configurable borrowing policy.",
@@ -83,11 +89,14 @@ PURPOSES = {
     "borrow_extension": "Explicit custodian decision on a proposed later due date for an active loan.",
     "equipment_event": "Actor/time/faculty-scoped inventory, configuration and borrowing lifecycle audit.",
 }
+GROUP_MEETING_TABLES = {"group_meeting", "group_meeting_availability", "group_meeting_participant",
+                        "group_meeting_commitment", "group_meeting_consent", "group_meeting_event"}
 MAIN_TABLES = {"role", "organization_unit", "university_user", "resource", "resource_request",
                "busy_slot", "allocation_run", "request_decision", "allocation", "application_state", "request_history"}
 MAIN_TABLES |= {"login_account", "academic_period", "legacy_calendar_binding", "appointment", "appointment_professor",
                 "appointment_invitation", "appointment_commitment", "professor_availability", "calendar_block"}
 MAIN_TABLES |= {"room_policy", "faculty_room_approver", "student_room_request", "room_reservation", "room_invitation", "room_organizer_commitment"}
+MAIN_TABLES |= GROUP_MEETING_TABLES
 MAIN_TABLES.add("notification")
 MAIN_TABLES.add("logged_out_session")
 MAIN_TABLES |= {"course_import", "course", "course_section", "teaching_assignment", "course_session", "enrollment"}
@@ -173,6 +182,11 @@ def catalog(tables):
         lines.append("")
     lines += ["## Confirmed appointment overlap protection", "",
               "Revision `0042a` uses PostgreSQL btree_gist and an exclusion constraint on `(user_id WITH =, period WITH &&)` in `appointment_commitment`. The generated timestamp range is `[start_at, end_at)`; adjacent reservations are allowed. Cancellation releases commitment rows while appointment/history records remain.", ""]
+    lines += ["## Group meeting pilot integrity", "",
+              "Revision `0051f` adds six tables and links group events to the existing private notification inbox.",
+              "The pilot serializes confirmation under the calendar lock. Deferred constraints require the current required approvals and exact participant commitment rows. A GiST exclusion forbids overlapping group meeting commitments for a person.",
+              "One active group meeting may link to a room request. The already approved room interval is reused. Deferred protection prevents the release of that room while its linked meeting is confirmed.",
+              "Downgrade requires an empty group meeting and hard-availability history. See the [pilot architecture and permission matrix](../research/cdmcs-rehearsal/group-meeting-architecture.md).", ""]
     lines += ["## alembic_version (infrastructure)", "", "Alembic's existing revision marker, not an additional application entity.", "",
               "| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |", "|---|---|---|---|---|",
               "| version_num | varchar(32) | PK | no | - |", "", "No foreign keys, additional indexes or cascading deletion.", ""]
@@ -190,6 +204,8 @@ def artifacts():
         raise RuntimeError("Update table purpose inventory before generating diagrams.")
     return {"database-er-physical.mmd": er_source(tables, True),
             "database-er-high-level.mmd": er_source([item for item in tables if item.name in MAIN_TABLES], False),
+            "group-meeting-er.mmd": er_source([item for item in tables if item.name in GROUP_MEETING_TABLES | {
+                'university_user', 'student_room_request', 'room_reservation', 'notification'}], False),
             "waiting-list-er.mmd": er_source([item for item in tables if item.name in {
                 'waiting_list_entry', 'student_room_request', 'borrow_request', 'university_user',
                 'login_account', 'organization_unit','reservation_priority_override'}], True),

@@ -76,7 +76,8 @@ def init_security(app, database_provider):
             return None
         if request.endpoint and request.endpoint.startswith("appointments."):
             return None
-        if request.endpoint == "cdmcs_rehearsal.index":
+        if request.endpoint == "cdmcs_rehearsal.index" or (request.endpoint and
+                request.endpoint.startswith(("group_meetings.", "group_meeting_preferences."))):
             return None
         if request.endpoint and request.endpoint.startswith("rooms."):
             return None
