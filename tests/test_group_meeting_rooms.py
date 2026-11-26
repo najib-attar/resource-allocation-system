@@ -194,6 +194,7 @@ class ScopedMeetingRoomIntegrationTests(RoomFixture):
             session.flush()
             session.add_all(GroupMeetingParticipant(meeting_id=meeting.id, user_id=person, side=side,
                 revision=1, decision="Approved") for person, side in ((2, "host"), (1, "guest")))
+            session.flush()
             session.add_all(GroupMeetingCommitment(meeting_id=meeting.id, user_id=person, start_at=START,
                 end_at=end) for person in (1, 2))
         day = START.date().isoformat()
