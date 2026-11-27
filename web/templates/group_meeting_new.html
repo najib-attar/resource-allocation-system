@@ -1,0 +1,104 @@
+{% extends 'service_base.html' %}
+{% from 'cdmcs_rehearsal.html' import participant_picker with context %}
+{% block title %}Find group meeting times | Campus Space{% endblock %}
+{% block page_heading %}Find group meeting times{% endblock %}
+{% block service_intro %}Search the fictional İTÜ calendars, then request an arrangement for approval.{% endblock %}
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='prototype.css') }}">{% endblock %}
+
+{% macro options(rows, heading, section_id, conditional, room, find_room=false) %}
+<section class="ui-card booking-section" aria-labelledby="{{ section_id }}">
+    <h2 id="{{ section_id }}">{{ heading }}</h2>
+    {% if conditional %}<p>Each option moves one online meeting after everyone affected approves its replacement time.</p>{% endif %}
+    {% if find_room %}<p>Request faculty approval for your room and time. Once approved, attach the booking to send the meeting for participant approval.</p>{% endif %}
+    {% if rows %}
+    <form method="post" action="{{ url_for('group_meetings.create') }}" class="booking-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <fieldset><legend>Select an arrangement</legend>
+        {% for item in rows %}
+        <label class="meeting-choice">
+            <input type="radio" name="ticket" value="{{ item.ticket }}" required>
+            <span class="meeting-choice-text">
+                <strong>{{ item.display }}</strong>
+                {% if item.candidate_room %}<span>{{ item.candidate_room.name }} · {{ item.candidate_room.building }} · {{ item.candidate_room.capacity }} seats</span>{% endif %}
+                {% if item.replacement %}<span>Replacement for the flexible meeting {{ item.replacement }}.</span>{% endif %}
+                <span>Required calendars fit. {{ item.coverage }}% preferred-time coverage across the group, {{ item.wait }} min after the first candidate, {{ '%+d'|format(item.gaps) }} calendar gaps, cost {{ item.cost }} units.</span>
+            </span>
+        </label>
+        {% endfor %}
+        </fieldset>
+        <label class="ui-field">Purpose <textarea name="purpose" maxlength="2000" rows="2" required></textarea></label>
+        {% if not room and not find_room %}
+        <label class="ui-field">HTTPS join link <input name="join_url" type="url" maxlength="512"></label>
+        {% if not conditional %}<label><input type="checkbox" name="flexible" value="yes"> This online meeting may be considered for a move after confirmation</label>{% endif %}
+        {% endif %}
+        <div class="booking-submit"><button class="ui-button ui-button--primary" type="submit">{{ 'Request room approval' if find_room else 'Request meeting' }}</button></div>
+    </form>
+    {% else %}
+    <p>No valid {{ 'relocation' if conditional else 'direct' }} option was found in this range.</p>
+    {% endif %}
+</section>
+{% endmacro %}
+
+{% block service_content %}
+<div class="portal-prototype booking-prototype">
+    <div class="booking-layout">
+        <div>
+            <form method="post" class="booking-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <fieldset class="ui-card booking-section">
+                    <legend>Participants</legend>
+                    <p>You are a required organizer. Co-hosts and required guests approve the same revision. Optional invitees respond separately.</p>
+                    <div class="participant-picker-grid">
+                        {{ participant_picker('requiredIds', 'Required guests', people, form.requiredIds, true) }}
+                        {{ participant_picker('cohostIds', 'Co-hosts', people, form.cohostIds, false) }}
+                        {{ participant_picker('optionalIds', 'Optional invitees', people, form.optionalIds, false) }}
+                    </div>
+                </fieldset>
+                <fieldset class="ui-card booking-section">
+                    <legend>When</legend>
+                    <div class="booking-fields-row">
+                        <label class="ui-field">First date <input name="fromDate" type="date" required min="{{ first }}" max="{{ last }}" value="{{ form.fromDate }}"></label>
+                        <label class="ui-field">Last date <input name="untilDate" type="date" required min="{{ first }}" max="{{ last }}" value="{{ form.untilDate }}"></label>
+                    </div>
+                    <div class="booking-fields-row">
+                        <label class="ui-field">Duration (minutes) <input name="duration" type="number" min="15" max="120" step="15" required value="{{ form.duration }}"></label>
+                        <label class="ui-field">Preferred start <input name="preferredStart" type="datetime-local" value="{{ form.preferredStart }}"></label>
+                    </div>
+                    <p>Times use {{ zone }}. Preferred start breaks ties among equal-cost, equal-burden options.</p>
+                </fieldset>
+                <fieldset class="ui-card booking-section">
+                    <legend>Where</legend>
+                    <label class="ui-field">Location
+                        <select name="roomId">
+                            <option value="">Online</option>
+                            <option value="find"{% if form.findRoom %} selected{% endif %}>Find a room</option>
+                            {% for room in rooms %}
+                            <option value="{{ room.request_id }}"{% if form.roomId|string == room.request_id|string %} selected{% endif %}>{{ room.name }} · {{ room.start|university_time }} ({{ room.attendee_count }} approved)</option>
+                            {% endfor %}
+                        </select>
+                    </label>
+                    <p>Faculty reviews new room requests. Approved bookings use their exact date and duration.</p>
+                    <fieldset><legend>Required room facilities</legend>
+                    {% for feature in ['projector', 'whiteboard', 'computers'] %}
+                    <label><input type="checkbox" name="features" value="{{ feature }}"{% if feature in form.features %} checked{% endif %}> {{ feature|capitalize }}</label>
+                    {% endfor %}
+                    </fieldset>
+                </fieldset>
+                <div class="booking-submit"><button class="ui-button ui-button--primary" type="submit">Find times</button></div>
+            </form>
+            {% if result %}
+            <p>Meeting shape {{ result.relationship }}</p>
+            {{ options(result.direct, 'Direct options', 'direct-options', false, result.room, form.findRoom) }}
+            {% if not result.room and not form.findRoom %}{{ options(result.moves, 'Options requiring one move', 'move-options', true, none) }}{% endif %}
+            {% endif %}
+        </div>
+        <aside class="booking-guide">
+            <div class="ui-card"><h2>Plan your availability</h2>
+                <p>Hard windows gate eligibility. Preferred hours and gaps only change rank. Already confirmed appointments and teaching remain protected.</p>
+                <p><a href="{{ url_for('group_meeting_preferences.index') }}">Scheduling preferences</a></p>
+                <p><a href="{{ url_for('group_meetings.index') }}">Your group meetings</a></p>
+            </div>
+        </aside>
+    </div>
+</div>
+{% endblock %}

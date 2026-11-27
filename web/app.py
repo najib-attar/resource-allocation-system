@@ -188,7 +188,10 @@ app.register_blueprint(create_administration_blueprint(lambda: get_repository().
 
 @app.before_request
 def pin_database_view():
-    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(("appointments.", "student.", "professor.", "eligibility.", "rooms.", "notifications.", "equipment.", "calendar.", "courses.", "waiting.", "feedback.", "administration.")):
+    workspace = ("appointments.", "student.", "professor.", "research_assistant.", "eligibility.", "rooms.",
+                 "notifications.", "equipment.", "calendar.", "courses.", "waiting.", "feedback.", "administration.",
+                 "cdmcs_rehearsal.", "group_meetings.", "group_meeting_preferences.", "group_meeting_reschedule.")
+    if request.method in {"GET", "HEAD"} and request.endpoint not in {"static", "login", "logout"} and not (request.endpoint or "").startswith(workspace):
         current_results()
 
 

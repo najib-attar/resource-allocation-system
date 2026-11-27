@@ -1,0 +1,83 @@
+{% extends 'service_base.html' %}
+{% block title %}Meeting details | Campus Space{% endblock %}
+{% block page_heading %}{{ meeting.purpose }}{% endblock %}
+{% block service_intro %}{{ meeting.status }} · Revision {{ meeting.revision }}{% endblock %}
+{% block service_actions %}<a class="button-secondary" href="{{ url_for('group_meetings.index') }}">Group meetings</a>{% endblock %}
+{% block service_content %}
+{% if not campus_shell %}
+<div class="service-actions"><p>{{ self.service_intro() }}</p>{{ self.service_actions() }}</div>
+{% endif %}
+<div class="appointment-grid">
+    <section class="panel" aria-labelledby="arrangement">
+        <h2 id="arrangement">Arrangement</h2>
+        <p>{{ meeting.start_at|university_time }} – {{ meeting.end_at|university_time }}</p>
+        <p>{{ meeting.location_mode|capitalize }}{% if meeting.room_request_id %} · Approved room booking #{{ meeting.room_request_id }}{% endif %}</p>
+        {% if room_name %}<p>{{ room_name }}</p>{% endif %}
+        {% if meeting.status == 'Confirmed' %}
+        <p><a href="{{ url_for('group_meeting_reschedule.detail', meeting_id=meeting.id) }}">Rescheduling and replacement approvals</a></p>
+        {% endif %}
+        {% if meeting.join_url and meeting.status == 'Confirmed' and (own.side != 'optional' or own.decision == 'Accepted') %}
+        <p><a href="{{ meeting.join_url }}" rel="noreferrer">Open the organizer's join link</a></p>
+        {% endif %}
+        {% if meeting.move_start_at %}
+            {% if relocation %}
+                <h3>Proposed relocation</h3>
+                <p>Current meeting <a href="{{ url_for('group_meetings.detail', meeting_id=relocation.id) }}">{{ relocation.purpose }}</a> · {{ relocation.start|university_time }} – {{ relocation.end|university_time }}</p>
+                <p>Replacement time {{ meeting.move_start_at|university_time }} – {{ relocation.replacement_end|university_time }}</p>
+                <p>{{ responses|selectattr('decision', 'equalto', 'Approved')|list|length }} of {{ responses|length }} affected people consented.</p>
+            {% elif consent %}
+                <p>The original meeting or its availability changed. Ask the organizer to search again, or refuse this relocation.</p>
+            {% elif affected and meeting.status == 'Confirmed' %}
+                <p>Relocation applied. Approved replacement start {{ meeting.move_start_at|university_time }}.</p>
+            {% else %}
+                <p>{% if meeting.status == 'Confirmed' %}A separate relocation was approved for this arrangement.{% else %}This arrangement includes a separate relocation decision.{% endif %}</p>
+            {% endif %}
+        {% endif %}
+        {% if active and (own.side == 'optional' or consent or (meeting.status == 'Pending Approval' and actor != meeting.organizer_id)) %}
+        <form method="post" action="{{ url_for('group_meetings.response', meeting_id=meeting.id) }}" class="service-actions">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="revision" value="{{ meeting.revision }}">
+            {% if own.side == 'optional' %}
+                {% if own.decision != 'Accepted' %}<button name="action" value="accept-invitation">Accept invitation</button>{% endif %}
+                {% if own.decision != 'Declined' %}<button name="action" value="decline-invitation">Decline invitation</button>{% endif %}
+            {% elif actor != meeting.organizer_id and meeting.status == 'Pending Approval' %}
+                {% if own.decision != 'Approved' %}<button name="action" value="approve" class="button-primary">Approve revision</button>{% endif %}
+                <button name="action" value="decline">Decline meeting</button>
+            {% endif %}
+            {% if consent %}
+                {% if relocation and consent.decision != 'Approved' %}<button name="action" value="consent">Consent to replacement</button>{% endif %}
+                <button name="action" value="refuse-move">Refuse relocation</button>
+            {% endif %}
+        </form>
+        {% endif %}
+        {% if active and own.side != 'optional' %}
+        <form method="post" action="{{ url_for('group_meetings.cancellation', meeting_id=meeting.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="revision" value="{{ meeting.revision }}">
+            <button class="service-danger">Cancel meeting</button>
+        </form>
+        {% endif %}
+        {% if active and actor == meeting.organizer_id and meeting.status == 'Pending Approval' and not meeting.room_request_id %}
+        <form method="post" action="{{ url_for('group_meetings.revision', meeting_id=meeting.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="revision" value="{{ meeting.revision }}">
+            <label class="ui-field">New start (university time) <input name="start" type="datetime-local" required></label>
+            <p>Changing the time clears prior responses and any relocation proposal.</p>
+            <button>Propose new time</button>
+        </form>
+        {% elif actor == meeting.organizer_id and meeting.status in ['Declined', 'Cancelled'] %}
+        <p><a href="{{ url_for('group_meetings.new', retry=meeting.id) }}">Find another arrangement</a></p>
+        {% endif %}
+    </section>
+    <section class="panel" aria-labelledby="attendance">
+        <h2 id="attendance">Participants and approvals</h2>
+        <ul>{% for person in members %}
+            <li>{{ roster[person.user_id].name if person.user_id in roster else 'Unavailable participant' }} ·
+                {{ 'Organizer' if person.user_id == meeting.organizer_id else 'Co-host' if person.side == 'host' else 'Required guest' if person.side == 'guest' else 'Optional invitee' }} ·
+                {{ person.decision }}</li>
+        {% endfor %}</ul>
+        <h3>Updates</h3>
+        <ol>{% for event in history %}<li>{{ event.message }} <time datetime="{{ event.created_at.isoformat() }}">{{ event.created_at|university_time }}</time></li>{% endfor %}</ol>
+    </section>
+</div>
+{% endblock %}

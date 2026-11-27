@@ -27,6 +27,9 @@
             <p>{{ display_name }}<small>{{ role_label }}</small></p>
             <a href="{{ url_for('calendar.index') }}">{{ icon('calendar', 17) }}My calendar</a>
             <a href="{{ url_for('appointments.calendar') }}">{{ icon('clock', 17) }}My schedule &amp; blocks</a>
+            {% if cdmcs_rehearsal_enabled %}
+            <a href="{{ url_for('cdmcs_rehearsal.index') }}"{% if request.endpoint == 'cdmcs_rehearsal.index' %} aria-current="page"{% endif %}>{{ icon('meeting', 17) }}Meeting rehearsal</a>
+            {% endif %}
             <form class="sign-out-form" method="post" action="{{ url_for('logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">{{ icon('logout', 17) }}Sign out</button></form>
         </div>
     </details>

@@ -65,6 +65,8 @@ erDiagram
         integer approved_revision "nullable"
         integer approved_by FK "nullable"
         text explanation
+        jsonb group_participant_ids "nullable"
+        varchar_64 group_submission_key UK "nullable"
         timestamptz created_at
     }
     university_user {

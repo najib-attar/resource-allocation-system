@@ -1,0 +1,19 @@
+configuration,preferred_rate,outside_window_rate,outside_day_rate,gap_weight,nearby_minutes,gap_rule,taper_minutes,delay_per_day,base_relocation_penalty,person_relocation_penalty,feasible_cases,waiting_minutes,preferred_coverage_percent,new_gaps_per_person,mean_max_personal_burden,peak_max_personal_burden,moved_cases,move_percent,decision,decision_reason
+default,1,2,4,1,120,cutoff,0,10,25,8,32,765.46875,37.421875,0.65078125,117.1875,210,15,46.875,ranked_lower,15 moves versus 10 for the selected configuration
+preferred_hour_free,0,2,4,1,120,cutoff,0,10,25,8,32,875.15625,44.6875,0.6640625,122.8125,210,16,50.0,ranked_lower,16 moves versus 10 for the selected configuration
+preferred_hour_double,2,2,4,1,120,cutoff,0,10,25,8,32,676.875,28.59375,0.63984375,120,210,13,40.625,excluded,coverage 28.59% is below 36.42%
+outside_hour_equal,1,1,4,1,120,cutoff,0,10,25,8,32,720.46875,28.203125,0.62421875,119.53125,210,13,40.625,excluded,coverage 28.20% is below 36.42%
+outside_hour_high,1,4,4,1,120,cutoff,0,10,25,8,32,884.53125,43.828125,0.67109375,132.1875,210,17,53.125,ranked_lower,17 moves versus 10 for the selected configuration
+nonpreferred_day_low,1,2,2,1,120,cutoff,0,10,25,8,32,866.71875,34.765625,0.62265625,127.03125,210,13,40.625,excluded,coverage 34.77% is below 36.42%
+nonpreferred_day_high,1,2,8,1,120,cutoff,0,10,25,8,32,764.53125,36.875,0.66640625,120.71875,240,16,50.0,excluded,peak burden 240 exceeds 210
+uniform_rates,1,1,1,1,120,cutoff,0,10,25,8,32,843.28125,22.8125,0.69140625,137.34375,210,11,34.375,excluded,coverage 22.81% is below 36.42%
+no_gap_weight,1,2,4,0,120,cutoff,0,10,25,8,32,647.8125,48.984375,0.53203125,136.875,225,4,12.5,excluded,peak burden 225 exceeds 210
+triple_gap_weight,1,2,4,3,120,cutoff,0,10,25,8,32,902.8125,28.515625,0.68515625,126.5625,210,16,50.0,excluded,coverage 28.52% is below 36.42%
+nearby_30,1,2,4,1,30,cutoff,0,10,25,8,32,827.34375,44.0625,0.7546875,149.78125,248,13,40.625,excluded,peak burden 248 exceeds 210
+nearby_240,1,2,4,1,240,cutoff,0,10,25,8,32,812.34375,40.46875,0.60234375,147.4375,240,11,34.375,excluded,peak burden 240 exceeds 210
+no_delay,1,2,4,1,120,cutoff,0,0,25,8,32,765.46875,37.421875,0.65078125,117.1875,210,15,46.875,ranked_lower,15 moves versus 10 for the selected configuration
+delay_40,1,2,4,1,120,cutoff,0,40,25,8,32,586.875,34.6875,0.69296875,120,240,13,40.625,excluded,peak burden 240 exceeds 210 and coverage 34.69% is below 36.42%
+no_relocation_penalty,1,2,4,1,120,cutoff,0,10,0,0,32,819.84375,36.171875,0.68515625,117.65625,210,18,56.25,excluded,coverage 36.17% is below 36.42%
+higher_fixed_move,1,2,4,1,120,cutoff,0,10,150,8,32,685.3125,36.71875,0.6046875,120.9375,240,4,12.5,excluded,peak burden 240 exceeds 210
+higher_personal_move,1,2,4,1,120,cutoff,0,10,25,50,32,675,37.109375,0.61015625,117.65625,210,10,31.25,selected,fewest moves among configurations meeting both thresholds
+tapered_nearby,1,2,4,1,120,tapered,30,10,25,8,32,813.28125,34.84375,0.60078125,117.1875,210,14,43.75,excluded,coverage 34.84% is below 36.42%

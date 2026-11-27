@@ -1,10 +1,21 @@
 # PostgreSQL setup and safe operations
 
-## Current schema (0051e)
+## Current schema (0051f)
+
+Revision `0051f` adds six empty group meeting tables and a nullable
+group-event reference to the shared Inbox. It preserves the existing
+appointment, resource, credential and notification records. The group
+meeting routes and native optimizer are registered only by the owned
+synthetic pilot launcher. Downgrade to `0051e` is supported when pilot
+tables are empty. Stored group meetings or availability prevent downgrade
+to preserve decisions and published availability.
+[Pilot guide](research/cdmcs-rehearsal/README.md)
+
+## Academic course catalogue (0051e)
 
 Revision `0051e` adds six tables for the course catalogue, sections, public
 teaching assignments, weekly meetings, private enrolments and import provenance.
-There are 69 application tables plus Alembic's revision marker. The schema
+This revision had 69 application tables plus Alembic's revision marker. The schema
 upgrade starts with empty course tables. The trusted local İTÜ demo importer
 populates them separately. Apply the migration using the existing backup and
 worker restart procedure. The downgrade to `0051d` is supported while the six

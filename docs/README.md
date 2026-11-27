@@ -3,7 +3,7 @@
 The Student Portal and Professor Services are implemented in `main`. Student
 [PR #24](https://github.com/najib-attar/resource-allocation-system/pull/24) and
 Professor [PR #25](https://github.com/najib-attar/resource-allocation-system/pull/25)
-record their integration. The application migration head is **0051e**.
+record their integration. The application migration head is **0051f**.
 
 ## Start here
 
@@ -24,6 +24,7 @@ record their integration. The application migration head is **0051e**.
 | Professor Services and Portal | [Professor guide](professor-services/README.md), [approved contracts](srs/professor-workflows.md), [shared UI architecture](professor-services/frontend-plan.md) | [Backend/control traceability](professor-services/traceability.md), [screen coverage](professor-services/screen-coverage.md) |
 | Research Assistant workspace | [Demo walkthrough](demo-walkthrough.md#research-assistant-workspace) | Private task planner, personal schedule and Inbox |
 | Student–professor appointments | [Requirements](srs/UC-STU-01-requirements.md), [design](architecture/appointments-design.md) | [Student acceptance record](ui/student-portal/acceptance-report.md), [Professor acceptance record](professor-services/acceptance-report.md) |
+| Opt-in synthetic group meetings | [Pilot guide](research/cdmcs-rehearsal/README.md), [architecture and role matrix](research/cdmcs-rehearsal/group-meeting-architecture.md) | [Weight report](research/cdmcs-rehearsal/weight-analysis.md), [database diagram](architecture/group-meeting-er.mmd) |
 | Student room requests | [Requirements](srs/UC-STU-02-requirements.md), [design](architecture/student-room-design.md) | Student portal feature/control matrices above |
 | Equipment borrowing | [User guide](equipment-borrowing-guide.md), [requirements](srs/UC-STU-03-requirements.md), [design](architecture/equipment-borrowing-design.md) | Student portal feature/control matrices above |
 | Waiting lists | [Requirements](srs/UC-STU-05-requirements.md), [design](architecture/waiting-lists-design.md) | [Acceptance cases](testing/waiting-list-test-cases.md) |

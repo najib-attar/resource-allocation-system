@@ -1,6 +1,6 @@
 # Physical schema catalog
 
-Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 69 application tables.
+Generated from SQLAlchemy metadata. `alembic_version` is migration infrastructure, not one of the 77 application tables.
 
 Foreign keys use PostgreSQL **NO ACTION** unless explicitly marked RESTRICT; no implicit cascading deletion. Nullable columns are explicitly listed; all others are NOT NULL.
 ORM Python defaults are not server defaults. SQL import/admin tools must supply required values unless an identity/server default is listed.
@@ -655,6 +655,189 @@ Private actor/time/status history, staff responses and idempotent actions; exist
 - Index: `ix_feedback_event_actor_id (actor_id)`.
 - Index: `ix_feedback_event_report_id (report_id)`.
 
+## group_meeting
+
+Persistent synthetic pilot meeting with an accountable organizer, a dated revision, an optional approved room link and at most one move target.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| organizer_id | integer | FK -> university_user.id | no | - |
+| purpose | text | - | no | - |
+| start_at | timestamp with time zone | - | no | - |
+| end_at | timestamp with time zone | - | no | - |
+| revision | integer | - | no | ORM: 1 |
+| status | varchar(30) | - | no | ORM: Pending Approval |
+| location_mode | varchar(10) | - | no | - |
+| join_url | varchar(512) | - | yes | - |
+| room_request_id | bigint | FK -> student_room_request.id | yes | - |
+| required_features | jsonb | - | no | ORM callable |
+| flexible | boolean | - | no | ORM: False |
+| move_target_id | bigint | FK -> group_meeting.id | yes | - |
+| move_target_revision | integer | - | yes | - |
+| move_start_at | timestamp with time zone | - | yes | - |
+| submission_key | varchar(64) | - | yes | - |
+| created_at | timestamp with time zone | - | no | now() |
+
+- Primary key: `id`.
+- Foreign key: `(move_target_id) -> group_meeting (id)`; NO ACTION.
+- Foreign key: `(organizer_id) -> university_user (id)`; NO ACTION.
+- Foreign key: `(room_request_id) -> student_room_request (id)`; NO ACTION.
+- Check: `(location_mode = 'online' AND room_request_id IS NULL) OR (location_mode = 'physical' AND room_request_id IS NOT NULL AND NOT flexible)`.
+- Check: `jsonb_typeof(required_features) = 'array' AND '["projector","whiteboard","computers"]'::jsonb @> required_features`.
+- Check: `num_nonnulls(move_target_id, move_target_revision, move_start_at) IN (0, 3) AND (move_target_id IS NULL OR (move_target_id <> id AND location_mode = 'online' AND move_target_revision > 0))`.
+- Check: `revision > 0 AND end_at > start_at AND end_at - start_at <= interval '120 minutes'`.
+- Check: `status IN ('Pending Approval','Confirmed','Declined','Cancelled')`.
+- Unique: `submission_key`.
+- Index: `ix_group_meeting_move_target_id (move_target_id)`.
+- Index: `ix_group_meeting_organizer_id (organizer_id)`.
+- Index: `uq_group_meeting_active_room (room_request_id)`.
+
+## group_meeting_availability
+
+Owner-published weekly hard availability for the synthetic meeting pilot, with date bounds, relocation opt-in and optimistic revision.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| owner_id | integer | PK; FK -> university_user.id | no | - |
+| revision | integer | - | no | - |
+| valid_from | date | - | no | - |
+| valid_until | date | - | no | - |
+| windows | jsonb | - | no | - |
+| allow_relocation | boolean | - | no | ORM: False |
+
+- Primary key: `owner_id`.
+- Foreign key: `(owner_id) -> university_user (id)`; NO ACTION.
+- Check: `jsonb_typeof(windows) = 'array' AND jsonb_array_length(windows) <= 28`.
+- Check: `revision > 0 AND valid_from <= valid_until`.
+
+## group_meeting_commitment
+
+Exact interval reserved for each confirmed required participant. Optional invitees have no commitment row.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| meeting_id | bigint | PK; FK -> group_meeting_participant.meeting_id | no | - |
+| user_id | integer | PK; FK -> group_meeting_participant.user_id | no | - |
+| start_at | timestamp with time zone | - | no | - |
+| end_at | timestamp with time zone | - | no | - |
+| period | tstzrange | - | no | computed: tstzrange(start_at, end_at, '[)') |
+
+- Primary key: `meeting_id, user_id`.
+- Foreign key: `(meeting_id, user_id) -> group_meeting_participant (meeting_id, user_id)`; NO ACTION.
+- Check: `start_at < end_at`.
+- Index: `ix_group_meeting_commitment_user_id (user_id)`.
+
+## group_meeting_consent
+
+Explicit revision-scoped move decision by each required participant affected by the proposed replacement.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| meeting_id | bigint | PK; FK -> group_meeting.id | no | - |
+| user_id | integer | PK; FK -> university_user.id | no | - |
+| revision | integer | - | no | - |
+| decision | varchar(10) | - | no | - |
+
+- Primary key: `meeting_id, user_id`.
+- Foreign key: `(meeting_id) -> group_meeting (id)`; NO ACTION.
+- Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
+- Check: `decision IN ('Pending','Approved','Declined')`.
+- Check: `revision > 0`.
+- Index: `ix_group_meeting_consent_user_id (user_id)`.
+
+## group_meeting_event
+
+Participant-scoped lifecycle, confirmation and relocation history for the pilot inbox.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| meeting_id | bigint | FK -> group_meeting.id | no | - |
+| actor_id | integer | FK -> university_user.id | no | - |
+| revision | integer | - | no | - |
+| message | text | - | no | - |
+| created_at | timestamp with time zone | - | no | now() |
+
+- Primary key: `id`.
+- Foreign key: `(actor_id) -> university_user (id)`; NO ACTION.
+- Foreign key: `(meeting_id) -> group_meeting (id)`; NO ACTION.
+- Check: `revision > 0`.
+- Index: `ix_group_meeting_event_actor_id (actor_id)`.
+- Index: `ix_group_meeting_event_meeting_id (meeting_id)`.
+
+## group_meeting_participant
+
+One required host, required attendee or optional invitee identity per meeting with a current revision response.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| meeting_id | bigint | PK; FK -> group_meeting.id | no | - |
+| user_id | integer | PK; FK -> university_user.id | no | - |
+| revision | integer | - | no | - |
+| side | varchar(10) | - | no | - |
+| decision | varchar(10) | - | no | - |
+
+- Primary key: `meeting_id, user_id`.
+- Foreign key: `(meeting_id) -> group_meeting (id)`; NO ACTION.
+- Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
+- Check: `((side = 'host' OR side = 'guest') AND decision IN ('Pending', 'Approved', 'Declined')) OR (side = 'optional' AND decision IN ('Invited', 'Accepted', 'Declined'))`.
+- Check: `revision > 0`.
+- Index: `ix_group_meeting_participant_user_id (user_id)`.
+
+## group_meeting_reschedule
+
+A replacement proposal for a confirmed meeting, recording its source revision and original arrangement.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| id | bigint | PK | no | identity |
+| meeting_id | bigint | FK -> group_meeting.id | no | - |
+| source_revision | integer | - | no | - |
+| original_start_at | timestamp with time zone | - | no | - |
+| original_end_at | timestamp with time zone | - | no | - |
+| original_room_request_id | bigint | FK -> student_room_request.id | yes | - |
+| start_at | timestamp with time zone | - | no | - |
+| end_at | timestamp with time zone | - | no | - |
+| room_request_id | bigint | FK -> student_room_request.id | yes | - |
+| status | varchar(20) | - | no | - |
+| submission_key | varchar(64) | - | yes | - |
+| created_at | timestamp with time zone | - | no | now() |
+| resolved_at | timestamp with time zone | - | yes | - |
+
+- Primary key: `id`.
+- Foreign key: `(meeting_id) -> group_meeting (id)`; NO ACTION.
+- Foreign key: `(original_room_request_id) -> student_room_request (id)`; NO ACTION.
+- Foreign key: `(room_request_id) -> student_room_request (id)`; NO ACTION.
+- Check: `(original_room_request_id IS NULL) = (room_request_id IS NULL)`.
+- Check: `(status = 'Pending Approval') = (resolved_at IS NULL)`.
+- Check: `source_revision > 0 AND original_start_at < original_end_at AND start_at <> original_start_at AND end_at - start_at = original_end_at - original_start_at`.
+- Check: `status IN ('Pending Approval','Applied','Declined','Withdrawn','Superseded')`.
+- Unique: `submission_key`.
+- Index: `ix_group_meeting_reschedule_meeting_id (meeting_id)`.
+- Index: `ix_group_meeting_reschedule_original_room_request_id (original_room_request_id)`.
+- Index: `ix_group_meeting_reschedule_room_request_id (room_request_id)`.
+- Index: `uq_group_reschedule_applied (meeting_id, source_revision)`.
+- Index: `uq_group_reschedule_pending (meeting_id)`.
+
+## group_meeting_reschedule_decision
+
+A required participant's decision on one confirmed meeting replacement proposal.
+
+| Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
+|---|---|---|---|---|
+| proposal_id | bigint | PK; FK -> group_meeting_reschedule.id | no | - |
+| user_id | integer | PK; FK -> university_user.id | no | - |
+| decision | varchar(10) | - | no | - |
+| decided_at | timestamp with time zone | - | yes | - |
+
+- Primary key: `proposal_id, user_id`.
+- Foreign key: `(proposal_id) -> group_meeting_reschedule (id)`; NO ACTION.
+- Foreign key: `(user_id) -> university_user (id)`; NO ACTION.
+- Check: `(decision = 'Pending') = (decided_at IS NULL)`.
+- Check: `decision IN ('Pending','Approved','Declined')`.
+- Index: `ix_group_meeting_reschedule_decision_user_id (user_id)`.
+
 ## legacy_calendar_binding
 
 Explicit period/planning-week association for an undated busy slot or request.
@@ -744,7 +927,7 @@ Ranked structured time/resource alternatives returned by C++.
 
 ## notification
 
-Recipient-scoped event inbox and durable read state; exactly one appointment/room/equipment/private-feedback history event.
+Recipient-scoped event inbox and durable read state with exactly one appointment, room, equipment, feedback, eligibility or group meeting event.
 
 | Column | PostgreSQL Type | Keys | Nullable | Generated / Default |
 |---|---|---|---|---|
@@ -755,6 +938,7 @@ Recipient-scoped event inbox and durable read state; exactly one appointment/roo
 | equipment_event_id | bigint | FK -> equipment_event.id | yes | - |
 | feedback_event_id | bigint | FK -> feedback_event.id | yes | - |
 | eligibility_event_id | bigint | FK -> eligibility_event.id | yes | - |
+| group_meeting_event_id | bigint | FK -> group_meeting_event.id | yes | - |
 | read_at | timestamp with time zone | - | yes | - |
 
 - Primary key: `id`.
@@ -762,18 +946,21 @@ Recipient-scoped event inbox and durable read state; exactly one appointment/roo
 - Foreign key: `(eligibility_event_id) -> eligibility_event (id)`; NO ACTION.
 - Foreign key: `(equipment_event_id) -> equipment_event (id)`; NO ACTION.
 - Foreign key: `(feedback_event_id) -> feedback_event (id)`; NO ACTION.
+- Foreign key: `(group_meeting_event_id) -> group_meeting_event (id)`; NO ACTION.
 - Foreign key: `(recipient_id) -> university_user (id)`; NO ACTION.
 - Foreign key: `(room_event_id) -> room_event (id)`; NO ACTION.
-- Check: `num_nonnulls(appointment_event_id, room_event_id, equipment_event_id, feedback_event_id, eligibility_event_id) = 1`.
+- Check: `num_nonnulls(appointment_event_id, room_event_id, equipment_event_id, feedback_event_id, eligibility_event_id, group_meeting_event_id) = 1`.
 - Unique: `recipient_id, appointment_event_id`.
 - Unique: `recipient_id, eligibility_event_id`.
 - Unique: `recipient_id, equipment_event_id`.
 - Unique: `recipient_id, feedback_event_id`.
+- Unique: `recipient_id, group_meeting_event_id`.
 - Unique: `recipient_id, room_event_id`.
 - Index: `ix_notification_appointment_event_id (appointment_event_id)`.
 - Index: `ix_notification_eligibility_event_id (eligibility_event_id)`.
 - Index: `ix_notification_equipment_event_id (equipment_event_id)`.
 - Index: `ix_notification_feedback_event_id (feedback_event_id)`.
+- Index: `ix_notification_group_meeting_event_id (group_meeting_event_id)`.
 - Index: `ix_notification_recipient_read_id (recipient_id, read_at, id)`.
 - Index: `ix_notification_room_event_id (room_event_id)`.
 
@@ -1464,6 +1651,8 @@ Student needs, selected verified room, faculty approval, dated interval and revi
 | approved_revision | integer | - | yes | - |
 | approved_by | integer | FK -> login_account.user_id | yes | - |
 | explanation | text | - | no | ORM:  |
+| group_participant_ids | jsonb | - | yes | - |
+| group_submission_key | varchar(64) | - | yes | - |
 | created_at | timestamp with time zone | - | no | now() |
 
 - Primary key: `id`.
@@ -1479,6 +1668,7 @@ Student needs, selected verified room, faculty approval, dated interval and revi
 - Check: `revision > 0 AND attendee_count > 0 AND duration_minutes BETWEEN 1 AND 1440 AND start_at < end_at`.
 - Check: `status <> 'Confirmed' OR (approved_revision IS NOT NULL AND approved_revision = revision AND approved_by IS NOT NULL AND approved_by = approver_id)`.
 - Check: `status IN ('Pending Faculty Approval','Needs Revision','Rejected','Confirmed','Cancelled')`.
+- Unique: `group_submission_key`.
 - Index: `ix_student_room_approver_status (approver_id, status)`.
 - Index: `ix_student_room_organizer_start (organizer_id, start_at)`.
 - Index: `ix_student_room_request_approved_by (approved_by)`.
@@ -1613,6 +1803,14 @@ Shared consent, responsible-staff preapproval, contextual FCFS identity and noti
 ## Confirmed appointment overlap protection
 
 Revision `0042a` uses PostgreSQL btree_gist and an exclusion constraint on `(user_id WITH =, period WITH &&)` in `appointment_commitment`. The generated timestamp range is `[start_at, end_at)`; adjacent reservations are allowed. Cancellation releases commitment rows while appointment/history records remain.
+
+## Group meeting pilot integrity
+
+Revision `0051f` adds six tables and links group events to the existing private notification inbox.
+The pilot serializes confirmation under the calendar lock. Deferred constraints require the current required approvals and exact participant commitment rows. A GiST exclusion forbids overlapping group meeting commitments for a person.
+One active group meeting may link to a room request. The already approved room interval is reused. Deferred protection prevents the release of that room while its linked meeting is confirmed.
+Revision `0051g` retains confirmed meeting replacement proposals and required decisions. Revision `0051h` adds scoped group room requests to the existing faculty approval lifecycle.
+Downgrade requires an empty group meeting and hard-availability history. See the [pilot architecture and permission matrix](../research/cdmcs-rehearsal/group-meeting-architecture.md).
 
 ## alembic_version (infrastructure)
 

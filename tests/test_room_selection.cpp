@@ -99,6 +99,24 @@ TEST_CASE("Room protocol never substitutes another room for a stale selection") 
     auto result=execute(in); CHECK(!result["feasible"].get<bool>()); CHECK(result["candidates"].empty());
     CHECK(result["alternatives"].empty());
 }
+TEST_CASE("Group meeting room validation uses truthful roles only in its narrow scope") {
+    auto in=document();
+    in["action"]="validate";
+    in["selectedRoomId"]=101;
+    in["category"]="meeting";
+    in["attendeeCount"]=3;
+    in["groupMeeting"]=true;
+    for(const std::string role : {"Student", "Instructor", "Research Assistant", "Staff", "Administrator"}) {
+        in["organizerRole"]=role;
+        CHECK(execute(in)["feasible"].get<bool>());
+    }
+    auto narrow=in; narrow.erase("groupMeeting"); execute(narrow,2);
+    narrow=in; narrow["groupMeeting"]="true"; execute(narrow,2);
+    narrow=in; narrow["category"]="lecture"; execute(narrow,2);
+    narrow=in; narrow["action"]="recommend"; execute(narrow,2);
+    narrow=in; narrow["organizerRole"]="TeachingAssistant"; execute(narrow,2);
+    narrow=in; narrow["attendeeCount"]=9; execute(narrow,2);
+}
 TEST_CASE("Room protocol offers only feasible alternative times after a conflict") {
     auto in=document(); in["rooms"][0]["busy"]={{{"start",1800000000},{"end",1800003600}}};
     auto result=execute(in); CHECK(!result["feasible"].get<bool>());

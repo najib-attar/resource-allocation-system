@@ -1,7 +1,7 @@
 """Authenticated notification presentation; identity always comes from the session."""
 
 from flask import Blueprint, g, jsonify, redirect, render_template, request, url_for
-from .notification_service import INBOX_KINDS, INBOX_READ_STATES, NotificationService
+from .notification_service import INBOX_READ_STATES, NotificationService
 
 
 def add_notification_urls(inbox):
@@ -11,6 +11,7 @@ def add_notification_urls(inbox):
         'equipment': ('equipment.detail', 'request_id'),
         'feedback': ('feedback.detail', 'report_id'),
         'eligibility': ('professor.page', 'request_id'),
+        'group_meeting': ('group_meetings.detail', 'meeting_id'),
     }
     for item in inbox['items']:
         endpoint, parameter = destinations[item['kind']]
@@ -48,7 +49,7 @@ def create_notification_blueprint(database_provider):
         service = NotificationService(database_provider())
         result = add_notification_urls(service.inbox_page(g.principal.user_id,
             kind=request.args.get('kind', 'all'), read_state=request.args.get('state', 'all'), before=before))
-        return render_template('notifications.html', inbox=result, kinds=INBOX_KINDS,
+        return render_template('notifications.html', inbox=result, kinds=result['kinds'],
             read_states=INBOX_READ_STATES), 200, {'Cache-Control': 'no-store'}
 
     @blueprint.get('/feed')

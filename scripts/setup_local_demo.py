@@ -127,7 +127,7 @@ def write_settings(path, settings):
         temporary.unlink(missing_ok=True)
 
 
-def prepare_settings(path, seed=None, start=None, end=None, port=None, dataset=None):
+def prepare_settings(path, seed=None, start=None, end=None, port=None, dataset=None, *, allow_create=True):
     if path.exists():
         settings = json.loads(path.read_text(encoding="utf-8"))
         if not isinstance(settings, dict) or settings.get("kind") != "university-local-demo" or settings.get("version") != 1:
@@ -147,6 +147,8 @@ def prepare_settings(path, seed=None, start=None, end=None, port=None, dataset=N
             if value is not None and settings[key] != value:
                 raise ValueError("Saved demo settings differ. Reuse them or choose a new -Profile; existing data is never reset.")
         return settings
+    if not allow_create:
+        raise ValueError("This profile has no existing settings file.")
     dataset = dataset or "fictional"
     if dataset not in {"itu", "fictional"}:
         raise ValueError("Choose a supported demonstration dataset.")

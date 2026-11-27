@@ -6,6 +6,7 @@
 {% block service_intro %}Welcome, {{ home.name|person_name }}. {{ home.schedule.today.strftime('%A, %d %B %Y') }}.{% endblock %}
 {% block service_actions %}
 <a class="service-button" href="{{ url_for('research_assistant.tasks') }}">My research tasks</a>
+{% if group_meetings_enabled %}<a class="service-button" href="{{ url_for('group_meetings.index') }}">Group meetings</a>{% endif %}
 {% endblock %}
 {% block service_content %}
 <div class="service-split">

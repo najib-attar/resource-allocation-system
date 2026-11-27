@@ -3,8 +3,8 @@
 import uuid
 from sqlalchemy import select
 
-from .calendar_service import CalendarError, epoch, expand_weekly, legacy_intervals
-from .persistence.models import (AcademicPeriod, Allocation, AppointmentCommitment, CalendarBlock,
+from .calendar_service import COMMITMENT_MODELS, CalendarError, epoch, expand_weekly, legacy_intervals
+from .persistence.models import (AcademicPeriod, Allocation, CalendarBlock,
     FacultyRoomApprover, LegacyCalendarBinding, LoginAccount, Resource,
     RoomAccess, RoomClosure, RoomOrganizerCommitment, RoomPolicy, RoomReservation, Role, User)
 from .persistence.repository import state_row
@@ -44,7 +44,7 @@ def academic_room_intervals(session, room_ids, start, end, run_id):
 def person_busy(session, actor, start, end, active_run, exclude_request=None):
     intervals, unresolved = legacy_intervals(session, [actor], start, end, active_run)
     values = [{'start': row['start'], 'end': row['end']} for row in intervals]
-    for model in (CalendarBlock, AppointmentCommitment, RoomOrganizerCommitment):
+    for model in (CalendarBlock, *COMMITMENT_MODELS):
         query = select(model).where(model.user_id == actor, model.start_at < end, model.end_at > start)
         if model is RoomOrganizerCommitment and exclude_request is not None:
             query = query.where(model.request_id != exclude_request)
@@ -66,10 +66,13 @@ def room_usage_intervals(session, room_ids, start, end, active_run_id, exclude_r
 
 
 def room_snapshot(session, actor, role, values, horizon, strategy='best_fit', selected=None,
-                  action='recommend', exclude_request=None):
+                  action='recommend', exclude_request=None, *, candidate_ids=None):
     state = state_row(session)
     start, end = horizon
-    rooms = list(session.scalars(select(Resource).order_by(Resource.source_order, Resource.id)))
+    room_query = select(Resource).order_by(Resource.source_order, Resource.id)
+    if candidate_ids is not None:
+        room_query = room_query.where(Resource.id.in_(candidate_ids))
+    rooms = list(session.scalars(room_query))
     policies = {row.resource_id: row for row in session.scalars(select(RoomPolicy))}
     approvers = valid_approvers(session)
     whitelist = {}

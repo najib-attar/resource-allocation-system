@@ -1,8 +1,26 @@
 # PostgreSQL application persistence and dated calendars
 
+## Generalized meeting pilot (0051f)
+
+The schema now has **75 application tables** plus Alembic. Six additive tables
+store group meetings, participant responses, confirmed commitments,
+revision-scoped move consent, history, and separately published hard
+availability. The existing recipient-scoped inbox includes group meeting
+events in its source constraint.
+
+One approved student room request may supply an exact interval to an active
+physical meeting. The room remains under the existing faculty-approved
+reservation lifecycle. Group confirmation and room cancellation use the
+shared dated calendar lock. Group commitments release on cancellation
+while their history remains auditable.
+
+The opt-in synthetic launcher enables the pilot. See the [architecture
+and permission matrix](../research/cdmcs-rehearsal/group-meeting-architecture.md)
+and [focused Mermaid ER source](group-meeting-er.mmd).
+
 ## Academic course catalogue (0051e)
 
-The current schema has **69 application tables** plus Alembic. `course`
+That revision brought the schema to **69 application tables** plus Alembic. `course`
 identifies an offering by course code. A `course_section` has one CRN per
 `academic_period` and retains its published title, quota and source metadata.
 `teaching_assignment` preserves every named instructor in publication order
@@ -131,7 +149,7 @@ persistence.
 ![High-level ER diagram](database-er-high-level.svg)
 
 - [High-level Mermaid source](database-er-high-level.mmd): principal entities, using only actual foreign-key relationships.
-- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd) cover all 69 application tables, Alembic's infrastructure table, and their columns and relationships.
+- [Complete physical ER diagram](database-er-physical.svg) and [Mermaid source](database-er-physical.mmd) cover all 75 application tables, Alembic's infrastructure table, and their columns and relationships.
 - [Physical schema catalog](database-schema-catalog.md): every column's type/nullability/default, composite keys, unique/check constraints, indexes and deletion policy.
 
 `alembic_version` is Alembic's migration infrastructure. The diagram sources

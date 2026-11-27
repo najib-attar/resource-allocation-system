@@ -3,7 +3,7 @@
 from datetime import date, datetime
 from uuid import UUID
 
-from sqlalchemy import BigInteger, Boolean, CheckConstraint, Computed, Date, DateTime, ForeignKey, ForeignKeyConstraint, Identity, Index, Integer, String, Text, UniqueConstraint, Uuid, func
+from sqlalchemy import BigInteger, Boolean, CheckConstraint, Computed, Date, DateTime, ForeignKey, ForeignKeyConstraint, Identity, Index, Integer, String, Text, UniqueConstraint, Uuid, func, text
 from sqlalchemy.dialects.postgresql import ExcludeConstraint, JSONB, TSTZRANGE
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
@@ -741,6 +741,8 @@ class StudentRoomRequest(Base):
     approved_revision: Mapped[int | None] = mapped_column(Integer)
     approved_by: Mapped[int | None] = mapped_column(ForeignKey("login_account.user_id"), index=True)
     explanation: Mapped[str] = mapped_column(Text, default="")
+    group_participant_ids: Mapped[list | None] = mapped_column(JSONB(none_as_null=True))
+    group_submission_key: Mapped[str | None] = mapped_column(String(64), unique=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
@@ -786,15 +788,151 @@ class RoomEvent(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
 
+class GroupMeetingAvailability(Base):
+    __tablename__ = "group_meeting_availability"
+    __table_args__ = (
+        CheckConstraint("revision > 0 AND valid_from <= valid_until"),
+        CheckConstraint("jsonb_typeof(windows) = 'array' AND jsonb_array_length(windows) <= 28"),
+    )
+    owner_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True)
+    revision: Mapped[int] = mapped_column(Integer)
+    valid_from: Mapped[date] = mapped_column(Date)
+    valid_until: Mapped[date] = mapped_column(Date)
+    windows: Mapped[list] = mapped_column(JSONB)
+    allow_relocation: Mapped[bool] = mapped_column(Boolean, default=False)
+
+
+class GroupMeeting(Base):
+    __tablename__ = "group_meeting"
+    __table_args__ = (
+        CheckConstraint(allowed("status", ("Pending Approval", "Confirmed", "Declined", "Cancelled"))),
+        CheckConstraint("revision > 0 AND end_at > start_at AND end_at - start_at <= interval '120 minutes'"),
+        CheckConstraint("(location_mode = 'online' AND room_request_id IS NULL) OR "
+                        "(location_mode = 'physical' AND room_request_id IS NOT NULL AND NOT flexible)"),
+        CheckConstraint("jsonb_typeof(required_features) = 'array' AND "
+                        "'[\"projector\",\"whiteboard\",\"computers\"]'::jsonb @> required_features"),
+        CheckConstraint("num_nonnulls(move_target_id, move_target_revision, move_start_at) IN (0, 3) AND "
+                        "(move_target_id IS NULL OR (move_target_id <> id AND location_mode = 'online' AND move_target_revision > 0))"),
+        Index("uq_group_meeting_active_room", "room_request_id", unique=True,
+              postgresql_where=text("room_request_id IS NOT NULL AND status IN ('Pending Approval', 'Confirmed')")),
+    )
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    organizer_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), index=True)
+    purpose: Mapped[str] = mapped_column(Text)
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    revision: Mapped[int] = mapped_column(Integer, default=1)
+    status: Mapped[str] = mapped_column(String(30), default="Pending Approval")
+    location_mode: Mapped[str] = mapped_column(String(10))
+    join_url: Mapped[str | None] = mapped_column(String(512))
+    room_request_id: Mapped[int | None] = mapped_column(ForeignKey("student_room_request.id"))
+    required_features: Mapped[list] = mapped_column(JSONB, default=list)
+    flexible: Mapped[bool] = mapped_column(Boolean, default=False)
+    move_target_id: Mapped[int | None] = mapped_column(ForeignKey("group_meeting.id"), index=True)
+    move_target_revision: Mapped[int | None] = mapped_column(Integer)
+    move_start_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    submission_key: Mapped[str | None] = mapped_column(String(64), unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
+class GroupMeetingParticipant(Base):
+    __tablename__ = "group_meeting_participant"
+    __table_args__ = (
+        CheckConstraint("revision > 0"),
+        CheckConstraint("((side = 'host' OR side = 'guest') AND decision IN ('Pending', 'Approved', 'Declined')) "
+                        "OR (side = 'optional' AND decision IN ('Invited', 'Accepted', 'Declined'))"),
+    )
+    meeting_id: Mapped[int] = mapped_column(ForeignKey("group_meeting.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True, index=True)
+    revision: Mapped[int] = mapped_column(Integer)
+    side: Mapped[str] = mapped_column(String(10))
+    decision: Mapped[str] = mapped_column(String(10))
+
+
+class GroupMeetingCommitment(Base):
+    __tablename__ = "group_meeting_commitment"
+    __table_args__ = (
+        ForeignKeyConstraint(("meeting_id", "user_id"), ("group_meeting_participant.meeting_id", "group_meeting_participant.user_id")),
+        CheckConstraint("start_at < end_at"),
+        ExcludeConstraint(("user_id", "="), ("period", "&&"), using="gist", name="ex_group_meeting_person_overlap"),
+    )
+    meeting_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    period: Mapped[object] = mapped_column(TSTZRANGE, Computed("tstzrange(start_at, end_at, '[)')", persisted=True))
+
+
+class GroupMeetingConsent(Base):
+    __tablename__ = "group_meeting_consent"
+    __table_args__ = (CheckConstraint("revision > 0"), CheckConstraint(allowed("decision", ("Pending", "Approved", "Declined"))))
+    meeting_id: Mapped[int] = mapped_column(ForeignKey("group_meeting.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True, index=True)
+    revision: Mapped[int] = mapped_column(Integer)
+    decision: Mapped[str] = mapped_column(String(10))
+
+
+class GroupMeetingReschedule(Base):
+    __tablename__ = "group_meeting_reschedule"
+    __table_args__ = (
+        CheckConstraint(allowed("status", ("Pending Approval", "Applied", "Declined", "Withdrawn", "Superseded"))),
+        CheckConstraint("source_revision > 0 AND original_start_at < original_end_at AND "
+                        "start_at <> original_start_at AND end_at - start_at = original_end_at - original_start_at"),
+        CheckConstraint("(original_room_request_id IS NULL) = (room_request_id IS NULL)"),
+        CheckConstraint("(status = 'Pending Approval') = (resolved_at IS NULL)"),
+        Index("uq_group_reschedule_pending", "meeting_id", unique=True,
+              postgresql_where=text("status = 'Pending Approval'")),
+        Index("uq_group_reschedule_applied", "meeting_id", "source_revision", unique=True,
+              postgresql_where=text("status = 'Applied'")),
+    )
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    meeting_id: Mapped[int] = mapped_column(ForeignKey("group_meeting.id"), index=True)
+    source_revision: Mapped[int] = mapped_column(Integer)
+    original_start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    original_end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    original_room_request_id: Mapped[int | None] = mapped_column(ForeignKey("student_room_request.id"), index=True)
+    start_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    end_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
+    room_request_id: Mapped[int | None] = mapped_column(ForeignKey("student_room_request.id"), index=True)
+    status: Mapped[str] = mapped_column(String(20))
+    submission_key: Mapped[str | None] = mapped_column(String(64), unique=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class GroupMeetingRescheduleDecision(Base):
+    __tablename__ = "group_meeting_reschedule_decision"
+    __table_args__ = (
+        CheckConstraint(allowed("decision", ("Pending", "Approved", "Declined"))),
+        CheckConstraint("(decision = 'Pending') = (decided_at IS NULL)"),
+    )
+    proposal_id: Mapped[int] = mapped_column(ForeignKey("group_meeting_reschedule.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), primary_key=True, index=True)
+    decision: Mapped[str] = mapped_column(String(10))
+    decided_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+
+
+class GroupMeetingEvent(Base):
+    __tablename__ = "group_meeting_event"
+    __table_args__ = (CheckConstraint("revision > 0"),)
+    id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
+    meeting_id: Mapped[int] = mapped_column(ForeignKey("group_meeting.id"), index=True)
+    actor_id: Mapped[int] = mapped_column(ForeignKey("university_user.id"), index=True)
+    revision: Mapped[int] = mapped_column(Integer)
+    message: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
 class Notification(Base):
     __tablename__ = "notification"
     __table_args__ = (
-        CheckConstraint("num_nonnulls(appointment_event_id, room_event_id, equipment_event_id, feedback_event_id, eligibility_event_id) = 1", name="ck_notification_source"),
+        CheckConstraint("num_nonnulls(appointment_event_id, room_event_id, equipment_event_id, feedback_event_id, eligibility_event_id, group_meeting_event_id) = 1", name="ck_notification_source"),
         UniqueConstraint("recipient_id", "appointment_event_id"),
         UniqueConstraint("recipient_id", "room_event_id"),
         UniqueConstraint("recipient_id", "equipment_event_id"),
         UniqueConstraint("recipient_id", "feedback_event_id"),
         UniqueConstraint("recipient_id", "eligibility_event_id"),
+        UniqueConstraint("recipient_id", "group_meeting_event_id", name="uq_notification_group_meeting_event"),
         Index("ix_notification_recipient_read_id", "recipient_id", "read_at", "id"),
     )
     id: Mapped[int] = mapped_column(BigInteger, Identity(), primary_key=True)
@@ -804,6 +942,7 @@ class Notification(Base):
     equipment_event_id: Mapped[int | None] = mapped_column(ForeignKey("equipment_event.id"), index=True)
     feedback_event_id: Mapped[int | None] = mapped_column(ForeignKey("feedback_event.id"), index=True)
     eligibility_event_id: Mapped[int | None] = mapped_column(ForeignKey("eligibility_event.id"), index=True)
+    group_meeting_event_id: Mapped[int | None] = mapped_column(ForeignKey("group_meeting_event.id"), index=True)
     read_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
 

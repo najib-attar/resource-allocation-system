@@ -91,6 +91,10 @@ class SchedulingPreferenceService:
         if (type(uid) is not int or type(version) is not int
                 or uid != principal.user_id or version != principal.session_version):
             raise PreferenceAccessDenied()
+        modern_login = login_session.get('login_format') == 2
+        token = login_session.get('csrf') if modern_login else None
+        if modern_login and not AccountService._valid_session_token(token):
+            raise PreferenceAccessDenied()
         try:
             with self.database.transaction(read_only=not write) as session, session.no_autoflush:
                 if (getattr(session.get_bind(), 'url', None) != authenticated or not session.is_active
@@ -103,7 +107,7 @@ class SchedulingPreferenceService:
                     # Keep active university identity stable until the preference commit.
                     if session.get(User, uid, with_for_update={'read': True}, populate_existing=True) is None:
                         raise PreferenceAccessDenied()
-                current = AccountService(self.database).identity(uid, version, session=session)
+                current = AccountService(self.database).identity(uid, version, session=session, session_token=token)
                 if current is None or current != principal:
                     raise PreferenceAccessDenied()
                 yield session, current.user_id
