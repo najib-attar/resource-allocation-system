@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import select, text
+from sqlalchemy import delete, select, text, update
 from sqlalchemy.exc import DBAPIError, IntegrityError
 
 from postgres_fixtures import ROOT
@@ -23,9 +23,11 @@ from web.group_meeting_planning import plan
 from web.group_meeting_reschedule import decisions_for, propose, respond
 from web.group_meeting_service import MeetingError, cancel, decide, submit
 from web.notification_service import NotificationService
+from web.persistence.database import DatabaseBusy
 from web.persistence.models import (
     GroupMeeting, GroupMeetingAvailability, GroupMeetingCommitment, GroupMeetingConsent,
-    GroupMeetingParticipant, GroupMeetingReschedule, Role, RoomOrganizerCommitment, RoomReservation, User,
+    GroupMeetingParticipant, GroupMeetingReschedule, GroupMeetingRescheduleDecision, Role,
+    RoomOrganizerCommitment, RoomReservation, User,
 )
 from web.persistence.repository import state_row
 from web.room_request_service import RoomRequestError, RoomRequestService
@@ -274,6 +276,63 @@ class ConfirmedMeetingRescheduleTests(AppointmentFixture):
             command.downgrade(Config(str(ROOT / "alembic.ini")), "0051f")
         with self.database.transaction(read_only=True) as session:
             self.assertEqual(session.scalar(text("SELECT version_num FROM alembic_version")), self.head_revision)
+
+    def test_resolved_decision_history_rejects_rewrite_delete_and_truncate(self):
+        meeting = self.confirmed(required=(2,), optional=())
+        declined = self.proposal(meeting)
+        self.vote(meeting, declined, 2, "decline")
+        applied = self.proposal(meeting)
+        self.vote(meeting, applied, 2)
+        decisions = GroupMeetingRescheduleDecision
+        for proposal, status in ((declined, "Declined"), (applied, "Applied")):
+            before = self.saved(meeting, proposal)
+            self.assertEqual(before[3], status)
+            vote = (decisions.proposal_id == proposal, decisions.user_id == 2)
+            for statement in (
+                update(decisions).where(*vote).values(decision="Approved", decided_at=REPLACEMENT),
+                delete(decisions).where(*vote),
+            ):
+                with self.subTest(status=status, operation=type(statement).__name__), \
+                        self.assertRaisesRegex(IntegrityError, "Resolved reschedule decisions are immutable"), \
+                        self.database.transaction() as session:
+                    session.execute(statement)
+            self.assertEqual(self.saved(meeting, proposal), before)
+        with self.assertRaisesRegex(IntegrityError, "Reschedule decision history cannot be truncated"), \
+                self.database.transaction() as session:
+            session.execute(text("TRUNCATE group_meeting_reschedule_decision"))
+        self.assertEqual(self.saved(meeting, applied)[4], {1: "Approved", 2: "Approved"})
+
+    def test_concurrent_proposal_resolution_locks_out_decision_edits(self):
+        meeting = self.confirmed(required=(2,), optional=())
+        proposal = self.proposal(meeting)
+        decisions = GroupMeetingRescheduleDecision
+        edit = update(decisions).where(decisions.proposal_id == proposal, decisions.user_id == 2).values(
+            decision="Approved", decided_at=REPLACEMENT)
+        with self.database.transaction() as resolver:
+            respond(resolver, self.fixture, 1, self.roster, meeting, proposal, 1, "withdraw")
+            resolver.flush()
+            with self.assertRaises(DatabaseBusy), self.database.transaction() as editor:
+                editor.execute(text("SET LOCAL lock_timeout = '100ms'"))
+                editor.execute(edit)
+        with self.assertRaisesRegex(IntegrityError, "Resolved reschedule decisions are immutable"), \
+                self.database.transaction() as session:
+            session.execute(edit)
+        self.assertEqual(self.saved(meeting, proposal)[3:5], ("Withdrawn", {1: "Approved", 2: "Pending"}))
+
+    def test_decision_history_guard_upgrade_preserves_existing_votes(self):
+        meeting = self.confirmed(required=(2,), optional=())
+        config = Config(str(ROOT / "alembic.ini"))
+        with patch.dict(os.environ, {"DATABASE_URL": self.url}):
+            command.downgrade(config, "0051h")
+            proposal = self.proposal(meeting)
+            self.vote(meeting, proposal, 2, "decline")
+            with self.database.transaction(read_only=True) as session:
+                before = [(row.user_id, row.decision, row.decided_at) for row in decisions_for(session, proposal)]
+            command.upgrade(config, "head")
+        with self.database.transaction(read_only=True) as session:
+            after = [(row.user_id, row.decision, row.decided_at) for row in decisions_for(session, proposal)]
+            self.assertEqual(after, before)
+            self.assertEqual({uid: decision for uid, decision, _ in after}, {1: "Approved", 2: "Declined"})
 
     def test_schema_upgrade_preserves_prior_confirmed_group_arrangements(self):
         meeting = self.confirmed(required=(2,), optional=())

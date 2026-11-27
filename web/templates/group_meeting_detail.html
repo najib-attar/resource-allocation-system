@@ -20,10 +20,15 @@
         <p><a href="{{ meeting.join_url }}" rel="noreferrer">Open the organizer's join link</a></p>
         {% endif %}
         {% if meeting.move_start_at %}
-            {% if affected %}
-                <h3>Proposed replacement{% if meeting.status == 'Confirmed' %} applied{% endif %}</h3>
-                <p>{{ meeting.move_start_at|university_time }}</p>
+            {% if relocation %}
+                <h3>Proposed relocation</h3>
+                <p>Current meeting <a href="{{ url_for('group_meetings.detail', meeting_id=relocation.id) }}">{{ relocation.purpose }}</a> · {{ relocation.start|university_time }} – {{ relocation.end|university_time }}</p>
+                <p>Replacement time {{ meeting.move_start_at|university_time }} – {{ relocation.replacement_end|university_time }}</p>
                 <p>{{ responses|selectattr('decision', 'equalto', 'Approved')|list|length }} of {{ responses|length }} affected people consented.</p>
+            {% elif consent %}
+                <p>The original meeting or its availability changed. Ask the organizer to search again, or refuse this relocation.</p>
+            {% elif affected and meeting.status == 'Confirmed' %}
+                <p>Relocation applied. Approved replacement start {{ meeting.move_start_at|university_time }}.</p>
             {% else %}
                 <p>{% if meeting.status == 'Confirmed' %}A separate relocation was approved for this arrangement.{% else %}This arrangement includes a separate relocation decision.{% endif %}</p>
             {% endif %}
@@ -40,7 +45,7 @@
                 <button name="action" value="decline">Decline meeting</button>
             {% endif %}
             {% if consent %}
-                {% if consent.decision != 'Approved' %}<button name="action" value="consent">Consent to replacement</button>{% endif %}
+                {% if relocation and consent.decision != 'Approved' %}<button name="action" value="consent">Consent to replacement</button>{% endif %}
                 <button name="action" value="refuse-move">Refuse relocation</button>
             {% endif %}
         </form>

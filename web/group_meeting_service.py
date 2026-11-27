@@ -106,6 +106,19 @@ def _check_arrangement(session, fixture, actor, roster, required, attendees, sta
     return target, affected, replacement_end
 
 
+def check_pending_relocation(session, fixture, meeting, members, roster, consents):
+    """Check the named target, the exact voters and both proposed intervals."""
+    if meeting.move_target_id is None or any(row.revision != meeting.revision for row in consents):
+        raise MeetingError("The relocation or its revision changed. Search again.")
+    target, affected, replacement_end = _check_arrangement(
+        session, fixture, meeting.organizer_id, roster, required_members(members),
+        {member.user_id for member in members}, meeting.start_at, meeting.end_at,
+        move=(meeting.move_target_id, meeting.move_target_revision, meeting.move_start_at))
+    if {row.user_id for row in consents} != affected:
+        raise MeetingError("The group affected by the move changed. Search again.")
+    return target, affected, replacement_end
+
+
 def _event(session, meeting, actor, message, *, notify_actor=False):
     publish_event(session, GroupMeetingEvent(meeting_id=meeting.id, actor_id=actor,
         revision=meeting.revision, message=message), notify_actor=notify_actor)
@@ -191,6 +204,8 @@ def decide(session, fixture, actor, roster, meeting_id, revision, action):
             raise PermissionError("Only affected required participants may consent to a move.")
     else:
         raise MeetingError("Choose a supported meeting response.")
+    checked = (check_pending_relocation(session, fixture, meeting, members, roster, consents)
+               if action == "consent" else None)
     decision = "Declined" if action in {"decline", "refuse-move"} else "Approved"
     if response.decision == decision:
         return
@@ -204,16 +219,15 @@ def decide(session, fixture, actor, roster, meeting_id, revision, action):
             p.decision == "Approved" and p.revision == revision for p in consents):
         _event(session, meeting, actor, "Move consent recorded." if action == "consent" else "Required approval recorded.")
         return
-    move = ((meeting.move_target_id, meeting.move_target_revision, meeting.move_start_at)
-            if meeting.move_target_id is not None else None)
     required = required_members(members)
-    checked = _check_arrangement(session, fixture, meeting.organizer_id, roster, required,
-        {p.user_id for p in members}, meeting.start_at, meeting.end_at,
-        room_id=meeting.room_request_id, features=meeting.required_features, move=move)
+    if meeting.move_target_id is None:
+        _check_arrangement(session, fixture, meeting.organizer_id, roster, required,
+            {p.user_id for p in members}, meeting.start_at, meeting.end_at,
+            room_id=meeting.room_request_id, features=meeting.required_features)
+    elif checked is None:
+        checked = check_pending_relocation(session, fixture, meeting, members, roster, consents)
     if checked:
         target, affected, replacement_end = checked
-        if {p.user_id for p in consents} != affected:
-            raise MeetingError("The group affected by the move changed. Search again.")
         from .group_meeting_reschedule import supersede_active
         supersede_active(session, target.id)
         _release(session, target)

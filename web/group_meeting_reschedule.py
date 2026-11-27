@@ -135,6 +135,7 @@ def respond(session, fixture, actor, roster, meeting_id, proposal_id, revision, 
         return
     if action == "decline":
         own.decision, own.decided_at = "Declined", now
+        session.flush([own])
         proposal.status, proposal.resolved_at = "Declined", now
         _event(session, meeting, actor, "A required participant declined the replacement. The original meeting remains confirmed.")
         return
@@ -152,6 +153,7 @@ def respond(session, fixture, actor, roster, meeting_id, proposal_id, revision, 
     release_prior = prior_booking is not None and prior_booking.group_participant_ids is not None
     if release_prior and room_service is None:
         raise MeetingError("The prior meeting room could not be released safely. Refresh and try again.")
+    session.flush([own])
     _release(session, meeting)
     meeting.start_at, meeting.end_at = proposal.start_at, proposal.end_at
     meeting.room_request_id = proposal.room_request_id

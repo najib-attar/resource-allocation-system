@@ -93,8 +93,10 @@ the `0051e → 0051h → 0051e → 0051h` rehearsal. Alembic reported no pending
 schema changes at the upgraded head. The shared CDMCS fact projection
 retained 544 participant teaching intervals, 101 room teaching intervals,
 and 169 published availability intervals in the week of 23 November.
-Native ranking and mutations use synthetic test identities. The existing
-profile remained at `0051e`.
+Native ranking and mutations use synthetic test identities. The separately
+approved migration moved the existing profile to `0051h`. A read-only check
+on 27 November matched all 69 original tables and 41 original sequences
+against the pre-migration backup.
 
 The persistent aggregate was introduced in revision `0051f`. Revision
 `0051g` keeps separate proposal history and required-participant decisions
@@ -114,6 +116,35 @@ a scoped room is replaced, the previous scoped hold is released with the
 calendar change. A separately created Student room booking keeps its
 own lifecycle. Empty pilot additions can be downgraded. With pilot history,
 the migration guards refuse loss of proposal and scoped booking records.
+
+Revision `0051i` protects decisions attached to resolved replacement
+proposals from mutation. It governs the synthetic pilot. A regular profile
+at `0051h` can still use the regular launcher and calendar. Confirmed group
+holds stay part of conflict checks if the pilot interface is disabled.
+
+### Proposed persistent synthetic profile
+
+The current native launcher creates a fresh synthetic fixture. A persistent
+deployment would require a separate launcher and operator approval.
+
+1. Export the approved public academic reference fields from the imported
+   İTÜ dataset in a read-only transaction. Include term and teaching dates,
+   course and section labels, meeting intervals and room identifiers.
+   Review and hash the export. Create new teaching and enrollment links
+   using fictional identities. Transfer public reference fields only.
+2. Initialize and migrate a new owned PostgreSQL cluster on loopback with a
+   separate data directory, port, database credentials and session secret.
+   Seed the reviewed export and fictional accounts once. Keep its manifest,
+   logs, credentials and backups outside Git.
+3. Require an explicit synthetic-profile selection and opt-in on launch.
+   Validate the profile marker, database identity and data directory, schema
+   head, exact roster of two to eight fictional accounts and native executable
+   checksum before registering rehearsal routes. Ensure regular conflict checks honor
+   confirmed group holds when the pilot is off.
+4. Verify rejection of the existing regular profile, an unapproved roster
+   and an external listener. Exercise booking conflicts, relocation
+   consent, calendar synchronization and a restart on the new profile.
+   Activate only after reviewing those results.
 
 ## Confirmation and relocation
 

@@ -5,7 +5,7 @@ from datetime import date, datetime, timedelta, timezone
 from sqlalchemy import delete, func, or_, select
 from sqlalchemy.exc import IntegrityError
 
-from .calendar_service import (CalendarError, assert_commitments_compatible, aware, calendar_snapshot, commitment_models,
+from .calendar_service import (COMMITMENT_MODELS, CalendarError, assert_commitments_compatible, aware, calendar_snapshot,
                                epoch, expand_weekly, university_zone)
 from .persistence.models import (AcademicPeriod, Appointment, AppointmentCommitment, AppointmentEvent,
                                 AppointmentInvitation, AppointmentProfessor, BusySlot, CalendarBlock,
@@ -352,7 +352,7 @@ class AppointmentService:
                                               week_start=week_start, excluded_dates=list(exclusions)))
             session.flush()
             from .calendar_service import legacy_intervals
-            commits = [row for model in commitment_models(session) for row in session.scalars(select(model))]
+            commits = [row for model in COMMITMENT_MODELS for row in session.scalars(select(model))]
             if commits:
                 values, _ = legacy_intervals(session, {row.user_id for row in commits}, min(row.start_at for row in commits),
                                              max(row.end_at for row in commits), state.active_run_id)

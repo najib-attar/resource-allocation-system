@@ -12,12 +12,14 @@ from sqlalchemy.exc import SQLAlchemyError
 from research.cdmcs.i3c.process import ProcessFailure
 
 from .calendar_service import CalendarError, local_instant, university_zone
-from .cdmcs_rehearsal import _selection
+from .cdmcs_rehearsal import FIXTURE_EXTENSION, _selection
 from .engine_gateway import EngineGateway, EngineIntegrationError
 from .group_meeting_access import group_session
 from .group_meeting_planning import plan
 from .group_meeting_rooms import meeting_room_choices, meeting_room_features
-from .group_meeting_service import ACTIVE, PENDING, MeetingError, cancel, consents_for, decide, revise, submit, visible_meeting
+from .group_meeting_service import (
+    ACTIVE, PENDING, MeetingError, cancel, check_pending_relocation, consents_for, decide, revise, submit, visible_meeting,
+)
 from .persistence.database import DatabaseBusy
 from .persistence.models import GroupMeeting, GroupMeetingEvent, GroupMeetingParticipant, Resource, StudentRoomRequest
 from .persistence.repository import state_row
@@ -50,7 +52,7 @@ def _future(meeting):
 
 def register_group_meetings(app, fixture):
     """Bind the pilot to the exact database object provisioned by the demo launcher."""
-    if not app.jinja_env.globals.get("cdmcs_rehearsal_enabled"):
+    if app.extensions.get(FIXTURE_EXTENSION) is not fixture:
         raise RuntimeError("The generalized meeting pilot requires the isolated rehearsal.")
     fixture.database.sessions.configure(info={"group_meeting_pilot": True})
     blueprint = Blueprint("group_meetings", __name__, url_prefix="/meetings")
@@ -201,6 +203,17 @@ def register_group_meetings(app, fixture):
             affected = consent is not None
             if meeting.status != PENDING:
                 consent = None
+            relocation = None
+            if consent:
+                try:
+                    target, affected_ids, replacement_end = check_pending_relocation(
+                        db, fixture, meeting, members, roster, responses)
+                    if actor in affected_ids:
+                        relocation = {"id": target.id, "purpose": target.purpose, "start": target.start_at,
+                                      "end": target.end_at, "replacement_end": replacement_end}
+                except MeetingError:
+                    # A refusal can close a stale proposal. Withhold the obsolete target details.
+                    pass
             events = list(db.scalars(select(GroupMeetingEvent).where(GroupMeetingEvent.meeting_id == meeting.id)
                 .order_by(GroupMeetingEvent.id.desc()).limit(40)))
             room = (db.execute(select(Resource.name, Resource.building).join(StudentRoomRequest,
@@ -210,7 +223,8 @@ def register_group_meetings(app, fixture):
             room_name = " · ".join(value for value in room if value) if room else None
             return render_template("group_meeting_detail.html", meeting=meeting, members=members, roster=roster,
                 actor=actor, own=own, consent=consent, responses=responses, history=events,
-                active=meeting.status in ACTIVE and _future(meeting), room_name=room_name, affected=affected)
+                active=meeting.status in ACTIVE and _future(meeting), room_name=room_name, affected=affected,
+                relocation=relocation)
 
     @blueprint.post("/<int:meeting_id>/response")
     def response(meeting_id):

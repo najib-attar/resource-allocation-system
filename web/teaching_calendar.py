@@ -4,7 +4,7 @@ from datetime import datetime, time, timedelta, timezone
 
 from sqlalchemy import func, select, union
 
-from .calendar_service import CalendarError, commitment_models, epoch, expand_weekly
+from .calendar_service import COMMITMENT_MODELS, CalendarError, epoch, expand_weekly
 from .persistence.models import (AcademicPeriod, Allocation, AllocationParticipant,
     Course, CourseSection, CourseSession, Enrollment, LegacyCalendarBinding, Resource,
     RoomReservation, TeachingAssignment)
@@ -95,7 +95,7 @@ def overlaps_intervals(values, protected, identity):
 
 def assert_teaching_commitments_compatible(session):
     """Reject imports that would silently invalidate existing confirmed commitments."""
-    commitments = [row for model in commitment_models(session)
+    commitments = [row for model in COMMITMENT_MODELS
                    for row in session.scalars(select(model))]
     if commitments:
         intervals = person_teaching_intervals(session, {row.user_id for row in commitments},

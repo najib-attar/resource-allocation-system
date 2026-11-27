@@ -205,8 +205,27 @@ class RehearsalTests(TestCase):
     def test_normal_application_does_not_register_the_rehearsal(self):
         from web.app import app
 
-        self.assertNotIn("cdmcs_rehearsal.index", app.view_functions)
+        self.assertFalse({"cdmcs_rehearsal.index", "group_meetings.index", "group_meeting_reschedule.detail"}
+                         & app.view_functions.keys())
+        self.assertNotIn(rehearsal.FIXTURE_EXTENSION, app.extensions)
         self.assertFalse(app.jinja_env.globals.get("cdmcs_rehearsal_enabled"))
+        self.assertNotEqual(app.config["SESSION_COOKIE_NAME"], rehearsal.SESSION_COOKIE)
+
+    def test_group_routes_use_only_the_registered_rehearsal_fixture(self):
+        from web.group_meeting_routes import register_group_meetings
+
+        app = Flask(__name__)
+        app.jinja_env.globals["cdmcs_rehearsal_enabled"] = True
+        with self.assertRaises(RuntimeError):
+            register_group_meetings(app, self.fixture)
+        rehearsal.register_rehearsal(app, self.fixture)
+        other_fixture = replace(self.fixture, database=MagicMock())
+        with self.assertRaises(RuntimeError):
+            register_group_meetings(app, other_fixture)
+        other_fixture.database.sessions.configure.assert_not_called()
+        register_group_meetings(app, self.fixture)
+        self.assertIn("group_meetings.index", app.view_functions)
+        self.assertEqual(app.config["SESSION_COOKIE_NAME"], rehearsal.SESSION_COOKIE)
 
     def test_booking_handoff_respects_existing_roles_and_faculty(self):
         with patch.object(rehearsal, "AppointmentService") as service:

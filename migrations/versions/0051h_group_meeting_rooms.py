@@ -109,6 +109,7 @@ def upgrade():
 
 
 def downgrade():
+    op.execute("LOCK TABLE student_room_request IN ACCESS EXCLUSIVE MODE")
     if op.get_bind().scalar(sa.text("SELECT EXISTS (SELECT 1 FROM student_room_request WHERE group_participant_ids IS NOT NULL)")):
         raise RuntimeError("Downgrade would discard group room authorization history. Preserve and reconcile those requests first.")
     op.execute("DROP TRIGGER group_meeting_room_scope ON student_room_request; DROP FUNCTION ras_group_meeting_room_scope()")

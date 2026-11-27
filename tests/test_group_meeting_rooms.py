@@ -1,11 +1,17 @@
 """Physical group meetings attach to the existing approved room lifecycle."""
 
+import os
+from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
+from time import monotonic, sleep
 from unittest import TestCase, mock
 
-from sqlalchemy import select
+from alembic import command
+from alembic.config import Config
+from sqlalchemy import select, text
 from sqlalchemy.exc import IntegrityError
 
+from postgres_fixtures import ROOT
 from test_appointments import START
 from test_room_requests import RoomFixture
 from web.account_service import AccountService
@@ -181,6 +187,29 @@ class ScopedMeetingRoomIntegrationTests(RoomFixture):
         self.database.sessions.configure(info={})
         with self.assertRaises(PermissionError):
             self.propose(key="b" * 64)
+
+    def test_downgrade_checks_for_scoped_requests_after_a_concurrent_insert_commits(self):
+        config = Config(str(ROOT / "alembic.ini"))
+        with mock.patch.dict(os.environ, {"DATABASE_URL": self.url}), ThreadPoolExecutor(max_workers=1) as pool:
+            with self.database.transaction() as writer:
+                request = self.rooms.submit_group_meeting(writer, 2, purpose="Fictional in-flight room request",
+                    start=START, duration=60, participant_ids=[1, 2], features=["computers"], room_id=303,
+                    submission_key="a" * 64)
+                relation = writer.scalar(text("SELECT 'student_room_request'::regclass::oid"))
+                downgrade = pool.submit(command.downgrade, config, "0051g")
+                deadline = monotonic() + 10
+                with self.database.transaction(read_only=True) as observer:
+                    while not observer.scalar(text(
+                        "SELECT EXISTS (SELECT 1 FROM pg_locks WHERE relation = :relation AND NOT granted)"),
+                        {"relation": relation}):
+                        if downgrade.done() or monotonic() >= deadline:
+                            self.fail("Downgrade did not wait for the scoped request transaction.")
+                        sleep(0.01)
+            with self.assertRaisesRegex(RuntimeError, "discard group room authorization history"):
+                downgrade.result(timeout=10)
+        with self.database.transaction(read_only=True) as session:
+            self.assertEqual(session.scalar(text("SELECT version_num FROM alembic_version")), self.head_revision)
+            self.assertEqual(session.get(StudentRoomRequest, request).group_participant_ids, [1, 2])
 
     def test_confirmed_group_and_its_scoped_room_project_one_calendar_commitment(self):
         request = self.propose()

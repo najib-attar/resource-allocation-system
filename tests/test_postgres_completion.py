@@ -173,7 +173,8 @@ class PostgresCompletionTests(PostgresTestCase):
             "check_group_meeting_consent", "check_group_meeting_room", "check_group_reschedule",
             "check_group_reschedule_decision")})
         expected.update({name: (False, False) for name in (
-            "protect_group_reschedule_history", "group_meeting_room_scope")})
+            "protect_group_reschedule_history", "group_meeting_room_scope",
+            "protect_group_reschedule_decision_history", "protect_group_reschedule_decision_truncate")})
         self.assertEqual({row[0]: (row[1], row[2]) for row in rows}, expected)
 
     def test_concurrent_child_deletions_cannot_leave_empty_recurring_request(self):

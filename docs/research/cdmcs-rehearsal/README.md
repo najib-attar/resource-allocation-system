@@ -30,9 +30,9 @@ $profile = 'C:\path\to\owning-checkout\build\local-demos\itu-bbf-fall-2026'
 & $python -B scripts/run_itu_cdmcs.py --state-dir $profile
 ~~~
 
-After a separately approved migration has brought the profile to this
-checkout's schema head, the same launcher can serve the regular Campus
-Space application from that database.
+The same launcher can serve the existing regular Campus Space profile at
+`0051h`. The `0051i` migration adds pilot-only audit guards and is required
+for a new CDMCS rehearsal.
 
 ~~~powershell
 & $python -B scripts/build_backend.py --if-needed

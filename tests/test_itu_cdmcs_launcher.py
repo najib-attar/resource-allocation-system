@@ -74,6 +74,19 @@ class ItuCdmcsLauncherTests(TestCase):
             self.assertEqual(launcher.main(), 0)
         self.assertEqual(serve.call_args.args[2], 5080)
 
+    def test_pilot_only_revision_keeps_regular_0051h_profile_compatible(self):
+        command = ["run_itu_cdmcs", "--state-dir", str(self.directory), "--serve"]
+        with (
+            patch("sys.argv", command),
+            patch.object(launcher, "required_revisions", return_value={"0051i"}),
+            patch.object(launcher, "inspect_database", return_value={"0051h"}),
+            patch.object(launcher, "serve") as serve,
+        ):
+            self.assertEqual(launcher.main(), 0)
+        serve.assert_called_once()
+        with patch.object(launcher, "required_revisions", return_value={"a_future_revision"}):
+            self.assertFalse(launcher.can_serve({"0051h"}))
+
     def test_pg_ctl_console_output_is_separate_from_the_server_log(self):
         data = self.directory / "postgres-data"
         (data / "postmaster.pid").write_text(f"1234\n{data}\n5678\n55546\n", encoding="utf-8")

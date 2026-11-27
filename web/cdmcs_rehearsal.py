@@ -52,6 +52,8 @@ class RehearsalError(ValueError):
 
 
 DEMO_ROLES = {"Student", "Instructor", "Research Assistant", "Staff", "Administrator"}
+FIXTURE_EXTENSION = "cdmcs_rehearsal_fixture"
+SESSION_COOKIE = "cdmcs_rehearsal_session"
 ORIGIN = {"source": "synthetic-itu-rehearsal", "fixture_id": "appointments"}
 TIER_POLICY = dict(preferred_rate=1, outside_window_rate=2, outside_day_rate=4,
     gap_weight=1, nearby_limit=120, exception_fee=0, move_fixed_cost=25,
@@ -395,4 +397,6 @@ def register_rehearsal(app, fixture):
         return response
 
     app.register_blueprint(blueprint)
+    app.extensions[FIXTURE_EXTENSION] = fixture
+    app.config["SESSION_COOKIE_NAME"] = SESSION_COOKIE
     app.jinja_env.globals["cdmcs_rehearsal_enabled"] = True

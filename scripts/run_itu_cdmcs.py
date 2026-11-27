@@ -51,6 +51,13 @@ def required_revisions():
     return frozenset(ScriptDirectory.from_config(config).get_heads())
 
 
+def can_serve(revisions):
+    head = required_revisions()
+    # 0051i only guards writes to pilot decisions. This launcher never registers
+    # pilot routes, so an existing regular profile at 0051h can still boot.
+    return revisions == head or (head == {"0051i"} and revisions == {"0051h"})
+
+
 @contextmanager
 def serving_lock(directory):
     with (directory / "launcher.lock").open("a+b") as lock:
@@ -138,7 +145,7 @@ def main():
         database = Database(connection_url(settings))
         if args.serve:
             with serving_lock(directory), existing_postgres(directory, args.postgres_bin):
-                if inspect_database(database, settings_path, settings) != required_revisions():
+                if not can_serve(inspect_database(database, settings_path, settings)):
                     raise ValueError("The profile needs a separately approved migration before this checkout can serve it.")
                 serve(database, settings, args.port)
         else:

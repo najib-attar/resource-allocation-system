@@ -310,8 +310,8 @@ class Repository:
                                                end_minutes=slot["endMinutes"], score=item["score"], time_distance=item["timeDistanceMinutes"],
                                                day_distance=item["dayDistance"], conflict_count=item["conflictCount"], reason=item["reason"]))
         run.status, run.build, run.engine_version = "success", build, result["engineVersion"]
-        from ..calendar_service import assert_commitments_compatible, commitment_models, legacy_intervals
-        commitments = [row for model in commitment_models(session) for row in session.scalars(select(model))]
+        from ..calendar_service import COMMITMENT_MODELS, assert_commitments_compatible, legacy_intervals
+        commitments = [row for model in COMMITMENT_MODELS for row in session.scalars(select(model))]
         if commitments:
             intervals, unresolved = legacy_intervals(session, {row.user_id for row in commitments},
                 min(row.start_at for row in commitments), max(row.end_at for row in commitments), run.id)

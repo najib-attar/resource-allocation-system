@@ -14,7 +14,7 @@ from test_appointments import AppointmentFixture, START
 from web.account_service import AccountService
 from web.appointment_service import AppointmentError
 from web.backend_executable import file_sha256
-from web.calendar_service import CalendarError
+from web.calendar_service import CalendarError, calendar_snapshot, epoch
 from web.cdmcs_rehearsal import RehearsalFixture
 from web.group_meeting_planning import plan
 from web.group_meeting_service import MeetingError, cancel, decide, revise, submit, visible_meeting
@@ -26,6 +26,7 @@ from web.persistence.models import (
     RoomReservation, TeachingAssignment, User,
 )
 from web.persistence.repository import state_row
+from web.room_calendar import person_busy
 from web.room_request_service import RoomRequestError, RoomRequestService
 from web.teaching_calendar import assert_teaching_commitments_compatible
 from web.university_calendar import UniversityCalendarService
@@ -208,10 +209,22 @@ class GroupMeetingWorkflowTests(AppointmentFixture):
     def test_standard_scheduler_and_personal_blocks_respect_group_confirmation(self):
         meeting = self.request()
         self.respond(meeting, 2)
+        self.assertTrue(self.calendar_entry(1, meeting)["busy"])
+        self.database.sessions.configure(info={})
+        self.assertIsNone(self.calendar_entry(1, meeting))
+        self.assertFalse(self.inbox.inbox(2)["items"])
+        end = START + timedelta(minutes=30)
+        with self.database.transaction(read_only=True) as session:
+            snapshot, _ = calendar_snapshot(session, 6, [2], [], 30, START, end,
+                                            exclude_group_meetings=(meeting,))
+            self.assertEqual(snapshot["busy"], [{"userId": 2, "start": epoch(START), "end": epoch(end)}])
+            room_busy, resolved = person_busy(session, 2, START, end, active_run=None)
+            self.assertTrue(resolved)
+            self.assertEqual(room_busy, [{"start": epoch(START), "end": epoch(end)}])
         with self.assertRaises(AppointmentError):
             self.submit(organizer=6, professors=(2,), start=START)
         with self.assertRaises(CalendarError):
-            self.service.block(2, START, START + timedelta(minutes=30), "Protected by meeting")
+            self.service.block(2, START, end, "Protected by meeting")
         self.assertEqual(self.commits(meeting), {1: START, 2: START})
 
     def test_teaching_publication_and_group_confirmation_protect_each_other(self):
@@ -239,9 +252,11 @@ class GroupMeetingWorkflowTests(AppointmentFixture):
 
         group = self.request()
         self.respond(group, 2)
+        self.database.sessions.configure(info={})
         with self.assertRaisesRegex(CalendarError, "Published teaching conflicts"):
             publish_class()
         self.assertEqual(self.commits(group), {1: START, 2: START})
+        self.database.sessions.configure(info={"group_meeting_pilot": True})
         with self.database.transaction() as session:
             cancel(session, 1, group, 1)
         publish_class()
@@ -336,6 +351,18 @@ class GroupMeetingWorkflowTests(AppointmentFixture):
         self.assertEqual(self.responses(new, GroupMeetingConsent)[2], ("Pending", 1))
         with self.database.transaction(read_only=True) as session:
             self.assertEqual(state_row(session).calendar_revision, prior_revision)
+
+    def test_stale_relocation_cannot_record_even_the_first_consent(self):
+        original = self.confirmed_flexible()
+        replacement = START + timedelta(hours=2)
+        proposed = self.moving_request(original, replacement=replacement)
+        self.service.block(2, replacement, replacement + timedelta(minutes=30), "Fictional new class")
+        with self.assertRaisesRegex(MeetingError, "overlapping commitment"):
+            self.respond(proposed, 1, "consent")
+        self.assertEqual(self.responses(proposed, GroupMeetingConsent), {1: ("Pending", 1), 2: ("Pending", 1)})
+        self.respond(proposed, 2, "refuse-move")
+        self.assertEqual(self.record(proposed)[0], "Declined")
+        self.assertEqual(self.commits(original), {1: START, 2: START})
 
     def test_confirmed_group_requires_correct_commitments_at_database_commit(self):
         meeting = self.request()
